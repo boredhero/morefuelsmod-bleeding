@@ -2,6 +2,7 @@ package net.minecraft.command;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -37,10 +38,6 @@ public class CommandGameMode extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -62,20 +59,17 @@ public class CommandGameMode extends CommandBase
 
             if (entityplayer != sender)
             {
-                notifyOperators(sender, this, 1, "commands.gamemode.success.other", new Object[] {entityplayer.getName(), itextcomponent});
+                notifyCommandListener(sender, this, 1, "commands.gamemode.success.other", new Object[] {entityplayer.getName(), itextcomponent});
             }
             else
             {
-                notifyOperators(sender, this, 1, "commands.gamemode.success.self", new Object[] {itextcomponent});
+                notifyCommandListener(sender, this, 1, "commands.gamemode.success.self", new Object[] {itextcomponent});
             }
         }
     }
 
     /**
      * Gets the Game Mode specified in the command.
-     *  
-     * @param sender The source of the command invocation
-     * @param gameModeString The name of the game mode
      */
     protected WorldSettings.GameType getGameModeFromCommand(ICommandSender sender, String gameModeString) throws CommandException, NumberInvalidException
     {
@@ -83,7 +77,7 @@ public class CommandGameMode extends CommandBase
         return worldsettings$gametype == WorldSettings.GameType.NOT_SET ? WorldSettings.getGameTypeById(parseInt(gameModeString, 0, WorldSettings.GameType.values().length - 2)) : worldsettings$gametype;
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"survival", "creative", "adventure", "spectator"}): (args.length == 2 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : Collections.<String>emptyList());
     }

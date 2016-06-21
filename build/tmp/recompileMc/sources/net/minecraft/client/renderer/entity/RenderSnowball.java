@@ -14,14 +14,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderSnowball<T extends Entity> extends Render<T>
 {
-    protected final Item field_177084_a;
-    private final RenderItem field_177083_e;
+    protected final Item item;
+    private final RenderItem itemRenderer;
 
-    public RenderSnowball(RenderManager renderManagerIn, Item p_i46137_2_, RenderItem p_i46137_3_)
+    public RenderSnowball(RenderManager renderManagerIn, Item itemIn, RenderItem itemRendererIn)
     {
         super(renderManagerIn);
-        this.field_177084_a = p_i46137_2_;
-        this.field_177083_e = p_i46137_3_;
+        this.item = itemIn;
+        this.itemRenderer = itemRendererIn;
     }
 
     /**
@@ -35,7 +35,7 @@ public class RenderSnowball<T extends Entity> extends Render<T>
         GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
         GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-        this.bindTexture(TextureMap.locationBlocksTexture);
+        this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
         if (this.renderOutlines)
         {
@@ -43,7 +43,7 @@ public class RenderSnowball<T extends Entity> extends Render<T>
             GlStateManager.enableOutlineMode(this.getTeamColor(entity));
         }
 
-        this.field_177083_e.renderItem(this.getPotion(entity), ItemCameraTransforms.TransformType.GROUND);
+        this.itemRenderer.renderItem(this.getStackToRender(entity), ItemCameraTransforms.TransformType.GROUND);
 
         if (this.renderOutlines)
         {
@@ -56,9 +56,9 @@ public class RenderSnowball<T extends Entity> extends Render<T>
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
 
-    public ItemStack getPotion(T entityIn)
+    public ItemStack getStackToRender(T entityIn)
     {
-        return new ItemStack(this.field_177084_a);
+        return new ItemStack(this.item);
     }
 
     /**
@@ -66,6 +66,6 @@ public class RenderSnowball<T extends Entity> extends Render<T>
      */
     protected ResourceLocation getEntityTexture(Entity entity)
     {
-        return TextureMap.locationBlocksTexture;
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
 }

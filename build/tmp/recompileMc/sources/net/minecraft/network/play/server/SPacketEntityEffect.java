@@ -74,7 +74,7 @@ public class SPacketEntityEffect implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean func_149429_c()
+    public boolean isMaxDuration()
     {
         return this.duration == 32767;
     }

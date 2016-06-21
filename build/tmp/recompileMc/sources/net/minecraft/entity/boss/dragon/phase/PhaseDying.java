@@ -1,5 +1,6 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -8,8 +9,8 @@ import net.minecraft.world.gen.feature.WorldGenEndPodium;
 
 public class PhaseDying extends PhaseBase
 {
-    private Vec3d field_188672_b;
-    private int field_188673_c;
+    private Vec3d targetLocation;
+    private int time;
 
     public PhaseDying(EntityDragon dragonIn)
     {
@@ -22,7 +23,7 @@ public class PhaseDying extends PhaseBase
      */
     public void doClientRenderEffects()
     {
-        if (this.field_188673_c++ % 10 == 0)
+        if (this.time++ % 10 == 0)
         {
             float f = (this.dragon.getRNG().nextFloat() - 0.5F) * 8.0F;
             float f1 = (this.dragon.getRNG().nextFloat() - 0.5F) * 4.0F;
@@ -37,15 +38,15 @@ public class PhaseDying extends PhaseBase
      */
     public void doLocalUpdate()
     {
-        ++this.field_188673_c;
+        ++this.time;
 
-        if (this.field_188672_b == null)
+        if (this.targetLocation == null)
         {
-            BlockPos blockpos = this.dragon.worldObj.getHeight(WorldGenEndPodium.field_186139_a);
-            this.field_188672_b = new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
+            BlockPos blockpos = this.dragon.worldObj.getHeight(WorldGenEndPodium.END_PODIUM_LOCATION);
+            this.targetLocation = new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
         }
 
-        double d0 = this.field_188672_b.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
+        double d0 = this.targetLocation.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
 
         if (d0 >= 100.0D && d0 <= 22500.0D && !this.dragon.isCollidedHorizontally && !this.dragon.isCollidedVertically)
         {
@@ -62,8 +63,8 @@ public class PhaseDying extends PhaseBase
      */
     public void initPhase()
     {
-        this.field_188672_b = null;
-        this.field_188673_c = 0;
+        this.targetLocation = null;
+        this.time = 0;
     }
 
     /**
@@ -77,9 +78,10 @@ public class PhaseDying extends PhaseBase
     /**
      * Returns the location the dragon is flying toward
      */
+    @Nullable
     public Vec3d getTargetLocation()
     {
-        return this.field_188672_b;
+        return this.targetLocation;
     }
 
     public PhaseList<PhaseDying> getPhaseList()

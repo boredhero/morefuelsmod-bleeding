@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.layer;
 
 import net.minecraft.init.Biomes;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class GenLayerBiomeEdge extends GenLayer
 {
@@ -27,45 +27,45 @@ public class GenLayerBiomeEdge extends GenLayer
                 this.initChunkSeed((long)(j + areaX), (long)(i + areaY));
                 int k = aint[j + 1 + (i + 1) * (areaWidth + 2)];
 
-                if (!this.replaceBiomeEdgeIfNecessary(aint, aint1, j, i, areaWidth, k, BiomeGenBase.getIdForBiome(Biomes.extremeHills), BiomeGenBase.getIdForBiome(Biomes.extremeHillsEdge)) && !this.replaceBiomeEdge(aint, aint1, j, i, areaWidth, k, BiomeGenBase.getIdForBiome(Biomes.mesaPlateau_F), BiomeGenBase.getIdForBiome(Biomes.mesa)) && !this.replaceBiomeEdge(aint, aint1, j, i, areaWidth, k, BiomeGenBase.getIdForBiome(Biomes.mesaPlateau), BiomeGenBase.getIdForBiome(Biomes.mesa)) && !this.replaceBiomeEdge(aint, aint1, j, i, areaWidth, k, BiomeGenBase.getIdForBiome(Biomes.megaTaiga), BiomeGenBase.getIdForBiome(Biomes.taiga)))
+                if (!this.replaceBiomeEdgeIfNecessary(aint, aint1, j, i, areaWidth, k, Biome.getIdForBiome(Biomes.EXTREME_HILLS), Biome.getIdForBiome(Biomes.EXTREME_HILLS_EDGE)) && !this.replaceBiomeEdge(aint, aint1, j, i, areaWidth, k, Biome.getIdForBiome(Biomes.MESA_ROCK), Biome.getIdForBiome(Biomes.MESA)) && !this.replaceBiomeEdge(aint, aint1, j, i, areaWidth, k, Biome.getIdForBiome(Biomes.MESA_CLEAR_ROCK), Biome.getIdForBiome(Biomes.MESA)) && !this.replaceBiomeEdge(aint, aint1, j, i, areaWidth, k, Biome.getIdForBiome(Biomes.REDWOOD_TAIGA), Biome.getIdForBiome(Biomes.TAIGA)))
                 {
-                    if (k == BiomeGenBase.getIdForBiome(Biomes.desert))
+                    if (k == Biome.getIdForBiome(Biomes.DESERT))
                     {
                         int l1 = aint[j + 1 + (i + 1 - 1) * (areaWidth + 2)];
                         int i2 = aint[j + 1 + 1 + (i + 1) * (areaWidth + 2)];
                         int j2 = aint[j + 1 - 1 + (i + 1) * (areaWidth + 2)];
                         int k2 = aint[j + 1 + (i + 1 + 1) * (areaWidth + 2)];
 
-                        if (l1 != BiomeGenBase.getIdForBiome(Biomes.icePlains) && i2 != BiomeGenBase.getIdForBiome(Biomes.icePlains) && j2 != BiomeGenBase.getIdForBiome(Biomes.icePlains) && k2 != BiomeGenBase.getIdForBiome(Biomes.icePlains))
+                        if (l1 != Biome.getIdForBiome(Biomes.ICE_PLAINS) && i2 != Biome.getIdForBiome(Biomes.ICE_PLAINS) && j2 != Biome.getIdForBiome(Biomes.ICE_PLAINS) && k2 != Biome.getIdForBiome(Biomes.ICE_PLAINS))
                         {
                             aint1[j + i * areaWidth] = k;
                         }
                         else
                         {
-                            aint1[j + i * areaWidth] = BiomeGenBase.getIdForBiome(Biomes.extremeHillsPlus);
+                            aint1[j + i * areaWidth] = Biome.getIdForBiome(Biomes.EXTREME_HILLS_WITH_TREES);
                         }
                     }
-                    else if (k == BiomeGenBase.getIdForBiome(Biomes.swampland))
+                    else if (k == Biome.getIdForBiome(Biomes.SWAMPLAND))
                     {
                         int l = aint[j + 1 + (i + 1 - 1) * (areaWidth + 2)];
                         int i1 = aint[j + 1 + 1 + (i + 1) * (areaWidth + 2)];
                         int j1 = aint[j + 1 - 1 + (i + 1) * (areaWidth + 2)];
                         int k1 = aint[j + 1 + (i + 1 + 1) * (areaWidth + 2)];
 
-                        if (l != BiomeGenBase.getIdForBiome(Biomes.desert) && i1 != BiomeGenBase.getIdForBiome(Biomes.desert) && j1 != BiomeGenBase.getIdForBiome(Biomes.desert) && k1 != BiomeGenBase.getIdForBiome(Biomes.desert) && l != BiomeGenBase.getIdForBiome(Biomes.coldTaiga) && i1 != BiomeGenBase.getIdForBiome(Biomes.coldTaiga) && j1 != BiomeGenBase.getIdForBiome(Biomes.coldTaiga) && k1 != BiomeGenBase.getIdForBiome(Biomes.coldTaiga) && l != BiomeGenBase.getIdForBiome(Biomes.icePlains) && i1 != BiomeGenBase.getIdForBiome(Biomes.icePlains) && j1 != BiomeGenBase.getIdForBiome(Biomes.icePlains) && k1 != BiomeGenBase.getIdForBiome(Biomes.icePlains))
+                        if (l != Biome.getIdForBiome(Biomes.DESERT) && i1 != Biome.getIdForBiome(Biomes.DESERT) && j1 != Biome.getIdForBiome(Biomes.DESERT) && k1 != Biome.getIdForBiome(Biomes.DESERT) && l != Biome.getIdForBiome(Biomes.COLD_TAIGA) && i1 != Biome.getIdForBiome(Biomes.COLD_TAIGA) && j1 != Biome.getIdForBiome(Biomes.COLD_TAIGA) && k1 != Biome.getIdForBiome(Biomes.COLD_TAIGA) && l != Biome.getIdForBiome(Biomes.ICE_PLAINS) && i1 != Biome.getIdForBiome(Biomes.ICE_PLAINS) && j1 != Biome.getIdForBiome(Biomes.ICE_PLAINS) && k1 != Biome.getIdForBiome(Biomes.ICE_PLAINS))
                         {
-                            if (l != BiomeGenBase.getIdForBiome(Biomes.jungle) && k1 != BiomeGenBase.getIdForBiome(Biomes.jungle) && i1 != BiomeGenBase.getIdForBiome(Biomes.jungle) && j1 != BiomeGenBase.getIdForBiome(Biomes.jungle))
+                            if (l != Biome.getIdForBiome(Biomes.JUNGLE) && k1 != Biome.getIdForBiome(Biomes.JUNGLE) && i1 != Biome.getIdForBiome(Biomes.JUNGLE) && j1 != Biome.getIdForBiome(Biomes.JUNGLE))
                             {
                                 aint1[j + i * areaWidth] = k;
                             }
                             else
                             {
-                                aint1[j + i * areaWidth] = BiomeGenBase.getIdForBiome(Biomes.jungleEdge);
+                                aint1[j + i * areaWidth] = Biome.getIdForBiome(Biomes.JUNGLE_EDGE);
                             }
                         }
                         else
                         {
-                            aint1[j + i * areaWidth] = BiomeGenBase.getIdForBiome(Biomes.plains);
+                            aint1[j + i * areaWidth] = Biome.getIdForBiome(Biomes.PLAINS);
                         }
                     }
                     else
@@ -149,14 +149,14 @@ public class GenLayerBiomeEdge extends GenLayer
         }
         else
         {
-            BiomeGenBase biomegenbase = BiomeGenBase.getBiome(p_151634_1_);
-            BiomeGenBase biomegenbase1 = BiomeGenBase.getBiome(p_151634_2_);
+            Biome biome = Biome.getBiome(p_151634_1_);
+            Biome biome1 = Biome.getBiome(p_151634_2_);
 
-            if (biomegenbase != null && biomegenbase1 != null)
+            if (biome != null && biome1 != null)
             {
-                BiomeGenBase.TempCategory biomegenbase$tempcategory = biomegenbase.getTempCategory();
-                BiomeGenBase.TempCategory biomegenbase$tempcategory1 = biomegenbase1.getTempCategory();
-                return biomegenbase$tempcategory == biomegenbase$tempcategory1 || biomegenbase$tempcategory == BiomeGenBase.TempCategory.MEDIUM || biomegenbase$tempcategory1 == BiomeGenBase.TempCategory.MEDIUM;
+                Biome.TempCategory biome$tempcategory = biome.getTempCategory();
+                Biome.TempCategory biome$tempcategory1 = biome1.getTempCategory();
+                return biome$tempcategory == biome$tempcategory1 || biome$tempcategory == Biome.TempCategory.MEDIUM || biome$tempcategory1 == Biome.TempCategory.MEDIUM;
             }
             else
             {

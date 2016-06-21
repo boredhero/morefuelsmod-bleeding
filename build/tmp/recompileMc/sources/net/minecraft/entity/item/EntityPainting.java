@@ -2,6 +2,7 @@ package net.minecraft.entity.item;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,18 +69,18 @@ public class EntityPainting extends EntityHanging
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setString("Motive", this.art.title);
-        super.writeEntityToNBT(tagCompound);
+        compound.setString("Motive", this.art.title);
+        super.writeEntityToNBT(compound);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        String s = tagCompund.getString("Motive");
+        String s = compound.getString("Motive");
 
         for (EntityPainting.EnumArt entitypainting$enumart : EntityPainting.EnumArt.values())
         {
@@ -94,7 +95,7 @@ public class EntityPainting extends EntityHanging
             this.art = EntityPainting.EnumArt.KEBAB;
         }
 
-        super.readEntityFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
     }
 
     public int getWidthPixels()
@@ -110,11 +111,11 @@ public class EntityPainting extends EntityHanging
     /**
      * Called when this entity is broken. Entity parameter may be null.
      */
-    public void onBroken(Entity brokenEntity)
+    public void onBroken(@Nullable Entity brokenEntity)
     {
         if (this.worldObj.getGameRules().getBoolean("doEntityDrops"))
         {
-            this.playSound(SoundEvents.entity_painting_break, 1.0F, 1.0F);
+            this.playSound(SoundEvents.ENTITY_PAINTING_BREAK, 1.0F, 1.0F);
 
             if (brokenEntity instanceof EntityPlayer)
             {
@@ -126,13 +127,13 @@ public class EntityPainting extends EntityHanging
                 }
             }
 
-            this.entityDropItem(new ItemStack(Items.painting), 0.0F);
+            this.entityDropItem(new ItemStack(Items.PAINTING), 0.0F);
         }
     }
 
-    public void func_184523_o()
+    public void playPlaceSound()
     {
-        this.playSound(SoundEvents.entity_painting_place, 1.0F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_PAINTING_PLACE, 1.0F, 1.0F);
     }
 
     /**
@@ -143,8 +144,11 @@ public class EntityPainting extends EntityHanging
         this.setPosition(x, y, z);
     }
 
+    /**
+     * Set the position and rotation values directly without any clamping.
+     */
     @SideOnly(Side.CLIENT)
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_)
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
         BlockPos blockpos = this.hangingPosition.add(x - this.posX, y - this.posY, z - this.posZ);
         this.setPosition((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());

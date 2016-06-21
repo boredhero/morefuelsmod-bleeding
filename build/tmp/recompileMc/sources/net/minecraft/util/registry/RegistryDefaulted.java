@@ -1,5 +1,8 @@
 package net.minecraft.util.registry;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public class RegistryDefaulted<K, V> extends RegistrySimple<K, V>
 {
     /** Default object for this registry, returned when an object is not found. */
@@ -10,7 +13,8 @@ public class RegistryDefaulted<K, V> extends RegistrySimple<K, V>
         this.defaultObject = defaultObjectIn;
     }
 
-    public V getObject(K name)
+    @Nonnull
+    public V getObject(@Nullable K name)
     {
         V v = super.getObject(name);
         return (V)(v == null ? this.defaultObject : v);

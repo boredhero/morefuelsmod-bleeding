@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import javax.annotation.Nullable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.FileUtils;
@@ -33,8 +34,8 @@ public class HttpUtil
 {
     public static final ListeningExecutorService DOWNLOADER_EXECUTOR = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool((new ThreadFactoryBuilder()).setDaemon(true).setNameFormat("Downloader %d").build()));
     /** The number of download threads that we have started so far. */
-    private static final AtomicInteger downloadThreadsStarted = new AtomicInteger(0);
-    private static final Logger logger = LogManager.getLogger();
+    private static final AtomicInteger DOWNLOAD_THREADS_STARTED = new AtomicInteger(0);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * Builds an encoded HTTP POST content string from a string map
@@ -80,7 +81,7 @@ public class HttpUtil
     /**
      * Sends a POST to the given URL using the map as the POST args
      */
-    public static String postMap(URL url, Map<String, Object> data, boolean skipLoggingErrors, Proxy p_151226_3_)
+    public static String postMap(URL url, Map<String, Object> data, boolean skipLoggingErrors, @Nullable Proxy p_151226_3_)
     {
         /**
          * Sends a POST to the given URL
@@ -91,7 +92,7 @@ public class HttpUtil
     /**
      * Sends a POST to the given URL
      */
-    private static String post(URL url, String content, boolean skipLoggingErrors, Proxy p_151225_3_)
+    private static String post(URL url, String content, boolean skipLoggingErrors, @Nullable Proxy p_151225_3_)
     {
         try
         {
@@ -129,7 +130,7 @@ public class HttpUtil
         {
             if (!skipLoggingErrors)
             {
-                logger.error((String)("Could not post to " + url), (Throwable)exception);
+                LOGGER.error((String)("Could not post to " + url), (Throwable)exception);
             }
 
             return "";
@@ -137,7 +138,7 @@ public class HttpUtil
     }
 
     @SideOnly(Side.CLIENT)
-    public static ListenableFuture<Object> downloadResourcePack(final File saveFile, final String packUrl, final Map<String, String> p_180192_2_, final int maxSize, final IProgressUpdate p_180192_4_, final Proxy p_180192_5_)
+    public static ListenableFuture<Object> downloadResourcePack(final File saveFile, final String packUrl, final Map<String, String> p_180192_2_, final int maxSize, @Nullable final IProgressUpdate p_180192_4_, final Proxy p_180192_5_)
     {
         ListenableFuture<?> listenablefuture = DOWNLOADER_EXECUTOR.submit(new Runnable()
         {
@@ -196,7 +197,7 @@ public class HttpUtil
                                 return;
                             }
 
-                            HttpUtil.logger.warn("Deleting " + saveFile + " as it does not match what we currently have (" + i + " vs our " + j + ").");
+                            HttpUtil.LOGGER.warn("Deleting " + saveFile + " as it does not match what we currently have (" + i + " vs our " + j + ").");
                             FileUtils.deleteQuietly(saveFile);
                         }
                         else if (saveFile.getParentFile() != null)
@@ -239,7 +240,7 @@ public class HttpUtil
 
                             if (Thread.interrupted())
                             {
-                                HttpUtil.logger.error("INTERRUPTED");
+                                HttpUtil.LOGGER.error("INTERRUPTED");
 
                                 if (p_180192_4_ != null)
                                 {
@@ -268,7 +269,7 @@ public class HttpUtil
 
                             try
                             {
-                                HttpUtil.logger.error(IOUtils.toString(inputstream1));
+                                HttpUtil.LOGGER.error(IOUtils.toString(inputstream1));
                             }
                             catch (IOException ioexception)
                             {

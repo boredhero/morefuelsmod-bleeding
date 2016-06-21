@@ -56,6 +56,7 @@ import net.minecraftforge.fml.common.versioning.ComparableVersion;
 import static net.minecraft.util.text.TextFormatting.*;
 
 import org.apache.logging.log4j.Level;
+import org.lwjgl.input.Mouse;
 
 import com.google.common.base.Strings;
 
@@ -157,13 +158,14 @@ public class GuiModList extends GuiScreen
     @Override
     public void initGui()
     {
+        int slotHeight = 35;
         for (ModContainer mod : mods)
         {
             listWidth = Math.max(listWidth,getFontRenderer().getStringWidth(mod.getName()) + 10);
-            listWidth = Math.max(listWidth,getFontRenderer().getStringWidth(mod.getVersion()) + 10);
+            listWidth = Math.max(listWidth,getFontRenderer().getStringWidth(mod.getVersion()) + 5 + slotHeight);
         }
         listWidth = Math.min(listWidth, 150);
-        this.modList = new GuiSlotModList(this, mods, listWidth);
+        this.modList = new GuiSlotModList(this, mods, listWidth, slotHeight);
 
         this.buttonList.add(new GuiButton(6, ((modList.right + this.width) / 2) - 100, this.height - 38, I18n.format("gui.done")));
         configModButton = new GuiButton(20, 10, this.height - 49, this.listWidth, 20, "Config");
@@ -313,10 +315,6 @@ public class GuiModList extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
@@ -333,6 +331,21 @@ public class GuiModList extends GuiScreen
         int x = ((10 + modList.right) / 2) - (getFontRenderer().getStringWidth(text) / 2);
         getFontRenderer().drawString(text, x, modList.bottom + 5, 0xFFFFFF);
         search.drawTextBox();
+    }
+
+    /**
+     * Handles mouse input.
+     */
+    @Override
+    public void handleMouseInput() throws IOException
+    {
+        int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
+        int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+
+        super.handleMouseInput();
+        if (this.modInfo != null)
+            this.modInfo.handleMouseInput(mouseX, mouseY);
+        this.modList.handleMouseInput(mouseX, mouseY);
     }
 
     Minecraft getMinecraftInstance()
@@ -596,7 +609,7 @@ public class GuiModList extends GuiScreen
                 for (ITextComponent part : line) {
                     if (!(part instanceof TextComponentString))
                         continue;
-                    k += GuiModList.this.fontRendererObj.getStringWidth(((TextComponentString)part).getChatComponentText_TextValue());
+                    k += GuiModList.this.fontRendererObj.getStringWidth(((TextComponentString)part).getText());
                     if (k >= x)
                     {
                         GuiModList.this.handleComponentClick(part);

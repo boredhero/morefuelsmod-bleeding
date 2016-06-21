@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityFlying;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -55,12 +56,12 @@ public class EntityGhast extends EntityFlying implements IMob
     @SideOnly(Side.CLIENT)
     public boolean isAttacking()
     {
-        return ((Boolean)this.dataWatcher.get(ATTACKING)).booleanValue();
+        return ((Boolean)this.dataManager.get(ATTACKING)).booleanValue();
     }
 
     public void setAttacking(boolean attacking)
     {
-        this.dataWatcher.set(ATTACKING, Boolean.valueOf(attacking));
+        this.dataManager.set(ATTACKING, Boolean.valueOf(attacking));
     }
 
     public int getFireballStrength()
@@ -93,7 +94,7 @@ public class EntityGhast extends EntityFlying implements IMob
         else if ("fireball".equals(source.getDamageType()) && source.getEntity() instanceof EntityPlayer)
         {
             super.attackEntityFrom(source, 1000.0F);
-            ((EntityPlayer)source.getEntity()).addStat(AchievementList.ghast);
+            ((EntityPlayer)source.getEntity()).addStat(AchievementList.GHAST);
             return true;
         }
         else
@@ -105,7 +106,7 @@ public class EntityGhast extends EntityFlying implements IMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(ATTACKING, Boolean.valueOf(false));
+        this.dataManager.register(ATTACKING, Boolean.valueOf(false));
     }
 
     protected void applyEntityAttributes()
@@ -122,19 +123,20 @@ public class EntityGhast extends EntityFlying implements IMob
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_ghast_ambient;
+        return SoundEvents.ENTITY_GHAST_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_ghast_hurt;
+        return SoundEvents.ENTITY_GHAST_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_ghast_death;
+        return SoundEvents.ENTITY_GHAST_DEATH;
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_GHAST;
@@ -167,22 +169,22 @@ public class EntityGhast extends EntityFlying implements IMob
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setInteger("ExplosionPower", this.explosionStrength);
+        super.writeEntityToNBT(compound);
+        compound.setInteger("ExplosionPower", this.explosionStrength);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
 
-        if (tagCompund.hasKey("ExplosionPower", 99))
+        if (compound.hasKey("ExplosionPower", 99))
         {
-            this.explosionStrength = tagCompund.getInteger("ExplosionPower");
+            this.explosionStrength = compound.getInteger("ExplosionPower");
         }
     }
 
@@ -240,7 +242,7 @@ public class EntityGhast extends EntityFlying implements IMob
 
                     if (this.attackTimer == 10)
                     {
-                        world.playAuxSFXAtEntity((EntityPlayer)null, 1015, new BlockPos(this.parentEntity), 0);
+                        world.playEvent((EntityPlayer)null, 1015, new BlockPos(this.parentEntity), 0);
                     }
 
                     if (this.attackTimer == 20)
@@ -250,7 +252,7 @@ public class EntityGhast extends EntityFlying implements IMob
                         double d2 = entitylivingbase.posX - (this.parentEntity.posX + vec3d.xCoord * d1);
                         double d3 = entitylivingbase.getEntityBoundingBox().minY + (double)(entitylivingbase.height / 2.0F) - (0.5D + this.parentEntity.posY + (double)(this.parentEntity.height / 2.0F));
                         double d4 = entitylivingbase.posZ - (this.parentEntity.posZ + vec3d.zCoord * d1);
-                        world.playAuxSFXAtEntity((EntityPlayer)null, 1016, new BlockPos(this.parentEntity), 0);
+                        world.playEvent((EntityPlayer)null, 1016, new BlockPos(this.parentEntity), 0);
                         EntityLargeFireball entitylargefireball = new EntityLargeFireball(world, this.parentEntity, d2, d3, d4);
                         entitylargefireball.explosionPower = this.parentEntity.getFireballStrength();
                         entitylargefireball.posX = this.parentEntity.posX + vec3d.xCoord * d1;
@@ -376,7 +378,7 @@ public class EntityGhast extends EntityFlying implements IMob
 
             public void onUpdateMoveHelper()
             {
-                if (this.field_188491_h == EntityMoveHelper.Action.MOVE_TO)
+                if (this.action == EntityMoveHelper.Action.MOVE_TO)
                 {
                     double d0 = this.posX - this.parentEntity.posX;
                     double d1 = this.posY - this.parentEntity.posY;
@@ -396,7 +398,7 @@ public class EntityGhast extends EntityFlying implements IMob
                         }
                         else
                         {
-                            this.field_188491_h = EntityMoveHelper.Action.WAIT;
+                            this.action = EntityMoveHelper.Action.WAIT;
                         }
                     }
                 }
@@ -416,7 +418,7 @@ public class EntityGhast extends EntityFlying implements IMob
                 {
                     axisalignedbb = axisalignedbb.offset(d0, d1, d2);
 
-                    if (!this.parentEntity.worldObj.getCubes(this.parentEntity, axisalignedbb).isEmpty())
+                    if (!this.parentEntity.worldObj.getCollisionBoxes(this.parentEntity, axisalignedbb).isEmpty())
                     {
                         return false;
                     }

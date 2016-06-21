@@ -11,8 +11,8 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class NettyPacketEncoder extends MessageToByteEncoder < Packet<? >>
 {
-    private static final Logger logger = LogManager.getLogger();
-    private static final Marker RECEIVED_PACKET_MARKER = MarkerManager.getMarker("PACKET_SENT", NetworkManager.logMarkerPackets);
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Marker RECEIVED_PACKET_MARKER = MarkerManager.getMarker("PACKET_SENT", NetworkManager.NETWORK_PACKETS_MARKER);
     private final EnumPacketDirection direction;
 
     public NettyPacketEncoder(EnumPacketDirection direction)
@@ -22,11 +22,11 @@ public class NettyPacketEncoder extends MessageToByteEncoder < Packet<? >>
 
     protected void encode(ChannelHandlerContext p_encode_1_, Packet<?> p_encode_2_, ByteBuf p_encode_3_) throws IOException, Exception
     {
-        Integer integer = ((EnumConnectionState)p_encode_1_.channel().attr(NetworkManager.attrKeyConnectionState).get()).getPacketId(this.direction, p_encode_2_);
+        Integer integer = ((EnumConnectionState)p_encode_1_.channel().attr(NetworkManager.PROTOCOL_ATTRIBUTE_KEY).get()).getPacketId(this.direction, p_encode_2_);
 
-        if (logger.isDebugEnabled())
+        if (LOGGER.isDebugEnabled())
         {
-            logger.debug(RECEIVED_PACKET_MARKER, "OUT: [{}:{}] {}", new Object[] {p_encode_1_.channel().attr(NetworkManager.attrKeyConnectionState).get(), integer, p_encode_2_.getClass().getName()});
+            LOGGER.debug(RECEIVED_PACKET_MARKER, "OUT: [{}:{}] {}", new Object[] {p_encode_1_.channel().attr(NetworkManager.PROTOCOL_ATTRIBUTE_KEY).get(), integer, p_encode_2_.getClass().getName()});
         }
 
         if (integer == null)
@@ -44,7 +44,7 @@ public class NettyPacketEncoder extends MessageToByteEncoder < Packet<? >>
             }
             catch (Throwable throwable)
             {
-                logger.error((Object)throwable);
+                LOGGER.error((Object)throwable);
             }
         }
     }

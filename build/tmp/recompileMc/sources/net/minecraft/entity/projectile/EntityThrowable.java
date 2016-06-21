@@ -2,6 +2,7 @@ package net.minecraft.entity.projectile;
 
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -34,8 +35,8 @@ public abstract class EntityThrowable extends Entity implements IProjectile
     private String throwerName;
     private int ticksInGround;
     private int ticksInAir;
-    public Entity field_184539_c;
-    private int field_184540_av;
+    public Entity ignoreEntity;
+    private int ignoreTime;
 
     public EntityThrowable(World worldIn)
     {
@@ -63,8 +64,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -80,18 +80,21 @@ public abstract class EntityThrowable extends Entity implements IProjectile
         return distance < d0 * d0;
     }
 
-    public void func_184538_a(Entity p_184538_1_, float p_184538_2_, float p_184538_3_, float p_184538_4_, float p_184538_5_, float p_184538_6_)
+    /**
+     * Sets throwable heading based on an entity that's throwing it
+     */
+    public void setHeadingFromThrower(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy)
     {
-        float f = -MathHelper.sin(p_184538_3_ * 0.017453292F) * MathHelper.cos(p_184538_2_ * 0.017453292F);
-        float f1 = -MathHelper.sin((p_184538_2_ + p_184538_4_) * 0.017453292F);
-        float f2 = MathHelper.cos(p_184538_3_ * 0.017453292F) * MathHelper.cos(p_184538_2_ * 0.017453292F);
-        this.setThrowableHeading((double)f, (double)f1, (double)f2, p_184538_5_, p_184538_6_);
-        this.motionX += p_184538_1_.motionX;
-        this.motionZ += p_184538_1_.motionZ;
+        float f = -MathHelper.sin(rotationYawIn * 0.017453292F) * MathHelper.cos(rotationPitchIn * 0.017453292F);
+        float f1 = -MathHelper.sin((rotationPitchIn + pitchOffset) * 0.017453292F);
+        float f2 = MathHelper.cos(rotationYawIn * 0.017453292F) * MathHelper.cos(rotationPitchIn * 0.017453292F);
+        this.setThrowableHeading((double)f, (double)f1, (double)f2, velocity, inaccuracy);
+        this.motionX += entityThrower.motionX;
+        this.motionZ += entityThrower.motionZ;
 
-        if (!p_184538_1_.onGround)
+        if (!entityThrower.onGround)
         {
-            this.motionY += p_184538_1_.motionY;
+            this.motionY += entityThrower.motionY;
         }
     }
 
@@ -120,7 +123,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
     }
 
     /**
-     * Sets the velocity to the args. Args: x, y, z
+     * Updates the velocity of the entity to a new value.
      */
     @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
@@ -200,13 +203,13 @@ public abstract class EntityThrowable extends Entity implements IProjectile
 
             if (entity1.canBeCollidedWith())
             {
-                if (entity1 == this.field_184539_c)
+                if (entity1 == this.ignoreEntity)
                 {
                     flag = true;
                 }
-                else if (this.ticksExisted < 2 && this.field_184539_c == null)
+                else if (this.ticksExisted < 2 && this.ignoreEntity == null)
                 {
-                    this.field_184539_c = entity1;
+                    this.ignoreEntity = entity1;
                     flag = true;
                 }
                 else
@@ -229,15 +232,15 @@ public abstract class EntityThrowable extends Entity implements IProjectile
             }
         }
 
-        if (this.field_184539_c != null)
+        if (this.ignoreEntity != null)
         {
             if (flag)
             {
-                this.field_184540_av = 2;
+                this.ignoreTime = 2;
             }
-            else if (this.field_184540_av-- <= 0)
+            else if (this.ignoreTime-- <= 0)
             {
-                this.field_184539_c = null;
+                this.ignoreEntity = null;
             }
         }
 
@@ -248,7 +251,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
 
         if (raytraceresult != null)
         {
-            if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && this.worldObj.getBlockState(raytraceresult.getBlockPos()).getBlock() == Blocks.portal)
+            if (raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && this.worldObj.getBlockState(raytraceresult.getBlockPos()).getBlock() == Blocks.PORTAL)
             {
                 this.setPortal(raytraceresult.getBlockPos());
             }
@@ -323,46 +326,46 @@ public abstract class EntityThrowable extends Entity implements IProjectile
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setInteger("xTile", this.xTile);
-        tagCompound.setInteger("yTile", this.yTile);
-        tagCompound.setInteger("zTile", this.zTile);
-        ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.inTile);
-        tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
-        tagCompound.setByte("shake", (byte)this.throwableShake);
-        tagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+        compound.setInteger("xTile", this.xTile);
+        compound.setInteger("yTile", this.yTile);
+        compound.setInteger("zTile", this.zTile);
+        ResourceLocation resourcelocation = (ResourceLocation)Block.REGISTRY.getNameForObject(this.inTile);
+        compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
+        compound.setByte("shake", (byte)this.throwableShake);
+        compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
 
         if ((this.throwerName == null || this.throwerName.isEmpty()) && this.thrower instanceof EntityPlayer)
         {
             this.throwerName = this.thrower.getName();
         }
 
-        tagCompound.setString("ownerName", this.throwerName == null ? "" : this.throwerName);
+        compound.setString("ownerName", this.throwerName == null ? "" : this.throwerName);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.xTile = tagCompund.getInteger("xTile");
-        this.yTile = tagCompund.getInteger("yTile");
-        this.zTile = tagCompund.getInteger("zTile");
+        this.xTile = compound.getInteger("xTile");
+        this.yTile = compound.getInteger("yTile");
+        this.zTile = compound.getInteger("zTile");
 
-        if (tagCompund.hasKey("inTile", 8))
+        if (compound.hasKey("inTile", 8))
         {
-            this.inTile = Block.getBlockFromName(tagCompund.getString("inTile"));
+            this.inTile = Block.getBlockFromName(compound.getString("inTile"));
         }
         else
         {
-            this.inTile = Block.getBlockById(tagCompund.getByte("inTile") & 255);
+            this.inTile = Block.getBlockById(compound.getByte("inTile") & 255);
         }
 
-        this.throwableShake = tagCompund.getByte("shake") & 255;
-        this.inGround = tagCompund.getByte("inGround") == 1;
+        this.throwableShake = compound.getByte("shake") & 255;
+        this.inGround = compound.getByte("inGround") == 1;
         this.thrower = null;
-        this.throwerName = tagCompund.getString("ownerName");
+        this.throwerName = compound.getString("ownerName");
 
         if (this.throwerName != null && this.throwerName.isEmpty())
         {
@@ -372,6 +375,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
         this.thrower = this.getThrower();
     }
 
+    @Nullable
     public EntityLivingBase getThrower()
     {
         if (this.thrower == null && this.throwerName != null && !this.throwerName.isEmpty())

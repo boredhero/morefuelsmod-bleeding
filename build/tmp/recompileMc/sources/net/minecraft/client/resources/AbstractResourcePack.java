@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.data.IMetadataSection;
-import net.minecraft.client.resources.data.IMetadataSerializer;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public abstract class AbstractResourcePack implements IResourcePack
 {
-    private static final Logger resourceLog = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     protected final File resourcePackFile;
 
     public AbstractResourcePack(File resourcePackFileIn)
@@ -58,15 +58,15 @@ public abstract class AbstractResourcePack implements IResourcePack
 
     protected void logNameNotLowercase(String name)
     {
-        resourceLog.warn("ResourcePack: ignored non-lowercase namespace: {} in {}", new Object[] {name, this.resourcePackFile});
+        LOGGER.warn("ResourcePack: ignored non-lowercase namespace: {} in {}", new Object[] {name, this.resourcePackFile});
     }
 
-    public <T extends IMetadataSection> T getPackMetadata(IMetadataSerializer metadataSerializer, String metadataSectionName) throws IOException
+    public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer metadataSerializer, String metadataSectionName) throws IOException
     {
         return readMetadata(metadataSerializer, this.getInputStreamByName("pack.mcmeta"), metadataSectionName);
     }
 
-    static <T extends IMetadataSection> T readMetadata(IMetadataSerializer metadataSerializer, InputStream p_110596_1_, String sectionName)
+    static <T extends IMetadataSection> T readMetadata(MetadataSerializer metadataSerializer, InputStream p_110596_1_, String sectionName)
     {
         JsonObject jsonobject = null;
         BufferedReader bufferedreader = null;

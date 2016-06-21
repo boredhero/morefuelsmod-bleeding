@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.IEntityLivingData;
@@ -73,8 +74,8 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
     {
         super(worldIn);
         this.setSize(0.9F, 1.3F);
-        this.inventoryCrafting.setInventorySlotContents(0, new ItemStack(Items.dye));
-        this.inventoryCrafting.setInventorySlotContents(1, new ItemStack(Items.dye));
+        this.inventoryCrafting.setInventorySlotContents(0, new ItemStack(Items.DYE));
+        this.inventoryCrafting.setInventorySlotContents(1, new ItemStack(Items.DYE));
     }
 
     protected void initEntityAI()
@@ -82,7 +83,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.25D));
         this.tasks.addTask(2, new EntityAIMate(this, 1.0D));
-        this.tasks.addTask(3, new EntityAITempt(this, 1.1D, Items.wheat, false));
+        this.tasks.addTask(3, new EntityAITempt(this, 1.1D, Items.WHEAT, false));
         this.tasks.addTask(4, new EntityAIFollowParent(this, 1.1D));
         this.tasks.addTask(5, this.entityAIEatGrass = new EntityAIEatGrass(this));
         this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
@@ -120,9 +121,10 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(DYE_COLOR, Byte.valueOf((byte)0));
+        this.dataManager.register(DYE_COLOR, Byte.valueOf((byte)0));
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         if (this.getSheared())
@@ -184,9 +186,10 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
     }
 
     @SuppressWarnings("unused")
-    public boolean processInteract(EntityPlayer player, EnumHand p_184645_2_, ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
-        if (false && stack != null && stack.getItem() == Items.shears && !this.getSheared() && !this.isChild()) //Forge: Moved to onSheared
+        if (false)  //Forge: Moved to onSheared
+        if (stack != null && stack.getItem() == Items.SHEARS && !this.getSheared() && !this.isChild())
         {
             if (!this.worldObj.isRemote)
             {
@@ -195,7 +198,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
 
                 for (int j = 0; j < i; ++j)
                 {
-                    EntityItem entityitem = this.entityDropItem(new ItemStack(Item.getItemFromBlock(Blocks.wool), 1, this.getFleeceColor().getMetadata()), 1.0F);
+                    EntityItem entityitem = this.entityDropItem(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, this.getFleeceColor().getMetadata()), 1.0F);
                     entityitem.motionY += (double)(this.rand.nextFloat() * 0.05F);
                     entityitem.motionX += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
                     entityitem.motionZ += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.1F);
@@ -203,10 +206,10 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
             }
 
             stack.damageItem(1, player);
-            this.playSound(SoundEvents.entity_sheep_shear, 1.0F, 1.0F);
+            this.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0F, 1.0F);
         }
 
-        return super.processInteract(player, p_184645_2_, stack);
+        return super.processInteract(player, hand, stack);
     }
 
     @SideOnly(Side.CLIENT)
@@ -232,41 +235,41 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setBoolean("Sheared", this.getSheared());
-        tagCompound.setByte("Color", (byte)this.getFleeceColor().getMetadata());
+        super.writeEntityToNBT(compound);
+        compound.setBoolean("Sheared", this.getSheared());
+        compound.setByte("Color", (byte)this.getFleeceColor().getMetadata());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.setSheared(tagCompund.getBoolean("Sheared"));
-        this.setFleeceColor(EnumDyeColor.byMetadata(tagCompund.getByte("Color")));
+        super.readEntityFromNBT(compound);
+        this.setSheared(compound.getBoolean("Sheared"));
+        this.setFleeceColor(EnumDyeColor.byMetadata(compound.getByte("Color")));
     }
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_sheep_ambient;
+        return SoundEvents.ENTITY_SHEEP_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_sheep_hurt;
+        return SoundEvents.ENTITY_SHEEP_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_sheep_death;
+        return SoundEvents.ENTITY_SHEEP_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        this.playSound(SoundEvents.entity_sheep_step, 0.15F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15F, 1.0F);
     }
 
     /**
@@ -274,7 +277,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
      */
     public EnumDyeColor getFleeceColor()
     {
-        return EnumDyeColor.byMetadata(((Byte)this.dataWatcher.get(DYE_COLOR)).byteValue() & 15);
+        return EnumDyeColor.byMetadata(((Byte)this.dataManager.get(DYE_COLOR)).byteValue() & 15);
     }
 
     /**
@@ -282,8 +285,8 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
      */
     public void setFleeceColor(EnumDyeColor color)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(DYE_COLOR)).byteValue();
-        this.dataWatcher.set(DYE_COLOR, Byte.valueOf((byte)(b0 & 240 | color.getMetadata() & 15)));
+        byte b0 = ((Byte)this.dataManager.get(DYE_COLOR)).byteValue();
+        this.dataManager.set(DYE_COLOR, Byte.valueOf((byte)(b0 & 240 | color.getMetadata() & 15)));
     }
 
     /**
@@ -291,7 +294,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
      */
     public boolean getSheared()
     {
-        return (((Byte)this.dataWatcher.get(DYE_COLOR)).byteValue() & 16) != 0;
+        return (((Byte)this.dataManager.get(DYE_COLOR)).byteValue() & 16) != 0;
     }
 
     /**
@@ -299,15 +302,15 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
      */
     public void setSheared(boolean sheared)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(DYE_COLOR)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(DYE_COLOR)).byteValue();
 
         if (sheared)
         {
-            this.dataWatcher.set(DYE_COLOR, Byte.valueOf((byte)(b0 | 16)));
+            this.dataManager.set(DYE_COLOR, Byte.valueOf((byte)(b0 | 16)));
         }
         else
         {
-            this.dataWatcher.set(DYE_COLOR, Byte.valueOf((byte)(b0 & -17)));
+            this.dataManager.set(DYE_COLOR, Byte.valueOf((byte)(b0 & -17)));
         }
     }
 
@@ -346,7 +349,8 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
      * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
      * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
      */
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
         this.setFleeceColor(getRandomSheepColor(this.worldObj.rand));
@@ -365,7 +369,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         ItemStack itemstack = CraftingManager.getInstance().findMatchingRecipe(this.inventoryCrafting, ((EntitySheep)father).worldObj);
         int k;
 
-        if (itemstack != null && itemstack.getItem() == Items.dye)
+        if (itemstack != null && itemstack.getItem() == Items.DYE)
         {
             k = itemstack.getMetadata();
         }
@@ -411,9 +415,9 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
 
         java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
         for (int j = 0; j < i; ++j)
-            ret.add(new ItemStack(Item.getItemFromBlock(Blocks.wool), 1, this.getFleeceColor().getMetadata()));
+            ret.add(new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, this.getFleeceColor().getMetadata()));
 
-        this.playSound(SoundEvents.entity_sheep_shear, 1.0F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0F, 1.0F);
         return ret;
     }
 }

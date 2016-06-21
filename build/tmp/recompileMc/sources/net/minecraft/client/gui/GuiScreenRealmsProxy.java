@@ -54,7 +54,7 @@ public class GuiScreenRealmsProxy extends GuiScreen
     }
 
     /**
-     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
+     * Draws a textured rectangle at the current z-value.
      */
     public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height)
     {
@@ -94,10 +94,6 @@ public class GuiScreenRealmsProxy extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -145,12 +141,12 @@ public class GuiScreenRealmsProxy extends GuiScreen
         return this.fontRendererObj.getStringWidth(p_154326_1_);
     }
 
-    public void func_154319_c(String p_154319_1_, int p_154319_2_, int p_154319_3_, int p_154319_4_)
+    public void fontDrawShadow(String p_154319_1_, int p_154319_2_, int p_154319_3_, int p_154319_4_)
     {
         this.fontRendererObj.drawStringWithShadow(p_154319_1_, (float)p_154319_2_, (float)p_154319_3_, p_154319_4_);
     }
 
-    public List<String> func_154323_a(String p_154323_1_, int p_154323_2_)
+    public List<String> fontSplit(String p_154323_1_, int p_154323_2_)
     {
         return this.fontRendererObj.listFormattedStringToWidth(p_154323_1_, p_154323_2_);
     }
@@ -163,17 +159,17 @@ public class GuiScreenRealmsProxy extends GuiScreen
         this.proxy.buttonClicked(((GuiButtonRealmsProxy)button).getRealmsButton());
     }
 
-    public void func_154324_i()
+    public void buttonsClear()
     {
         super.buttonList.clear();
     }
 
-    public void func_154327_a(RealmsButton p_154327_1_)
+    public void buttonsAdd(RealmsButton button)
     {
-        super.buttonList.add(p_154327_1_.getProxy());
+        super.buttonList.add(button.getProxy());
     }
 
-    public List<RealmsButton> func_154320_j()
+    public List<RealmsButton> buttons()
     {
         List<RealmsButton> list = Lists.<RealmsButton>newArrayListWithExpectedSize(super.buttonList.size());
 
@@ -185,9 +181,9 @@ public class GuiScreenRealmsProxy extends GuiScreen
         return list;
     }
 
-    public void func_154328_b(RealmsButton p_154328_1_)
+    public void buttonsRemove(RealmsButton button)
     {
-        super.buttonList.remove(p_154328_1_.getProxy());
+        super.buttonList.remove(button.getProxy());
     }
 
     /**
@@ -219,10 +215,6 @@ public class GuiScreenRealmsProxy extends GuiScreen
 
     /**
      * Called when a mouse button is released.
-     *  
-     * @param mouseX Current mouse x coordinate
-     * @param mouseY Current mouse y coordinate
-     * @param state The mouse button that was released
      */
     public void mouseReleased(int mouseX, int mouseY, int state)
     {

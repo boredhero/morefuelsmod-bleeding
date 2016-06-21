@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderChicken extends RenderLiving<EntityChicken>
 {
-    private static final ResourceLocation chickenTextures = new ResourceLocation("textures/entity/chicken.png");
+    private static final ResourceLocation CHICKEN_TEXTURES = new ResourceLocation("textures/entity/chicken.png");
 
     public RenderChicken(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn)
     {
@@ -22,7 +22,7 @@ public class RenderChicken extends RenderLiving<EntityChicken>
      */
     protected ResourceLocation getEntityTexture(EntityChicken entity)
     {
-        return chickenTextures;
+        return CHICKEN_TEXTURES;
     }
 
     /**
@@ -30,8 +30,8 @@ public class RenderChicken extends RenderLiving<EntityChicken>
      */
     protected float handleRotationFloat(EntityChicken livingBase, float partialTicks)
     {
-        float f = livingBase.field_70888_h + (livingBase.wingRotation - livingBase.field_70888_h) * partialTicks;
-        float f1 = livingBase.field_70884_g + (livingBase.destPos - livingBase.field_70884_g) * partialTicks;
+        float f = livingBase.oFlap + (livingBase.wingRotation - livingBase.oFlap) * partialTicks;
+        float f1 = livingBase.oFlapSpeed + (livingBase.destPos - livingBase.oFlapSpeed) * partialTicks;
         return (MathHelper.sin(f) + 1.0F) * f1;
     }
 }

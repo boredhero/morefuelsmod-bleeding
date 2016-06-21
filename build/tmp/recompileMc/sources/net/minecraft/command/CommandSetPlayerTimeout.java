@@ -30,10 +30,6 @@ public class CommandSetPlayerTimeout extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -45,7 +41,7 @@ public class CommandSetPlayerTimeout extends CommandBase
         {
             int i = parseInt(args[0], 0);
             server.setPlayerIdleTimeout(i);
-            notifyOperators(sender, this, "commands.setidletimeout.success", new Object[] {Integer.valueOf(i)});
+            notifyCommandListener(sender, this, "commands.setidletimeout.success", new Object[] {Integer.valueOf(i)});
         }
     }
 }

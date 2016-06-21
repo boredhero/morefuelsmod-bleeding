@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -45,11 +46,11 @@ public class BlockHugeMushroom extends Block
         switch ((BlockHugeMushroom.EnumType)state.getValue(VARIANT))
         {
             case ALL_STEM:
-                return MapColor.clothColor;
+                return MapColor.CLOTH;
             case ALL_INSIDE:
-                return MapColor.sandColor;
+                return MapColor.SAND;
             case STEM:
-                return MapColor.sandColor;
+                return MapColor.SAND;
             default:
                 return super.getMapColor(state);
         }
@@ -58,6 +59,7 @@ public class BlockHugeMushroom extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Item.getItemFromBlock(this.smallBlock);

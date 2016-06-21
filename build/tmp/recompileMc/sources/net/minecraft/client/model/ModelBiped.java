@@ -71,9 +71,9 @@ public class ModelBiped extends ModelBase
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float p_78088_2_, float limbSwing, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
-        this.setRotationAngles(p_78088_2_, limbSwing, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         GlStateManager.pushMatrix();
 
         if (this.isChild)
@@ -314,9 +314,9 @@ public class ModelBiped extends ModelBase
         return side == EnumHandSide.LEFT ? this.bipedLeftArm : this.bipedRightArm;
     }
 
-    protected EnumHandSide getMainHand(Entity p_187072_1_)
+    protected EnumHandSide getMainHand(Entity entityIn)
     {
-        return p_187072_1_ instanceof EntityLivingBase ? ((EntityLivingBase)p_187072_1_).getPrimaryHand() : EnumHandSide.RIGHT;
+        return entityIn instanceof EntityLivingBase ? ((EntityLivingBase)entityIn).getPrimaryHand() : EnumHandSide.RIGHT;
     }
 
     @SideOnly(Side.CLIENT)

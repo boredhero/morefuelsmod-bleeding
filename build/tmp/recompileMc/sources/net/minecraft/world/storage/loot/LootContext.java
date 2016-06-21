@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
@@ -16,12 +17,15 @@ public class LootContext
     private final float luck;
     private final WorldServer worldObj;
     private final LootTableManager lootTableManager;
+    @Nullable
     private final Entity lootedEntity;
+    @Nullable
     private final EntityPlayer player;
+    @Nullable
     private final DamageSource damageSource;
     private final Set<LootTable> lootTables = Sets.<LootTable>newLinkedHashSet();
 
-    public LootContext(float luckIn, WorldServer worldIn, LootTableManager lootTableManagerIn, Entity lootedEntityIn, EntityPlayer playerIn, DamageSource damageSourceIn)
+    public LootContext(float luckIn, WorldServer worldIn, LootTableManager lootTableManagerIn, @Nullable Entity lootedEntityIn, @Nullable EntityPlayer playerIn, @Nullable DamageSource damageSourceIn)
     {
         this.luck = luckIn;
         this.worldObj = worldIn;
@@ -31,16 +35,19 @@ public class LootContext
         this.damageSource = damageSourceIn;
     }
 
+    @Nullable
     public Entity getLootedEntity()
     {
         return this.lootedEntity;
     }
 
+    @Nullable
     public Entity getKillerPlayer()
     {
         return this.player;
     }
 
+    @Nullable
     public Entity getKiller()
     {
         return this.damageSource == null ? null : this.damageSource.getEntity();
@@ -66,6 +73,7 @@ public class LootContext
         return this.luck;
     }
 
+    @Nullable
     public Entity getEntity(LootContext.EntityTarget target)
     {
         switch (target)
@@ -79,6 +87,11 @@ public class LootContext
             default:
                 return null;
         }
+    }
+
+    public WorldServer getWorld()
+    {
+        return worldObj;
     }
 
     public static class Builder

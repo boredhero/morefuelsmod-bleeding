@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.PacketBuffer;
@@ -11,16 +12,16 @@ public class BlockStatePaletteHashMap implements IBlockStatePalette
 {
     private final IntIdentityHashBiMap<IBlockState> statePaletteMap;
     private final IBlockStatePaletteResizer paletteResizer;
-    private final int field_186048_c;
+    private final int bits;
 
-    public BlockStatePaletteHashMap(int p_i47089_1_, IBlockStatePaletteResizer p_i47089_2_)
+    public BlockStatePaletteHashMap(int bitsIn, IBlockStatePaletteResizer p_i47089_2_)
     {
-        this.field_186048_c = p_i47089_1_;
+        this.bits = bitsIn;
         this.paletteResizer = p_i47089_2_;
-        this.statePaletteMap = new IntIdentityHashBiMap(1 << p_i47089_1_);
+        this.statePaletteMap = new IntIdentityHashBiMap(1 << bitsIn);
     }
 
-    public int func_186041_a(IBlockState state)
+    public int idFor(IBlockState state)
     {
         int i = this.statePaletteMap.getId(state);
 
@@ -28,9 +29,9 @@ public class BlockStatePaletteHashMap implements IBlockStatePalette
         {
             i = this.statePaletteMap.add(state);
 
-            if (i >= 1 << this.field_186048_c)
+            if (i >= 1 << this.bits)
             {
-                i = this.paletteResizer.func_186008_a(this.field_186048_c + 1, state);
+                i = this.paletteResizer.onResize(this.bits + 1, state);
             }
         }
 
@@ -40,6 +41,7 @@ public class BlockStatePaletteHashMap implements IBlockStatePalette
     /**
      * Gets the block state by the palette id.
      */
+    @Nullable
     public IBlockState getBlockState(int indexKey)
     {
         return (IBlockState)this.statePaletteMap.get(indexKey);
@@ -48,7 +50,7 @@ public class BlockStatePaletteHashMap implements IBlockStatePalette
     @SideOnly(Side.CLIENT)
     public void read(PacketBuffer buf)
     {
-        this.statePaletteMap.func_186812_a();
+        this.statePaletteMap.clear();
         int i = buf.readVarIntFromBuffer();
 
         for (int j = 0; j < i; ++j)
@@ -68,7 +70,7 @@ public class BlockStatePaletteHashMap implements IBlockStatePalette
         }
     }
 
-    public int func_186040_a()
+    public int getSerializedState()
     {
         int i = PacketBuffer.getVarIntSize(this.statePaletteMap.size());
 

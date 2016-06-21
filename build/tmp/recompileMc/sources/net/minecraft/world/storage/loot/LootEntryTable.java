@@ -14,9 +14,9 @@ public class LootEntryTable extends LootEntry
 {
     protected final ResourceLocation table;
 
-    public LootEntryTable(ResourceLocation tableIn, int weightIn, int qualityIn, LootCondition[] conditionsIn)
+    public LootEntryTable(ResourceLocation tableIn, int weightIn, int qualityIn, LootCondition[] conditionsIn, String entryName)
     {
-        super(weightIn, qualityIn, conditionsIn);
+        super(weightIn, qualityIn, conditionsIn, entryName);
         this.table = tableIn;
     }
 
@@ -34,7 +34,8 @@ public class LootEntryTable extends LootEntry
 
     public static LootEntryTable deserialize(JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn)
     {
+        String name = net.minecraftforge.common.ForgeHooks.readLootEntryName(object, "loot_table");
         ResourceLocation resourcelocation = new ResourceLocation(JsonUtils.getString(object, "name"));
-        return new LootEntryTable(resourcelocation, weightIn, qualityIn, conditionsIn);
+        return new LootEntryTable(resourcelocation, weightIn, qualityIn, conditionsIn, name);
     }
 }

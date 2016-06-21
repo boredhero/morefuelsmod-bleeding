@@ -20,9 +20,9 @@ public class BlockSandStone extends Block
 
     public BlockSandStone()
     {
-        super(Material.rock);
+        super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, BlockSandStone.EnumType.DEFAULT));
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -51,7 +51,7 @@ public class BlockSandStone extends Block
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return MapColor.sandColor;
+        return MapColor.SAND;
     }
 
     /**

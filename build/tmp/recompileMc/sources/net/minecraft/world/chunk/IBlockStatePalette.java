@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.relauncher.Side;
@@ -7,11 +8,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface IBlockStatePalette
 {
-    int func_186041_a(IBlockState state);
+    int idFor(IBlockState state);
 
     /**
      * Gets the block state by the palette id.
      */
+    @Nullable
     IBlockState getBlockState(int indexKey);
 
     @SideOnly(Side.CLIENT)
@@ -19,5 +21,5 @@ public interface IBlockStatePalette
 
     void write(PacketBuffer buf);
 
-    int func_186040_a();
+    int getSerializedState();
 }

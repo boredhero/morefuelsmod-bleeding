@@ -10,18 +10,17 @@ public class WorldGenEndIsland extends WorldGenerator
 {
     public boolean generate(World worldIn, Random rand, BlockPos position)
     {
-        int i = rand.nextInt(3) + 4;
-        float f = (float)i;
+        float f = (float)(rand.nextInt(3) + 4);
 
-        for (int j = 0; f > 0.5F; --j)
+        for (int i = 0; f > 0.5F; --i)
         {
-            for (int k = MathHelper.floor_float(-f); k <= MathHelper.ceiling_float_int(f); ++k)
+            for (int j = MathHelper.floor_float(-f); j <= MathHelper.ceiling_float_int(f); ++j)
             {
-                for (int l = MathHelper.floor_float(-f); l <= MathHelper.ceiling_float_int(f); ++l)
+                for (int k = MathHelper.floor_float(-f); k <= MathHelper.ceiling_float_int(f); ++k)
                 {
-                    if ((float)(k * k + l * l) <= (f + 1.0F) * (f + 1.0F))
+                    if ((float)(j * j + k * k) <= (f + 1.0F) * (f + 1.0F))
                     {
-                        this.setBlockAndNotifyAdequately(worldIn, position.add(k, j, l), Blocks.end_stone.getDefaultState());
+                        this.setBlockAndNotifyAdequately(worldIn, position.add(j, i, k), Blocks.END_STONE.getDefaultState());
                     }
                 }
             }

@@ -3,6 +3,7 @@ package net.minecraft.network.play.server;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.network.Packet;
@@ -27,7 +28,7 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
     private byte pitch;
     private byte headPitch;
     private EntityDataManager dataManager;
-    private List < EntityDataManager.DataEntry<? >> watcher;
+    private List < EntityDataManager.DataEntry<? >> dataManagerEntries;
 
     public SPacketSpawnMob()
     {
@@ -102,7 +103,7 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
         this.velocityX = buf.readShort();
         this.velocityY = buf.readShort();
         this.velocityZ = buf.readShort();
-        this.watcher = EntityDataManager.readEntries(buf);
+        this.dataManagerEntries = EntityDataManager.readEntries(buf);
     }
 
     /**
@@ -133,15 +134,16 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
         handler.handleSpawnMob(this);
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
-    public List < EntityDataManager.DataEntry<? >> func_149027_c()
+    public List < EntityDataManager.DataEntry<? >> getDataManagerEntries()
     {
-        if (this.watcher == null)
+        if (this.dataManagerEntries == null)
         {
-            this.watcher = this.dataManager.getAll();
+            this.dataManagerEntries = this.dataManager.getAll();
         }
 
-        return this.watcher;
+        return this.dataManagerEntries;
     }
 
     @SideOnly(Side.CLIENT)

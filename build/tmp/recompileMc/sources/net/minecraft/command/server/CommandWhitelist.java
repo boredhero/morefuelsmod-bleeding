@@ -3,6 +3,7 @@ package net.minecraft.command.server;
 import com.mojang.authlib.GameProfile;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -40,10 +41,6 @@ public class CommandWhitelist extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -56,12 +53,12 @@ public class CommandWhitelist extends CommandBase
             if (args[0].equals("on"))
             {
                 server.getPlayerList().setWhiteListEnabled(true);
-                notifyOperators(sender, this, "commands.whitelist.enabled", new Object[0]);
+                notifyCommandListener(sender, this, "commands.whitelist.enabled", new Object[0]);
             }
             else if (args[0].equals("off"))
             {
                 server.getPlayerList().setWhiteListEnabled(false);
-                notifyOperators(sender, this, "commands.whitelist.disabled", new Object[0]);
+                notifyCommandListener(sender, this, "commands.whitelist.disabled", new Object[0]);
             }
             else if (args[0].equals("list"))
             {
@@ -84,7 +81,7 @@ public class CommandWhitelist extends CommandBase
                 }
 
                 server.getPlayerList().addWhitelistedPlayer(gameprofile);
-                notifyOperators(sender, this, "commands.whitelist.add.success", new Object[] {args[1]});
+                notifyCommandListener(sender, this, "commands.whitelist.add.success", new Object[] {args[1]});
             }
             else if (args[0].equals("remove"))
             {
@@ -101,17 +98,17 @@ public class CommandWhitelist extends CommandBase
                 }
 
                 server.getPlayerList().removePlayerFromWhitelist(gameprofile1);
-                notifyOperators(sender, this, "commands.whitelist.remove.success", new Object[] {args[1]});
+                notifyCommandListener(sender, this, "commands.whitelist.remove.success", new Object[] {args[1]});
             }
             else if (args[0].equals("reload"))
             {
                 server.getPlayerList().reloadWhitelist();
-                notifyOperators(sender, this, "commands.whitelist.reloaded", new Object[0]);
+                notifyCommandListener(sender, this, "commands.whitelist.reloaded", new Object[0]);
             }
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         if (args.length == 1)
         {

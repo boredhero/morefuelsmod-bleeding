@@ -1,18 +1,20 @@
 package net.minecraft.inventory;
 
+import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 
 public class ItemStackHelper
 {
-    public static ItemStack func_188382_a(ItemStack[] p_188382_0_, int p_188382_1_, int p_188382_2_)
+    @Nullable
+    public static ItemStack getAndSplit(ItemStack[] stacks, int index, int amount)
     {
-        if (p_188382_1_ >= 0 && p_188382_1_ < p_188382_0_.length && p_188382_0_[p_188382_1_] != null && p_188382_2_ > 0)
+        if (index >= 0 && index < stacks.length && stacks[index] != null && amount > 0)
         {
-            ItemStack itemstack = p_188382_0_[p_188382_1_].splitStack(p_188382_2_);
+            ItemStack itemstack = stacks[index].splitStack(amount);
 
-            if (p_188382_0_[p_188382_1_].stackSize == 0)
+            if (stacks[index].stackSize == 0)
             {
-                p_188382_0_[p_188382_1_] = null;
+                stacks[index] = null;
             }
 
             return itemstack;
@@ -23,12 +25,13 @@ public class ItemStackHelper
         }
     }
 
-    public static ItemStack func_188383_a(ItemStack[] p_188383_0_, int p_188383_1_)
+    @Nullable
+    public static ItemStack getAndRemove(ItemStack[] stacks, int index)
     {
-        if (p_188383_1_ >= 0 && p_188383_1_ < p_188383_0_.length)
+        if (index >= 0 && index < stacks.length)
         {
-            ItemStack itemstack = p_188383_0_[p_188383_1_];
-            p_188383_0_[p_188383_1_] = null;
+            ItemStack itemstack = stacks[index];
+            stacks[index] = null;
             return itemstack;
         }
         else

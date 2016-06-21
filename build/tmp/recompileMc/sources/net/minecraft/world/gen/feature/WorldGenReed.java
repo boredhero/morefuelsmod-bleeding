@@ -18,15 +18,15 @@ public class WorldGenReed extends WorldGenerator
             {
                 BlockPos blockpos1 = blockpos.down();
 
-                if (worldIn.getBlockState(blockpos1.west()).getMaterial() == Material.water || worldIn.getBlockState(blockpos1.east()).getMaterial() == Material.water || worldIn.getBlockState(blockpos1.north()).getMaterial() == Material.water || worldIn.getBlockState(blockpos1.south()).getMaterial() == Material.water)
+                if (worldIn.getBlockState(blockpos1.west()).getMaterial() == Material.WATER || worldIn.getBlockState(blockpos1.east()).getMaterial() == Material.WATER || worldIn.getBlockState(blockpos1.north()).getMaterial() == Material.WATER || worldIn.getBlockState(blockpos1.south()).getMaterial() == Material.WATER)
                 {
                     int j = 2 + rand.nextInt(rand.nextInt(3) + 1);
 
                     for (int k = 0; k < j; ++k)
                     {
-                        if (Blocks.reeds.canBlockStay(worldIn, blockpos))
+                        if (Blocks.REEDS.canBlockStay(worldIn, blockpos))
                         {
-                            worldIn.setBlockState(blockpos.up(k), Blocks.reeds.getDefaultState(), 2);
+                            worldIn.setBlockState(blockpos.up(k), Blocks.REEDS.getDefaultState(), 2);
                         }
                     }
                 }

@@ -38,33 +38,30 @@ public class GuiEnchantment extends GuiContainer
     /** A Random instance for use with the enchantment gui */
     private Random random = new Random();
     private ContainerEnchantment container;
-    public int field_147073_u;
-    public float field_147071_v;
-    public float field_147069_w;
-    public float field_147082_x;
-    public float field_147081_y;
-    public float field_147080_z;
-    public float field_147076_A;
-    ItemStack field_147077_B;
-    private final IWorldNameable field_175380_I;
+    public int ticks;
+    public float flip;
+    public float oFlip;
+    public float flipT;
+    public float flipA;
+    public float open;
+    public float oOpen;
+    ItemStack last;
+    private final IWorldNameable nameable;
 
     public GuiEnchantment(InventoryPlayer inventory, World worldIn, IWorldNameable nameable)
     {
         super(new ContainerEnchantment(inventory, worldIn));
         this.playerInventory = inventory;
         this.container = (ContainerEnchantment)this.inventorySlots;
-        this.field_175380_I = nameable;
+        this.nameable = nameable;
     }
 
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
-        this.fontRendererObj.drawString(this.field_175380_I.getDisplayName().getUnformattedText(), 12, 5, 4210752);
+        this.fontRendererObj.drawString(this.nameable.getDisplayName().getUnformattedText(), 12, 5, 4210752);
         this.fontRendererObj.drawString(this.playerInventory.getDisplayName().getUnformattedText(), 8, this.ySize - 96 + 2, 4210752);
     }
 
@@ -74,7 +71,7 @@ public class GuiEnchantment extends GuiContainer
     public void updateScreen()
     {
         super.updateScreen();
-        this.func_147068_g();
+        this.tickBook();
     }
 
     /**
@@ -100,11 +97,6 @@ public class GuiEnchantment extends GuiContainer
 
     /**
      * Draws the background layer of this container (behind the items).
-     *  
-     * @param partialTicks How far into the current tick the game is, with 0.0 being the start of the tick and 1.0 being
-     * the end.
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
@@ -132,12 +124,12 @@ public class GuiEnchantment extends GuiContainer
         GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(ENCHANTMENT_TABLE_BOOK_TEXTURE);
         GlStateManager.rotate(20.0F, 1.0F, 0.0F, 0.0F);
-        float f2 = this.field_147076_A + (this.field_147080_z - this.field_147076_A) * partialTicks;
+        float f2 = this.oOpen + (this.open - this.oOpen) * partialTicks;
         GlStateManager.translate((1.0F - f2) * 0.2F, (1.0F - f2) * 0.1F, (1.0F - f2) * 0.25F);
         GlStateManager.rotate(-(1.0F - f2) * 90.0F - 90.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(180.0F, 1.0F, 0.0F, 0.0F);
-        float f3 = this.field_147069_w + (this.field_147071_v - this.field_147069_w) * partialTicks + 0.25F;
-        float f4 = this.field_147069_w + (this.field_147071_v - this.field_147069_w) * partialTicks + 0.75F;
+        float f3 = this.oFlip + (this.flip - this.oFlip) * partialTicks + 0.25F;
+        float f4 = this.oFlip + (this.flip - this.oFlip) * partialTicks + 0.75F;
         f3 = (f3 - (float)MathHelper.truncateDoubleToInt((double)f3)) * 1.6F - 0.3F;
         f4 = (f4 - (float)MathHelper.truncateDoubleToInt((double)f4)) * 1.6F - 0.3F;
 
@@ -231,10 +223,6 @@ public class GuiEnchantment extends GuiContainer
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -245,8 +233,8 @@ public class GuiEnchantment extends GuiContainer
         for (int j = 0; j < 3; ++j)
         {
             int k = this.container.enchantLevels[j];
-            Enchantment enchantment = Enchantment.getEnchantmentByID(this.container.field_185001_h[j]);
-            int l = this.container.field_185002_i[j];
+            Enchantment enchantment = Enchantment.getEnchantmentByID(this.container.enchantClue[j]);
+            int l = this.container.worldClue[j];
             int i1 = j + 1;
 
             if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, mouseX, mouseY) && k > 0 && l >= 0 && enchantment != null)
@@ -297,28 +285,28 @@ public class GuiEnchantment extends GuiContainer
         }
     }
 
-    public void func_147068_g()
+    public void tickBook()
     {
         ItemStack itemstack = this.inventorySlots.getSlot(0).getStack();
 
-        if (!ItemStack.areItemStacksEqual(itemstack, this.field_147077_B))
+        if (!ItemStack.areItemStacksEqual(itemstack, this.last))
         {
-            this.field_147077_B = itemstack;
+            this.last = itemstack;
 
             while (true)
             {
-                this.field_147082_x += (float)(this.random.nextInt(4) - this.random.nextInt(4));
+                this.flipT += (float)(this.random.nextInt(4) - this.random.nextInt(4));
 
-                if (this.field_147071_v > this.field_147082_x + 1.0F || this.field_147071_v < this.field_147082_x - 1.0F)
+                if (this.flip > this.flipT + 1.0F || this.flip < this.flipT - 1.0F)
                 {
                     break;
                 }
             }
         }
 
-        ++this.field_147073_u;
-        this.field_147069_w = this.field_147071_v;
-        this.field_147076_A = this.field_147080_z;
+        ++this.ticks;
+        this.oFlip = this.flip;
+        this.oOpen = this.open;
         boolean flag = false;
 
         for (int i = 0; i < 3; ++i)
@@ -331,18 +319,18 @@ public class GuiEnchantment extends GuiContainer
 
         if (flag)
         {
-            this.field_147080_z += 0.2F;
+            this.open += 0.2F;
         }
         else
         {
-            this.field_147080_z -= 0.2F;
+            this.open -= 0.2F;
         }
 
-        this.field_147080_z = MathHelper.clamp_float(this.field_147080_z, 0.0F, 1.0F);
-        float f1 = (this.field_147082_x - this.field_147071_v) * 0.4F;
+        this.open = MathHelper.clamp_float(this.open, 0.0F, 1.0F);
+        float f1 = (this.flipT - this.flip) * 0.4F;
         float f = 0.2F;
         f1 = MathHelper.clamp_float(f1, -f, f);
-        this.field_147081_y += (f1 - this.field_147081_y) * 0.9F;
-        this.field_147071_v += this.field_147081_y;
+        this.flipA += (f1 - this.flipA) * 0.9F;
+        this.flip += this.flipA;
     }
 }

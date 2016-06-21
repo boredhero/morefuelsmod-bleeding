@@ -1,12 +1,13 @@
 package net.minecraft.world;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.border.WorldBorder;
@@ -20,13 +21,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class WorldProvider
 {
-    public static final float[] moonPhaseFactors = new float[] {1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
+    public static final float[] MOON_PHASE_FACTORS = new float[] {1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
     /** world object being used */
     protected World worldObj;
     private WorldType terrainType;
     private String generatorSettings;
     /** World chunk manager being used to generate chunks */
-    protected BiomeProvider worldChunkMgr;
+    protected BiomeProvider biomeProvider;
     /** States whether the Hell world provider is used(true) or if the normal world provider is used(false) */
     protected boolean isHellWorld;
     /** A boolean that tells if a world does not have a sky. Used in calculating weather and skylight */
@@ -44,7 +45,7 @@ public abstract class WorldProvider
         this.worldObj = worldIn;
         this.terrainType = worldIn.getWorldInfo().getTerrainType();
         this.generatorSettings = worldIn.getWorldInfo().getGeneratorOptions();
-        this.registerWorldChunkManager();
+        this.createBiomeProvider();
         this.generateLightBrightnessTable();
     }
 
@@ -65,9 +66,9 @@ public abstract class WorldProvider
     /**
      * creates a new world chunk manager for WorldProvider
      */
-    protected void registerWorldChunkManager()
+    protected void createBiomeProvider()
     {
-        this.worldChunkMgr = terrainType.getBiomeProvider(worldObj);
+        this.biomeProvider = terrainType.getBiomeProvider(worldObj);
     }
 
     public IChunkGenerator createChunkGenerator()
@@ -81,7 +82,7 @@ public abstract class WorldProvider
     public boolean canCoordinateBeSpawn(int x, int z)
     {
         BlockPos blockpos = new BlockPos(x, 0, z);
-        return this.worldObj.getBiomeGenForCoords(blockpos).ignorePlayerSpawnSuitability() ? true : this.worldObj.getGroundAboveSeaLevel(blockpos).getBlock() == Blocks.grass;
+        return this.worldObj.getBiomeGenForCoords(blockpos).ignorePlayerSpawnSuitability() ? true : this.worldObj.getGroundAboveSeaLevel(blockpos).getBlock() == Blocks.GRASS;
     }
 
     /**
@@ -123,6 +124,7 @@ public abstract class WorldProvider
     /**
      * Returns array with sunrise/sunset colors
      */
+    @Nullable
     @SideOnly(Side.CLIENT)
     public float[] calcSunriseSunsetColors(float celestialAngle, float partialTicks)
     {
@@ -219,7 +221,7 @@ public abstract class WorldProvider
 
     public BiomeProvider getBiomeProvider()
     {
-        return this.worldChunkMgr;
+        return this.biomeProvider;
     }
 
     public boolean doesWaterVaporize()
@@ -237,7 +239,7 @@ public abstract class WorldProvider
         return this.lightBrightnessTable;
     }
 
-    public WorldBorder getWorldBorder()
+    public WorldBorder createWorldBorder()
     {
         return new WorldBorder();
     }
@@ -369,11 +371,11 @@ public abstract class WorldProvider
         int spawnFuzz = this.worldObj instanceof WorldServer ? terrainType.getSpawnFuzz((WorldServer)this.worldObj, this.worldObj.getMinecraftServer()) : 1;
         int border = MathHelper.floor_double(worldObj.getWorldBorder().getClosestDistance(ret.getX(), ret.getZ()));
         if (border < spawnFuzz) spawnFuzz = border;
-        if (spawnFuzz < 1) spawnFuzz = 1;
-        int spawnFuzzHalf = spawnFuzz / 2;
 
-        if (!getHasNoSky() && !isAdventure)
+        if (!getHasNoSky() && !isAdventure && spawnFuzz != 0)
         {
+            if (spawnFuzz < 2) spawnFuzz = 2;
+            int spawnFuzzHalf = spawnFuzz / 2;
             ret = worldObj.getTopSolidOrLiquidBlock(ret.add(worldObj.rand.nextInt(spawnFuzzHalf) - spawnFuzz, 0, worldObj.rand.nextInt(spawnFuzzHalf) - spawnFuzz));
         }
 
@@ -406,9 +408,9 @@ public abstract class WorldProvider
 
     /*======================================= Start Moved From World =========================================*/
 
-    public BiomeGenBase getBiomeGenForCoords(BlockPos pos)
+    public Biome getBiomeForCoords(BlockPos pos)
     {
-        return worldObj.getBiomeGenForCoordsBody(pos);
+        return worldObj.getBiomeForCoordsBody(pos);
     }
 
     public boolean isDaytime()
@@ -566,14 +568,14 @@ public abstract class WorldProvider
     /**
      * Called when a Player is added to the provider's world.
      */
-    public void onPlayerAdded(EntityPlayerMP p_186061_1_)
+    public void onPlayerAdded(EntityPlayerMP player)
     {
     }
 
     /**
      * Called when a Player is removed from the provider's world.
      */
-    public void onPlayerRemoved(EntityPlayerMP p_186062_1_)
+    public void onPlayerRemoved(EntityPlayerMP player)
     {
     }
 

@@ -3,6 +3,7 @@ package net.minecraft.command.server;
 import com.mojang.authlib.GameProfile;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -38,10 +39,6 @@ public class CommandDeOp extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -56,7 +53,7 @@ public class CommandDeOp extends CommandBase
             else
             {
                 server.getPlayerList().removeOp(gameprofile);
-                notifyOperators(sender, this, "commands.deop.success", new Object[] {args[0]});
+                notifyCommandListener(sender, this, "commands.deop.success", new Object[] {args[0]});
             }
         }
         else
@@ -65,7 +62,7 @@ public class CommandDeOp extends CommandBase
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getPlayerList().getOppedPlayerNames()) : Collections.<String>emptyList();
     }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -24,6 +24,7 @@ import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -89,7 +90,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public boolean preventEntitySpawning;
     private final List<Entity> riddenByEntities;
-    protected int field_184245_j;
+    protected int rideCooldown;
     private Entity ridingEntity;
     public boolean forceSpawn;
     /** Reference to the World object. */
@@ -168,7 +169,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     public int hurtResistantTime;
     protected boolean firstUpdate;
     protected boolean isImmuneToFire;
-    protected EntityDataManager dataWatcher;
+    protected EntityDataManager dataManager;
     private static final DataParameter<Byte> FLAGS = EntityDataManager.<Byte>createKey(Entity.class, DataSerializers.BYTE);
     private static final DataParameter<Integer> AIR = EntityDataManager.<Integer>createKey(Entity.class, DataSerializers.VARINT);
     private static final DataParameter<String> CUSTOM_NAME = EntityDataManager.<String>createKey(Entity.class, DataSerializers.STRING);
@@ -205,6 +206,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     protected EnumFacing teleportDirection;
     private boolean invulnerable;
     protected UUID entityUniqueID;
+    protected String cachedUniqueIdString;
     /** The command result statistics for this Entity. */
     private final CommandResultStats cmdResultStats;
     private final List<ItemStack> emptyItemStackList;
@@ -224,6 +226,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         this.fireResistance = 1;
         this.firstUpdate = true;
         this.entityUniqueID = MathHelper.getRandomUuid(this.rand);
+        this.cachedUniqueIdString = this.entityUniqueID.toString();
         this.cmdResultStats = new CommandResultStats();
         this.emptyItemStackList = Lists.<ItemStack>newArrayList();
         this.tags = Sets.<String>newHashSet();
@@ -232,15 +235,15 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
         if (worldIn != null)
         {
-            this.dimension = worldIn.provider.getDimensionType().getId();
+            this.dimension = worldIn.provider.getDimension();
         }
 
-        this.dataWatcher = new EntityDataManager(this);
-        this.dataWatcher.register(FLAGS, Byte.valueOf((byte)0));
-        this.dataWatcher.register(AIR, Integer.valueOf(300));
-        this.dataWatcher.register(CUSTOM_NAME_VISIBLE, Boolean.valueOf(false));
-        this.dataWatcher.register(CUSTOM_NAME, "");
-        this.dataWatcher.register(SILENT, Boolean.valueOf(false));
+        this.dataManager = new EntityDataManager(this);
+        this.dataManager.register(FLAGS, Byte.valueOf((byte)0));
+        this.dataManager.register(AIR, Integer.valueOf(300));
+        this.dataManager.register(CUSTOM_NAME_VISIBLE, Boolean.valueOf(false));
+        this.dataManager.register(CUSTOM_NAME, "");
+        this.dataManager.register(SILENT, Boolean.valueOf(false));
         this.entityInit();
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityEvent.EntityConstructing(this));
         capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
@@ -297,7 +300,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     public EntityDataManager getDataManager()
     {
-        return this.dataWatcher;
+        return this.dataManager;
     }
 
     public boolean equals(Object p_equals_1_)
@@ -323,7 +326,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             {
                 this.setPosition(this.posX, this.posY, this.posZ);
 
-                if (this.worldObj.getCubes(this, this.getEntityBoundingBox()).isEmpty())
+                if (this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
                 {
                     break;
                 }
@@ -347,12 +350,12 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     /**
      * Sets whether this entity should drop its items when setDead() is called. This applies to container minecarts.
      */
-    public void setDropItemsWhenDead(boolean p_184174_1_)
+    public void setDropItemsWhenDead(boolean dropWhenDead)
     {
     }
 
     /**
-     * Sets the width and height of the entity. Args: width, height
+     * Sets the width and height of the entity.
      */
     protected void setSize(float width, float height)
     {
@@ -372,7 +375,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Sets the rotation of the entity. Args: yaw, pitch (both in degrees)
+     * Sets the rotation of the entity.
      */
     protected void setRotation(float yaw, float pitch)
     {
@@ -439,9 +442,9 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             this.dismountRidingEntity();
         }
 
-        if (this.field_184245_j > 0)
+        if (this.rideCooldown > 0)
         {
-            --this.field_184245_j;
+            --this.rideCooldown;
         }
 
         this.prevDistanceWalkedModified = this.distanceWalkedModified;
@@ -619,7 +622,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Checks if the offset position from the entity's current position is inside of liquid. Args: x, y, z
+     * Checks if the offset position from the entity's current position is inside of a liquid.
      */
     public boolean isOffsetPositionInLiquid(double x, double y, double z)
     {
@@ -632,11 +635,11 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     private boolean isLiquidPresentInAABB(AxisAlignedBB bb)
     {
-        return this.worldObj.getCubes(this, bb).isEmpty() && !this.worldObj.isAnyLiquid(bb);
+        return this.worldObj.getCollisionBoxes(this, bb).isEmpty() && !this.worldObj.containsAnyLiquid(bb);
     }
 
     /**
-     * Tries to moves the entity by the passed in displacement. Args: x, y, z
+     * Tries to move the entity towards the specified location.
      */
     public void moveEntity(double x, double y, double z)
     {
@@ -672,7 +675,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             {
                 double d6;
 
-                for (d6 = 0.05D; x != 0.0D && this.worldObj.getCubes(this, this.getEntityBoundingBox().offset(x, -1.0D, 0.0D)).isEmpty(); d3 = x)
+                for (d6 = 0.05D; x != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, 0.0D)).isEmpty(); d3 = x)
                 {
                     if (x < d6 && x >= -d6)
                     {
@@ -688,7 +691,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                     }
                 }
 
-                for (; z != 0.0D && this.worldObj.getCubes(this, this.getEntityBoundingBox().offset(0.0D, -1.0D, z)).isEmpty(); d5 = z)
+                for (; z != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(0.0D, -1.0D, z)).isEmpty(); d5 = z)
                 {
                     if (z < d6 && z >= -d6)
                     {
@@ -704,7 +707,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                     }
                 }
 
-                for (; x != 0.0D && z != 0.0D && this.worldObj.getCubes(this, this.getEntityBoundingBox().offset(x, -1.0D, z)).isEmpty(); d5 = z)
+                for (; x != 0.0D && z != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, z)).isEmpty(); d5 = z)
                 {
                     if (x < d6 && x >= -d6)
                     {
@@ -736,7 +739,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 }
             }
 
-            List<AxisAlignedBB> list1 = this.worldObj.getCubes(this, this.getEntityBoundingBox().addCoord(x, y, z));
+            List<AxisAlignedBB> list1 = this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().addCoord(x, y, z));
             AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
             int i = 0;
 
@@ -772,7 +775,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 AxisAlignedBB axisalignedbb1 = this.getEntityBoundingBox();
                 this.setEntityBoundingBox(axisalignedbb);
                 y = (double)this.stepHeight;
-                List<AxisAlignedBB> list = this.worldObj.getCubes(this, this.getEntityBoundingBox().addCoord(d3, y, d5));
+                List<AxisAlignedBB> list = this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().addCoord(d3, y, d5));
                 AxisAlignedBB axisalignedbb2 = this.getEntityBoundingBox();
                 AxisAlignedBB axisalignedbb3 = axisalignedbb2.addCoord(d3, 0.0D, d5);
                 double d9 = y;
@@ -879,7 +882,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             BlockPos blockpos = new BlockPos(j4, l4, i5);
             IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
 
-            if (iblockstate.getMaterial() == Material.air)
+            if (iblockstate.getMaterial() == Material.AIR)
             {
                 BlockPos blockpos1 = blockpos.down();
                 IBlockState iblockstate1 = this.worldObj.getBlockState(blockpos1);
@@ -917,20 +920,20 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 double d13 = this.posY - d1;
                 double d14 = this.posZ - d2;
 
-                if (block != Blocks.ladder)
+                if (block != Blocks.LADDER)
                 {
                     d13 = 0.0D;
                 }
 
                 if (block != null && this.onGround)
                 {
-                    block.onEntityCollidedWithBlock(this.worldObj, blockpos, this);
+                    block.onEntityWalk(this.worldObj, blockpos, this);
                 }
 
                 this.distanceWalkedModified = (float)((double)this.distanceWalkedModified + (double)MathHelper.sqrt_double(d12 * d12 + d14 * d14) * 0.6D);
                 this.distanceWalkedOnStepModified = (float)((double)this.distanceWalkedOnStepModified + (double)MathHelper.sqrt_double(d12 * d12 + d13 * d13 + d14 * d14) * 0.6D);
 
-                if (this.distanceWalkedOnStepModified > (float)this.nextStepDistance && iblockstate.getMaterial() != Material.air)
+                if (this.distanceWalkedOnStepModified > (float)this.nextStepDistance && iblockstate.getMaterial() != Material.AIR)
                 {
                     this.nextStepDistance = (int)this.distanceWalkedOnStepModified + 1;
 
@@ -964,7 +967,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
             boolean flag1 = this.isWet();
 
-            if (this.worldObj.isFlammableWithin(this.getEntityBoundingBox().func_186664_h(0.001D)))
+            if (this.worldObj.isFlammableWithin(this.getEntityBoundingBox().contract(0.001D)))
             {
                 this.dealFireDamage(1);
 
@@ -985,7 +988,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
             if (flag1 && this.fire > 0)
             {
-                this.playSound(SoundEvents.entity_generic_extinguish_fire, 0.7F, 1.6F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+                this.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.7F, 1.6F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
                 this.fire = -this.fireResistance;
             }
 
@@ -1006,12 +1009,12 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     protected SoundEvent getSwimSound()
     {
-        return SoundEvents.entity_generic_swim;
+        return SoundEvents.ENTITY_GENERIC_SWIM;
     }
 
     protected SoundEvent getSplashSound()
     {
-        return SoundEvents.entity_generic_splash;
+        return SoundEvents.ENTITY_GENERIC_SPLASH;
     }
 
     protected void doBlockCollisions()
@@ -1055,11 +1058,11 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        SoundType soundtype = blockIn.getStepSound();
+        SoundType soundtype = blockIn.getSoundType();
 
-        if (this.worldObj.getBlockState(pos.up()).getBlock() == Blocks.snow_layer)
+        if (this.worldObj.getBlockState(pos.up()).getBlock() == Blocks.SNOW_LAYER)
         {
-            soundtype = Blocks.snow_layer.getStepSound();
+            soundtype = Blocks.SNOW_LAYER.getSoundType();
             this.playSound(soundtype.getStepSound(), soundtype.getVolume() * 0.15F, soundtype.getPitch());
         }
         else if (!blockIn.getDefaultState().getMaterial().isLiquid())
@@ -1081,7 +1084,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public boolean isSilent()
     {
-        return ((Boolean)this.dataWatcher.get(SILENT)).booleanValue();
+        return ((Boolean)this.dataManager.get(SILENT)).booleanValue();
     }
 
     /**
@@ -1089,7 +1092,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public void setSilent(boolean isSilent)
     {
-        this.dataWatcher.set(SILENT, Boolean.valueOf(isSilent));
+        this.dataManager.set(SILENT, Boolean.valueOf(isSilent));
     }
 
     /**
@@ -1121,14 +1124,14 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     /**
      * Returns the collision bounding box for this entity
      */
+    @Nullable
     public AxisAlignedBB getCollisionBoundingBox()
     {
         return null;
     }
 
     /**
-     * Will deal the specified amount of damage to the entity if the entity isn't immune to fire damage. Args:
-     * amountDamage
+     * Will deal the specified amount of fire damage to the entity if the entity isn't immune to fire damage.
      */
     protected void dealFireDamage(int amount)
     {
@@ -1198,7 +1201,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         {
             this.inWater = false;
         }
-        else if (this.worldObj.handleMaterialAcceleration(this.getEntityBoundingBox().expand(0.0D, -0.4000000059604645D, 0.0D).func_186664_h(0.001D), Material.water, this))
+        else if (this.worldObj.handleMaterialAcceleration(this.getEntityBoundingBox().expand(0.0D, -0.4000000059604645D, 0.0D).contract(0.001D), Material.WATER, this))
         {
             if (!this.inWater && !this.firstUpdate)
             {
@@ -1303,13 +1306,13 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     public boolean isInLava()
     {
-        return this.worldObj.isMaterialInBB(this.getEntityBoundingBox().expand(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.lava);
+        return this.worldObj.isMaterialInBB(this.getEntityBoundingBox().expand(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.LAVA);
     }
 
     /**
      * Used in both water and by flying objects
      */
-    public void moveFlying(float strafe, float forward, float friction)
+    public void moveRelative(float strafe, float forward, float friction)
     {
         float f = strafe * strafe + forward * forward;
 
@@ -1420,7 +1423,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Returns the distance to the entity. Args: entity
+     * Returns the distance to the entity.
      */
     public float getDistanceToEntity(Entity entityIn)
     {
@@ -1431,7 +1434,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Gets the squared distance to the position. Args: x, y, z
+     * Gets the squared distance to the position.
      */
     public double getDistanceSq(double x, double y, double z)
     {
@@ -1452,7 +1455,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Gets the distance to the position. Args: x, y, z
+     * Gets the distance to the position.
      */
     public double getDistance(double x, double y, double z)
     {
@@ -1463,7 +1466,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Returns the squared distance to the entity. Args: entity
+     * Returns the squared distance to the entity.
      */
     public double getDistanceSqToEntity(Entity entityIn)
     {
@@ -1481,7 +1484,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Applies a velocity to each of the entities pushing them away from each other. Args: entity
+     * Applies a velocity to the entities, to push them away from eachother.
      */
     public void applyEntityCollision(Entity entityIn)
     {
@@ -1527,7 +1530,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Adds to the current velocity of the entity. Args: x, y, z
+     * Adds to the current velocity of the entity.
      */
     public void addVelocity(double x, double y, double z)
     {
@@ -1606,6 +1609,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         }
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public RayTraceResult rayTrace(double blockReachDistance, float partialTicks)
     {
@@ -1632,8 +1636,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Adds a value to the player score. Currently not actually used and the entity passed in does nothing. Args:
-     * entity, scoreToAdd
+     * Adds to the players score.
      */
     public void addToPlayerScore(Entity entityIn, int amount)
     {
@@ -1650,8 +1653,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -1673,14 +1675,14 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      * 
      * Similar to writeToNBTOptional, but does not check whether this Entity is a passenger of another.
      */
-    public boolean writeToNBTAtomically(NBTTagCompound tagCompound)
+    public boolean writeToNBTAtomically(NBTTagCompound compound)
     {
         String s = this.getEntityString();
 
         if (!this.isDead && s != null)
         {
-            tagCompound.setString("id", s);
-            this.writeToNBT(tagCompound);
+            compound.setString("id", s);
+            this.writeToNBT(compound);
             return true;
         }
         else
@@ -1694,14 +1696,14 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      * returns false the entity is not saved on disk. Ridden entities return false here as they are saved with their
      * rider.
      */
-    public boolean writeToNBTOptional(NBTTagCompound tagCompund)
+    public boolean writeToNBTOptional(NBTTagCompound compound)
     {
         String s = this.getEntityString();
 
         if (!this.isDead && s != null && !this.isRiding())
         {
-            tagCompund.setString("id", s);
-            this.writeToNBT(tagCompund);
+            compound.setString("id", s);
+            this.writeToNBT(compound);
             return true;
         }
         else
@@ -1710,45 +1712,42 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         }
     }
 
-    /**
-     * Save the entity to NBT (calls an abstract helper method to write extra data)
-     */
-    public void writeToNBT(NBTTagCompound tagCompund)
+    public NBTTagCompound writeToNBT(NBTTagCompound p_189511_1_)
     {
         try
         {
-            tagCompund.setTag("Pos", this.newDoubleNBTList(new double[] {this.posX, this.posY, this.posZ}));
-            tagCompund.setTag("Motion", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
-            tagCompund.setTag("Rotation", this.newFloatNBTList(new float[] {this.rotationYaw, this.rotationPitch}));
-            tagCompund.setFloat("FallDistance", this.fallDistance);
-            tagCompund.setShort("Fire", (short)this.fire);
-            tagCompund.setShort("Air", (short)this.getAir());
-            tagCompund.setBoolean("OnGround", this.onGround);
-            tagCompund.setInteger("Dimension", this.dimension);
-            tagCompund.setBoolean("Invulnerable", this.invulnerable);
-            tagCompund.setInteger("PortalCooldown", this.timeUntilPortal);
-            tagCompund.setUniqueId("UUID", this.getUniqueID());
+            p_189511_1_.setTag("Pos", this.newDoubleNBTList(new double[] {this.posX, this.posY, this.posZ}));
+            p_189511_1_.setTag("Motion", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
+            p_189511_1_.setTag("Rotation", this.newFloatNBTList(new float[] {this.rotationYaw, this.rotationPitch}));
+            p_189511_1_.setFloat("FallDistance", this.fallDistance);
+            p_189511_1_.setShort("Fire", (short)this.fire);
+            p_189511_1_.setShort("Air", (short)this.getAir());
+            p_189511_1_.setBoolean("OnGround", this.onGround);
+            p_189511_1_.setInteger("Dimension", this.dimension);
+            p_189511_1_.setBoolean("Invulnerable", this.invulnerable);
+            p_189511_1_.setInteger("PortalCooldown", this.timeUntilPortal);
+            p_189511_1_.setUniqueId("UUID", this.getUniqueID());
 
             if (this.getCustomNameTag() != null && !this.getCustomNameTag().isEmpty())
             {
-                tagCompund.setString("CustomName", this.getCustomNameTag());
+                p_189511_1_.setString("CustomName", this.getCustomNameTag());
             }
 
             if (this.getAlwaysRenderNameTag())
             {
-                tagCompund.setBoolean("CustomNameVisible", this.getAlwaysRenderNameTag());
+                p_189511_1_.setBoolean("CustomNameVisible", this.getAlwaysRenderNameTag());
             }
 
-            this.cmdResultStats.writeStatsToNBT(tagCompund);
+            this.cmdResultStats.writeStatsToNBT(p_189511_1_);
 
             if (this.isSilent())
             {
-                tagCompund.setBoolean("Silent", this.isSilent());
+                p_189511_1_.setBoolean("Silent", this.isSilent());
             }
 
             if (this.glowing)
             {
-                tagCompund.setBoolean("Glowing", this.glowing);
+                p_189511_1_.setBoolean("Glowing", this.glowing);
             }
 
             if (this.tags.size() > 0)
@@ -1760,13 +1759,13 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                     nbttaglist.appendTag(new NBTTagString(s));
                 }
 
-                tagCompund.setTag("Tags", nbttaglist);
+                p_189511_1_.setTag("Tags", nbttaglist);
             }
 
-            if (customEntityData != null) tagCompund.setTag("ForgeData", customEntityData);
-            if (this.capabilities != null) tagCompund.setTag("ForgeCaps", this.capabilities.serializeNBT());
+            if (customEntityData != null) p_189511_1_.setTag("ForgeData", customEntityData);
+            if (this.capabilities != null) p_189511_1_.setTag("ForgeCaps", this.capabilities.serializeNBT());
 
-            this.writeEntityToNBT(tagCompund);
+            this.writeEntityToNBT(p_189511_1_);
 
             if (this.isBeingRidden())
             {
@@ -1784,9 +1783,11 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
                 if (!nbttaglist1.hasNoTags())
                 {
-                    tagCompund.setTag("Passengers", nbttaglist1);
+                    p_189511_1_.setTag("Passengers", nbttaglist1);
                 }
             }
+
+            return p_189511_1_;
         }
         catch (Throwable throwable)
         {
@@ -1800,13 +1801,13 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     /**
      * Reads the entity from NBT (calls an abstract helper method to read specialized data)
      */
-    public void readFromNBT(NBTTagCompound tagCompund)
+    public void readFromNBT(NBTTagCompound compound)
     {
         try
         {
-            NBTTagList nbttaglist = tagCompund.getTagList("Pos", 6);
-            NBTTagList nbttaglist2 = tagCompund.getTagList("Motion", 6);
-            NBTTagList nbttaglist3 = tagCompund.getTagList("Rotation", 5);
+            NBTTagList nbttaglist = compound.getTagList("Pos", 6);
+            NBTTagList nbttaglist2 = compound.getTagList("Motion", 6);
+            NBTTagList nbttaglist3 = compound.getTagList("Rotation", 5);
             this.motionX = nbttaglist2.getDoubleAt(0);
             this.motionY = nbttaglist2.getDoubleAt(1);
             this.motionZ = nbttaglist2.getDoubleAt(2);
@@ -1833,44 +1834,45 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             this.prevRotationPitch = this.rotationPitch = nbttaglist3.getFloatAt(1);
             this.setRotationYawHead(this.rotationYaw);
             this.setRenderYawOffset(this.rotationYaw);
-            this.fallDistance = tagCompund.getFloat("FallDistance");
-            this.fire = tagCompund.getShort("Fire");
-            this.setAir(tagCompund.getShort("Air"));
-            this.onGround = tagCompund.getBoolean("OnGround");
+            this.fallDistance = compound.getFloat("FallDistance");
+            this.fire = compound.getShort("Fire");
+            this.setAir(compound.getShort("Air"));
+            this.onGround = compound.getBoolean("OnGround");
 
-            if (tagCompund.hasKey("Dimension"))
+            if (compound.hasKey("Dimension"))
             {
-                this.dimension = tagCompund.getInteger("Dimension");
+                this.dimension = compound.getInteger("Dimension");
             }
 
-            this.invulnerable = tagCompund.getBoolean("Invulnerable");
-            this.timeUntilPortal = tagCompund.getInteger("PortalCooldown");
+            this.invulnerable = compound.getBoolean("Invulnerable");
+            this.timeUntilPortal = compound.getInteger("PortalCooldown");
 
-            if (tagCompund.hasUniqueId("UUID"))
+            if (compound.hasUniqueId("UUID"))
             {
-                this.entityUniqueID = tagCompund.getUniqueId("UUID");
+                this.entityUniqueID = compound.getUniqueId("UUID");
+                this.cachedUniqueIdString = this.entityUniqueID.toString();
             }
 
             this.setPosition(this.posX, this.posY, this.posZ);
             this.setRotation(this.rotationYaw, this.rotationPitch);
 
-            if (tagCompund.hasKey("CustomName", 8))
+            if (compound.hasKey("CustomName", 8))
             {
-                this.setCustomNameTag(tagCompund.getString("CustomName"));
+                this.setCustomNameTag(compound.getString("CustomName"));
             }
 
-            this.setAlwaysRenderNameTag(tagCompund.getBoolean("CustomNameVisible"));
-            this.cmdResultStats.readStatsFromNBT(tagCompund);
-            this.setSilent(tagCompund.getBoolean("Silent"));
-            this.setGlowing(tagCompund.getBoolean("Glowing"));
+            this.setAlwaysRenderNameTag(compound.getBoolean("CustomNameVisible"));
+            this.cmdResultStats.readStatsFromNBT(compound);
+            this.setSilent(compound.getBoolean("Silent"));
+            this.setGlowing(compound.getBoolean("Glowing"));
 
-            if (tagCompund.hasKey("ForgeData")) customEntityData = tagCompund.getCompoundTag("ForgeData");
-            if (this.capabilities != null && tagCompund.hasKey("ForgeCaps")) this.capabilities.deserializeNBT(tagCompund.getCompoundTag("ForgeCaps"));
+            if (compound.hasKey("ForgeData")) customEntityData = compound.getCompoundTag("ForgeData");
+            if (this.capabilities != null && compound.hasKey("ForgeCaps")) this.capabilities.deserializeNBT(compound.getCompoundTag("ForgeCaps"));
 
-            if (tagCompund.hasKey("Tags", 9))
+            if (compound.hasKey("Tags", 9))
             {
                 this.tags.clear();
-                NBTTagList nbttaglist1 = tagCompund.getTagList("Tags", 8);
+                NBTTagList nbttaglist1 = compound.getTagList("Tags", 8);
                 int i = Math.min(nbttaglist1.tagCount(), 1024);
 
                 for (int j = 0; j < i; ++j)
@@ -1879,7 +1881,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 }
             }
 
-            this.readEntityFromNBT(tagCompund);
+            this.readEntityFromNBT(compound);
 
             if (this.shouldSetPosAfterLoading())
             {
@@ -1911,12 +1913,12 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected abstract void readEntityFromNBT(NBTTagCompound tagCompund);
+    protected abstract void readEntityFromNBT(NBTTagCompound compound);
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected abstract void writeEntityToNBT(NBTTagCompound tagCompound);
+    protected abstract void writeEntityToNBT(NBTTagCompound compound);
 
     public void onChunkLoad()
     {
@@ -1965,11 +1967,11 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     /**
      * Drops an item at the position of the entity.
      */
-    public EntityItem entityDropItem(ItemStack itemStackIn, float offsetY)
+    public EntityItem entityDropItem(ItemStack stack, float offsetY)
     {
-        if (itemStackIn.stackSize != 0 && itemStackIn.getItem() != null)
+        if (stack.stackSize != 0 && stack.getItem() != null)
         {
-            EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY + (double)offsetY, this.posZ, itemStackIn);
+            EntityItem entityitem = new EntityItem(this.worldObj, this.posX, this.posY + (double)offsetY, this.posZ, stack);
             entityitem.setDefaultPickupDelay();
             if (captureDrops)
                 this.capturedDrops.add(entityitem);
@@ -2027,7 +2029,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         }
     }
 
-    public boolean processInitialInteract(EntityPlayer player, ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
     {
         return false;
     }
@@ -2036,6 +2038,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      * Returns a boundingBox used to collide the entity with other entities and blocks. This enables the entity to be
      * pushable on contact, like boats or minecarts.
      */
+    @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn)
     {
         return null;
@@ -2125,7 +2128,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     protected boolean canBeRidden(Entity entityIn)
     {
-        return this.field_184245_j <= 0;
+        return this.rideCooldown <= 0;
     }
 
     public void removePassengers()
@@ -2174,7 +2177,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         else
         {
             this.riddenByEntities.remove(passenger);
-            passenger.field_184245_j = 60;
+            passenger.rideCooldown = 60;
         }
     }
 
@@ -2183,8 +2186,11 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         return this.getPassengers().size() < 1;
     }
 
+    /**
+     * Set the position and rotation values directly without any clamping.
+     */
     @SideOnly(Side.CLIENT)
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_)
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
         this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
@@ -2218,13 +2224,13 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             if (!this.worldObj.isRemote && !pos.equals(this.lastPortalPos))
             {
                 this.lastPortalPos = new BlockPos(pos);
-                BlockPattern.PatternHelper blockpattern$patternhelper = Blocks.portal.func_181089_f(this.worldObj, this.lastPortalPos);
-                double d0 = blockpattern$patternhelper.getFinger().getAxis() == EnumFacing.Axis.X ? (double)blockpattern$patternhelper.getPos().getZ() : (double)blockpattern$patternhelper.getPos().getX();
-                double d1 = blockpattern$patternhelper.getFinger().getAxis() == EnumFacing.Axis.X ? this.posZ : this.posX;
-                d1 = Math.abs(MathHelper.func_181160_c(d1 - (double)(blockpattern$patternhelper.getFinger().rotateY().getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE ? 1 : 0), d0, d0 - (double)blockpattern$patternhelper.func_181118_d()));
-                double d2 = MathHelper.func_181160_c(this.posY - 1.0D, (double)blockpattern$patternhelper.getPos().getY(), (double)(blockpattern$patternhelper.getPos().getY() - blockpattern$patternhelper.func_181119_e()));
+                BlockPattern.PatternHelper blockpattern$patternhelper = Blocks.PORTAL.createPatternHelper(this.worldObj, this.lastPortalPos);
+                double d0 = blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? (double)blockpattern$patternhelper.getFrontTopLeft().getZ() : (double)blockpattern$patternhelper.getFrontTopLeft().getX();
+                double d1 = blockpattern$patternhelper.getForwards().getAxis() == EnumFacing.Axis.X ? this.posZ : this.posX;
+                d1 = Math.abs(MathHelper.pct(d1 - (double)(blockpattern$patternhelper.getForwards().rotateY().getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE ? 1 : 0), d0, d0 - (double)blockpattern$patternhelper.getWidth()));
+                double d2 = MathHelper.pct(this.posY - 1.0D, (double)blockpattern$patternhelper.getFrontTopLeft().getY(), (double)(blockpattern$patternhelper.getFrontTopLeft().getY() - blockpattern$patternhelper.getHeight()));
                 this.lastPortalVec = new Vec3d(d1, d2, 0.0D);
-                this.teleportDirection = blockpattern$patternhelper.getFinger();
+                this.teleportDirection = blockpattern$patternhelper.getForwards();
             }
 
             this.inPortal = true;
@@ -2240,7 +2246,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * Sets the velocity to the args. Args: x, y, z
+     * Updates the velocity of the entity to a new value.
      */
     @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
@@ -2278,7 +2284,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         return Iterables.<ItemStack>concat(this.getHeldEquipment(), this.getArmorInventoryList());
     }
 
-    public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack)
+    public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nullable ItemStack stack)
     {
     }
 
@@ -2341,9 +2347,9 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         return this.glowing || this.worldObj.isRemote && this.getFlag(6);
     }
 
-    public void setGlowing(boolean p_184195_1_)
+    public void setGlowing(boolean glowingIn)
     {
-        this.glowing = p_184195_1_;
+        this.glowing = glowingIn;
 
         if (!this.worldObj.isRemote)
         {
@@ -2375,25 +2381,26 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         }
     }
 
+    @Nullable
     public Team getTeam()
     {
-        return this.worldObj.getScoreboard().getPlayersTeam(this.getUniqueID().toString());
+        return this.worldObj.getScoreboard().getPlayersTeam(this.getCachedUniqueIdString());
     }
 
     /**
      * Returns whether this Entity is on the same team as the given Entity.
      */
-    public boolean isOnSameTeam(Entity p_184191_1_)
+    public boolean isOnSameTeam(Entity entityIn)
     {
-        return this.isOnScoreboardTeam(p_184191_1_.getTeam());
+        return this.isOnScoreboardTeam(entityIn.getTeam());
     }
 
     /**
      * Returns whether this Entity is on the given scoreboard team.
      */
-    public boolean isOnScoreboardTeam(Team p_184194_1_)
+    public boolean isOnScoreboardTeam(Team teamIn)
     {
-        return this.getTeam() != null ? this.getTeam().isSameTeam(p_184194_1_) : false;
+        return this.getTeam() != null ? this.getTeam().isSameTeam(teamIn) : false;
     }
 
     public void setInvisible(boolean invisible)
@@ -2407,7 +2414,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     protected boolean getFlag(int flag)
     {
-        return (((Byte)this.dataWatcher.get(FLAGS)).byteValue() & 1 << flag) != 0;
+        return (((Byte)this.dataManager.get(FLAGS)).byteValue() & 1 << flag) != 0;
     }
 
     /**
@@ -2415,26 +2422,26 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     protected void setFlag(int flag, boolean set)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(FLAGS)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(FLAGS)).byteValue();
 
         if (set)
         {
-            this.dataWatcher.set(FLAGS, Byte.valueOf((byte)(b0 | 1 << flag)));
+            this.dataManager.set(FLAGS, Byte.valueOf((byte)(b0 | 1 << flag)));
         }
         else
         {
-            this.dataWatcher.set(FLAGS, Byte.valueOf((byte)(b0 & ~(1 << flag))));
+            this.dataManager.set(FLAGS, Byte.valueOf((byte)(b0 & ~(1 << flag))));
         }
     }
 
     public int getAir()
     {
-        return ((Integer)this.dataWatcher.get(AIR)).intValue();
+        return ((Integer)this.dataManager.get(AIR)).intValue();
     }
 
     public void setAir(int air)
     {
-        this.dataWatcher.set(AIR, Integer.valueOf(air));
+        this.dataManager.set(AIR, Integer.valueOf(air));
     }
 
     /**
@@ -2592,9 +2599,9 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     }
 
     /**
-     * If returns false, the item will not inflict any damage against entities.
+     * Returns true if it's possible to attack this entity with an item.
      */
-    public boolean canAttackWithItem()
+    public boolean canBeAttackedWithItem()
     {
         return true;
     }
@@ -2641,8 +2648,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     private void copyDataFromOld(Entity entityIn)
     {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        entityIn.writeToNBT(nbttagcompound);
+        NBTTagCompound nbttagcompound = entityIn.writeToNBT(new NBTTagCompound());
         nbttagcompound.removeTag("Dimension");
         this.readFromNBT(nbttagcompound);
         this.timeUntilPortal = entityIn.timeUntilPortal;
@@ -2651,6 +2657,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         this.teleportDirection = entityIn.teleportDirection;
     }
 
+    @Nullable
     public Entity changeDimension(int dimensionIn)
     {
         if (!this.worldObj.isRemote && !this.isDead)
@@ -2791,7 +2798,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     public void addEntityCrashInfo(CrashReportCategory category)
     {
-        category.addCrashSectionCallable("Entity Type", new Callable<String>()
+        category.setDetail("Entity Type", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -2799,7 +2806,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             }
         });
         category.addCrashSection("Entity ID", Integer.valueOf(this.entityId));
-        category.addCrashSectionCallable("Entity Name", new Callable<String>()
+        category.setDetail("Entity Name", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -2809,14 +2816,14 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         category.addCrashSection("Entity\'s Exact location", String.format("%.2f, %.2f, %.2f", new Object[] {Double.valueOf(this.posX), Double.valueOf(this.posY), Double.valueOf(this.posZ)}));
         category.addCrashSection("Entity\'s Block location", CrashReportCategory.getCoordinateInfo(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posY), MathHelper.floor_double(this.posZ)));
         category.addCrashSection("Entity\'s Momentum", String.format("%.2f, %.2f, %.2f", new Object[] {Double.valueOf(this.motionX), Double.valueOf(this.motionY), Double.valueOf(this.motionZ)}));
-        category.addCrashSectionCallable("Entity\'s Passengers", new Callable<String>()
+        category.setDetail("Entity\'s Passengers", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return Entity.this.getPassengers().toString();
             }
         });
-        category.addCrashSectionCallable("Entity\'s Vehicle", new Callable<String>()
+        category.setDetail("Entity\'s Vehicle", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -2828,6 +2835,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     public void setUniqueId(UUID uniqueIdIn)
     {
         this.entityUniqueID = uniqueIdIn;
+        this.cachedUniqueIdString = this.entityUniqueID.toString();
     }
 
     /**
@@ -2842,6 +2850,11 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     public UUID getUniqueID()
     {
         return this.entityUniqueID;
+    }
+
+    public String getCachedUniqueIdString()
+    {
+        return this.cachedUniqueIdString;
     }
 
     public boolean isPushedByWater()
@@ -2867,8 +2880,8 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     public ITextComponent getDisplayName()
     {
         TextComponentString textcomponentstring = new TextComponentString(ScorePlayerTeam.formatPlayerName(this.getTeam(), this.getName()));
-        textcomponentstring.getChatStyle().setChatHoverEvent(this.getHoverEvent());
-        textcomponentstring.getChatStyle().setInsertion(this.getUniqueID().toString());
+        textcomponentstring.getStyle().setHoverEvent(this.getHoverEvent());
+        textcomponentstring.getStyle().setInsertion(this.getCachedUniqueIdString());
         return textcomponentstring;
     }
 
@@ -2877,12 +2890,12 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public void setCustomNameTag(String name)
     {
-        this.dataWatcher.set(CUSTOM_NAME, name);
+        this.dataManager.set(CUSTOM_NAME, name);
     }
 
     public String getCustomNameTag()
     {
-        return (String)this.dataWatcher.get(CUSTOM_NAME);
+        return (String)this.dataManager.get(CUSTOM_NAME);
     }
 
     /**
@@ -2890,17 +2903,17 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public boolean hasCustomName()
     {
-        return !((String)this.dataWatcher.get(CUSTOM_NAME)).isEmpty();
+        return !((String)this.dataManager.get(CUSTOM_NAME)).isEmpty();
     }
 
     public void setAlwaysRenderNameTag(boolean alwaysRenderNameTag)
     {
-        this.dataWatcher.set(CUSTOM_NAME_VISIBLE, Boolean.valueOf(alwaysRenderNameTag));
+        this.dataManager.set(CUSTOM_NAME_VISIBLE, Boolean.valueOf(alwaysRenderNameTag));
     }
 
     public boolean getAlwaysRenderNameTag()
     {
-        return ((Boolean)this.dataWatcher.get(CUSTOM_NAME_VISIBLE)).booleanValue();
+        return ((Boolean)this.dataManager.get(CUSTOM_NAME_VISIBLE)).booleanValue();
     }
 
     /**
@@ -2944,7 +2957,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
         String s = EntityList.getEntityString(this);
-        nbttagcompound.setString("id", this.getUniqueID().toString());
+        nbttagcompound.setString("id", this.getCachedUniqueIdString());
 
         if (s != null)
         {
@@ -3069,6 +3082,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     /**
      * Get the Minecraft server instance
      */
+    @Nullable
     public MinecraftServer getServer()
     {
         return this.worldObj.getMinecraftServer();
@@ -3089,13 +3103,8 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     /**
      * Applies the given player interaction to this Entity.
-     *  
-     * @param player The player interacting with this Entity.
-     * @param vec The vector representing the precise location of the interaction.
-     * @param stack The ItemStack used to interact with the Entity.
-     * @param hand The hand used to interact with the Entity.
      */
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, ItemStack stack, EnumHand hand)
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
     {
         return EnumActionResult.PASS;
     }
@@ -3149,18 +3158,18 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     {
         if (this instanceof net.minecraft.entity.item.EntityPainting)
         {
-            return new ItemStack(net.minecraft.init.Items.painting);
+            return new ItemStack(net.minecraft.init.Items.PAINTING);
         }
         else if (this instanceof EntityLeashKnot)
         {
-            return new ItemStack(net.minecraft.init.Items.lead);
+            return new ItemStack(net.minecraft.init.Items.LEAD);
         }
         else if (this instanceof net.minecraft.entity.item.EntityItemFrame)
         {
             ItemStack held = ((net.minecraft.entity.item.EntityItemFrame)this).getDisplayedItem();
             if (held == null)
             {
-                return new ItemStack(net.minecraft.init.Items.item_frame);
+                return new ItemStack(net.minecraft.init.Items.ITEM_FRAME);
             }
             else
             {
@@ -3177,18 +3186,18 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         }
         else if (this instanceof net.minecraft.entity.item.EntityArmorStand)
         {
-            return new ItemStack(net.minecraft.init.Items.armor_stand);
+            return new ItemStack(net.minecraft.init.Items.ARMOR_STAND);
         }
         else if (this instanceof net.minecraft.entity.item.EntityEnderCrystal)
         {
-            return new ItemStack(net.minecraft.init.Items.end_crystal);
+            return new ItemStack(net.minecraft.init.Items.END_CRYSTAL);
         }
         else
         {
             String name = EntityList.getEntityString(this);
-            if (EntityList.entityEggs.containsKey(name))
+            if (EntityList.ENTITY_EGGS.containsKey(name))
             {
-                ItemStack stack = new ItemStack(net.minecraft.init.Items.spawn_egg);
+                ItemStack stack = new ItemStack(net.minecraft.init.Items.SPAWN_EGG);
                 net.minecraft.item.ItemMonsterPlacer.applyEntityIdToItemStack(stack, name);
                 return stack;
             }
@@ -3269,22 +3278,23 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     {
         NBTTagCompound ret = new NBTTagCompound();
         ret.setString("id", this.getEntityString());
-        this.writeToNBT(ret);
-        return ret;
+        return this.writeToNBT(ret);
     }
     /* ================================== Forge End =====================================*/
 
     /**
-     * Makes this boss Entity visible to the given player. Has no effect if this Entity is not a boss.
+     * Add the given player to the list of players tracking this entity. For instance, a player may track a boss in
+     * order to view its associated boss bar.
      */
-    public void setBossVisibleTo(EntityPlayerMP player)
+    public void addTrackingPlayer(EntityPlayerMP player)
     {
     }
 
     /**
-     * Makes this boss Entity non-visible to the given player. Has no effect if this Entity is not a boss.
+     * Removes the given player from the list of players tracking this entity. See {@link Entity#addTrackingPlayer} for
+     * more information on tracking.
      */
-    public void setBossNonVisibleTo(EntityPlayerMP player)
+    public void removeTrackingPlayer(EntityPlayerMP player)
     {
     }
 
@@ -3293,7 +3303,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public float getRotatedYaw(Rotation transformRotation)
     {
-        float f = MathHelper.wrapAngleTo180_float(this.rotationYaw);
+        float f = MathHelper.wrapDegrees(this.rotationYaw);
 
         switch (transformRotation)
         {
@@ -3313,7 +3323,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public float getMirroredYaw(Mirror transformMirror)
     {
-        float f = MathHelper.wrapAngleTo180_float(this.rotationYaw);
+        float f = MathHelper.wrapDegrees(this.rotationYaw);
 
         switch (transformMirror)
         {
@@ -3326,7 +3336,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         }
     }
 
-    public boolean func_184213_bq()
+    public boolean ignoreItemEntityData()
     {
         return false;
     }
@@ -3342,6 +3352,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      * For vehicles, the first passenger is generally considered the controller and "drives" the vehicle. For example,
      * Pigs, Horses, and Boats are generally "steered" by the controlling passenger.
      */
+    @Nullable
     public Entity getControllingPassenger()
     {
         return null;
@@ -3404,21 +3415,21 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         return entity;
     }
 
-    public boolean isRidingSameEntity(Entity p_184223_1_)
+    public boolean isRidingSameEntity(Entity entityIn)
     {
-        return this.getLowestRidingEntity() == p_184223_1_.getLowestRidingEntity();
+        return this.getLowestRidingEntity() == entityIn.getLowestRidingEntity();
     }
 
-    public boolean isRidingOrBeingRiddenBy(Entity p_184215_1_)
+    public boolean isRidingOrBeingRiddenBy(Entity entityIn)
     {
         for (Entity entity : this.getPassengers())
         {
-            if (entity.equals(p_184215_1_))
+            if (entity.equals(entityIn))
             {
                 return true;
             }
 
-            if (entity.isRidingOrBeingRiddenBy(p_184215_1_))
+            if (entity.isRidingOrBeingRiddenBy(entityIn))
             {
                 return true;
             }
@@ -3436,6 +3447,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     /**
      * Get entity this is riding
      */
+    @Nullable
     public Entity getRidingEntity()
     {
         return this.ridingEntity;

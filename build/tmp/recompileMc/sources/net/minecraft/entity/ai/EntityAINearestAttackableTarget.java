@@ -5,6 +5,7 @@ import com.google.common.base.Predicate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -38,7 +39,7 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
         this(creature, classTarget, 10, checkSight, onlyNearby, (Predicate <? super T >)null);
     }
 
-    public EntityAINearestAttackableTarget(EntityCreature creature, Class<T> classTarget, int chance, boolean checkSight, boolean onlyNearby, final Predicate <? super T > targetSelector)
+    public EntityAINearestAttackableTarget(EntityCreature creature, Class<T> classTarget, int chance, boolean checkSight, boolean onlyNearby, @Nullable final Predicate <? super T > targetSelector)
     {
         super(creature, checkSight, onlyNearby);
         this.targetClass = classTarget;
@@ -47,7 +48,7 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
         this.setMutexBits(1);
         this.targetEntitySelector = new Predicate<T>()
         {
-            public boolean apply(T p_apply_1_)
+            public boolean apply(@Nullable T p_apply_1_)
             {
                 return p_apply_1_ == null ? false : (targetSelector != null && !targetSelector.apply(p_apply_1_) ? false : (!EntitySelectors.NOT_SPECTATING.apply(p_apply_1_) ? false : EntityAINearestAttackableTarget.this.isSuitableTarget(p_apply_1_, false)));
             }
@@ -65,7 +66,7 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
         }
         else if (this.targetClass != EntityPlayer.class && this.targetClass != EntityPlayerMP.class)
         {
-            List<T> list = this.taskOwner.worldObj.<T>getEntitiesWithinAABB(this.targetClass, this.func_188511_a(this.getTargetDistance()), this.targetEntitySelector);
+            List<T> list = this.taskOwner.worldObj.<T>getEntitiesWithinAABB(this.targetClass, this.getTargetableArea(this.getTargetDistance()), this.targetEntitySelector);
 
             if (list.isEmpty())
             {
@@ -80,13 +81,14 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
         }
         else
         {
-            this.targetEntity = (T)this.taskOwner.worldObj.func_184150_a(this.taskOwner.posX, this.taskOwner.posY + (double)this.taskOwner.getEyeHeight(), this.taskOwner.posZ, this.getTargetDistance(), this.getTargetDistance(), new Function<EntityPlayer, Double>()
+            this.targetEntity = (T)this.taskOwner.worldObj.getNearestAttackablePlayer(this.taskOwner.posX, this.taskOwner.posY + (double)this.taskOwner.getEyeHeight(), this.taskOwner.posZ, this.getTargetDistance(), this.getTargetDistance(), new Function<EntityPlayer, Double>()
             {
-                public Double apply(EntityPlayer p_apply_1_)
+                @Nullable
+                public Double apply(@Nullable EntityPlayer p_apply_1_)
                 {
                     ItemStack itemstack = p_apply_1_.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
 
-                    if (itemstack != null && itemstack.getItem() == Items.skull)
+                    if (itemstack != null && itemstack.getItem() == Items.SKULL)
                     {
                         int i = itemstack.getItemDamage();
                         boolean flag = EntityAINearestAttackableTarget.this.taskOwner instanceof EntitySkeleton && ((EntitySkeleton)EntityAINearestAttackableTarget.this.taskOwner).getSkeletonType() == 0 && i == 0;
@@ -106,9 +108,9 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
         }
     }
 
-    protected AxisAlignedBB func_188511_a(double p_188511_1_)
+    protected AxisAlignedBB getTargetableArea(double targetDistance)
     {
-        return this.taskOwner.getEntityBoundingBox().expand(p_188511_1_, 4.0D, p_188511_1_);
+        return this.taskOwner.getEntityBoundingBox().expand(targetDistance, 4.0D, targetDistance);
     }
 
     /**

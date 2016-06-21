@@ -20,10 +20,10 @@ public class EntityAIFollowOwner extends EntityAIBase
     World theWorld;
     private double followSpeed;
     private PathNavigate petPathfinder;
-    private int field_75343_h;
+    private int timeToRecalcPath;
     float maxDist;
     float minDist;
-    private float field_75344_i;
+    private float oldWaterCost;
 
     public EntityAIFollowOwner(EntityTameable thePetIn, double followSpeedIn, float minDistIn, float maxDistIn)
     {
@@ -84,8 +84,8 @@ public class EntityAIFollowOwner extends EntityAIBase
      */
     public void startExecuting()
     {
-        this.field_75343_h = 0;
-        this.field_75344_i = this.thePet.getPathPriority(PathNodeType.WATER);
+        this.timeToRecalcPath = 0;
+        this.oldWaterCost = this.thePet.getPathPriority(PathNodeType.WATER);
         this.thePet.setPathPriority(PathNodeType.WATER, 0.0F);
     }
 
@@ -96,14 +96,14 @@ public class EntityAIFollowOwner extends EntityAIBase
     {
         this.theOwner = null;
         this.petPathfinder.clearPathEntity();
-        this.thePet.setPathPriority(PathNodeType.WATER, this.field_75344_i);
+        this.thePet.setPathPriority(PathNodeType.WATER, this.oldWaterCost);
     }
 
-    private boolean func_181065_a(BlockPos p_181065_1_)
+    private boolean isEmptyBlock(BlockPos pos)
     {
-        IBlockState iblockstate = this.theWorld.getBlockState(p_181065_1_);
+        IBlockState iblockstate = this.theWorld.getBlockState(pos);
         Block block = iblockstate.getBlock();
-        return block == Blocks.air ? true : !iblockstate.isFullCube();
+        return block == Blocks.AIR ? true : !iblockstate.isFullCube();
     }
 
     /**
@@ -115,9 +115,9 @@ public class EntityAIFollowOwner extends EntityAIBase
 
         if (!this.thePet.isSitting())
         {
-            if (--this.field_75343_h <= 0)
+            if (--this.timeToRecalcPath <= 0)
             {
-                this.field_75343_h = 10;
+                this.timeToRecalcPath = 10;
 
                 if (!this.petPathfinder.tryMoveToEntityLiving(this.theOwner, this.followSpeed))
                 {
@@ -133,7 +133,7 @@ public class EntityAIFollowOwner extends EntityAIBase
                             {
                                 for (int i1 = 0; i1 <= 4; ++i1)
                                 {
-                                    if ((l < 1 || i1 < 1 || l > 3 || i1 > 3) && this.theWorld.getBlockState(new BlockPos(i + l, k - 1, j + i1)).isFullyOpaque() && this.func_181065_a(new BlockPos(i + l, k, j + i1)) && this.func_181065_a(new BlockPos(i + l, k + 1, j + i1)))
+                                    if ((l < 1 || i1 < 1 || l > 3 || i1 > 3) && this.theWorld.getBlockState(new BlockPos(i + l, k - 1, j + i1)).isFullyOpaque() && this.isEmptyBlock(new BlockPos(i + l, k, j + i1)) && this.isEmptyBlock(new BlockPos(i + l, k + 1, j + i1)))
                                     {
                                         this.thePet.setLocationAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + i1) + 0.5F), this.thePet.rotationYaw, this.thePet.rotationPitch);
                                         this.petPathfinder.clearPathEntity();

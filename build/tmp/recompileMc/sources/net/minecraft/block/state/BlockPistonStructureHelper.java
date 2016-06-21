@@ -43,7 +43,7 @@ public class BlockPistonStructureHelper
         this.toDestroy.clear();
         IBlockState iblockstate = this.world.getBlockState(this.blockToMove);
 
-        if (!BlockPistonBase.func_185646_a(iblockstate, this.world, this.blockToMove, this.moveDirection, false))
+        if (!BlockPistonBase.canPush(iblockstate, this.world, this.blockToMove, this.moveDirection, false))
         {
             if (iblockstate.getMobilityFlag() != EnumPushReaction.DESTROY)
             {
@@ -55,7 +55,7 @@ public class BlockPistonStructureHelper
                 return true;
             }
         }
-        else if (!this.func_177251_a(this.blockToMove))
+        else if (!this.addBlockLine(this.blockToMove))
         {
             return false;
         }
@@ -65,7 +65,7 @@ public class BlockPistonStructureHelper
             {
                 BlockPos blockpos = (BlockPos)this.toMove.get(i);
 
-                if (this.world.getBlockState(blockpos).getBlock() == Blocks.slime_block && !this.func_177250_b(blockpos))
+                if (this.world.getBlockState(blockpos).getBlock() == Blocks.SLIME_BLOCK && !this.addBranchingBlocks(blockpos))
                 {
                     return false;
                 }
@@ -75,7 +75,7 @@ public class BlockPistonStructureHelper
         }
     }
 
-    private boolean func_177251_a(BlockPos origin)
+    private boolean addBlockLine(BlockPos origin)
     {
         IBlockState iblockstate = this.world.getBlockState(origin);
         Block block = iblockstate.getBlock();
@@ -84,7 +84,7 @@ public class BlockPistonStructureHelper
         {
             return true;
         }
-        else if (!BlockPistonBase.func_185646_a(iblockstate, this.world, origin, this.moveDirection, false))
+        else if (!BlockPistonBase.canPush(iblockstate, this.world, origin, this.moveDirection, false))
         {
             return true;
         }
@@ -106,13 +106,13 @@ public class BlockPistonStructureHelper
             }
             else
             {
-                while (block == Blocks.slime_block)
+                while (block == Blocks.SLIME_BLOCK)
                 {
                     BlockPos blockpos = origin.offset(this.moveDirection.getOpposite(), i);
                     iblockstate = this.world.getBlockState(blockpos);
                     block = iblockstate.getBlock();
 
-                    if (iblockstate.getBlock().isAir(iblockstate, this.world, blockpos) || !BlockPistonBase.func_185646_a(iblockstate, this.world, blockpos, this.moveDirection, false) || blockpos.equals(this.pistonPos))
+                    if (iblockstate.getBlock().isAir(iblockstate, this.world, blockpos) || !BlockPistonBase.canPush(iblockstate, this.world, blockpos, this.moveDirection, false) || blockpos.equals(this.pistonPos))
                     {
                         break;
                     }
@@ -142,13 +142,13 @@ public class BlockPistonStructureHelper
 
                     if (k > -1)
                     {
-                        this.func_177255_a(i1, k);
+                        this.reorderListAtCollision(i1, k);
 
                         for (int l = 0; l <= k + i1; ++l)
                         {
                             BlockPos blockpos2 = (BlockPos)this.toMove.get(l);
 
-                            if (this.world.getBlockState(blockpos2).getBlock() == Blocks.slime_block && !this.func_177250_b(blockpos2))
+                            if (this.world.getBlockState(blockpos2).getBlock() == Blocks.SLIME_BLOCK && !this.addBranchingBlocks(blockpos2))
                             {
                                 return false;
                             }
@@ -164,7 +164,7 @@ public class BlockPistonStructureHelper
                         return true;
                     }
 
-                    if (!BlockPistonBase.func_185646_a(iblockstate, this.world, blockpos1, this.moveDirection, true) || blockpos1.equals(this.pistonPos))
+                    if (!BlockPistonBase.canPush(iblockstate, this.world, blockpos1, this.moveDirection, true) || blockpos1.equals(this.pistonPos))
                     {
                         return false;
                     }
@@ -188,7 +188,7 @@ public class BlockPistonStructureHelper
         }
     }
 
-    private void func_177255_a(int p_177255_1_, int p_177255_2_)
+    private void reorderListAtCollision(int p_177255_1_, int p_177255_2_)
     {
         List<BlockPos> list = Lists.<BlockPos>newArrayList();
         List<BlockPos> list1 = Lists.<BlockPos>newArrayList();
@@ -202,11 +202,11 @@ public class BlockPistonStructureHelper
         this.toMove.addAll(list2);
     }
 
-    private boolean func_177250_b(BlockPos p_177250_1_)
+    private boolean addBranchingBlocks(BlockPos p_177250_1_)
     {
         for (EnumFacing enumfacing : EnumFacing.values())
         {
-            if (enumfacing.getAxis() != this.moveDirection.getAxis() && !this.func_177251_a(p_177250_1_.offset(enumfacing)))
+            if (enumfacing.getAxis() != this.moveDirection.getAxis() && !this.addBlockLine(p_177250_1_.offset(enumfacing)))
             {
                 return false;
             }

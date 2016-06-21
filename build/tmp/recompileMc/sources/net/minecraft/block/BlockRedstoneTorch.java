@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -129,11 +130,11 @@ public class BlockRedstoneTorch extends BlockTorch
         {
             if (flag)
             {
-                worldIn.setBlockState(pos, Blocks.unlit_redstone_torch.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
+                worldIn.setBlockState(pos, Blocks.UNLIT_REDSTONE_TORCH.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
 
                 if (this.isBurnedOut(worldIn, pos, true))
                 {
-                    worldIn.playSound((EntityPlayer)null, pos, SoundEvents.block_redstone_torch_burnout, SoundCategory.BLOCKS, 0.5F, 2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F);
+                    worldIn.playSound((EntityPlayer)null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.8F);
 
                     for (int i = 0; i < 5; ++i)
                     {
@@ -149,14 +150,16 @@ public class BlockRedstoneTorch extends BlockTorch
         }
         else if (!flag && !this.isBurnedOut(worldIn, pos, false))
         {
-            worldIn.setBlockState(pos, Blocks.redstone_torch.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
+            worldIn.setBlockState(pos, Blocks.REDSTONE_TORCH.getDefaultState().withProperty(FACING, state.getValue(FACING)), 3);
         }
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!this.onNeighborChangeInternal(worldIn, pos, state))
         {
@@ -175,9 +178,10 @@ public class BlockRedstoneTorch extends BlockTorch
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Item.getItemFromBlock(Blocks.redstone_torch);
+        return Item.getItemFromBlock(Blocks.REDSTONE_TORCH);
     }
 
     /**
@@ -189,14 +193,14 @@ public class BlockRedstoneTorch extends BlockTorch
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState worldIn, World pos, BlockPos state, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
         if (this.isOn)
         {
-            double d0 = (double)state.getX() + 0.5D + (rand.nextDouble() - 0.5D) * 0.2D;
-            double d1 = (double)state.getY() + 0.7D + (rand.nextDouble() - 0.5D) * 0.2D;
-            double d2 = (double)state.getZ() + 0.5D + (rand.nextDouble() - 0.5D) * 0.2D;
-            EnumFacing enumfacing = (EnumFacing)worldIn.getValue(FACING);
+            double d0 = (double)pos.getX() + 0.5D + (rand.nextDouble() - 0.5D) * 0.2D;
+            double d1 = (double)pos.getY() + 0.7D + (rand.nextDouble() - 0.5D) * 0.2D;
+            double d2 = (double)pos.getZ() + 0.5D + (rand.nextDouble() - 0.5D) * 0.2D;
+            EnumFacing enumfacing = (EnumFacing)stateIn.getValue(FACING);
 
             if (enumfacing.getAxis().isHorizontal())
             {
@@ -207,18 +211,18 @@ public class BlockRedstoneTorch extends BlockTorch
                 d2 += 0.27D * (double)enumfacing1.getFrontOffsetZ();
             }
 
-            pos.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
+            worldIn.spawnParticle(EnumParticleTypes.REDSTONE, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
         }
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Blocks.redstone_torch);
+        return new ItemStack(Blocks.REDSTONE_TORCH);
     }
 
     public boolean isAssociatedBlock(Block other)
     {
-        return other == Blocks.unlit_redstone_torch || other == Blocks.redstone_torch;
+        return other == Blocks.UNLIT_REDSTONE_TORCH || other == Blocks.REDSTONE_TORCH;
     }
 
     static class Toggle

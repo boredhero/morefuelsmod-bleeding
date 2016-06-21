@@ -10,9 +10,9 @@ public class RenderSpectralArrow extends RenderArrow<EntitySpectralArrow>
 {
     public static final ResourceLocation RES_SPECTRAL_ARROW = new ResourceLocation("textures/entity/projectiles/spectral_arrow.png");
 
-    public RenderSpectralArrow(RenderManager p_i46549_1_)
+    public RenderSpectralArrow(RenderManager manager)
     {
-        super(p_i46549_1_);
+        super(manager);
     }
 
     /**

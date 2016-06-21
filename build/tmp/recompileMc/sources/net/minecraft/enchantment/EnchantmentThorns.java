@@ -56,33 +56,54 @@ public class EnchantmentThorns extends Enchantment
     public void onUserHurt(EntityLivingBase user, Entity attacker, int level)
     {
         Random random = user.getRNG();
-        ItemStack itemstack = EnchantmentHelper.getEnchantedItem(Enchantments.thorns, user);
+        ItemStack itemstack = EnchantmentHelper.getEnchantedItem(Enchantments.THORNS, user);
 
-        if (func_92094_a(level, random))
+        if (shouldHit(level, random))
         {
             if (attacker != null)
             {
-                attacker.attackEntityFrom(DamageSource.causeThornsDamage(user), (float)func_92095_b(level, random));
+                attacker.attackEntityFrom(DamageSource.causeThornsDamage(user), (float)getDamage(level, random));
             }
 
             if (itemstack != null)
             {
-                itemstack.damageItem(3, user);
+                damageArmor(itemstack, 3, user);
             }
         }
         else if (itemstack != null)
         {
-            itemstack.damageItem(1, user);
+            damageArmor(itemstack, 1, user);
         }
     }
 
-    public static boolean func_92094_a(int level, Random rnd)
+    public static boolean shouldHit(int level, Random rnd)
     {
         return level <= 0 ? false : rnd.nextFloat() < 0.15F * (float)level;
     }
 
-    public static int func_92095_b(int level, Random rnd)
+    public static int getDamage(int level, Random rnd)
     {
         return level > 10 ? level - 10 : 1 + rnd.nextInt(4);
+    }
+
+    private void damageArmor(ItemStack stack, int amount, EntityLivingBase entity)
+    {
+        int slot = -1;
+        int x = 0;
+        for (ItemStack i : entity.getArmorInventoryList())
+        {
+            if (i == stack){
+                slot = x;
+                break;
+            }
+            x++;
+        }
+        if (slot == -1 || !(stack.getItem() instanceof net.minecraftforge.common.ISpecialArmor))
+        {
+            stack.damageItem(1, entity);
+            return;
+        }
+        net.minecraftforge.common.ISpecialArmor armor = (net.minecraftforge.common.ISpecialArmor)stack.getItem();
+        armor.damageArmor(entity, stack, DamageSource.causeThornsDamage(entity), amount, slot);
     }
 }

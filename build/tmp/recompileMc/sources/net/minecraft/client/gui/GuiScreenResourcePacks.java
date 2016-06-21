@@ -55,7 +55,7 @@ public class GuiScreenResourcePacks extends GuiScreen
                 this.availableResourcePacks.add(new ResourcePackListEntryFound(this, resourcepackrepository$entry));
             }
 
-            ResourcePackRepository.Entry resourcepackrepository$entry2 = resourcepackrepository.func_188565_b();
+            ResourcePackRepository.Entry resourcepackrepository$entry2 = resourcepackrepository.getResourcePackEntry();
 
             if (resourcepackrepository$entry2 != null)
             {
@@ -130,7 +130,7 @@ public class GuiScreenResourcePacks extends GuiScreen
                     {
                         if (resourcepacklistentry instanceof ResourcePackListEntryFound)
                         {
-                            list.add(((ResourcePackListEntryFound)resourcepacklistentry).func_148318_i());
+                            list.add(((ResourcePackListEntryFound)resourcepacklistentry).getResourcePackEntry());
                         }
                     }
 
@@ -170,10 +170,6 @@ public class GuiScreenResourcePacks extends GuiScreen
 
     /**
      * Called when a mouse button is released.
-     *  
-     * @param mouseX Current mouse x coordinate
-     * @param mouseY Current mouse y coordinate
-     * @param state The mouse button that was released
      */
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
@@ -182,10 +178,6 @@ public class GuiScreenResourcePacks extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {

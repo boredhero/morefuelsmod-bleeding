@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -18,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class CommandHandler implements ICommandManager
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Map<String, ICommand> commandMap = Maps.<String, ICommand>newHashMap();
     private final Set<ICommand> commandSet = Sets.<ICommand>newHashSet();
 
@@ -46,7 +47,7 @@ public abstract class CommandHandler implements ICommandManager
         if (icommand == null)
         {
             TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.notFound", new Object[0]);
-            textcomponenttranslation.getChatStyle().setColor(TextFormatting.RED);
+            textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
             sender.addChatMessage(textcomponenttranslation);
         }
         else if (icommand.checkPermission(this.getServer(), sender))
@@ -69,7 +70,7 @@ public abstract class CommandHandler implements ICommandManager
 
                 for (Entity entity : list)
                 {
-                    astring[i] = entity.getUniqueID().toString();
+                    astring[i] = entity.getCachedUniqueIdString();
 
                     if (this.tryExecute(sender, astring, icommand, rawCommand))
                     {
@@ -92,7 +93,7 @@ public abstract class CommandHandler implements ICommandManager
         else
         {
             TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.permission", new Object[0]);
-            textcomponenttranslation1.getChatStyle().setColor(TextFormatting.RED);
+            textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
             sender.addChatMessage(textcomponenttranslation1);
         }
 
@@ -110,21 +111,21 @@ public abstract class CommandHandler implements ICommandManager
         catch (WrongUsageException wrongusageexception)
         {
             TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.usage", new Object[] {new TextComponentTranslation(wrongusageexception.getMessage(), wrongusageexception.getErrorObjects())});
-            textcomponenttranslation2.getChatStyle().setColor(TextFormatting.RED);
+            textcomponenttranslation2.getStyle().setColor(TextFormatting.RED);
             sender.addChatMessage(textcomponenttranslation2);
         }
         catch (CommandException commandexception)
         {
             TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation(commandexception.getMessage(), commandexception.getErrorObjects());
-            textcomponenttranslation1.getChatStyle().setColor(TextFormatting.RED);
+            textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
             sender.addChatMessage(textcomponenttranslation1);
         }
         catch (Throwable var9)
         {
             TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.exception", new Object[0]);
-            textcomponenttranslation.getChatStyle().setColor(TextFormatting.RED);
+            textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
             sender.addChatMessage(textcomponenttranslation);
-            logger.warn("Couldn\'t process command: \'" + input + "\'", var9);
+            LOGGER.warn("Couldn\'t process command: \'" + input + "\'", var9);
         }
 
         return false;
@@ -163,7 +164,7 @@ public abstract class CommandHandler implements ICommandManager
         return astring;
     }
 
-    public List<String> getTabCompletionOptions(ICommandSender sender, String input, BlockPos pos)
+    public List<String> getTabCompletionOptions(ICommandSender sender, String input, @Nullable BlockPos pos)
     {
         String[] astring = input.split(" ", -1);
         String s = astring[0];

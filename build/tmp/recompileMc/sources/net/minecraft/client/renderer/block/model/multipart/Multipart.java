@@ -21,9 +21,9 @@ public class Multipart
     private final List<Selector> selectors;
     private BlockStateContainer stateContainer;
 
-    public Multipart(List<Selector> p_i46564_1_)
+    public Multipart(List<Selector> selectorsIn)
     {
-        this.selectors = p_i46564_1_;
+        this.selectors = selectorsIn;
     }
 
     public List<Selector> getSelectors()
@@ -93,13 +93,13 @@ public class Multipart
                 return new Multipart(this.getSelectors(p_deserialize_3_, p_deserialize_1_.getAsJsonArray()));
             }
 
-            private List<Selector> getSelectors(JsonDeserializationContext p_188133_1_, JsonArray p_188133_2_)
+            private List<Selector> getSelectors(JsonDeserializationContext context, JsonArray elements)
             {
                 List<Selector> list = Lists.<Selector>newArrayList();
 
-                for (JsonElement jsonelement : p_188133_2_)
+                for (JsonElement jsonelement : elements)
                 {
-                    list.add((Selector)p_188133_1_.deserialize(jsonelement, Selector.class));
+                    list.add((Selector)context.deserialize(jsonelement, Selector.class));
                 }
 
                 return list;

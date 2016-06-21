@@ -20,9 +20,9 @@ public class ModelVillager extends ModelBase
     public ModelRenderer leftVillagerLeg;
     public ModelRenderer villagerNose;
 
-    public ModelVillager(float p_i1163_1_)
+    public ModelVillager(float scale)
     {
-        this(p_i1163_1_, 0.0F, 64, 64);
+        this(scale, 0.0F, 64, 64);
     }
 
     public ModelVillager(float scale, float p_i1164_2_, int width, int height)
@@ -55,9 +55,9 @@ public class ModelVillager extends ModelBase
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float p_78088_2_, float limbSwing, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
-        this.setRotationAngles(p_78088_2_, limbSwing, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.villagerHead.render(scale);
         this.villagerBody.render(scale);
         this.rightVillagerLeg.render(scale);

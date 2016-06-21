@@ -1,5 +1,6 @@
 package net.minecraft.server.management;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockCommandBlock;
@@ -37,14 +38,14 @@ public class PlayerInteractionManager
     /** True if the player is destroying a block */
     private boolean isDestroyingBlock;
     private int initialDamage;
-    private BlockPos field_180240_f = BlockPos.ORIGIN;
+    private BlockPos destroyPos = BlockPos.ORIGIN;
     private int curblockDamage;
     /**
      * Set to true when the "finished destroying block" packet is received but the block wasn't fully damaged yet. The
      * block will not be destroyed while this is false.
      */
     private boolean receivedFinishDiggingPacket;
-    private BlockPos field_180241_i = BlockPos.ORIGIN;
+    private BlockPos delayedDestroyPos = BlockPos.ORIGIN;
     private int initialBlockDamage;
     private int durabilityRemainingOnBlock = -1;
 
@@ -100,51 +101,51 @@ public class PlayerInteractionManager
         if (this.receivedFinishDiggingPacket)
         {
             int i = this.curblockDamage - this.initialBlockDamage;
-            IBlockState iblockstate = this.theWorld.getBlockState(this.field_180241_i);
+            IBlockState iblockstate = this.theWorld.getBlockState(this.delayedDestroyPos);
             Block block = iblockstate.getBlock();
 
-            if (block.isAir(iblockstate, theWorld, field_180241_i))
+            if (block.isAir(iblockstate, theWorld, delayedDestroyPos))
             {
                 this.receivedFinishDiggingPacket = false;
             }
             else
             {
-                float f = iblockstate.getPlayerRelativeBlockHardness(this.thisPlayerMP, this.thisPlayerMP.worldObj, this.field_180241_i) * (float)(i + 1);
+                float f = iblockstate.getPlayerRelativeBlockHardness(this.thisPlayerMP, this.thisPlayerMP.worldObj, this.delayedDestroyPos) * (float)(i + 1);
                 int j = (int)(f * 10.0F);
 
                 if (j != this.durabilityRemainingOnBlock)
                 {
-                    this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), this.field_180241_i, j);
+                    this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), this.delayedDestroyPos, j);
                     this.durabilityRemainingOnBlock = j;
                 }
 
                 if (f >= 1.0F)
                 {
                     this.receivedFinishDiggingPacket = false;
-                    this.tryHarvestBlock(this.field_180241_i);
+                    this.tryHarvestBlock(this.delayedDestroyPos);
                 }
             }
         }
         else if (this.isDestroyingBlock)
         {
-            IBlockState iblockstate1 = this.theWorld.getBlockState(this.field_180240_f);
+            IBlockState iblockstate1 = this.theWorld.getBlockState(this.destroyPos);
             Block block1 = iblockstate1.getBlock();
 
-            if (block1.isAir(iblockstate1, theWorld, field_180240_f))
+            if (block1.isAir(iblockstate1, theWorld, destroyPos))
             {
-                this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), this.field_180240_f, -1);
+                this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), this.destroyPos, -1);
                 this.durabilityRemainingOnBlock = -1;
                 this.isDestroyingBlock = false;
             }
             else
             {
                 int k = this.curblockDamage - this.initialDamage;
-                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.thisPlayerMP, this.thisPlayerMP.worldObj, this.field_180240_f) * (float)(k + 1); // Forge: Fix network break progress using wrong position
+                float f1 = iblockstate1.getPlayerRelativeBlockHardness(this.thisPlayerMP, this.thisPlayerMP.worldObj, this.destroyPos) * (float)(k + 1); // Forge: Fix network break progress using wrong position
                 int l = (int)(f1 * 10.0F);
 
                 if (l != this.durabilityRemainingOnBlock)
                 {
-                    this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), this.field_180240_f, l);
+                    this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), this.destroyPos, l);
                     this.durabilityRemainingOnBlock = l;
                 }
             }
@@ -157,11 +158,12 @@ public class PlayerInteractionManager
      */
     public void onBlockClicked(BlockPos pos, EnumFacing side)
     {
-        net.minecraftforge.event.entity.player.PlayerInteractEvent event = net.minecraftforge.event.ForgeEventFactory.onPlayerInteract(thisPlayerMP,
-                net.minecraftforge.event.entity.player.PlayerInteractEvent.Action.LEFT_CLICK_BLOCK, theWorld, pos, side, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(thisPlayerMP, getBlockReachDistance() + 1));
+        net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock event = net.minecraftforge.common.ForgeHooks.onLeftClickBlock(thisPlayerMP, pos, side, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(thisPlayerMP, getBlockReachDistance() + 1));
         if (event.isCanceled())
         {
-            thisPlayerMP.playerNetServerHandler.sendPacket(new SPacketBlockChange(theWorld, pos));
+            // Restore block and te data
+            thisPlayerMP.connection.sendPacket(new SPacketBlockChange(theWorld, pos));
+            theWorld.notifyBlockUpdate(pos, theWorld.getBlockState(pos), theWorld.getBlockState(pos), 3);
             return;
         }
 
@@ -212,7 +214,9 @@ public class PlayerInteractionManager
                 }
                 else
                 {
-                    thisPlayerMP.playerNetServerHandler.sendPacket(new SPacketBlockChange(theWorld, pos));
+                    // Restore block and te data
+                    thisPlayerMP.connection.sendPacket(new SPacketBlockChange(theWorld, pos));
+                    theWorld.notifyBlockUpdate(pos, theWorld.getBlockState(pos), theWorld.getBlockState(pos), 3);
                 }
                 f = iblockstate.getPlayerRelativeBlockHardness(this.thisPlayerMP, this.thisPlayerMP.worldObj, pos);
             }
@@ -220,7 +224,9 @@ public class PlayerInteractionManager
             {
                 if (f >= 1.0F)
                 {
-                    thisPlayerMP.playerNetServerHandler.sendPacket(new SPacketBlockChange(theWorld, pos));
+                    // Restore block and te data
+                    thisPlayerMP.connection.sendPacket(new SPacketBlockChange(theWorld, pos));
+                    theWorld.notifyBlockUpdate(pos, theWorld.getBlockState(pos), theWorld.getBlockState(pos), 3);
                 }
                 return;
             }
@@ -232,7 +238,7 @@ public class PlayerInteractionManager
             else
             {
                 this.isDestroyingBlock = true;
-                this.field_180240_f = pos;
+                this.destroyPos = pos;
                 int i = (int)(f * 10.0F);
                 this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), pos, i);
                 this.durabilityRemainingOnBlock = i;
@@ -242,7 +248,7 @@ public class PlayerInteractionManager
 
     public void blockRemoving(BlockPos pos)
     {
-        if (pos.equals(this.field_180240_f))
+        if (pos.equals(this.destroyPos))
         {
             int i = this.curblockDamage - this.initialDamage;
             IBlockState iblockstate = this.theWorld.getBlockState(pos);
@@ -261,7 +267,7 @@ public class PlayerInteractionManager
                 {
                     this.isDestroyingBlock = false;
                     this.receivedFinishDiggingPacket = true;
-                    this.field_180241_i = pos;
+                    this.delayedDestroyPos = pos;
                     this.initialBlockDamage = this.initialDamage;
                 }
             }
@@ -274,7 +280,7 @@ public class PlayerInteractionManager
     public void cancelDestroyingBlock()
     {
         this.isDestroyingBlock = false;
-        this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), this.field_180240_f, -1);
+        this.theWorld.sendBlockBreakProgress(this.thisPlayerMP.getEntityId(), this.destroyPos, -1);
     }
 
     /**
@@ -288,7 +294,6 @@ public class PlayerInteractionManager
     private boolean removeBlock(BlockPos pos, boolean canHarvest)
     {
         IBlockState iblockstate = this.theWorld.getBlockState(pos);
-        iblockstate.getBlock().onBlockHarvested(this.theWorld, pos, iblockstate, this.thisPlayerMP);
         boolean flag = iblockstate.getBlock().removedByPlayer(iblockstate, theWorld, pos, thisPlayerMP, canHarvest);
 
         if (flag)
@@ -324,13 +329,13 @@ public class PlayerInteractionManager
                 ItemStack stack = thisPlayerMP.getHeldItemMainhand();
                 if (stack != null && stack.getItem().onBlockStartBreak(stack, pos, thisPlayerMP)) return false;
 
-                this.theWorld.playAuxSFXAtEntity(this.thisPlayerMP, 2001, pos, Block.getStateId(iblockstate));
+                this.theWorld.playEvent(this.thisPlayerMP, 2001, pos, Block.getStateId(iblockstate));
                 boolean flag1 = false;
 
                 if (this.isCreative())
                 {
                     flag1 = this.removeBlock(pos);
-                    this.thisPlayerMP.playerNetServerHandler.sendPacket(new SPacketBlockChange(this.theWorld, pos));
+                    this.thisPlayerMP.connection.sendPacket(new SPacketBlockChange(this.theWorld, pos));
                 }
                 else
                 {
@@ -342,8 +347,9 @@ public class PlayerInteractionManager
                     {
                         itemstack1.onBlockDestroyed(this.theWorld, iblockstate, pos, this.thisPlayerMP);
 
-                        if (itemstack1.stackSize == 0)
+                        if (itemstack1.stackSize <= 0)
                         {
+                            net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.thisPlayerMP, itemstack1, EnumHand.MAIN_HAND);
                             this.thisPlayerMP.setHeldItem(EnumHand.MAIN_HAND, (ItemStack)null);
                         }
                     }
@@ -377,6 +383,7 @@ public class PlayerInteractionManager
         }
         else
         {
+            if (net.minecraftforge.common.ForgeHooks.onItemRightClick(player, hand, stack)) return net.minecraft.util.EnumActionResult.PASS;
             int i = stack.stackSize;
             int j = stack.getMetadata();
             ActionResult<ItemStack> actionresult = stack.useItemRightClick(worldIn, player, hand);
@@ -416,7 +423,7 @@ public class PlayerInteractionManager
         }
     }
 
-    public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float p_187251_7_, float p_187251_8_, float p_187251_9_)
+    public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, @Nullable ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (this.gameType == WorldSettings.GameType.SPECTATOR)
         {
@@ -448,13 +455,26 @@ public class PlayerInteractionManager
         }
         else
         {
-            if (!player.isSneaking() || player.getHeldItemMainhand() == null && player.getHeldItemOffhand() == null)
+            net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.minecraftforge.common.ForgeHooks
+                    .onRightClickBlock(player, hand, stack, pos, facing, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(thisPlayerMP, getBlockReachDistance() + 1));
+            if (event.isCanceled()) return EnumActionResult.PASS;
+
+            net.minecraft.item.Item item = stack == null ? null : stack.getItem();
+            EnumActionResult ret = item == null ? EnumActionResult.PASS : item.onItemUseFirst(stack, player, worldIn, pos, facing, hitX, hitY, hitZ, hand);
+            if (ret != EnumActionResult.PASS) return ret;
+
+            boolean bypass = true;
+            for (ItemStack s : new ItemStack[]{player.getHeldItemMainhand(), player.getHeldItemOffhand()}) //TODO: Expand to more hands? player.inv.getHands()?
+                bypass = bypass && (s == null || s.getItem().doesSneakBypassUse(s, worldIn, pos, player));
+            EnumActionResult result = EnumActionResult.PASS;
+
+            if (!player.isSneaking() || bypass || event.getUseBlock() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
             {
                 IBlockState iblockstate = worldIn.getBlockState(pos);
-
-                if (iblockstate.getBlock().onBlockActivated(worldIn, pos, iblockstate, player, hand, stack, facing, p_187251_7_, p_187251_8_, p_187251_9_))
+                if(event.getUseBlock() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
+                if (iblockstate.getBlock().onBlockActivated(worldIn, pos, iblockstate, player, hand, stack, facing, hitX, hitY, hitZ))
                 {
-                    return EnumActionResult.SUCCESS;
+                    result = EnumActionResult.SUCCESS;
                 }
             }
 
@@ -474,14 +494,21 @@ public class PlayerInteractionManager
             {
                 int j = stack.getMetadata();
                 int i = stack.stackSize;
-                EnumActionResult enumactionresult = stack.onItemUse(player, worldIn, pos, hand, facing, p_187251_7_, p_187251_8_, p_187251_9_);
+                if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
+                        || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW) {
+                EnumActionResult enumactionresult = stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
                 stack.setItemDamage(j);
                 stack.stackSize = i;
                 return enumactionresult;
+                } else return result;
+
             }
             else
             {
-                return stack.onItemUse(player, worldIn, pos, hand, facing, p_187251_7_, p_187251_8_, p_187251_9_);
+                if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
+                        || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
+                return stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+                else return result;
             }
         }
     }

@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderLeashKnot extends Render<EntityLeashKnot>
 {
-    private static final ResourceLocation leashKnotTextures = new ResourceLocation("textures/entity/lead_knot.png");
+    private static final ResourceLocation LEASH_KNOT_TEXTURES = new ResourceLocation("textures/entity/lead_knot.png");
     private ModelLeashKnot leashKnotModel = new ModelLeashKnot();
 
     public RenderLeashKnot(RenderManager renderManagerIn)
@@ -55,6 +55,6 @@ public class RenderLeashKnot extends Render<EntityLeashKnot>
      */
     protected ResourceLocation getEntityTexture(EntityLeashKnot entity)
     {
-        return leashKnotTextures;
+        return LEASH_KNOT_TEXTURES;
     }
 }

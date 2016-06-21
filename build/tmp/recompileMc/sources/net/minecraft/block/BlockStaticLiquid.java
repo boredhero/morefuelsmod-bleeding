@@ -15,16 +15,18 @@ public class BlockStaticLiquid extends BlockLiquid
         super(materialIn);
         this.setTickRandomly(false);
 
-        if (materialIn == Material.lava)
+        if (materialIn == Material.LAVA)
         {
             this.setTickRandomly(true);
         }
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!this.checkForMixing(worldIn, pos, state))
         {
@@ -41,7 +43,7 @@ public class BlockStaticLiquid extends BlockLiquid
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (this.blockMaterial == Material.lava)
+        if (this.blockMaterial == Material.LAVA)
         {
             if (worldIn.getGameRules().getBoolean("doFireTick"))
             {
@@ -62,11 +64,11 @@ public class BlockStaticLiquid extends BlockLiquid
 
                         Block block = worldIn.getBlockState(blockpos).getBlock();
 
-                        if (block.blockMaterial == Material.air)
+                        if (block.blockMaterial == Material.AIR)
                         {
                             if (this.isSurroundingBlockFlammable(worldIn, blockpos))
                             {
-                                worldIn.setBlockState(blockpos, Blocks.fire.getDefaultState());
+                                worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
                                 return;
                             }
                         }
@@ -89,7 +91,7 @@ public class BlockStaticLiquid extends BlockLiquid
 
                         if (worldIn.isAirBlock(blockpos1.up()) && this.getCanBlockBurn(worldIn, blockpos1))
                         {
-                            worldIn.setBlockState(blockpos1.up(), Blocks.fire.getDefaultState());
+                            worldIn.setBlockState(blockpos1.up(), Blocks.FIRE.getDefaultState());
                         }
                     }
                 }

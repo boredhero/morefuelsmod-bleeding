@@ -925,12 +925,6 @@ public class GuiConfigEntries extends GuiListExtended
         /**
          * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
          * clicked and the list should not be dragged.
-         *  
-         * @param mouseX Scaled X coordinate of the mouse on the entire screen
-         * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-         * @param mouseEvent The button on the mouse that was pressed
-         * @param relativeX Relative X coordinate of the mouse within this entry.
-         * @param relativeY Relative Y coordinate of the mouse within this entry.
          */
         @Override
         public boolean mousePressed(int index, int x, int y, int mouseEvent, int relativeX, int relativeY)
@@ -1362,12 +1356,6 @@ public class GuiConfigEntries extends GuiListExtended
         /**
          * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
          * clicked and the list should not be dragged.
-         *  
-         * @param mouseX Scaled X coordinate of the mouse on the entire screen
-         * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-         * @param mouseEvent The button on the mouse that was pressed
-         * @param relativeX Relative X coordinate of the mouse within this entry.
-         * @param relativeY Relative Y coordinate of the mouse within this entry.
          */
         @Override
         public boolean mousePressed(int index, int x, int y, int mouseEvent, int relativeX, int relativeY)
@@ -1603,12 +1591,6 @@ public class GuiConfigEntries extends GuiListExtended
         /**
          * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
          * clicked and the list should not be dragged.
-         *  
-         * @param mouseX Scaled X coordinate of the mouse on the entire screen
-         * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-         * @param mouseEvent The button on the mouse that was pressed
-         * @param relativeX Relative X coordinate of the mouse within this entry.
-         * @param relativeY Relative Y coordinate of the mouse within this entry.
          */
         @Override
         public boolean mousePressed(int index, int x, int y, int mouseEvent, int relativeX, int relativeY)
@@ -1739,18 +1721,18 @@ public class GuiConfigEntries extends GuiListExtended
         public boolean enabled();
 
         /**
-         * Handles user keystrokes for any GuiTextField objects in this entry. Call {@code GuiTextField.keyTyped()} for any GuiTextField
+         * Handles user keystrokes for any GuiTextField objects in this entry. Call {@link GuiTextField#textboxKeyTyped(char, int)} for any GuiTextField
          * objects that should receive the input provided.
          */
         public void keyTyped(char eventChar, int eventKey);
 
         /**
-         * Call {@code GuiTextField.updateCursorCounter()} for any GuiTextField objects in this entry.
+         * Call {@link GuiTextField#updateCursorCounter()} for any GuiTextField objects in this entry.
          */
         public void updateCursorCounter();
 
         /**
-         * Call {@code GuiTextField.mouseClicked()} for and GuiTextField objects in this entry.
+         * Call {@link GuiTextField#mouseClicked(int, int, int)} for and GuiTextField objects in this entry.
          */
         public void mouseClicked(int x, int y, int mouseEvent);
 

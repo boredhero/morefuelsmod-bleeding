@@ -23,15 +23,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockEndRod extends BlockDirectional
 {
-    protected static final AxisAlignedBB field_185630_a = new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.0D, 0.625D);
-    protected static final AxisAlignedBB field_185631_b = new AxisAlignedBB(0.375D, 0.375D, 0.0D, 0.625D, 0.625D, 1.0D);
-    protected static final AxisAlignedBB field_185632_c = new AxisAlignedBB(0.0D, 0.375D, 0.375D, 1.0D, 0.625D, 0.625D);
+    protected static final AxisAlignedBB END_ROD_VERTICAL_AABB = new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 1.0D, 0.625D);
+    protected static final AxisAlignedBB END_ROD_NS_AABB = new AxisAlignedBB(0.375D, 0.375D, 0.0D, 0.625D, 0.625D, 1.0D);
+    protected static final AxisAlignedBB END_ROD_EW_AABB = new AxisAlignedBB(0.0D, 0.375D, 0.375D, 1.0D, 0.625D, 0.625D);
 
     protected BlockEndRod()
     {
-        super(Material.circuits);
+        super(Material.CIRCUITS);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.UP));
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     /**
@@ -58,11 +58,11 @@ public class BlockEndRod extends BlockDirectional
         {
             case X:
             default:
-                return field_185632_c;
+                return END_ROD_EW_AABB;
             case Z:
-                return field_185631_b;
+                return END_ROD_NS_AABB;
             case Y:
-                return field_185630_a;
+                return END_ROD_VERTICAL_AABB;
         }
     }
 
@@ -92,7 +92,7 @@ public class BlockEndRod extends BlockDirectional
     {
         IBlockState iblockstate = worldIn.getBlockState(pos.offset(facing.getOpposite()));
 
-        if (iblockstate.getBlock() == Blocks.end_rod)
+        if (iblockstate.getBlock() == Blocks.END_ROD)
         {
             EnumFacing enumfacing = (EnumFacing)iblockstate.getValue(FACING);
 
@@ -110,24 +110,26 @@ public class BlockEndRod extends BlockDirectional
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState worldIn, World pos, BlockPos state, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-        EnumFacing enumfacing = (EnumFacing)worldIn.getValue(FACING);
-        double d0 = (double)state.getX() + 0.55D - (double)(rand.nextFloat() * 0.1F);
-        double d1 = (double)state.getY() + 0.55D - (double)(rand.nextFloat() * 0.1F);
-        double d2 = (double)state.getZ() + 0.55D - (double)(rand.nextFloat() * 0.1F);
+        EnumFacing enumfacing = (EnumFacing)stateIn.getValue(FACING);
+        double d0 = (double)pos.getX() + 0.55D - (double)(rand.nextFloat() * 0.1F);
+        double d1 = (double)pos.getY() + 0.55D - (double)(rand.nextFloat() * 0.1F);
+        double d2 = (double)pos.getZ() + 0.55D - (double)(rand.nextFloat() * 0.1F);
         double d3 = (double)(0.4F - (rand.nextFloat() + rand.nextFloat()) * 0.4F);
 
         if (rand.nextInt(5) == 0)
         {
-            pos.spawnParticle(EnumParticleTypes.END_ROD, d0 + (double)enumfacing.getFrontOffsetX() * d3, d1 + (double)enumfacing.getFrontOffsetY() * d3, d2 + (double)enumfacing.getFrontOffsetZ() * d3, rand.nextGaussian() * 0.005D, rand.nextGaussian() * 0.005D, rand.nextGaussian() * 0.005D, new int[0]);
+            worldIn.spawnParticle(EnumParticleTypes.END_ROD, d0 + (double)enumfacing.getFrontOffsetX() * d3, d1 + (double)enumfacing.getFrontOffsetY() * d3, d2 + (double)enumfacing.getFrontOffsetZ() * d3, rand.nextGaussian() * 0.005D, rand.nextGaussian() * 0.005D, rand.nextGaussian() * 0.005D, new int[0]);
         }
     }
 

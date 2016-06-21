@@ -54,8 +54,6 @@ public class MusicTicker implements ITickable
 
     /**
      * Plays a music track for the maximum allowable period of time
-     *  
-     * @param requestedMusicType The type of music being requested
      */
     public void playMusic(MusicTicker.MusicType requestedMusicType)
     {
@@ -80,13 +78,13 @@ public class MusicTicker implements ITickable
     @SideOnly(Side.CLIENT)
     public static enum MusicType
     {
-        MENU(SoundEvents.music_menu, 20, 600),
-        GAME(SoundEvents.music_game, 12000, 24000),
-        CREATIVE(SoundEvents.music_creative, 1200, 3600),
-        CREDITS(SoundEvents.music_credits, Integer.MAX_VALUE, Integer.MAX_VALUE),
-        NETHER(SoundEvents.music_nether, 1200, 3600),
-        END_BOSS(SoundEvents.music_dragon, 0, 0),
-        END(SoundEvents.music_end, 6000, 24000);
+        MENU(SoundEvents.MUSIC_MENU, 20, 600),
+        GAME(SoundEvents.MUSIC_GAME, 12000, 24000),
+        CREATIVE(SoundEvents.MUSIC_CREATIVE, 1200, 3600),
+        CREDITS(SoundEvents.MUSIC_CREDITS, Integer.MAX_VALUE, Integer.MAX_VALUE),
+        NETHER(SoundEvents.MUSIC_NETHER, 1200, 3600),
+        END_BOSS(SoundEvents.MUSIC_DRAGON, 0, 0),
+        END(SoundEvents.MUSIC_END, 6000, 24000);
 
         private final SoundEvent musicLocation;
         private final int minDelay;

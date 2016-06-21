@@ -19,9 +19,9 @@ public class WorldGenCactus extends WorldGenerator
 
                 for (int k = 0; k < j; ++k)
                 {
-                    if (Blocks.cactus.canBlockStay(worldIn, blockpos))
+                    if (Blocks.CACTUS.canBlockStay(worldIn, blockpos))
                     {
-                        worldIn.setBlockState(blockpos.up(k), Blocks.cactus.getDefaultState(), 2);
+                        worldIn.setBlockState(blockpos.up(k), Blocks.CACTUS.getDefaultState(), 2);
                     }
                 }
             }

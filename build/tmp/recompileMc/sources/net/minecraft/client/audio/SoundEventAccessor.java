@@ -3,6 +3,7 @@ package net.minecraft.client.audio;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -14,13 +15,13 @@ public class SoundEventAccessor implements ISoundEventAccessor<Sound>
 {
     private final List<ISoundEventAccessor<Sound>> accessorList = Lists.<ISoundEventAccessor<Sound>>newArrayList();
     private final Random rnd = new Random();
-    private final ResourceLocation field_188717_c;
-    private final ITextComponent field_188718_d;
+    private final ResourceLocation location;
+    private final ITextComponent subtitle;
 
-    public SoundEventAccessor(ResourceLocation p_i46521_1_, String p_i46521_2_)
+    public SoundEventAccessor(ResourceLocation locationIn, @Nullable String subtitleIn)
     {
-        this.field_188717_c = p_i46521_1_;
-        this.field_188718_d = p_i46521_2_ == null ? null : new TextComponentTranslation(p_i46521_2_, new Object[0]);
+        this.location = locationIn;
+        this.subtitle = subtitleIn == null ? null : new TextComponentTranslation(subtitleIn, new Object[0]);
     }
 
     public int getWeight()
@@ -53,26 +54,27 @@ public class SoundEventAccessor implements ISoundEventAccessor<Sound>
                 }
             }
 
-            return SoundHandler.missing_sound;
+            return SoundHandler.MISSING_SOUND;
         }
         else
         {
-            return SoundHandler.missing_sound;
+            return SoundHandler.MISSING_SOUND;
         }
     }
 
-    public void func_188715_a(ISoundEventAccessor<Sound> p_188715_1_)
+    public void addSound(ISoundEventAccessor<Sound> p_188715_1_)
     {
         this.accessorList.add(p_188715_1_);
     }
 
-    public ResourceLocation func_188714_b()
+    public ResourceLocation getLocation()
     {
-        return this.field_188717_c;
+        return this.location;
     }
 
-    public ITextComponent func_188712_c()
+    @Nullable
+    public ITextComponent getSubtitle()
     {
-        return this.field_188718_d;
+        return this.subtitle;
     }
 }

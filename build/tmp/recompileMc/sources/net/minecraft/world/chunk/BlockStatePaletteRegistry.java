@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockStatePaletteRegistry implements IBlockStatePalette
 {
-    public int func_186041_a(IBlockState state)
+    public int idFor(IBlockState state)
     {
         int i = Block.BLOCK_STATE_IDS.get(state);
         return i == -1 ? 0 : i;
@@ -21,7 +21,7 @@ public class BlockStatePaletteRegistry implements IBlockStatePalette
     public IBlockState getBlockState(int indexKey)
     {
         IBlockState iblockstate = (IBlockState)Block.BLOCK_STATE_IDS.getByValue(indexKey);
-        return iblockstate == null ? Blocks.air.getDefaultState() : iblockstate;
+        return iblockstate == null ? Blocks.AIR.getDefaultState() : iblockstate;
     }
 
     @SideOnly(Side.CLIENT)
@@ -35,7 +35,7 @@ public class BlockStatePaletteRegistry implements IBlockStatePalette
         buf.writeVarIntToBuffer(0);
     }
 
-    public int func_186040_a()
+    public int getSerializedState()
     {
         return PacketBuffer.getVarIntSize(0);
     }

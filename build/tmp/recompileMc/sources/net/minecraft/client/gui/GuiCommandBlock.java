@@ -2,6 +2,7 @@ package net.minecraft.client.gui;
 
 import io.netty.buffer.Unpooled;
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
@@ -25,15 +26,15 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
     /** "Done" button for the GUI. */
     private GuiButton doneBtn;
     private GuiButton cancelBtn;
-    private GuiButton field_175390_s;
-    private GuiButton field_184079_s;
-    private GuiButton field_184080_t;
-    private GuiButton field_184081_u;
-    private boolean field_175389_t;
+    private GuiButton outputBtn;
+    private GuiButton modeBtn;
+    private GuiButton conditionalBtn;
+    private GuiButton autoExecBtn;
+    private boolean trackOutput;
     private TileEntityCommandBlock.Mode commandBlockMode = TileEntityCommandBlock.Mode.REDSTONE;
     private TabCompleter tabCompleter;
-    private boolean field_184084_y;
-    private boolean field_184085_z;
+    private boolean conditional;
+    private boolean automatic;
 
     public GuiCommandBlock(TileEntityCommandBlock commandBlockIn)
     {
@@ -59,10 +60,10 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
         this.buttonList.clear();
         this.buttonList.add(this.doneBtn = new GuiButton(0, this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.done", new Object[0])));
         this.buttonList.add(this.cancelBtn = new GuiButton(1, this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.cancel", new Object[0])));
-        this.buttonList.add(this.field_175390_s = new GuiButton(4, this.width / 2 + 150 - 20, 135, 20, 20, "O"));
-        this.buttonList.add(this.field_184079_s = new GuiButton(5, this.width / 2 - 50 - 100 - 4, 165, 100, 20, I18n.format("advMode.mode.sequence", new Object[0])));
-        this.buttonList.add(this.field_184080_t = new GuiButton(6, this.width / 2 - 50, 165, 100, 20, I18n.format("advMode.mode.unconditional", new Object[0])));
-        this.buttonList.add(this.field_184081_u = new GuiButton(7, this.width / 2 + 50 + 4, 165, 100, 20, I18n.format("advMode.mode.redstoneTriggered", new Object[0])));
+        this.buttonList.add(this.outputBtn = new GuiButton(4, this.width / 2 + 150 - 20, 135, 20, 20, "O"));
+        this.buttonList.add(this.modeBtn = new GuiButton(5, this.width / 2 - 50 - 100 - 4, 165, 100, 20, I18n.format("advMode.mode.sequence", new Object[0])));
+        this.buttonList.add(this.conditionalBtn = new GuiButton(6, this.width / 2 - 50, 165, 100, 20, I18n.format("advMode.mode.unconditional", new Object[0])));
+        this.buttonList.add(this.autoExecBtn = new GuiButton(7, this.width / 2 + 50 + 4, 165, 100, 20, I18n.format("advMode.mode.redstoneTriggered", new Object[0])));
         this.commandTextField = new GuiTextField(2, this.fontRendererObj, this.width / 2 - 150, 50, 300, 20);
         this.commandTextField.setMaxStringLength(32500);
         this.commandTextField.setFocused(true);
@@ -71,12 +72,13 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
         this.previousOutputTextField.setEnabled(false);
         this.previousOutputTextField.setText("-");
         this.doneBtn.enabled = false;
-        this.field_175390_s.enabled = false;
-        this.field_184079_s.enabled = false;
-        this.field_184080_t.enabled = false;
-        this.field_184081_u.enabled = false;
+        this.outputBtn.enabled = false;
+        this.modeBtn.enabled = false;
+        this.conditionalBtn.enabled = false;
+        this.autoExecBtn.enabled = false;
         this.tabCompleter = new TabCompleter(this.commandTextField, true)
         {
+            @Nullable
             public BlockPos getTargetBlockPos()
             {
                 return commandblockbaselogic.getPosition();
@@ -84,23 +86,23 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
         };
     }
 
-    public void func_184075_a()
+    public void updateGui()
     {
         CommandBlockBaseLogic commandblockbaselogic = this.commandBlock.getCommandBlockLogic();
         this.commandTextField.setText(commandblockbaselogic.getCommand());
-        this.field_175389_t = commandblockbaselogic.shouldTrackOutput();
-        this.commandBlockMode = this.commandBlock.func_184251_i();
-        this.field_184084_y = this.commandBlock.func_184258_j();
-        this.field_184085_z = this.commandBlock.isAuto();
-        this.func_175388_a();
-        this.func_184073_g();
-        this.func_184077_i();
-        this.func_184076_j();
+        this.trackOutput = commandblockbaselogic.shouldTrackOutput();
+        this.commandBlockMode = this.commandBlock.getMode();
+        this.conditional = this.commandBlock.isConditional();
+        this.automatic = this.commandBlock.isAuto();
+        this.updateCmdOutput();
+        this.updateMode();
+        this.updateConditional();
+        this.updateAutoExec();
         this.doneBtn.enabled = true;
-        this.field_175390_s.enabled = true;
-        this.field_184079_s.enabled = true;
-        this.field_184080_t.enabled = true;
-        this.field_184081_u.enabled = true;
+        this.outputBtn.enabled = true;
+        this.modeBtn.enabled = true;
+        this.conditionalBtn.enabled = true;
+        this.autoExecBtn.enabled = true;
     }
 
     /**
@@ -122,19 +124,19 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
 
             if (button.id == 1)
             {
-                commandblockbaselogic.setTrackOutput(this.field_175389_t);
+                commandblockbaselogic.setTrackOutput(this.trackOutput);
                 this.mc.displayGuiScreen((GuiScreen)null);
             }
             else if (button.id == 0)
             {
                 PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
-                commandblockbaselogic.func_145757_a(packetbuffer);
+                commandblockbaselogic.fillInInfo(packetbuffer);
                 packetbuffer.writeString(this.commandTextField.getText());
                 packetbuffer.writeBoolean(commandblockbaselogic.shouldTrackOutput());
                 packetbuffer.writeString(this.commandBlockMode.name());
-                packetbuffer.writeBoolean(this.field_184084_y);
-                packetbuffer.writeBoolean(this.field_184085_z);
-                this.mc.getNetHandler().addToSendQueue(new CPacketCustomPayload("MC|AutoCmd", packetbuffer));
+                packetbuffer.writeBoolean(this.conditional);
+                packetbuffer.writeBoolean(this.automatic);
+                this.mc.getConnection().sendPacket(new CPacketCustomPayload("MC|AutoCmd", packetbuffer));
 
                 if (!commandblockbaselogic.shouldTrackOutput())
                 {
@@ -146,22 +148,22 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
             else if (button.id == 4)
             {
                 commandblockbaselogic.setTrackOutput(!commandblockbaselogic.shouldTrackOutput());
-                this.func_175388_a();
+                this.updateCmdOutput();
             }
             else if (button.id == 5)
             {
-                this.func_184074_h();
-                this.func_184073_g();
+                this.nextMode();
+                this.updateMode();
             }
             else if (button.id == 6)
             {
-                this.field_184084_y = !this.field_184084_y;
-                this.func_184077_i();
+                this.conditional = !this.conditional;
+                this.updateConditional();
             }
             else if (button.id == 7)
             {
-                this.field_184085_z = !this.field_184085_z;
-                this.func_184076_j();
+                this.automatic = !this.automatic;
+                this.updateAutoExec();
             }
         }
     }
@@ -211,10 +213,6 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -240,13 +238,13 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    private void func_175388_a()
+    private void updateCmdOutput()
     {
         CommandBlockBaseLogic commandblockbaselogic = this.commandBlock.getCommandBlockLogic();
 
         if (commandblockbaselogic.shouldTrackOutput())
         {
-            this.field_175390_s.displayString = "O";
+            this.outputBtn.displayString = "O";
 
             if (commandblockbaselogic.getLastOutput() != null)
             {
@@ -255,27 +253,27 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
         }
         else
         {
-            this.field_175390_s.displayString = "X";
+            this.outputBtn.displayString = "X";
             this.previousOutputTextField.setText("-");
         }
     }
 
-    private void func_184073_g()
+    private void updateMode()
     {
         switch (this.commandBlockMode)
         {
             case SEQUENCE:
-                this.field_184079_s.displayString = I18n.format("advMode.mode.sequence", new Object[0]);
+                this.modeBtn.displayString = I18n.format("advMode.mode.sequence", new Object[0]);
                 break;
             case AUTO:
-                this.field_184079_s.displayString = I18n.format("advMode.mode.auto", new Object[0]);
+                this.modeBtn.displayString = I18n.format("advMode.mode.auto", new Object[0]);
                 break;
             case REDSTONE:
-                this.field_184079_s.displayString = I18n.format("advMode.mode.redstone", new Object[0]);
+                this.modeBtn.displayString = I18n.format("advMode.mode.redstone", new Object[0]);
         }
     }
 
-    private void func_184074_h()
+    private void nextMode()
     {
         switch (this.commandBlockMode)
         {
@@ -290,27 +288,27 @@ public class GuiCommandBlock extends GuiScreen implements ITabCompleter
         }
     }
 
-    private void func_184077_i()
+    private void updateConditional()
     {
-        if (this.field_184084_y)
+        if (this.conditional)
         {
-            this.field_184080_t.displayString = I18n.format("advMode.mode.conditional", new Object[0]);
+            this.conditionalBtn.displayString = I18n.format("advMode.mode.conditional", new Object[0]);
         }
         else
         {
-            this.field_184080_t.displayString = I18n.format("advMode.mode.unconditional", new Object[0]);
+            this.conditionalBtn.displayString = I18n.format("advMode.mode.unconditional", new Object[0]);
         }
     }
 
-    private void func_184076_j()
+    private void updateAutoExec()
     {
-        if (this.field_184085_z)
+        if (this.automatic)
         {
-            this.field_184081_u.displayString = I18n.format("advMode.mode.autoexec.bat", new Object[0]);
+            this.autoExecBtn.displayString = I18n.format("advMode.mode.autoexec.bat", new Object[0]);
         }
         else
         {
-            this.field_184081_u.displayString = I18n.format("advMode.mode.redstoneTriggered", new Object[0]);
+            this.autoExecBtn.displayString = I18n.format("advMode.mode.redstoneTriggered", new Object[0]);
         }
     }
 

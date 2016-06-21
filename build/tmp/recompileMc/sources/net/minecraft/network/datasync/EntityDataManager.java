@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.annotation.Nullable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
@@ -21,15 +22,16 @@ import org.apache.commons.lang3.ObjectUtils;
 public class EntityDataManager
 {
     private static final Map < Class <? extends Entity > , Integer > NEXT_ID_MAP = Maps. < Class <? extends Entity > , Integer > newHashMap();
-    private final Entity owner;
+    /** The entity that this data manager is for. */
+    private final Entity entity;
     private final Map < Integer, EntityDataManager.DataEntry<? >> entries = Maps. < Integer, EntityDataManager.DataEntry<? >> newHashMap();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private boolean empty = true;
     private boolean dirty;
 
-    public EntityDataManager(Entity ownerIn)
+    public EntityDataManager(Entity entityIn)
     {
-        this.owner = ownerIn;
+        this.entity = entityIn;
     }
 
     public static <T> DataParameter<T> createKey(Class <? extends Entity > clazz, DataSerializer<T> serializer)
@@ -134,7 +136,7 @@ public class EntityDataManager
         if (ObjectUtils.notEqual(value, dataentry.getValue()))
         {
             dataentry.setValue(value);
-            this.owner.notifyDataManagerChange(key);
+            this.entity.notifyDataManagerChange(key);
             dataentry.setDirty(true);
             this.dirty = true;
         }
@@ -167,6 +169,7 @@ public class EntityDataManager
         buf.writeByte(255);
     }
 
+    @Nullable
     public List < EntityDataManager.DataEntry<? >> getDirty()
     {
         List < EntityDataManager.DataEntry<? >> list = null;
@@ -210,6 +213,7 @@ public class EntityDataManager
         buf.writeByte(255);
     }
 
+    @Nullable
     public List < EntityDataManager.DataEntry<? >> getAll()
     {
         List < EntityDataManager.DataEntry<? >> list = null;
@@ -246,6 +250,7 @@ public class EntityDataManager
         }
     }
 
+    @Nullable
     public static List < EntityDataManager.DataEntry<? >> readEntries(PacketBuffer buf) throws IOException
     {
         List < EntityDataManager.DataEntry<? >> list = null;
@@ -258,7 +263,7 @@ public class EntityDataManager
                 list = Lists. < EntityDataManager.DataEntry<? >> newArrayList();
             }
 
-            int j = buf.readUnsignedByte();
+            int j = buf.readVarIntFromBuffer();
             DataSerializer<?> dataserializer = DataSerializers.getSerializer(j);
 
             if (dataserializer == null)
@@ -284,7 +289,7 @@ public class EntityDataManager
             if (dataentry1 != null)
             {
                 this.setEntryValue(dataentry1, dataentry);
-                this.owner.notifyDataManagerChange(dataentry.getKey());
+                this.entity.notifyDataManagerChange(dataentry.getKey());
             }
         }
 

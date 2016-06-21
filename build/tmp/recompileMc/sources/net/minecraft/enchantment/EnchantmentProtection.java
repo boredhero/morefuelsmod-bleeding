@@ -30,7 +30,7 @@ public class EnchantmentProtection extends Enchantment
      */
     public int getMinEnchantability(int enchantmentLevel)
     {
-        return this.protectionType.func_185316_b() + (enchantmentLevel - 1) * this.protectionType.func_185315_c();
+        return this.protectionType.getMinimalEnchantability() + (enchantmentLevel - 1) * this.protectionType.getEnchantIncreasePerLevel();
     }
 
     /**
@@ -38,7 +38,7 @@ public class EnchantmentProtection extends Enchantment
      */
     public int getMaxEnchantability(int enchantmentLevel)
     {
-        return this.getMinEnchantability(enchantmentLevel) + this.protectionType.func_185315_c();
+        return this.getMinEnchantability(enchantmentLevel) + this.protectionType.getEnchantIncreasePerLevel();
     }
 
     /**
@@ -62,7 +62,7 @@ public class EnchantmentProtection extends Enchantment
      */
     public String getName()
     {
-        return "enchantment.protect." + this.protectionType.func_185314_a();
+        return "enchantment.protect." + this.protectionType.getTypeName();
     }
 
     /**
@@ -86,7 +86,7 @@ public class EnchantmentProtection extends Enchantment
      */
     public static int getFireTimeForEntity(EntityLivingBase p_92093_0_, int p_92093_1_)
     {
-        int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.fireProtection, p_92093_0_);
+        int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.FIRE_PROTECTION, p_92093_0_);
 
         if (i > 0)
         {
@@ -96,16 +96,16 @@ public class EnchantmentProtection extends Enchantment
         return p_92093_1_;
     }
 
-    public static double func_92092_a(EntityLivingBase p_92092_0_, double p_92092_1_)
+    public static double getBlastDamageReduction(EntityLivingBase entityLivingBaseIn, double damage)
     {
-        int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.blastProtection, p_92092_0_);
+        int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.BLAST_PROTECTION, entityLivingBaseIn);
 
         if (i > 0)
         {
-            p_92092_1_ -= (double)MathHelper.floor_double(p_92092_1_ * (double)((float)i * 0.15F));
+            damage -= (double)MathHelper.floor_double(damage * (double)((float)i * 0.15F));
         }
 
-        return p_92092_1_;
+        return damage;
     }
 
     public static enum Type
@@ -116,32 +116,32 @@ public class EnchantmentProtection extends Enchantment
         EXPLOSION("explosion", 5, 8, 12),
         PROJECTILE("projectile", 3, 6, 15);
 
-        private final String field_185322_f;
-        private final int field_185323_g;
-        private final int field_185324_h;
-        private final int field_185325_i;
+        private final String typeName;
+        private final int minEnchantability;
+        private final int levelCost;
+        private final int levelCostSpan;
 
-        private Type(String p_i47051_3_, int p_i47051_4_, int p_i47051_5_, int p_i47051_6_)
+        private Type(String name, int minimal, int perLevelEnchantability, int p_i47051_6_)
         {
-            this.field_185322_f = p_i47051_3_;
-            this.field_185323_g = p_i47051_4_;
-            this.field_185324_h = p_i47051_5_;
-            this.field_185325_i = p_i47051_6_;
+            this.typeName = name;
+            this.minEnchantability = minimal;
+            this.levelCost = perLevelEnchantability;
+            this.levelCostSpan = p_i47051_6_;
         }
 
-        public String func_185314_a()
+        public String getTypeName()
         {
-            return this.field_185322_f;
+            return this.typeName;
         }
 
-        public int func_185316_b()
+        public int getMinimalEnchantability()
         {
-            return this.field_185323_g;
+            return this.minEnchantability;
         }
 
-        public int func_185315_c()
+        public int getEnchantIncreasePerLevel()
         {
-            return this.field_185324_h;
+            return this.levelCost;
         }
     }
 }

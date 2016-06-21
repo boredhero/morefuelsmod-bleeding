@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 
 public class ItemMinecart extends Item
 {
-    private static final IBehaviorDispenseItem dispenserMinecartBehavior = new BehaviorDefaultDispenseItem()
+    private static final IBehaviorDispenseItem MINECART_DISPENSER_BEHAVIOR = new BehaviorDefaultDispenseItem()
     {
         private final BehaviorDefaultDispenseItem behaviourDefaultDispenseItem = new BehaviorDefaultDispenseItem();
         /**
@@ -49,7 +49,7 @@ public class ItemMinecart extends Item
             }
             else
             {
-                if (iblockstate.getMaterial() != Material.air || !BlockRailBase.isRailBlock(world.getBlockState(blockpos.down())))
+                if (iblockstate.getMaterial() != Material.AIR || !BlockRailBase.isRailBlock(world.getBlockState(blockpos.down())))
                 {
                     return this.behaviourDefaultDispenseItem.dispense(source, stack);
                 }
@@ -67,7 +67,7 @@ public class ItemMinecart extends Item
                 }
             }
 
-            EntityMinecart entityminecart = EntityMinecart.func_184263_a(world, d0, d1 + d3, d2, ((ItemMinecart)stack.getItem()).minecartType);
+            EntityMinecart entityminecart = EntityMinecart.create(world, d0, d1 + d3, d2, ((ItemMinecart)stack.getItem()).minecartType);
 
             if (stack.hasDisplayName())
             {
@@ -83,17 +83,17 @@ public class ItemMinecart extends Item
          */
         protected void playDispenseSound(IBlockSource source)
         {
-            source.getWorld().playAuxSFX(1000, source.getBlockPos(), 0);
+            source.getWorld().playEvent(1000, source.getBlockPos(), 0);
         }
     };
     private final EntityMinecart.Type minecartType;
 
-    public ItemMinecart(EntityMinecart.Type p_i46743_1_)
+    public ItemMinecart(EntityMinecart.Type typeIn)
     {
         this.maxStackSize = 1;
-        this.minecartType = p_i46743_1_;
-        this.setCreativeTab(CreativeTabs.tabTransport);
-        BlockDispenser.dispenseBehaviorRegistry.putObject(this, dispenserMinecartBehavior);
+        this.minecartType = typeIn;
+        this.setCreativeTab(CreativeTabs.TRANSPORTATION);
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, MINECART_DISPENSER_BEHAVIOR);
     }
 
     /**
@@ -119,7 +119,7 @@ public class ItemMinecart extends Item
                     d0 = 0.5D;
                 }
 
-                EntityMinecart entityminecart = EntityMinecart.func_184263_a(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.0625D + d0, (double)pos.getZ() + 0.5D, this.minecartType);
+                EntityMinecart entityminecart = EntityMinecart.create(worldIn, (double)pos.getX() + 0.5D, (double)pos.getY() + 0.0625D + d0, (double)pos.getZ() + 0.5D, this.minecartType);
 
                 if (stack.hasDisplayName())
                 {

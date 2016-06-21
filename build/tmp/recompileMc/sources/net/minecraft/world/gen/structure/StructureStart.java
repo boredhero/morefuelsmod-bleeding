@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
 public abstract class StructureStart
@@ -31,7 +31,7 @@ public abstract class StructureStart
         return this.boundingBox;
     }
 
-    public List<StructureComponent> func_186161_c()
+    public List<StructureComponent> getComponents()
     {
         return this.components;
     }
@@ -137,7 +137,7 @@ public abstract class StructureStart
 
         for (StructureComponent structurecomponent : this.components)
         {
-            structurecomponent.func_181138_a(0, k, 0);
+            structurecomponent.offset(0, k, 0);
         }
     }
 
@@ -160,7 +160,7 @@ public abstract class StructureStart
 
         for (StructureComponent structurecomponent : this.components)
         {
-            structurecomponent.func_181138_a(0, k, 0);
+            structurecomponent.offset(0, k, 0);
         }
     }
 
@@ -172,12 +172,12 @@ public abstract class StructureStart
         return true;
     }
 
-    public boolean func_175788_a(ChunkCoordIntPair pair)
+    public boolean isValidForPostProcess(ChunkPos pair)
     {
         return true;
     }
 
-    public void func_175787_b(ChunkCoordIntPair pair)
+    public void notifyPostProcessAt(ChunkPos pair)
     {
     }
 

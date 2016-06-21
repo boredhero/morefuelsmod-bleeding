@@ -16,9 +16,9 @@ public class CPacketPing implements Packet<INetHandlerStatusServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketPing(long p_i46842_1_)
+    public CPacketPing(long clientTimeIn)
     {
-        this.clientTime = p_i46842_1_;
+        this.clientTime = clientTimeIn;
     }
 
     /**

@@ -27,10 +27,10 @@ public class PathPoint
     public PathPoint previous;
     /** True if the pathfinder has already visited this point */
     public boolean visited;
-    public float field_186284_j = 0.0F;
-    public float field_186285_k = 0.0F;
-    public float field_186286_l = 0.0F;
-    public PathNodeType field_186287_m = PathNodeType.BLOCKED;
+    public float distanceFromOrigin = 0.0F;
+    public float cost = 0.0F;
+    public float costMalus = 0.0F;
+    public PathNodeType nodeType = PathNodeType.BLOCKED;
 
     public PathPoint(int x, int y, int z)
     {
@@ -40,19 +40,19 @@ public class PathPoint
         this.hash = makeHash(x, y, z);
     }
 
-    public PathPoint func_186283_a(int p_186283_1_, int p_186283_2_, int p_186283_3_)
+    public PathPoint cloneMove(int x, int y, int z)
     {
-        PathPoint pathpoint = new PathPoint(p_186283_1_, p_186283_2_, p_186283_3_);
+        PathPoint pathpoint = new PathPoint(x, y, z);
         pathpoint.index = this.index;
         pathpoint.totalPathDistance = this.totalPathDistance;
         pathpoint.distanceToNext = this.distanceToNext;
         pathpoint.distanceToTarget = this.distanceToTarget;
         pathpoint.previous = this.previous;
         pathpoint.visited = this.visited;
-        pathpoint.field_186284_j = this.field_186284_j;
-        pathpoint.field_186285_k = this.field_186285_k;
-        pathpoint.field_186286_l = this.field_186286_l;
-        pathpoint.field_186287_m = this.field_186287_m;
+        pathpoint.distanceFromOrigin = this.distanceFromOrigin;
+        pathpoint.cost = this.cost;
+        pathpoint.costMalus = this.costMalus;
+        pathpoint.nodeType = this.nodeType;
         return pathpoint;
     }
 
@@ -83,7 +83,7 @@ public class PathPoint
         return f * f + f1 * f1 + f2 * f2;
     }
 
-    public float func_186281_c(PathPoint p_186281_1_)
+    public float distanceManhattan(PathPoint p_186281_1_)
     {
         float f = (float)Math.abs(p_186281_1_.xCoord - this.xCoord);
         float f1 = (float)Math.abs(p_186281_1_.yCoord - this.yCoord);
@@ -123,14 +123,14 @@ public class PathPoint
     }
 
     @SideOnly(Side.CLIENT)
-    public static PathPoint func_186282_b(PacketBuffer buf)
+    public static PathPoint createFromBuffer(PacketBuffer buf)
     {
         PathPoint pathpoint = new PathPoint(buf.readInt(), buf.readInt(), buf.readInt());
-        pathpoint.field_186284_j = buf.readFloat();
-        pathpoint.field_186285_k = buf.readFloat();
-        pathpoint.field_186286_l = buf.readFloat();
+        pathpoint.distanceFromOrigin = buf.readFloat();
+        pathpoint.cost = buf.readFloat();
+        pathpoint.costMalus = buf.readFloat();
         pathpoint.visited = buf.readBoolean();
-        pathpoint.field_186287_m = PathNodeType.values()[buf.readInt()];
+        pathpoint.nodeType = PathNodeType.values()[buf.readInt()];
         pathpoint.distanceToTarget = buf.readFloat();
         return pathpoint;
     }

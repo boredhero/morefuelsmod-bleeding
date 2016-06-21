@@ -1,12 +1,13 @@
 package net.minecraft.world;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -62,6 +63,7 @@ public class ChunkCache implements IBlockAccess
         return this.hasExtendedLevels;
     }
 
+    @Nullable
     public TileEntity getTileEntity(BlockPos pos)
     {
         int i = (pos.getX() >> 4) - this.chunkX;
@@ -103,19 +105,21 @@ public class ChunkCache implements IBlockAccess
             }
         }
 
-        return Blocks.air.getDefaultState();
+        return Blocks.AIR.getDefaultState();
     }
 
     @SideOnly(Side.CLIENT)
-    public BiomeGenBase getBiomeGenForCoords(BlockPos pos)
+    public Biome getBiomeGenForCoords(BlockPos pos)
     {
-        return this.worldObj.getBiomeGenForCoords(pos);
+        int i = (pos.getX() >> 4) - this.chunkX;
+        int j = (pos.getZ() >> 4) - this.chunkZ;
+        return this.chunkArray[i][j].getBiome(pos, this.worldObj.getBiomeProvider());
     }
 
     @SideOnly(Side.CLIENT)
-    private int getLightForExt(EnumSkyBlock p_175629_1_, BlockPos pos)
+    private int getLightForExt(EnumSkyBlock type, BlockPos pos)
     {
-        if (p_175629_1_ == EnumSkyBlock.SKY && this.worldObj.provider.getHasNoSky())
+        if (type == EnumSkyBlock.SKY && this.worldObj.provider.getHasNoSky())
         {
             return 0;
         }
@@ -127,7 +131,7 @@ public class ChunkCache implements IBlockAccess
 
                 for (EnumFacing enumfacing : EnumFacing.values())
                 {
-                    int k = this.getLightFor(p_175629_1_, pos.offset(enumfacing));
+                    int k = this.getLightFor(type, pos.offset(enumfacing));
 
                     if (k > l)
                     {
@@ -146,14 +150,14 @@ public class ChunkCache implements IBlockAccess
             {
                 int i = (pos.getX() >> 4) - this.chunkX;
                 int j = (pos.getZ() >> 4) - this.chunkZ;
-                if (i < 0 || i >= chunkArray.length || j < 0 || j >= chunkArray[i].length) return p_175629_1_.defaultLightValue;
-                if (chunkArray[i][j] == null) return p_175629_1_.defaultLightValue;
-                return this.chunkArray[i][j].getLightFor(p_175629_1_, pos);
+                if (i < 0 || i >= chunkArray.length || j < 0 || j >= chunkArray[i].length) return type.defaultLightValue;
+                if (chunkArray[i][j] == null) return type.defaultLightValue;
+                return this.chunkArray[i][j].getLightFor(type, pos);
             }
         }
         else
         {
-            return p_175629_1_.defaultLightValue;
+            return type.defaultLightValue;
         }
     }
 

@@ -202,30 +202,30 @@ public class VertexBuffer
         }
     }
 
-    public VertexBuffer tex(double p_187315_1_, double p_187315_3_)
+    public VertexBuffer tex(double u, double v)
     {
         int i = this.vertexCount * this.vertexFormat.getNextOffset() + this.vertexFormat.getOffset(this.vertexFormatIndex);
 
         switch (this.vertexFormatElement.getType())
         {
             case FLOAT:
-                this.byteBuffer.putFloat(i, (float)p_187315_1_);
-                this.byteBuffer.putFloat(i + 4, (float)p_187315_3_);
+                this.byteBuffer.putFloat(i, (float)u);
+                this.byteBuffer.putFloat(i + 4, (float)v);
                 break;
             case UINT:
             case INT:
-                this.byteBuffer.putInt(i, (int)p_187315_1_);
-                this.byteBuffer.putInt(i + 4, (int)p_187315_3_);
+                this.byteBuffer.putInt(i, (int)u);
+                this.byteBuffer.putInt(i + 4, (int)v);
                 break;
             case USHORT:
             case SHORT:
-                this.byteBuffer.putShort(i, (short)((int)p_187315_3_));
-                this.byteBuffer.putShort(i + 2, (short)((int)p_187315_1_));
+                this.byteBuffer.putShort(i, (short)((int)v));
+                this.byteBuffer.putShort(i + 2, (short)((int)u));
                 break;
             case UBYTE:
             case BYTE:
-                this.byteBuffer.put(i, (byte)((int)p_187315_3_));
-                this.byteBuffer.put(i + 1, (byte)((int)p_187315_1_));
+                this.byteBuffer.put(i, (byte)((int)v));
+                this.byteBuffer.put(i + 1, (byte)((int)u));
         }
 
         this.nextVertexFormatIndex();
@@ -289,7 +289,7 @@ public class VertexBuffer
     }
 
     /**
-     * Takes in the pass the call list is being requested for. Args: renderPass
+     * Gets the color index.
      */
     public int getColorIndex(int p_78909_1_)
     {
@@ -358,7 +358,7 @@ public class VertexBuffer
     }
 
     /**
-     * Disabels color processing.
+     * Disables color processing.
      */
     public void noColor()
     {
@@ -500,34 +500,34 @@ public class VertexBuffer
         }
     }
 
-    public VertexBuffer normal(float p_181663_1_, float p_181663_2_, float p_181663_3_)
+    public VertexBuffer normal(float x, float y, float z)
     {
         int i = this.vertexCount * this.vertexFormat.getNextOffset() + this.vertexFormat.getOffset(this.vertexFormatIndex);
 
         switch (this.vertexFormatElement.getType())
         {
             case FLOAT:
-                this.byteBuffer.putFloat(i, p_181663_1_);
-                this.byteBuffer.putFloat(i + 4, p_181663_2_);
-                this.byteBuffer.putFloat(i + 8, p_181663_3_);
+                this.byteBuffer.putFloat(i, x);
+                this.byteBuffer.putFloat(i + 4, y);
+                this.byteBuffer.putFloat(i + 8, z);
                 break;
             case UINT:
             case INT:
-                this.byteBuffer.putInt(i, (int)p_181663_1_);
-                this.byteBuffer.putInt(i + 4, (int)p_181663_2_);
-                this.byteBuffer.putInt(i + 8, (int)p_181663_3_);
+                this.byteBuffer.putInt(i, (int)x);
+                this.byteBuffer.putInt(i + 4, (int)y);
+                this.byteBuffer.putInt(i + 8, (int)z);
                 break;
             case USHORT:
             case SHORT:
-                this.byteBuffer.putShort(i, (short)((int)(p_181663_1_ * 32767) & 65535));
-                this.byteBuffer.putShort(i + 2, (short)((int)(p_181663_2_ * 32767) & 65535));
-                this.byteBuffer.putShort(i + 4, (short)((int)(p_181663_3_ * 32767) & 65535));
+                this.byteBuffer.putShort(i, (short)((int)(x * 32767) & 65535));
+                this.byteBuffer.putShort(i + 2, (short)((int)(y * 32767) & 65535));
+                this.byteBuffer.putShort(i + 4, (short)((int)(z * 32767) & 65535));
                 break;
             case UBYTE:
             case BYTE:
-                this.byteBuffer.put(i, (byte)((int)(p_181663_1_ * 127) & 255));
-                this.byteBuffer.put(i + 1, (byte)((int)(p_181663_2_ * 127) & 255));
-                this.byteBuffer.put(i + 2, (byte)((int)(p_181663_3_ * 127) & 255));
+                this.byteBuffer.put(i, (byte)((int)(x * 127) & 255));
+                this.byteBuffer.put(i + 1, (byte)((int)(y * 127) & 255));
+                this.byteBuffer.put(i + 2, (byte)((int)(z * 127) & 255));
         }
 
         this.nextVertexFormatIndex();

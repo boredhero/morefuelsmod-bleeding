@@ -13,6 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.Reader;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -24,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class ResourceIndex
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Map<String, File> resourceMap = Maps.<String, File>newHashMap();
 
     protected ResourceIndex()
@@ -59,11 +60,11 @@ public class ResourceIndex
         }
         catch (JsonParseException var20)
         {
-            logger.error("Unable to parse resource index file: " + file2);
+            LOGGER.error("Unable to parse resource index file: " + file2);
         }
         catch (FileNotFoundException var21)
         {
-            logger.error("Can\'t find the resource index file: " + file2);
+            LOGGER.error("Can\'t find the resource index file: " + file2);
         }
         finally
         {
@@ -71,6 +72,7 @@ public class ResourceIndex
         }
     }
 
+    @Nullable
     public File getFile(ResourceLocation location)
     {
         String s = location.toString();

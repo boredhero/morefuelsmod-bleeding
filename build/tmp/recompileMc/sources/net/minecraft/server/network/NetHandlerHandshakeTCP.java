@@ -34,15 +34,15 @@ public class NetHandlerHandshakeTCP implements INetHandlerHandshakeServer
             case LOGIN:
                 this.networkManager.setConnectionState(EnumConnectionState.LOGIN);
 
-                if (packetIn.getProtocolVersion() > 107)
+                if (packetIn.getProtocolVersion() > 110)
                 {
-                    TextComponentString textcomponentstring = new TextComponentString("Outdated server! I\'m still on 1.9");
+                    TextComponentString textcomponentstring = new TextComponentString("Outdated server! I\'m still on 1.9.4");
                     this.networkManager.sendPacket(new SPacketDisconnect(textcomponentstring));
                     this.networkManager.closeChannel(textcomponentstring);
                 }
-                else if (packetIn.getProtocolVersion() < 107)
+                else if (packetIn.getProtocolVersion() < 110)
                 {
-                    TextComponentString textcomponentstring1 = new TextComponentString("Outdated client! Please use 1.9");
+                    TextComponentString textcomponentstring1 = new TextComponentString("Outdated client! Please use 1.9.4");
                     this.networkManager.sendPacket(new SPacketDisconnect(textcomponentstring1));
                     this.networkManager.closeChannel(textcomponentstring1);
                 }

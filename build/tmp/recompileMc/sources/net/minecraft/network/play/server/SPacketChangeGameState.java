@@ -11,16 +11,16 @@ public class SPacketChangeGameState implements Packet<INetHandlerPlayClient>
 {
     public static final String[] MESSAGE_NAMES = new String[] {"tile.bed.notValid"};
     private int state;
-    private float field_149141_c;
+    private float value;
 
     public SPacketChangeGameState()
     {
     }
 
-    public SPacketChangeGameState(int stateIn, float p_i46943_2_)
+    public SPacketChangeGameState(int stateIn, float valueIn)
     {
         this.state = stateIn;
-        this.field_149141_c = p_i46943_2_;
+        this.value = valueIn;
     }
 
     /**
@@ -29,7 +29,7 @@ public class SPacketChangeGameState implements Packet<INetHandlerPlayClient>
     public void readPacketData(PacketBuffer buf) throws IOException
     {
         this.state = buf.readUnsignedByte();
-        this.field_149141_c = buf.readFloat();
+        this.value = buf.readFloat();
     }
 
     /**
@@ -38,7 +38,7 @@ public class SPacketChangeGameState implements Packet<INetHandlerPlayClient>
     public void writePacketData(PacketBuffer buf) throws IOException
     {
         buf.writeByte(this.state);
-        buf.writeFloat(this.field_149141_c);
+        buf.writeFloat(this.value);
     }
 
     /**
@@ -56,8 +56,8 @@ public class SPacketChangeGameState implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public float func_149137_d()
+    public float getValue()
     {
-        return this.field_149141_c;
+        return this.value;
     }
 }

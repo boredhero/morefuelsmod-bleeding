@@ -25,7 +25,7 @@ public abstract class WorldGenerator
 
     public abstract boolean generate(World worldIn, Random rand, BlockPos position);
 
-    public void func_175904_e()
+    public void setDecorationDefaults()
     {
     }
 

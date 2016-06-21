@@ -18,15 +18,15 @@ public class SPacketEntity implements Packet<INetHandlerPlayClient>
     protected byte yaw;
     protected byte pitch;
     protected boolean onGround;
-    protected boolean field_149069_g;
+    protected boolean rotating;
 
     public SPacketEntity()
     {
     }
 
-    public SPacketEntity(int p_i46936_1_)
+    public SPacketEntity(int entityIdIn)
     {
-        this.entityId = p_i46936_1_;
+        this.entityId = entityIdIn;
     }
 
     /**
@@ -65,39 +65,39 @@ public class SPacketEntity implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public int func_186952_a()
+    public int getX()
     {
         return this.posX;
     }
 
     @SideOnly(Side.CLIENT)
-    public int func_186953_b()
+    public int getY()
     {
         return this.posY;
     }
 
     @SideOnly(Side.CLIENT)
-    public int func_186951_c()
+    public int getZ()
     {
         return this.posZ;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte func_149066_f()
+    public byte getYaw()
     {
         return this.yaw;
     }
 
     @SideOnly(Side.CLIENT)
-    public byte func_149063_g()
+    public byte getPitch()
     {
         return this.pitch;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean func_149060_h()
+    public boolean isRotating()
     {
-        return this.field_149069_g;
+        return this.rotating;
     }
 
     @SideOnly(Side.CLIENT)
@@ -112,13 +112,13 @@ public class SPacketEntity implements Packet<INetHandlerPlayClient>
             {
             }
 
-            public S15PacketEntityRelMove(int p_i47083_1_, long p_i47083_2_, long p_i47083_4_, long p_i47083_6_, boolean p_i47083_8_)
+            public S15PacketEntityRelMove(int entityIdIn, long xIn, long yIn, long zIn, boolean onGroundIn)
             {
-                super(p_i47083_1_);
-                this.posX = (int)p_i47083_2_;
-                this.posY = (int)p_i47083_4_;
-                this.posZ = (int)p_i47083_6_;
-                this.onGround = p_i47083_8_;
+                super(entityIdIn);
+                this.posX = (int)xIn;
+                this.posY = (int)yIn;
+                this.posZ = (int)zIn;
+                this.onGround = onGroundIn;
             }
 
             /**
@@ -150,16 +150,16 @@ public class SPacketEntity implements Packet<INetHandlerPlayClient>
         {
             public S16PacketEntityLook()
             {
-                this.field_149069_g = true;
+                this.rotating = true;
             }
 
-            public S16PacketEntityLook(int p_i47081_1_, byte p_i47081_2_, byte p_i47081_3_, boolean p_i47081_4_)
+            public S16PacketEntityLook(int entityIdIn, byte yawIn, byte pitchIn, boolean onGroundIn)
             {
-                super(p_i47081_1_);
-                this.yaw = p_i47081_2_;
-                this.pitch = p_i47081_3_;
-                this.field_149069_g = true;
-                this.onGround = p_i47081_4_;
+                super(entityIdIn);
+                this.yaw = yawIn;
+                this.pitch = pitchIn;
+                this.rotating = true;
+                this.onGround = onGroundIn;
             }
 
             /**
@@ -189,19 +189,19 @@ public class SPacketEntity implements Packet<INetHandlerPlayClient>
         {
             public S17PacketEntityLookMove()
             {
-                this.field_149069_g = true;
+                this.rotating = true;
             }
 
-            public S17PacketEntityLookMove(int p_i47082_1_, long p_i47082_2_, long p_i47082_4_, long p_i47082_6_, byte p_i47082_8_, byte p_i47082_9_, boolean p_i47082_10_)
+            public S17PacketEntityLookMove(int entityIdIn, long xIn, long yIn, long zIn, byte yawIn, byte pitchIn, boolean onGroundIn)
             {
-                super(p_i47082_1_);
-                this.posX = (int)p_i47082_2_;
-                this.posY = (int)p_i47082_4_;
-                this.posZ = (int)p_i47082_6_;
-                this.yaw = p_i47082_8_;
-                this.pitch = p_i47082_9_;
-                this.onGround = p_i47082_10_;
-                this.field_149069_g = true;
+                super(entityIdIn);
+                this.posX = (int)xIn;
+                this.posY = (int)yIn;
+                this.posZ = (int)zIn;
+                this.yaw = yawIn;
+                this.pitch = pitchIn;
+                this.onGround = onGroundIn;
+                this.rotating = true;
             }
 
             /**

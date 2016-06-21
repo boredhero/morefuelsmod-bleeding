@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer;
 
 import com.google.common.base.Objects;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -58,21 +59,21 @@ public class ItemRenderer
         this.renderItemSide(entityIn, heldStack, transform, false);
     }
 
-    public void renderItemSide(EntityLivingBase p_187462_1_, ItemStack p_187462_2_, ItemCameraTransforms.TransformType p_187462_3_, boolean p_187462_4_)
+    public void renderItemSide(EntityLivingBase entitylivingbaseIn, ItemStack heldStack, ItemCameraTransforms.TransformType transform, boolean p_187462_4_)
     {
-        if (p_187462_2_ != null)
+        if (heldStack != null)
         {
-            Item item = p_187462_2_.getItem();
+            Item item = heldStack.getItem();
             Block block = Block.getBlockFromItem(item);
             GlStateManager.pushMatrix();
-            boolean flag = this.itemRenderer.shouldRenderItemIn3D(p_187462_2_) && this.isBlockTranslucent(block);
+            boolean flag = this.itemRenderer.shouldRenderItemIn3D(heldStack) && this.isBlockTranslucent(block);
 
             if (flag)
             {
                 GlStateManager.depthMask(false);
             }
 
-            this.itemRenderer.renderItem(p_187462_2_, p_187462_1_, p_187462_3_, p_187462_4_);
+            this.itemRenderer.renderItem(heldStack, entitylivingbaseIn, transform, p_187462_4_);
 
             if (flag)
             {
@@ -86,7 +87,7 @@ public class ItemRenderer
     /**
      * Returns true if given block is translucent
      */
-    private boolean isBlockTranslucent(Block blockIn)
+    private boolean isBlockTranslucent(@Nullable Block blockIn)
     {
         return blockIn != null && blockIn.getBlockLayer() == BlockRenderLayer.TRANSLUCENT;
     }
@@ -213,7 +214,7 @@ public class ItemRenderer
         this.renderMapFirstPerson(this.itemStackMainHand);
     }
 
-    private void renderMapFirstPerson(ItemStack p_187461_1_)
+    private void renderMapFirstPerson(ItemStack stack)
     {
         GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
@@ -230,7 +231,7 @@ public class ItemRenderer
         vertexbuffer.pos(135.0D, -7.0D, 0.0D).tex(1.0D, 0.0D).endVertex();
         vertexbuffer.pos(-7.0D, -7.0D, 0.0D).tex(0.0D, 0.0D).endVertex();
         tessellator.draw();
-        MapData mapdata = Items.filled_map.getMapData(p_187461_1_, this.mc.theWorld);
+        MapData mapdata = Items.FILLED_MAP.getMapData(stack, this.mc.theWorld);
 
         if (mapdata != null)
         {
@@ -313,7 +314,7 @@ public class ItemRenderer
     }
 
     /**
-     * Renders the active item in the player's hand when in first person mode. Args: partialTickTime
+     * Renders the active item in the player's hand when in first person mode.
      */
     public void renderItemInFirstPerson(float partialTicks)
     {
@@ -329,7 +330,7 @@ public class ItemRenderer
         {
             ItemStack itemstack = abstractclientplayer.getActiveItemStack();
 
-            if (itemstack.getItem() == Items.bow)
+            if (itemstack != null && itemstack.getItem() == Items.BOW) //Forge: Data watcher can desync and cause this to NPE...
             {
                 EnumHand enumhand1 = abstractclientplayer.getActiveHand();
                 flag = enumhand1 == EnumHand.MAIN_HAND;
@@ -360,7 +361,7 @@ public class ItemRenderer
         RenderHelper.disableStandardItemLighting();
     }
 
-    public void renderItemInFirstPerson(AbstractClientPlayer p_187457_1_, float p_187457_2_, float p_187457_3_, EnumHand p_187457_4_, float p_187457_5_, ItemStack p_187457_6_, float p_187457_7_)
+    public void renderItemInFirstPerson(AbstractClientPlayer p_187457_1_, float p_187457_2_, float p_187457_3_, EnumHand p_187457_4_, float p_187457_5_, @Nullable ItemStack p_187457_6_, float p_187457_7_)
     {
         boolean flag = p_187457_4_ == EnumHand.MAIN_HAND;
         EnumHandSide enumhandside = flag ? p_187457_1_.getPrimaryHand() : p_187457_1_.getPrimaryHand().opposite();
@@ -451,7 +452,7 @@ public class ItemRenderer
     }
 
     /**
-     * Renders all the overlays that are in first person mode. Args: partialTickTime
+     * Renders the overlays.
      */
     public void renderOverlays(float partialTicks)
     {
@@ -487,7 +488,7 @@ public class ItemRenderer
 
         if (!this.mc.thePlayer.isSpectator())
         {
-            if (this.mc.thePlayer.isInsideOfMaterial(Material.water))
+            if (this.mc.thePlayer.isInsideOfMaterial(Material.WATER))
             {
                 if (!net.minecraftforge.event.ForgeEventFactory.renderWaterOverlay(mc.thePlayer, partialTicks))
                 this.renderWaterOverlayTexture(partialTicks);
@@ -508,7 +509,7 @@ public class ItemRenderer
      */
     private void renderBlockInHand(float partialTicks, TextureAtlasSprite atlas)
     {
-        this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+        this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
         float f = 0.1F;
@@ -535,7 +536,7 @@ public class ItemRenderer
 
     /**
      * Renders a texture that warps around based on the direction the player is looking. Texture needs to be bound
-     * before being called. Used for the water overlay. Args: parialTickTime
+     * before being called. Used for the water overlay.
      */
     private void renderWaterOverlayTexture(float partialTicks)
     {
@@ -584,7 +585,7 @@ public class ItemRenderer
         {
             GlStateManager.pushMatrix();
             TextureAtlasSprite textureatlassprite = this.mc.getTextureMapBlocks().getAtlasSprite("minecraft:blocks/fire_layer_1");
-            this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+            this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             float f1 = textureatlassprite.getMinU();
             float f2 = textureatlassprite.getMaxU();
             float f3 = textureatlassprite.getMinV();

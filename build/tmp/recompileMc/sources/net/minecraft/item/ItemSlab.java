@@ -66,12 +66,12 @@ public class ItemSlab extends ItemBlock
 
                 if ((facing == EnumFacing.UP && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.BOTTOM || facing == EnumFacing.DOWN && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.TOP) && comparable1 == comparable)
                 {
-                    IBlockState iblockstate1 = this.func_185055_a(iproperty, comparable1);
-                    AxisAlignedBB axisalignedbb = iblockstate1.getSelectedBoundingBox(worldIn, pos);
+                    IBlockState iblockstate1 = this.makeState(iproperty, comparable1);
+                    AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, pos);
 
                     if (axisalignedbb != Block.NULL_AABB && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos)) && worldIn.setBlockState(pos, iblockstate1, 11))
                     {
-                        SoundType soundtype = this.doubleSlab.getStepSound();
+                        SoundType soundtype = this.doubleSlab.getSoundType();
                         worldIn.playSound(playerIn, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                         --stack.stackSize;
                     }
@@ -121,12 +121,12 @@ public class ItemSlab extends ItemBlock
 
             if (comparable == itemSlabType)
             {
-                IBlockState iblockstate1 = this.func_185055_a(this.singleSlab.getVariantProperty(), comparable);
-                AxisAlignedBB axisalignedbb = iblockstate1.getSelectedBoundingBox(worldIn, pos);
+                IBlockState iblockstate1 = this.makeState(this.singleSlab.getVariantProperty(), comparable);
+                AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, pos);
 
                 if (axisalignedbb != Block.NULL_AABB && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos)) && worldIn.setBlockState(pos, iblockstate1, 11))
                 {
-                    SoundType soundtype = this.doubleSlab.getStepSound();
+                    SoundType soundtype = this.doubleSlab.getSoundType();
                     worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                     --stack.stackSize;
                 }
@@ -138,7 +138,7 @@ public class ItemSlab extends ItemBlock
         return false;
     }
 
-    protected <T extends Comparable<T>> IBlockState func_185055_a(IProperty<T> p_185055_1_, Comparable<?> p_185055_2_)
+    protected <T extends Comparable<T>> IBlockState makeState(IProperty<T> p_185055_1_, Comparable<?> p_185055_2_)
     {
         return this.doubleSlab.getDefaultState().withProperty(p_185055_1_, (T)p_185055_2_);
     }

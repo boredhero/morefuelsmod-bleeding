@@ -15,17 +15,14 @@ public class I18n
 
     /**
      * Translates the given string and then formats it. Equivilant to String.format(translate(key), parameters).
-     *  
-     * @param translateKey The translation key
-     * @param parameters Varargs list of parameters for use when formating the string.
      */
     public static String format(String translateKey, Object... parameters)
     {
         return i18nLocale.formatMessage(translateKey, parameters);
     }
 
-    public static boolean hasKey(String p_188566_0_)
+    public static boolean hasKey(String key)
     {
-        return i18nLocale.hasKey(p_188566_0_);
+        return i18nLocale.hasKey(key);
     }
 }

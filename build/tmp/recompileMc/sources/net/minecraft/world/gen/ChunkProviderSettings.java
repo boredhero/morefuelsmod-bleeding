@@ -1,5 +1,6 @@
 package net.minecraft.world.gen;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -12,7 +13,7 @@ import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.JsonUtils;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class ChunkProviderSettings
 {
@@ -179,6 +180,7 @@ public class ChunkProviderSettings
 
     public static class Factory
         {
+            @VisibleForTesting
             static final Gson JSON_ADAPTER = (new GsonBuilder()).registerTypeAdapter(ChunkProviderSettings.Factory.class, new ChunkProviderSettings.Serializer()).create();
             public float coordinateScale = 684.412F;
             public float heightScale = 684.412F;
@@ -285,10 +287,10 @@ public class ChunkProviderSettings
 
             public Factory()
             {
-                this.func_177863_a();
+                this.setDefaults();
             }
 
-            public void func_177863_a()
+            public void setDefaults()
             {
                 this.coordinateScale = 684.412F;
                 this.heightScale = 684.412F;
@@ -470,7 +472,7 @@ public class ChunkProviderSettings
                 return i;
             }
 
-            public ChunkProviderSettings func_177864_b()
+            public ChunkProviderSettings build()
             {
                 return new ChunkProviderSettings(this);
             }
@@ -520,7 +522,7 @@ public class ChunkProviderSettings
 
                     if (chunkprovidersettings$factory.fixedBiome < 38 && chunkprovidersettings$factory.fixedBiome >= -1)
                     {
-                        if (chunkprovidersettings$factory.fixedBiome >= BiomeGenBase.getIdForBiome(Biomes.hell))
+                        if (chunkprovidersettings$factory.fixedBiome >= Biome.getIdForBiome(Biomes.HELL))
                         {
                             chunkprovidersettings$factory.fixedBiome += 2;
                         }

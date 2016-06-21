@@ -96,9 +96,9 @@ public class RealmsScreen
 
     public void render(int p_render_1_, int p_render_2_, float p_render_3_)
     {
-        for (int i = 0; i < this.proxy.func_154320_j().size(); ++i)
+        for (int i = 0; i < this.proxy.buttons().size(); ++i)
         {
-            ((RealmsButton)this.proxy.func_154320_j().get(i)).render(p_render_1_, p_render_2_);
+            ((RealmsButton)this.proxy.buttons().get(i)).render(p_render_1_, p_render_2_);
         }
     }
 
@@ -162,12 +162,12 @@ public class RealmsScreen
 
     public void fontDrawShadow(String p_fontDrawShadow_1_, int p_fontDrawShadow_2_, int p_fontDrawShadow_3_, int p_fontDrawShadow_4_)
     {
-        this.proxy.func_154319_c(p_fontDrawShadow_1_, p_fontDrawShadow_2_, p_fontDrawShadow_3_, p_fontDrawShadow_4_);
+        this.proxy.fontDrawShadow(p_fontDrawShadow_1_, p_fontDrawShadow_2_, p_fontDrawShadow_3_, p_fontDrawShadow_4_);
     }
 
     public List<String> fontSplit(String p_fontSplit_1_, int p_fontSplit_2_)
     {
-        return this.proxy.func_154323_a(p_fontSplit_1_, p_fontSplit_2_);
+        return this.proxy.fontSplit(p_fontSplit_1_, p_fontSplit_2_);
     }
 
     public void buttonClicked(RealmsButton p_buttonClicked_1_)
@@ -186,22 +186,22 @@ public class RealmsScreen
 
     public void buttonsClear()
     {
-        this.proxy.func_154324_i();
+        this.proxy.buttonsClear();
     }
 
     public void buttonsAdd(RealmsButton p_buttonsAdd_1_)
     {
-        this.proxy.func_154327_a(p_buttonsAdd_1_);
+        this.proxy.buttonsAdd(p_buttonsAdd_1_);
     }
 
     public List<RealmsButton> buttons()
     {
-        return this.proxy.func_154320_j();
+        return this.proxy.buttons();
     }
 
     public void buttonsRemove(RealmsButton p_buttonsRemove_1_)
     {
-        this.proxy.func_154328_b(p_buttonsRemove_1_);
+        this.proxy.buttonsRemove(p_buttonsRemove_1_);
     }
 
     public RealmsEditBox newEditBox(int p_newEditBox_1_, int p_newEditBox_2_, int p_newEditBox_3_, int p_newEditBox_4_, int p_newEditBox_5_)

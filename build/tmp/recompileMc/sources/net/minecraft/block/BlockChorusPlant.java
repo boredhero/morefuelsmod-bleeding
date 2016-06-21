@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -32,8 +33,8 @@ public class BlockChorusPlant extends Block
 
     protected BlockChorusPlant()
     {
-        super(Material.plants);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        super(Material.PLANTS);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
         this.setDefaultState(this.blockState.getBaseState().withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)).withProperty(UP, Boolean.valueOf(false)).withProperty(DOWN, Boolean.valueOf(false)));
     }
 
@@ -49,7 +50,7 @@ public class BlockChorusPlant extends Block
         Block block3 = worldIn.getBlockState(pos.east()).getBlock();
         Block block4 = worldIn.getBlockState(pos.south()).getBlock();
         Block block5 = worldIn.getBlockState(pos.west()).getBlock();
-        return state.withProperty(DOWN, Boolean.valueOf(block == this || block == Blocks.chorus_flower || block == Blocks.end_stone)).withProperty(UP, Boolean.valueOf(block1 == this || block1 == Blocks.chorus_flower)).withProperty(NORTH, Boolean.valueOf(block2 == this || block2 == Blocks.chorus_flower)).withProperty(EAST, Boolean.valueOf(block3 == this || block3 == Blocks.chorus_flower)).withProperty(SOUTH, Boolean.valueOf(block4 == this || block4 == Blocks.chorus_flower)).withProperty(WEST, Boolean.valueOf(block5 == this || block5 == Blocks.chorus_flower));
+        return state.withProperty(DOWN, Boolean.valueOf(block == this || block == Blocks.CHORUS_FLOWER || block == Blocks.END_STONE)).withProperty(UP, Boolean.valueOf(block1 == this || block1 == Blocks.CHORUS_FLOWER)).withProperty(NORTH, Boolean.valueOf(block2 == this || block2 == Blocks.CHORUS_FLOWER)).withProperty(EAST, Boolean.valueOf(block3 == this || block3 == Blocks.CHORUS_FLOWER)).withProperty(SOUTH, Boolean.valueOf(block4 == this || block4 == Blocks.CHORUS_FLOWER)).withProperty(WEST, Boolean.valueOf(block5 == this || block5 == Blocks.CHORUS_FLOWER));
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -65,41 +66,41 @@ public class BlockChorusPlant extends Block
         return new AxisAlignedBB((double)f1, (double)f2, (double)f3, (double)f4, (double)f5, (double)f6);
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, Entity p_185477_6_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
     {
         state = state.getActualState(worldIn, pos);
         float f = 0.1875F;
         float f1 = 0.8125F;
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, new AxisAlignedBB(0.1875D, 0.1875D, 0.1875D, 0.8125D, 0.8125D, 0.8125D));
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.1875D, 0.1875D, 0.1875D, 0.8125D, 0.8125D, 0.8125D));
 
         if (((Boolean)state.getValue(WEST)).booleanValue())
         {
-            addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, new AxisAlignedBB(0.0D, 0.1875D, 0.1875D, 0.1875D, 0.8125D, 0.8125D));
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.0D, 0.1875D, 0.1875D, 0.1875D, 0.8125D, 0.8125D));
         }
 
         if (((Boolean)state.getValue(EAST)).booleanValue())
         {
-            addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, new AxisAlignedBB(0.8125D, 0.1875D, 0.1875D, 1.0D, 0.8125D, 0.8125D));
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.8125D, 0.1875D, 0.1875D, 1.0D, 0.8125D, 0.8125D));
         }
 
         if (((Boolean)state.getValue(UP)).booleanValue())
         {
-            addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, new AxisAlignedBB(0.1875D, 0.8125D, 0.1875D, 0.8125D, 1.0D, 0.8125D));
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.1875D, 0.8125D, 0.1875D, 0.8125D, 1.0D, 0.8125D));
         }
 
         if (((Boolean)state.getValue(DOWN)).booleanValue())
         {
-            addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.1875D, 0.8125D));
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.1875D, 0.0D, 0.1875D, 0.8125D, 0.1875D, 0.8125D));
         }
 
         if (((Boolean)state.getValue(NORTH)).booleanValue())
         {
-            addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, new AxisAlignedBB(0.1875D, 0.1875D, 0.0D, 0.8125D, 0.8125D, 0.1875D));
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.1875D, 0.1875D, 0.0D, 0.8125D, 0.8125D, 0.1875D));
         }
 
         if (((Boolean)state.getValue(SOUTH)).booleanValue())
         {
-            addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, new AxisAlignedBB(0.1875D, 0.1875D, 0.8125D, 0.8125D, 0.8125D, 1.0D));
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.1875D, 0.1875D, 0.8125D, 0.8125D, 0.8125D, 1.0D));
         }
     }
 
@@ -113,7 +114,7 @@ public class BlockChorusPlant extends Block
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (!this.func_185608_b(worldIn, pos))
+        if (!this.canSurviveAt(worldIn, pos))
         {
             worldIn.destroyBlock(pos, true);
         }
@@ -122,9 +123,10 @@ public class BlockChorusPlant extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.chorus_fruit;
+        return Items.CHORUS_FRUIT;
     }
 
     /**
@@ -150,21 +152,23 @@ public class BlockChorusPlant extends Block
 
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        return super.canPlaceBlockAt(worldIn, pos) ? this.func_185608_b(worldIn, pos) : false;
+        return super.canPlaceBlockAt(worldIn, pos) ? this.canSurviveAt(worldIn, pos) : false;
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
-        if (!this.func_185608_b(worldIn, pos))
+        if (!this.canSurviveAt(worldIn, pos))
         {
             worldIn.scheduleUpdate(pos, this, 1);
         }
     }
 
-    public boolean func_185608_b(World wordIn, BlockPos pos)
+    public boolean canSurviveAt(World wordIn, BlockPos pos)
     {
         boolean flag = wordIn.isAirBlock(pos.up());
         boolean flag1 = wordIn.isAirBlock(pos.down());
@@ -183,7 +187,7 @@ public class BlockChorusPlant extends Block
 
                 Block block1 = wordIn.getBlockState(blockpos.down()).getBlock();
 
-                if (block1 == this || block1 == Blocks.end_stone)
+                if (block1 == this || block1 == Blocks.END_STONE)
                 {
                     return true;
                 }
@@ -191,7 +195,7 @@ public class BlockChorusPlant extends Block
         }
 
         Block block2 = wordIn.getBlockState(pos.down()).getBlock();
-        return block2 == this || block2 == Blocks.end_stone;
+        return block2 == this || block2 == Blocks.END_STONE;
     }
 
     protected BlockStateContainer createBlockState()
@@ -214,6 +218,6 @@ public class BlockChorusPlant extends Block
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
     {
         Block block = blockAccess.getBlockState(pos.offset(side)).getBlock();
-        return block != this && block != Blocks.chorus_flower && (side != EnumFacing.DOWN || block != Blocks.end_stone);
+        return block != this && block != Blocks.CHORUS_FLOWER && (side != EnumFacing.DOWN || block != Blocks.END_STONE);
     }
 }

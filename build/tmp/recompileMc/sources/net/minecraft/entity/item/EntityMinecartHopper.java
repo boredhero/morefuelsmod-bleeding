@@ -1,6 +1,7 @@
 package net.minecraft.entity.item;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -23,7 +24,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
     /** Whether this hopper minecart is being blocked by an activator rail. */
     private boolean isBlocked = true;
     private int transferTicker = -1;
-    private BlockPos field_174900_c = BlockPos.ORIGIN;
+    private BlockPos lastPosition = BlockPos.ORIGIN;
 
     public EntityMinecartHopper(World worldIn)
     {
@@ -42,7 +43,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
 
     public IBlockState getDefaultDisplayTile()
     {
-        return Blocks.hopper.getDefaultState();
+        return Blocks.HOPPER.getDefaultState();
     }
 
     public int getDefaultDisplayTileOffset()
@@ -58,7 +59,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
         return 5;
     }
 
-    public boolean processInitialInteract(EntityPlayer player, ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
     {
         if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand))) return true;
         if (!this.worldObj.isRemote)
@@ -70,7 +71,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
     }
 
     /**
-     * Called every tick the minecart is on an activator rail. Args: x, y, z, is the rail receiving power
+     * Called every tick the minecart is on an activator rail.
      */
     public void onActivatorRailPass(int x, int y, int z, boolean receivingPower)
     {
@@ -141,7 +142,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
         {
             BlockPos blockpos = new BlockPos(this);
 
-            if (blockpos.equals(this.field_174900_c))
+            if (blockpos.equals(this.lastPosition))
             {
                 --this.transferTicker;
             }
@@ -154,7 +155,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
             {
                 this.setTransferTicker(0);
 
-                if (this.func_96112_aD())
+                if (this.captureDroppedItems())
                 {
                     this.setTransferTicker(4);
                     this.markDirty();
@@ -163,7 +164,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
         }
     }
 
-    public boolean func_96112_aD()
+    public boolean captureDroppedItems()
     {
         if (TileEntityHopper.captureDroppedItems(this))
         {
@@ -188,28 +189,28 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
 
         if (this.worldObj.getGameRules().getBoolean("doEntityDrops"))
         {
-            this.dropItemWithOffset(Item.getItemFromBlock(Blocks.hopper), 1, 0.0F);
+            this.dropItemWithOffset(Item.getItemFromBlock(Blocks.HOPPER), 1, 0.0F);
         }
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setInteger("TransferCooldown", this.transferTicker);
-        tagCompound.setBoolean("Enabled", this.isBlocked);
+        super.writeEntityToNBT(compound);
+        compound.setInteger("TransferCooldown", this.transferTicker);
+        compound.setBoolean("Enabled", this.isBlocked);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.transferTicker = tagCompund.getInteger("TransferCooldown");
-        this.isBlocked = tagCompund.hasKey("Enabled") ? tagCompund.getBoolean("Enabled") : true;
+        super.readEntityFromNBT(compound);
+        this.transferTicker = compound.getInteger("TransferCooldown");
+        this.isBlocked = compound.hasKey("Enabled") ? compound.getBoolean("Enabled") : true;
     }
 
     /**

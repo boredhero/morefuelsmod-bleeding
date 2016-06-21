@@ -35,7 +35,7 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.SERVER)
 public class MinecraftServerGui extends JComponent
 {
-    private static final Font serverGuiFont = new Font("Monospaced", 0, 12);
+    private static final Font SERVER_GUI_FONT = new Font("Monospaced", 0, 12);
     private static final Logger LOGGER = LogManager.getLogger();
     private DedicatedServer server;
 
@@ -129,7 +129,7 @@ public class MinecraftServerGui extends JComponent
         final JTextArea jtextarea = new JTextArea();
         final JScrollPane jscrollpane = new JScrollPane(jtextarea, 22, 30);
         jtextarea.setEditable(false);
-        jtextarea.setFont(serverGuiFont);
+        jtextarea.setFont(SERVER_GUI_FONT);
         final JTextField jtextfield = new JTextField();
         jtextfield.addActionListener(new ActionListener()
         {
@@ -162,7 +162,7 @@ public class MinecraftServerGui extends JComponent
 
                 while ((s = QueueLogAppender.getNextLogEvent("ServerGuiConsole")) != null)
                 {
-                    MinecraftServerGui.this.func_164247_a(jtextarea, jscrollpane, s);
+                    MinecraftServerGui.this.appendLine(jtextarea, jscrollpane, s);
                 }
             }
         });
@@ -172,7 +172,7 @@ public class MinecraftServerGui extends JComponent
     }
 
     private java.util.concurrent.CountDownLatch latch = new java.util.concurrent.CountDownLatch(1);
-    public void func_164247_a(final JTextArea p_164247_1_, final JScrollPane p_164247_2_, final String p_164247_3_)
+    public void appendLine(final JTextArea textArea, final JScrollPane scrollPane, final String line)
     {
         try
         {
@@ -184,24 +184,24 @@ public class MinecraftServerGui extends JComponent
             {
                 public void run()
                 {
-                    MinecraftServerGui.this.func_164247_a(p_164247_1_, p_164247_2_, p_164247_3_);
+                    MinecraftServerGui.this.appendLine(textArea, scrollPane, line);
                 }
             });
         }
         else
         {
-            Document document = p_164247_1_.getDocument();
-            JScrollBar jscrollbar = p_164247_2_.getVerticalScrollBar();
+            Document document = textArea.getDocument();
+            JScrollBar jscrollbar = scrollPane.getVerticalScrollBar();
             boolean flag = false;
 
-            if (p_164247_2_.getViewport().getView() == p_164247_1_)
+            if (scrollPane.getViewport().getView() == textArea)
             {
-                flag = (double)jscrollbar.getValue() + jscrollbar.getSize().getHeight() + (double)(serverGuiFont.getSize() * 4) > (double)jscrollbar.getMaximum();
+                flag = (double)jscrollbar.getValue() + jscrollbar.getSize().getHeight() + (double)(SERVER_GUI_FONT.getSize() * 4) > (double)jscrollbar.getMaximum();
             }
 
             try
             {
-                document.insertString(document.getLength(), p_164247_3_, (AttributeSet)null);
+                document.insertString(document.getLength(), line, (AttributeSet)null);
             }
             catch (BadLocationException var8)
             {

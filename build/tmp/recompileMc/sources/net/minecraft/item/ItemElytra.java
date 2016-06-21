@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLiving;
@@ -21,16 +22,16 @@ public class ItemElytra extends Item
     {
         this.maxStackSize = 1;
         this.setMaxDamage(432);
-        this.setCreativeTab(CreativeTabs.tabTransport);
+        this.setCreativeTab(CreativeTabs.TRANSPORTATION);
         this.addPropertyOverride(new ResourceLocation("broken"), new IItemPropertyGetter()
         {
             @SideOnly(Side.CLIENT)
-            public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn)
+            public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
             {
                 return ItemElytra.isBroken(stack) ? 0.0F : 1.0F;
             }
         });
-        BlockDispenser.dispenseBehaviorRegistry.putObject(this, ItemArmor.dispenserBehavior);
+        BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, ItemArmor.DISPENSER_BEHAVIOR);
     }
 
     public static boolean isBroken(ItemStack stack)
@@ -43,7 +44,7 @@ public class ItemElytra extends Item
      */
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
     {
-        return repair.getItem() == Items.leather;
+        return repair.getItem() == Items.LEATHER;
     }
 
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)

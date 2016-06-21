@@ -32,9 +32,6 @@ public class GuiChest extends GuiContainer
 
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
@@ -44,11 +41,6 @@ public class GuiChest extends GuiContainer
 
     /**
      * Draws the background layer of this container (behind the items).
-     *  
-     * @param partialTicks How far into the current tick the game is, with 0.0 being the start of the tick and 1.0 being
-     * the end.
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {

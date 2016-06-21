@@ -1,5 +1,6 @@
 package net.minecraft.world.demo;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.SPacketChangeGameState;
@@ -13,10 +14,10 @@ import net.minecraft.world.World;
 
 public class DemoWorldManager extends PlayerInteractionManager
 {
-    private boolean field_73105_c;
+    private boolean displayedIntro;
     private boolean demoTimeExpired;
-    private int field_73104_e;
-    private int field_73102_f;
+    private int demoEndedReminder;
+    private int gameModeTicks;
 
     public DemoWorldManager(World worldIn)
     {
@@ -26,21 +27,21 @@ public class DemoWorldManager extends PlayerInteractionManager
     public void updateBlockRemoving()
     {
         super.updateBlockRemoving();
-        ++this.field_73102_f;
+        ++this.gameModeTicks;
         long i = this.theWorld.getTotalWorldTime();
         long j = i / 24000L + 1L;
 
-        if (!this.field_73105_c && this.field_73102_f > 20)
+        if (!this.displayedIntro && this.gameModeTicks > 20)
         {
-            this.field_73105_c = true;
-            this.thisPlayerMP.playerNetServerHandler.sendPacket(new SPacketChangeGameState(5, 0.0F));
+            this.displayedIntro = true;
+            this.thisPlayerMP.connection.sendPacket(new SPacketChangeGameState(5, 0.0F));
         }
 
         this.demoTimeExpired = i > 120500L;
 
         if (this.demoTimeExpired)
         {
-            ++this.field_73104_e;
+            ++this.demoEndedReminder;
         }
 
         if (i % 24000L == 500L)
@@ -54,15 +55,15 @@ public class DemoWorldManager extends PlayerInteractionManager
         {
             if (i == 100L)
             {
-                this.thisPlayerMP.playerNetServerHandler.sendPacket(new SPacketChangeGameState(5, 101.0F));
+                this.thisPlayerMP.connection.sendPacket(new SPacketChangeGameState(5, 101.0F));
             }
             else if (i == 175L)
             {
-                this.thisPlayerMP.playerNetServerHandler.sendPacket(new SPacketChangeGameState(5, 102.0F));
+                this.thisPlayerMP.connection.sendPacket(new SPacketChangeGameState(5, 102.0F));
             }
             else if (i == 250L)
             {
-                this.thisPlayerMP.playerNetServerHandler.sendPacket(new SPacketChangeGameState(5, 103.0F));
+                this.thisPlayerMP.connection.sendPacket(new SPacketChangeGameState(5, 103.0F));
             }
         }
         else if (j == 5L && i % 24000L == 22000L)
@@ -76,10 +77,10 @@ public class DemoWorldManager extends PlayerInteractionManager
      */
     private void sendDemoReminder()
     {
-        if (this.field_73104_e > 100)
+        if (this.demoEndedReminder > 100)
         {
             this.thisPlayerMP.addChatMessage(new TextComponentTranslation("demo.reminder", new Object[0]));
-            this.field_73104_e = 0;
+            this.demoEndedReminder = 0;
         }
     }
 
@@ -128,7 +129,7 @@ public class DemoWorldManager extends PlayerInteractionManager
         }
     }
 
-    public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float p_187251_7_, float p_187251_8_, float p_187251_9_)
+    public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, @Nullable ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (this.demoTimeExpired)
         {
@@ -137,7 +138,7 @@ public class DemoWorldManager extends PlayerInteractionManager
         }
         else
         {
-            return super.processRightClickBlock(player, worldIn, stack, hand, pos, facing, p_187251_7_, p_187251_8_, p_187251_9_);
+            return super.processRightClickBlock(player, worldIn, stack, hand, pos, facing, hitX, hitY, hitZ);
         }
     }
 }

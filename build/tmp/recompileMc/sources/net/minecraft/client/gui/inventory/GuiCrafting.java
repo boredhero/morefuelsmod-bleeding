@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiCrafting extends GuiContainer
 {
-    private static final ResourceLocation craftingTableGuiTextures = new ResourceLocation("textures/gui/container/crafting_table.png");
+    private static final ResourceLocation CRAFTING_TABLE_GUI_TEXTURES = new ResourceLocation("textures/gui/container/crafting_table.png");
 
     public GuiCrafting(InventoryPlayer playerInv, World worldIn)
     {
@@ -27,9 +27,6 @@ public class GuiCrafting extends GuiContainer
 
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
@@ -39,16 +36,11 @@ public class GuiCrafting extends GuiContainer
 
     /**
      * Draws the background layer of this container (behind the items).
-     *  
-     * @param partialTicks How far into the current tick the game is, with 0.0 being the start of the tick and 1.0 being
-     * the end.
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(craftingTableGuiTextures);
+        this.mc.getTextureManager().bindTexture(CRAFTING_TABLE_GUI_TEXTURES);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);

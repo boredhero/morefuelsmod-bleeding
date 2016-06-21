@@ -1,5 +1,6 @@
 package net.minecraft.client.renderer;
 
+import javax.annotation.Nullable;
 import net.minecraft.client.renderer.chunk.IRenderChunkFactory;
 import net.minecraft.client.renderer.chunk.RenderChunk;
 import net.minecraft.util.math.BlockPos;
@@ -39,8 +40,8 @@ public class ViewFrustum
                 for (int i1 = 0; i1 < this.countChunksZ; ++i1)
                 {
                     int j1 = (i1 * this.countChunksY + l) * this.countChunksX + k;
-                    BlockPos blockpos = new BlockPos(k * 16, l * 16, i1 * 16);
-                    this.renderChunks[j1] = renderChunkFactory.makeRenderChunk(this.world, this.renderGlobal, blockpos, j++);
+                    this.renderChunks[j1] = renderChunkFactory.create(this.world, this.renderGlobal, j++);
+                    this.renderChunks[j1].setOrigin(k * 16, l * 16, i1 * 16);
                 }
             }
         }
@@ -80,12 +81,7 @@ public class ViewFrustum
                 {
                     int i2 = l1 * 16;
                     RenderChunk renderchunk = this.renderChunks[(j1 * this.countChunksY + l1) * this.countChunksX + l];
-                    BlockPos blockpos = new BlockPos(i1, i2, k1);
-
-                    if (!blockpos.equals(renderchunk.getPosition()))
-                    {
-                        renderchunk.setPosition(blockpos);
-                    }
+                    renderchunk.setOrigin(i1, i2, k1);
                 }
             }
         }
@@ -148,6 +144,7 @@ public class ViewFrustum
         }
     }
 
+    @Nullable
     protected RenderChunk getRenderChunk(BlockPos pos)
     {
         int i = MathHelper.bucketInt(pos.getX(), 16);

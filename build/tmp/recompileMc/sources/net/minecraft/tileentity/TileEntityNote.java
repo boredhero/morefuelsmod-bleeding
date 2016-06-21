@@ -14,11 +14,12 @@ public class TileEntityNote extends TileEntity
     /** stores the latest redstone state */
     public boolean previousRedstoneState;
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         compound.setByte("note", this.note);
         compound.setBoolean("powered", this.previousRedstoneState);
+        return compound;
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -42,32 +43,32 @@ public class TileEntityNote extends TileEntity
 
     public void triggerNote(World worldIn, BlockPos posIn)
     {
-        if (worldIn.getBlockState(posIn.up()).getMaterial() == Material.air)
+        if (worldIn.getBlockState(posIn.up()).getMaterial() == Material.AIR)
         {
             Material material = worldIn.getBlockState(posIn.down()).getMaterial();
             int i = 0;
 
-            if (material == Material.rock)
+            if (material == Material.ROCK)
             {
                 i = 1;
             }
 
-            if (material == Material.sand)
+            if (material == Material.SAND)
             {
                 i = 2;
             }
 
-            if (material == Material.glass)
+            if (material == Material.GLASS)
             {
                 i = 3;
             }
 
-            if (material == Material.wood)
+            if (material == Material.WOOD)
             {
                 i = 4;
             }
 
-            worldIn.addBlockEvent(posIn, Blocks.noteblock, i, this.note);
+            worldIn.addBlockEvent(posIn, Blocks.NOTEBLOCK, i, this.note);
         }
     }
 }

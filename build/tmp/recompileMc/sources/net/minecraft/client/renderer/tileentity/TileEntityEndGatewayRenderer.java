@@ -20,35 +20,35 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<TileEntityEndGateway>
 {
-    private static final ResourceLocation field_188197_d = new ResourceLocation("textures/environment/end_sky.png");
-    private static final ResourceLocation field_188198_e = new ResourceLocation("textures/entity/end_portal.png");
-    private static final ResourceLocation field_188199_f = new ResourceLocation("textures/entity/end_gateway_beam.png");
-    private static final Random field_188200_g = new Random(31100L);
-    private static final FloatBuffer field_188201_h = GLAllocation.createDirectFloatBuffer(16);
-    private static final FloatBuffer field_188202_i = GLAllocation.createDirectFloatBuffer(16);
-    FloatBuffer field_188196_a = GLAllocation.createDirectFloatBuffer(16);
+    private static final ResourceLocation END_SKY_TEXTURE = new ResourceLocation("textures/environment/end_sky.png");
+    private static final ResourceLocation END_PORTAL_TEXTURE = new ResourceLocation("textures/entity/end_portal.png");
+    private static final ResourceLocation END_GATEWAY_BEAM_TEXTURE = new ResourceLocation("textures/entity/end_gateway_beam.png");
+    private static final Random RANDOM = new Random(31100L);
+    private static final FloatBuffer MODELVIEW = GLAllocation.createDirectFloatBuffer(16);
+    private static final FloatBuffer PROJECTION = GLAllocation.createDirectFloatBuffer(16);
+    FloatBuffer buffer = GLAllocation.createDirectFloatBuffer(16);
 
     public void renderTileEntityAt(TileEntityEndGateway te, double x, double y, double z, float partialTicks, int destroyStage)
     {
         GlStateManager.disableFog();
 
-        if (te.func_184309_b() || te.func_184310_d())
+        if (te.isSpawning() || te.isCoolingDown())
         {
             GlStateManager.alphaFunc(516, 0.1F);
-            this.bindTexture(field_188199_f);
-            float f = te.func_184309_b() ? te.func_184302_e() : te.func_184305_g();
-            double d0 = te.func_184309_b() ? 256.0D - y : 25.0D;
+            this.bindTexture(END_GATEWAY_BEAM_TEXTURE);
+            float f = te.isSpawning() ? te.getSpawnPercent() : te.getCooldownPercent();
+            double d0 = te.isSpawning() ? 256.0D - y : 25.0D;
             f = MathHelper.sin(f * (float)Math.PI);
             int j = MathHelper.floor_double((double)f * d0);
-            float[] afloat = EntitySheep.getDyeRgb(te.func_184309_b() ? EnumDyeColor.MAGENTA : EnumDyeColor.YELLOW);
+            float[] afloat = EntitySheep.getDyeRgb(te.isSpawning() ? EnumDyeColor.MAGENTA : EnumDyeColor.YELLOW);
             TileEntityBeaconRenderer.renderBeamSegment(x, y, z, (double)partialTicks, (double)f, (double)te.getWorld().getTotalWorldTime(), 0, j, afloat, 0.15D, 0.175D);
             TileEntityBeaconRenderer.renderBeamSegment(x, y, z, (double)partialTicks, (double)f, (double)te.getWorld().getTotalWorldTime(), 0, -j, afloat, 0.15D, 0.175D);
         }
 
         GlStateManager.disableLighting();
-        field_188200_g.setSeed(31100L);
-        GlStateManager.getFloat(2982, field_188201_h);
-        GlStateManager.getFloat(2983, field_188202_i);
+        RANDOM.setSeed(31100L);
+        GlStateManager.getFloat(2982, MODELVIEW);
+        GlStateManager.getFloat(2983, PROJECTION);
         double d1 = x * x + y * y + z * z;
         int i;
 
@@ -96,7 +96,7 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
 
             if (k == 0)
             {
-                this.bindTexture(field_188197_d);
+                this.bindTexture(END_SKY_TEXTURE);
                 f5 = 0.15F;
                 GlStateManager.enableBlend();
                 GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
@@ -104,7 +104,7 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
 
             if (k >= 1)
             {
-                this.bindTexture(field_188198_e);
+                this.bindTexture(END_PORTAL_TEXTURE);
             }
 
             if (k == 1)
@@ -116,9 +116,9 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
             GlStateManager.texGen(GlStateManager.TexGen.S, 9216);
             GlStateManager.texGen(GlStateManager.TexGen.T, 9216);
             GlStateManager.texGen(GlStateManager.TexGen.R, 9216);
-            GlStateManager.texGen(GlStateManager.TexGen.S, 9474, this.func_188193_a(1.0F, 0.0F, 0.0F, 0.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.T, 9474, this.func_188193_a(0.0F, 1.0F, 0.0F, 0.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.R, 9474, this.func_188193_a(0.0F, 0.0F, 1.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.S, 9474, this.getBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.T, 9474, this.getBuffer(0.0F, 1.0F, 0.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.R, 9474, this.getBuffer(0.0F, 0.0F, 1.0F, 0.0F));
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.S);
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.T);
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.R);
@@ -132,21 +132,21 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
             GlStateManager.translate(17.0F / f1, (2.0F + f1 / 1.5F) * ((float)Minecraft.getSystemTime() % 800000.0F / 800000.0F), 0.0F);
             GlStateManager.rotate((f1 * f1 * 4321.0F + f1 * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
             GlStateManager.scale(4.5F - f1 / 4.0F, 4.5F - f1 / 4.0F, 1.0F);
-            GlStateManager.multMatrix(field_188202_i);
-            GlStateManager.multMatrix(field_188201_h);
+            GlStateManager.multMatrix(PROJECTION);
+            GlStateManager.multMatrix(MODELVIEW);
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            float f2 = (field_188200_g.nextFloat() * 0.5F + 0.1F) * f5;
-            float f3 = (field_188200_g.nextFloat() * 0.5F + 0.4F) * f5;
-            float f4 = (field_188200_g.nextFloat() * 0.5F + 0.5F) * f5;
+            float f2 = (RANDOM.nextFloat() * 0.5F + 0.1F) * f5;
+            float f3 = (RANDOM.nextFloat() * 0.5F + 0.4F) * f5;
+            float f4 = (RANDOM.nextFloat() * 0.5F + 0.5F) * f5;
 
             if (k == 0)
             {
                 f2 = f3 = f4 = 1.0F * f5;
             }
 
-            if (te.func_184313_a(EnumFacing.SOUTH))
+            if (te.shouldRenderFace(EnumFacing.SOUTH))
             {
                 vertexbuffer.pos(x, y, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();
                 vertexbuffer.pos(x + 1.0D, y, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();
@@ -154,7 +154,7 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
                 vertexbuffer.pos(x, y + 1.0D, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();
             }
 
-            if (te.func_184313_a(EnumFacing.NORTH))
+            if (te.shouldRenderFace(EnumFacing.NORTH))
             {
                 vertexbuffer.pos(x, y + 1.0D, z).color(f2, f3, f4, 1.0F).endVertex();
                 vertexbuffer.pos(x + 1.0D, y + 1.0D, z).color(f2, f3, f4, 1.0F).endVertex();
@@ -162,7 +162,7 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
                 vertexbuffer.pos(x, y, z).color(f2, f3, f4, 1.0F).endVertex();
             }
 
-            if (te.func_184313_a(EnumFacing.EAST))
+            if (te.shouldRenderFace(EnumFacing.EAST))
             {
                 vertexbuffer.pos(x + 1.0D, y + 1.0D, z).color(f2, f3, f4, 1.0F).endVertex();
                 vertexbuffer.pos(x + 1.0D, y + 1.0D, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();
@@ -170,7 +170,7 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
                 vertexbuffer.pos(x + 1.0D, y, z).color(f2, f3, f4, 1.0F).endVertex();
             }
 
-            if (te.func_184313_a(EnumFacing.WEST))
+            if (te.shouldRenderFace(EnumFacing.WEST))
             {
                 vertexbuffer.pos(x, y, z).color(f2, f3, f4, 1.0F).endVertex();
                 vertexbuffer.pos(x, y, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();
@@ -178,7 +178,7 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
                 vertexbuffer.pos(x, y + 1.0D, z).color(f2, f3, f4, 1.0F).endVertex();
             }
 
-            if (te.func_184313_a(EnumFacing.DOWN))
+            if (te.shouldRenderFace(EnumFacing.DOWN))
             {
                 vertexbuffer.pos(x, y, z).color(f2, f3, f4, 1.0F).endVertex();
                 vertexbuffer.pos(x + 1.0D, y, z).color(f2, f3, f4, 1.0F).endVertex();
@@ -186,7 +186,7 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
                 vertexbuffer.pos(x, y, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();
             }
 
-            if (te.func_184313_a(EnumFacing.UP))
+            if (te.shouldRenderFace(EnumFacing.UP))
             {
                 vertexbuffer.pos(x, y + 1.0D, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();
                 vertexbuffer.pos(x + 1.0D, y + 1.0D, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();
@@ -197,7 +197,7 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
             tessellator.draw();
             GlStateManager.popMatrix();
             GlStateManager.matrixMode(5888);
-            this.bindTexture(field_188197_d);
+            this.bindTexture(END_SKY_TEXTURE);
         }
 
         GlStateManager.disableBlend();
@@ -208,16 +208,16 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
         GlStateManager.enableFog();
     }
 
-    private FloatBuffer func_188193_a(float p_188193_1_, float p_188193_2_, float p_188193_3_, float p_188193_4_)
+    private FloatBuffer getBuffer(float p_188193_1_, float p_188193_2_, float p_188193_3_, float p_188193_4_)
     {
-        this.field_188196_a.clear();
-        this.field_188196_a.put(p_188193_1_).put(p_188193_2_).put(p_188193_3_).put(p_188193_4_);
-        this.field_188196_a.flip();
-        return this.field_188196_a;
+        this.buffer.clear();
+        this.buffer.put(p_188193_1_).put(p_188193_2_).put(p_188193_3_).put(p_188193_4_);
+        this.buffer.flip();
+        return this.buffer;
     }
 
-    public boolean isGlobalRenderer(TileEntityEndGateway p_188185_1_)
+    public boolean isGlobalRenderer(TileEntityEndGateway te)
     {
-        return p_188185_1_.func_184309_b() || p_188185_1_.func_184310_d();
+        return te.isSpawning() || te.isCoolingDown();
     }
 }

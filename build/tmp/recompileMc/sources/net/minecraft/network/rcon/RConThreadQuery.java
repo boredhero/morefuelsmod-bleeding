@@ -40,7 +40,7 @@ public class RConThreadQuery extends RConThreadBase
     private byte[] buffer = new byte[1460];
     /** Storage for incoming DatagramPackets */
     private DatagramPacket incomingPacket;
-    private Map<SocketAddress, String> field_72644_p;
+    private Map<SocketAddress, String> idents;
     /** The hostname of this query server */
     private String queryHostname;
     /** The hostname of the running server */
@@ -93,7 +93,7 @@ public class RConThreadQuery extends RConThreadBase
             p_i1536_1_.saveProperties();
         }
 
-        this.field_72644_p = Maps.<SocketAddress, String>newHashMap();
+        this.idents = Maps.<SocketAddress, String>newHashMap();
         this.output = new RConOutputStream(1460);
         this.queryClients = Maps.<SocketAddress, RConThreadQuery.Auth>newHashMap();
         this.time = (new Date()).getTime();

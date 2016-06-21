@@ -1,20 +1,20 @@
 package net.minecraft.world.gen.layer;
 
 import net.minecraft.init.Biomes;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class GenLayerHills extends GenLayer
 {
-    private static final Logger logger = LogManager.getLogger();
-    private GenLayer field_151628_d;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private GenLayer riverLayer;
 
     public GenLayerHills(long p_i45479_1_, GenLayer p_i45479_3_, GenLayer p_i45479_4_)
     {
         super(p_i45479_1_);
         this.parent = p_i45479_3_;
-        this.field_151628_d = p_i45479_4_;
+        this.riverLayer = p_i45479_4_;
     }
 
     /**
@@ -24,7 +24,7 @@ public class GenLayerHills extends GenLayer
     public int[] getInts(int areaX, int areaY, int areaWidth, int areaHeight)
     {
         int[] aint = this.parent.getInts(areaX - 1, areaY - 1, areaWidth + 2, areaHeight + 2);
-        int[] aint1 = this.field_151628_d.getInts(areaX - 1, areaY - 1, areaWidth + 2, areaHeight + 2);
+        int[] aint1 = this.riverLayer.getInts(areaX - 1, areaY - 1, areaWidth + 2, areaHeight + 2);
         int[] aint2 = IntCache.getIntCache(areaWidth * areaHeight);
 
         for (int i = 0; i < areaHeight; ++i)
@@ -38,16 +38,16 @@ public class GenLayerHills extends GenLayer
 
                 if (k > 255)
                 {
-                    logger.debug("old! " + k);
+                    LOGGER.debug("old! " + k);
                 }
 
-                BiomeGenBase biomegenbase = BiomeGenBase.getBiomeForId(k);
-                boolean flag1 = biomegenbase != null && biomegenbase.isMutation();
+                Biome biome = Biome.getBiomeForId(k);
+                boolean flag1 = biome != null && biome.isMutation();
 
                 if (k != 0 && l >= 2 && (l - 2) % 29 == 1 && !flag1)
                 {
-                    BiomeGenBase biomegenbase3 = BiomeGenBase.getMutationForBiome(biomegenbase);
-                    aint2[j + i * areaWidth] = biomegenbase3 == null ? k : BiomeGenBase.getIdForBiome(biomegenbase3);
+                    Biome biome3 = Biome.getMutationForBiome(biome);
+                    aint2[j + i * areaWidth] = biome3 == null ? k : Biome.getIdForBiome(biome3);
                 }
                 else if (this.nextInt(3) != 0 && !flag)
                 {
@@ -55,91 +55,91 @@ public class GenLayerHills extends GenLayer
                 }
                 else
                 {
-                    BiomeGenBase biomegenbase1 = biomegenbase;
+                    Biome biome1 = biome;
 
-                    if (biomegenbase == Biomes.desert)
+                    if (biome == Biomes.DESERT)
                     {
-                        biomegenbase1 = Biomes.desertHills;
+                        biome1 = Biomes.DESERT_HILLS;
                     }
-                    else if (biomegenbase == Biomes.forest)
+                    else if (biome == Biomes.FOREST)
                     {
-                        biomegenbase1 = Biomes.forestHills;
+                        biome1 = Biomes.FOREST_HILLS;
                     }
-                    else if (biomegenbase == Biomes.birchForest)
+                    else if (biome == Biomes.BIRCH_FOREST)
                     {
-                        biomegenbase1 = Biomes.birchForestHills;
+                        biome1 = Biomes.BIRCH_FOREST_HILLS;
                     }
-                    else if (biomegenbase == Biomes.roofedForest)
+                    else if (biome == Biomes.ROOFED_FOREST)
                     {
-                        biomegenbase1 = Biomes.plains;
+                        biome1 = Biomes.PLAINS;
                     }
-                    else if (biomegenbase == Biomes.taiga)
+                    else if (biome == Biomes.TAIGA)
                     {
-                        biomegenbase1 = Biomes.taigaHills;
+                        biome1 = Biomes.TAIGA_HILLS;
                     }
-                    else if (biomegenbase == Biomes.megaTaiga)
+                    else if (biome == Biomes.REDWOOD_TAIGA)
                     {
-                        biomegenbase1 = Biomes.megaTaigaHills;
+                        biome1 = Biomes.REDWOOD_TAIGA_HILLS;
                     }
-                    else if (biomegenbase == Biomes.coldTaiga)
+                    else if (biome == Biomes.COLD_TAIGA)
                     {
-                        biomegenbase1 = Biomes.coldTaigaHills;
+                        biome1 = Biomes.COLD_TAIGA_HILLS;
                     }
-                    else if (biomegenbase == Biomes.plains)
+                    else if (biome == Biomes.PLAINS)
                     {
                         if (this.nextInt(3) == 0)
                         {
-                            biomegenbase1 = Biomes.forestHills;
+                            biome1 = Biomes.FOREST_HILLS;
                         }
                         else
                         {
-                            biomegenbase1 = Biomes.forest;
+                            biome1 = Biomes.FOREST;
                         }
                     }
-                    else if (biomegenbase == Biomes.icePlains)
+                    else if (biome == Biomes.ICE_PLAINS)
                     {
-                        biomegenbase1 = Biomes.iceMountains;
+                        biome1 = Biomes.ICE_MOUNTAINS;
                     }
-                    else if (biomegenbase == Biomes.jungle)
+                    else if (biome == Biomes.JUNGLE)
                     {
-                        biomegenbase1 = Biomes.jungleHills;
+                        biome1 = Biomes.JUNGLE_HILLS;
                     }
-                    else if (biomegenbase == Biomes.ocean)
+                    else if (biome == Biomes.OCEAN)
                     {
-                        biomegenbase1 = Biomes.deepOcean;
+                        biome1 = Biomes.DEEP_OCEAN;
                     }
-                    else if (biomegenbase == Biomes.extremeHills)
+                    else if (biome == Biomes.EXTREME_HILLS)
                     {
-                        biomegenbase1 = Biomes.extremeHillsPlus;
+                        biome1 = Biomes.EXTREME_HILLS_WITH_TREES;
                     }
-                    else if (biomegenbase == Biomes.savanna)
+                    else if (biome == Biomes.SAVANNA)
                     {
-                        biomegenbase1 = Biomes.savannaPlateau;
+                        biome1 = Biomes.SAVANNA_PLATEAU;
                     }
-                    else if (biomesEqualOrMesaPlateau(k, BiomeGenBase.getIdForBiome(Biomes.mesaPlateau_F)))
+                    else if (biomesEqualOrMesaPlateau(k, Biome.getIdForBiome(Biomes.MESA_ROCK)))
                     {
-                        biomegenbase1 = Biomes.mesa;
+                        biome1 = Biomes.MESA;
                     }
-                    else if (biomegenbase == Biomes.deepOcean && this.nextInt(3) == 0)
+                    else if (biome == Biomes.DEEP_OCEAN && this.nextInt(3) == 0)
                     {
                         int i1 = this.nextInt(2);
 
                         if (i1 == 0)
                         {
-                            biomegenbase1 = Biomes.plains;
+                            biome1 = Biomes.PLAINS;
                         }
                         else
                         {
-                            biomegenbase1 = Biomes.forest;
+                            biome1 = Biomes.FOREST;
                         }
                     }
 
-                    int j2 = BiomeGenBase.getIdForBiome(biomegenbase1);
+                    int j2 = Biome.getIdForBiome(biome1);
 
                     if (flag && j2 != k)
                     {
-                        BiomeGenBase biomegenbase2 = BiomeGenBase.getMutationForBiome(biomegenbase1);
-                        j2 = biomegenbase2 == null ? k : BiomeGenBase.getIdForBiome(biomegenbase2);
+                        Biome biome2 = Biome.getMutationForBiome(biome1);
+                        j2 = biome2 == null ? k : Biome.getIdForBiome(biome2);
                     }
 
                     if (j2 == k)

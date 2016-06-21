@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -26,7 +27,7 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
 
     protected BlockReed()
     {
-        super(Material.plants);
+        super(Material.PLANTS);
         this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
         this.setTickRandomly(true);
     }
@@ -38,7 +39,7 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (worldIn.getBlockState(pos.down()).getBlock() == Blocks.reeds || this.checkForDrop(worldIn, pos, state))
+        if (worldIn.getBlockState(pos.down()).getBlock() == Blocks.REEDS || this.checkForDrop(worldIn, pos, state))
         {
             if (worldIn.isAirBlock(pos.up()))
             {
@@ -77,7 +78,7 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
         {
             return true;
         }
-        else if (block != Blocks.grass && block != Blocks.dirt && block != Blocks.sand)
+        else if (block != Blocks.GRASS && block != Blocks.DIRT && block != Blocks.SAND)
         {
             return false;
         }
@@ -89,7 +90,7 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
             {
                 IBlockState iblockstate = worldIn.getBlockState(blockpos.offset(enumfacing));
 
-                if (iblockstate.getMaterial() == Material.water || iblockstate.getBlock() == Blocks.frosted_ice)
+                if (iblockstate.getMaterial() == Material.WATER || iblockstate.getBlock() == Blocks.FROSTED_ICE)
                 {
                     return true;
                 }
@@ -100,9 +101,11 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         this.checkForDrop(worldIn, pos, state);
     }
@@ -126,7 +129,8 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
         return this.canPlaceBlockAt(worldIn, pos);
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -134,9 +138,10 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.reeds;
+        return Items.REEDS;
     }
 
     /**
@@ -154,7 +159,7 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Items.reeds);
+        return new ItemStack(Items.REEDS);
     }
 
     /**

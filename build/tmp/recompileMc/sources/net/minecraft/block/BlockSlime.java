@@ -15,8 +15,8 @@ public class BlockSlime extends BlockBreakable
 {
     public BlockSlime()
     {
-        super(Material.clay, false, MapColor.grassColor);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        super(Material.CLAY, false, MapColor.GRASS);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
         this.slipperiness = 0.8F;
     }
 
@@ -65,7 +65,7 @@ public class BlockSlime extends BlockBreakable
     /**
      * Triggered whenever an entity collides with this block (enters into the block)
      */
-    public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, Entity entityIn)
+    public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn)
     {
         if (Math.abs(entityIn.motionY) < 0.1D && !entityIn.isSneaking())
         {
@@ -74,6 +74,6 @@ public class BlockSlime extends BlockBreakable
             entityIn.motionZ *= d0;
         }
 
-        super.onEntityCollidedWithBlock(worldIn, pos, entityIn);
+        super.onEntityWalk(worldIn, pos, entityIn);
     }
 }

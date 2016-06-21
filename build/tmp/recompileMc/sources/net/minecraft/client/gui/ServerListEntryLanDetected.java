@@ -9,22 +9,22 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry
 {
-    private final GuiMultiplayer field_148292_c;
+    private final GuiMultiplayer screen;
     protected final Minecraft mc;
-    protected final LanServerDetector.LanServer field_148291_b;
-    private long field_148290_d = 0L;
+    protected final LanServerDetector.LanServer serverData;
+    private long lastClickTime = 0L;
 
-    protected ServerListEntryLanDetected(GuiMultiplayer p_i45046_1_, LanServerDetector.LanServer p_i45046_2_)
+    protected ServerListEntryLanDetected(GuiMultiplayer screenIn, LanServerDetector.LanServer serverDataIn)
     {
-        this.field_148292_c = p_i45046_1_;
-        this.field_148291_b = p_i45046_2_;
+        this.screen = screenIn;
+        this.serverData = serverDataIn;
         this.mc = Minecraft.getMinecraft();
     }
 
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected)
     {
         this.mc.fontRendererObj.drawString(I18n.format("lanServer.title", new Object[0]), x + 32 + 3, y + 1, 16777215);
-        this.mc.fontRendererObj.drawString(this.field_148291_b.getServerMotd(), x + 32 + 3, y + 12, 8421504);
+        this.mc.fontRendererObj.drawString(this.serverData.getServerMotd(), x + 32 + 3, y + 12, 8421504);
 
         if (this.mc.gameSettings.hideServerAddress)
         {
@@ -32,30 +32,24 @@ public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry
         }
         else
         {
-            this.mc.fontRendererObj.drawString(this.field_148291_b.getServerIpPort(), x + 32 + 3, y + 12 + 11, 3158064);
+            this.mc.fontRendererObj.drawString(this.serverData.getServerIpPort(), x + 32 + 3, y + 12 + 11, 3158064);
         }
     }
 
     /**
      * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
      * clicked and the list should not be dragged.
-     *  
-     * @param mouseX Scaled X coordinate of the mouse on the entire screen
-     * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-     * @param mouseEvent The button on the mouse that was pressed
-     * @param relativeX Relative X coordinate of the mouse within this entry.
-     * @param relativeY Relative Y coordinate of the mouse within this entry.
      */
     public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
     {
-        this.field_148292_c.selectServer(slotIndex);
+        this.screen.selectServer(slotIndex);
 
-        if (Minecraft.getSystemTime() - this.field_148290_d < 250L)
+        if (Minecraft.getSystemTime() - this.lastClickTime < 250L)
         {
-            this.field_148292_c.connectToSelected();
+            this.screen.connectToSelected();
         }
 
-        this.field_148290_d = Minecraft.getSystemTime();
+        this.lastClickTime = Minecraft.getSystemTime();
         return false;
     }
 
@@ -72,6 +66,6 @@ public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry
 
     public LanServerDetector.LanServer getLanServer()
     {
-        return this.field_148291_b;
+        return this.serverData;
     }
 }

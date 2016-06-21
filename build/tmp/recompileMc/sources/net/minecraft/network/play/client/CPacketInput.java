@@ -21,12 +21,12 @@ public class CPacketInput implements Packet<INetHandlerPlayServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketInput(float p_i46868_1_, float p_i46868_2_, boolean p_i46868_3_, boolean p_i46868_4_)
+    public CPacketInput(float strafeSpeedIn, float forwardSpeedIn, boolean jumpingIn, boolean sneakingIn)
     {
-        this.strafeSpeed = p_i46868_1_;
-        this.forwardSpeed = p_i46868_2_;
-        this.jumping = p_i46868_3_;
-        this.sneaking = p_i46868_4_;
+        this.strafeSpeed = strafeSpeedIn;
+        this.forwardSpeed = forwardSpeedIn;
+        this.jumping = jumpingIn;
+        this.sneaking = sneakingIn;
     }
 
     /**

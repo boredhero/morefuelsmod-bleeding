@@ -17,16 +17,14 @@ public abstract class WorldGenAbstractTree extends WorldGenerator
     /**
      * returns whether or not a tree can grow into a block
      * For example, a tree will not grow into stone
-     *  
-     * @param blockType the type of block to be checked
      */
     protected boolean canGrowInto(Block blockType)
     {
         Material material = blockType.getDefaultState().getMaterial();
-        return material == Material.air || material == Material.leaves || blockType == Blocks.grass || blockType == Blocks.dirt || blockType == Blocks.log || blockType == Blocks.log2 || blockType == Blocks.sapling || blockType == Blocks.vine;
+        return material == Material.AIR || material == Material.LEAVES || blockType == Blocks.GRASS || blockType == Blocks.DIRT || blockType == Blocks.LOG || blockType == Blocks.LOG2 || blockType == Blocks.SAPLING || blockType == Blocks.VINE;
     }
 
-    public void func_180711_a(World worldIn, Random p_180711_2_, BlockPos p_180711_3_)
+    public void generateSaplings(World worldIn, Random random, BlockPos pos)
     {
     }
 
@@ -35,9 +33,9 @@ public abstract class WorldGenAbstractTree extends WorldGenerator
      */
     protected void setDirtAt(World worldIn, BlockPos pos)
     {
-        if (worldIn.getBlockState(pos).getBlock() != Blocks.dirt)
+        if (worldIn.getBlockState(pos).getBlock() != Blocks.DIRT)
         {
-            this.setBlockAndNotifyAdequately(worldIn, pos, Blocks.dirt.getDefaultState());
+            this.setBlockAndNotifyAdequately(worldIn, pos, Blocks.DIRT.getDefaultState());
         }
     }
 

@@ -40,9 +40,9 @@ public abstract class StateMapperBase implements IStateMapper
         return stringbuilder.toString();
     }
 
-    private <T extends Comparable<T>> String getPropertyName(IProperty<T> p_187489_1_, Comparable<?> p_187489_2_)
+    private <T extends Comparable<T>> String getPropertyName(IProperty<T> property, Comparable<?> value)
     {
-        return p_187489_1_.getName((T)p_187489_2_);
+        return property.getName((T)value);
     }
 
     public Map<IBlockState, ModelResourceLocation> putStateModelLocations(Block blockIn)

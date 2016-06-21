@@ -3,12 +3,13 @@ package net.minecraft.tileentity;
 import io.netty.buffer.ByteBuf;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -22,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class CommandBlockBaseLogic implements ICommandSender
 {
     /** The formatting for the timestamp on commands run. */
-    private static final SimpleDateFormat timestampFormat = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("HH:mm:ss");
     /** The number of successful commands run. (used for redstone output) */
     private int successCount;
     private boolean trackOutput = true;
@@ -55,22 +56,20 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
         return (ITextComponent)(this.lastOutput == null ? new TextComponentString("") : this.lastOutput);
     }
 
-    /**
-     * Stores data to NBT format.
-     */
-    public void writeDataToNBT(NBTTagCompound tagCompound)
+    public NBTTagCompound writeToNBT(NBTTagCompound p_189510_1_)
     {
-        tagCompound.setString("Command", this.commandStored);
-        tagCompound.setInteger("SuccessCount", this.successCount);
-        tagCompound.setString("CustomName", this.customName);
-        tagCompound.setBoolean("TrackOutput", this.trackOutput);
+        p_189510_1_.setString("Command", this.commandStored);
+        p_189510_1_.setInteger("SuccessCount", this.successCount);
+        p_189510_1_.setString("CustomName", this.customName);
+        p_189510_1_.setBoolean("TrackOutput", this.trackOutput);
 
         if (this.lastOutput != null && this.trackOutput)
         {
-            tagCompound.setString("LastOutput", ITextComponent.Serializer.componentToJson(this.lastOutput));
+            p_189510_1_.setString("LastOutput", ITextComponent.Serializer.componentToJson(this.lastOutput));
         }
 
-        this.resultStats.writeStatsToNBT(tagCompound);
+        this.resultStats.writeStatsToNBT(p_189510_1_);
+        return p_189510_1_;
     }
 
     /**
@@ -163,14 +162,14 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
                 {
                     CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Executing command block");
                     CrashReportCategory crashreportcategory = crashreport.makeCategory("Command to be executed");
-                    crashreportcategory.addCrashSectionCallable("Command", new Callable<String>()
+                    crashreportcategory.setDetail("Command", new ICrashReportDetail<String>()
                     {
                         public String call() throws Exception
                         {
                             return CommandBlockBaseLogic.this.getCommand();
                         }
                     });
-                    crashreportcategory.addCrashSectionCallable("Name", new Callable<String>()
+                    crashreportcategory.setDetail("Name", new ICrashReportDetail<String>()
                     {
                         public String call() throws Exception
                         {
@@ -203,9 +202,9 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
         return new TextComponentString(this.getName());
     }
 
-    public void setName(String p_145754_1_)
+    public void setName(String name)
     {
-        this.customName = p_145754_1_;
+        this.customName = name;
     }
 
     /**
@@ -215,7 +214,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
     {
         if (this.trackOutput && this.getEntityWorld() != null && !this.getEntityWorld().isRemote)
         {
-            this.lastOutput = (new TextComponentString("[" + timestampFormat.format(new Date()) + "] ")).appendSibling(component);
+            this.lastOutput = (new TextComponentString("[" + TIMESTAMP_FORMAT.format(new Date()) + "] ")).appendSibling(component);
             this.updateCommand();
         }
     }
@@ -236,13 +235,20 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
 
     public abstract void updateCommand();
 
+    /**
+     * Currently this returns 0 for the traditional command block, and 1 for the minecart command block
+     */
     @SideOnly(Side.CLIENT)
-    public abstract int func_145751_f();
+    public abstract int getCommandBlockType();
 
+    /**
+     * Fills in information about the command block for the packet. X/Y/Z for the minecart version, and entityId for the
+     * traditional version
+     */
     @SideOnly(Side.CLIENT)
-    public abstract void func_145757_a(ByteBuf buf);
+    public abstract void fillInInfo(ByteBuf buf);
 
-    public void setLastOutput(ITextComponent lastOutputMessage)
+    public void setLastOutput(@Nullable ITextComponent lastOutputMessage)
     {
         this.lastOutput = lastOutputMessage;
     }

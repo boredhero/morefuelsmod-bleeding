@@ -60,7 +60,7 @@ public class RenderPlayer extends RenderLivingBase<AbstractClientPlayer>
     public void doRender(AbstractClientPlayer entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderPlayerEvent.Pre(entity, this, partialTicks, x, y, z))) return;
-        if (!entity.isUser() || this.renderManager.livingPlayer == entity)
+        if (!entity.isUser() || this.renderManager.renderViewEntity == entity)
         {
             double d0 = y;
 
@@ -163,8 +163,7 @@ public class RenderPlayer extends RenderLivingBase<AbstractClientPlayer>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(AbstractClientPlayer entitylivingbaseIn, float partialTickTime)
     {
@@ -172,22 +171,22 @@ public class RenderPlayer extends RenderLivingBase<AbstractClientPlayer>
         GlStateManager.scale(f, f, f);
     }
 
-    protected void renderEntityName(AbstractClientPlayer p_188296_1_, double p_188296_2_, double p_188296_4_, double p_188296_6_, String p_188296_8_, double p_188296_9_)
+    protected void renderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double p_188296_9_)
     {
         if (p_188296_9_ < 100.0D)
         {
-            Scoreboard scoreboard = p_188296_1_.getWorldScoreboard();
+            Scoreboard scoreboard = entityIn.getWorldScoreboard();
             ScoreObjective scoreobjective = scoreboard.getObjectiveInDisplaySlot(2);
 
             if (scoreobjective != null)
             {
-                Score score = scoreboard.getOrCreateScore(p_188296_1_.getName(), scoreobjective);
-                this.renderLivingLabel(p_188296_1_, score.getScorePoints() + " " + scoreobjective.getDisplayName(), p_188296_2_, p_188296_4_, p_188296_6_, 64);
-                p_188296_4_ += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * 0.025F);
+                Score score = scoreboard.getOrCreateScore(entityIn.getName(), scoreobjective);
+                this.renderLivingLabel(entityIn, score.getScorePoints() + " " + scoreobjective.getDisplayName(), x, y, z, 64);
+                y += (double)((float)this.getFontRendererFromRenderManager().FONT_HEIGHT * 1.15F * 0.025F);
             }
         }
 
-        super.renderEntityName(p_188296_1_, p_188296_2_, p_188296_4_, p_188296_6_, p_188296_8_, p_188296_9_);
+        super.renderEntityName(entityIn, x, y, z, name, p_188296_9_);
     }
 
     public void renderRightArm(AbstractClientPlayer clientPlayer)
@@ -241,34 +240,34 @@ public class RenderPlayer extends RenderLivingBase<AbstractClientPlayer>
         }
     }
 
-    protected void rotateCorpse(AbstractClientPlayer bat, float p_77043_2_, float p_77043_3_, float partialTicks)
+    protected void rotateCorpse(AbstractClientPlayer entityLiving, float p_77043_2_, float p_77043_3_, float partialTicks)
     {
-        if (bat.isEntityAlive() && bat.isPlayerSleeping())
+        if (entityLiving.isEntityAlive() && entityLiving.isPlayerSleeping())
         {
-            GlStateManager.rotate(bat.getBedOrientationInDegrees(), 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(this.getDeathMaxRotation(bat), 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(entityLiving.getBedOrientationInDegrees(), 0.0F, 1.0F, 0.0F);
+            GlStateManager.rotate(this.getDeathMaxRotation(entityLiving), 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(270.0F, 0.0F, 1.0F, 0.0F);
         }
-        else if (bat.isElytraFlying())
+        else if (entityLiving.isElytraFlying())
         {
-            super.rotateCorpse(bat, p_77043_2_, p_77043_3_, partialTicks);
-            float f = (float)bat.getTicksElytraFlying() + partialTicks;
+            super.rotateCorpse(entityLiving, p_77043_2_, p_77043_3_, partialTicks);
+            float f = (float)entityLiving.getTicksElytraFlying() + partialTicks;
             float f1 = MathHelper.clamp_float(f * f / 100.0F, 0.0F, 1.0F);
-            GlStateManager.rotate(f1 * (-90.0F - bat.rotationPitch), 1.0F, 0.0F, 0.0F);
-            Vec3d vec3d = bat.getLook(partialTicks);
-            double d0 = bat.motionX * bat.motionX + bat.motionZ * bat.motionZ;
+            GlStateManager.rotate(f1 * (-90.0F - entityLiving.rotationPitch), 1.0F, 0.0F, 0.0F);
+            Vec3d vec3d = entityLiving.getLook(partialTicks);
+            double d0 = entityLiving.motionX * entityLiving.motionX + entityLiving.motionZ * entityLiving.motionZ;
             double d1 = vec3d.xCoord * vec3d.xCoord + vec3d.zCoord * vec3d.zCoord;
 
             if (d0 > 0.0D && d1 > 0.0D)
             {
-                double d2 = (bat.motionX * vec3d.xCoord + bat.motionZ * vec3d.zCoord) / (Math.sqrt(d0) * Math.sqrt(d1));
-                double d3 = bat.motionX * vec3d.zCoord - bat.motionZ * vec3d.xCoord;
+                double d2 = (entityLiving.motionX * vec3d.xCoord + entityLiving.motionZ * vec3d.zCoord) / (Math.sqrt(d0) * Math.sqrt(d1));
+                double d3 = entityLiving.motionX * vec3d.zCoord - entityLiving.motionZ * vec3d.xCoord;
                 GlStateManager.rotate((float)(Math.signum(d3) * Math.acos(d2)) * 180.0F / (float)Math.PI, 0.0F, 1.0F, 0.0F);
             }
         }
         else
         {
-            super.rotateCorpse(bat, p_77043_2_, p_77043_3_, partialTicks);
+            super.rotateCorpse(entityLiving, p_77043_2_, p_77043_3_, partialTicks);
         }
     }
 }

@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -60,9 +61,12 @@ public class BlockStem extends BlockBush implements IGrowable
         return state;
     }
 
-    protected boolean func_185514_i(IBlockState state)
+    /**
+     * Return true if the block can sustain a Bush
+     */
+    protected boolean canSustainBush(IBlockState state)
     {
-        return state.getBlock() == Blocks.farmland;
+        return state.getBlock() == Blocks.FARMLAND;
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
@@ -96,7 +100,7 @@ public class BlockStem extends BlockBush implements IGrowable
                     IBlockState soil = worldIn.getBlockState(pos.down());
                     Block block = soil.getBlock();
 
-                    if (worldIn.isAirBlock(pos) && (block.canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this) || block == Blocks.dirt || block == Blocks.grass))
+                    if (worldIn.isAirBlock(pos) && (block.canSustainPlant(soil, worldIn, pos.down(), EnumFacing.UP, this) || block == Blocks.DIRT || block == Blocks.GRASS))
                     {
                         worldIn.setBlockState(pos, this.crop.getDefaultState());
                     }
@@ -142,19 +146,22 @@ public class BlockStem extends BlockBush implements IGrowable
         return ret;
     }
 
+    @Nullable
     protected Item getSeedItem()
     {
-        return this.crop == Blocks.pumpkin ? Items.pumpkin_seeds : (this.crop == Blocks.melon_block ? Items.melon_seeds : null);
+        return this.crop == Blocks.PUMPKIN ? Items.PUMPKIN_SEEDS : (this.crop == Blocks.MELON_BLOCK ? Items.MELON_SEEDS : null);
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
     }
 
+    @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         Item item = this.getSeedItem();

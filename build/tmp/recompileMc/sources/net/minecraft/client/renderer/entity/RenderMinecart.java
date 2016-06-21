@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderMinecart<T extends EntityMinecart> extends Render<T>
 {
-    private static final ResourceLocation minecartTextures = new ResourceLocation("textures/entity/minecart.png");
+    private static final ResourceLocation MINECART_TEXTURES = new ResourceLocation("textures/entity/minecart.png");
     /** instance of ModelMinecart for rendering */
     protected ModelBase modelMinecart = new ModelMinecart();
 
@@ -44,13 +44,13 @@ public class RenderMinecart<T extends EntityMinecart> extends Render<T>
         double d1 = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * (double)partialTicks;
         double d2 = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double)partialTicks;
         double d3 = 0.30000001192092896D;
-        Vec3d vec3d = entity.func_70489_a(d0, d1, d2);
+        Vec3d vec3d = entity.getPos(d0, d1, d2);
         float f3 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
 
         if (vec3d != null)
         {
-            Vec3d vec3d1 = entity.func_70495_a(d0, d1, d2, d3);
-            Vec3d vec3d2 = entity.func_70495_a(d0, d1, d2, -d3);
+            Vec3d vec3d1 = entity.getPosOffset(d0, d1, d2, d3);
+            Vec3d vec3d2 = entity.getPosOffset(d0, d1, d2, -d3);
 
             if (vec3d1 == null)
             {
@@ -104,11 +104,11 @@ public class RenderMinecart<T extends EntityMinecart> extends Render<T>
         if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
         {
             GlStateManager.pushMatrix();
-            this.bindTexture(TextureMap.locationBlocksTexture);
+            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             float f4 = 0.75F;
             GlStateManager.scale(f4, f4, f4);
             GlStateManager.translate(-0.5F, (float)(j - 8) / 16.0F, 0.5F);
-            this.func_188319_a(entity, partialTicks, iblockstate);
+            this.renderCartContents(entity, partialTicks, iblockstate);
             GlStateManager.popMatrix();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.bindEntityTexture(entity);
@@ -132,10 +132,10 @@ public class RenderMinecart<T extends EntityMinecart> extends Render<T>
      */
     protected ResourceLocation getEntityTexture(T entity)
     {
-        return minecartTextures;
+        return MINECART_TEXTURES;
     }
 
-    protected void func_188319_a(T p_188319_1_, float p_188319_2_, IBlockState p_188319_3_)
+    protected void renderCartContents(T p_188319_1_, float p_188319_2_, IBlockState p_188319_3_)
     {
         GlStateManager.pushMatrix();
         Minecraft.getMinecraft().getBlockRendererDispatcher().renderBlockBrightness(p_188319_3_, p_188319_1_.getBrightness(p_188319_2_));

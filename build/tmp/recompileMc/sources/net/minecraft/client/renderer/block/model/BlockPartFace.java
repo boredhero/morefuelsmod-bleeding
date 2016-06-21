@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
+import javax.annotation.Nullable;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import net.minecraftforge.fml.relauncher.Side;
@@ -20,7 +21,7 @@ public class BlockPartFace
     public final String texture;
     public final BlockFaceUV blockFaceUV;
 
-    public BlockPartFace(EnumFacing cullFaceIn, int tintIndexIn, String textureIn, BlockFaceUV blockFaceUVIn)
+    public BlockPartFace(@Nullable EnumFacing cullFaceIn, int tintIndexIn, String textureIn, BlockFaceUV blockFaceUVIn)
     {
         this.cullFace = cullFaceIn;
         this.tintIndex = tintIndexIn;
@@ -51,6 +52,7 @@ public class BlockPartFace
                 return JsonUtils.getString(object, "texture");
             }
 
+            @Nullable
             private EnumFacing parseCullFace(JsonObject object)
             {
                 String s = JsonUtils.getString(object, "cullface", "");

@@ -1,5 +1,6 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
@@ -8,7 +9,7 @@ import net.minecraft.world.gen.feature.WorldGenEndPodium;
 
 public class PhaseLanding extends PhaseBase
 {
-    private Vec3d field_188685_b;
+    private Vec3d targetLocation;
 
     public PhaseLanding(EntityDragon dragonIn)
     {
@@ -21,7 +22,7 @@ public class PhaseLanding extends PhaseBase
      */
     public void doClientRenderEffects()
     {
-        Vec3d vec3d = this.dragon.func_184665_a(1.0F).normalize();
+        Vec3d vec3d = this.dragon.getHeadLookVec(1.0F).normalize();
         vec3d.rotateYaw(-((float)Math.PI / 4F));
         double d0 = this.dragon.dragonPartHead.posX;
         double d1 = this.dragon.dragonPartHead.posY + (double)(this.dragon.dragonPartHead.height / 2.0F);
@@ -43,14 +44,14 @@ public class PhaseLanding extends PhaseBase
      */
     public void doLocalUpdate()
     {
-        if (this.field_188685_b == null)
+        if (this.targetLocation == null)
         {
-            this.field_188685_b = new Vec3d(this.dragon.worldObj.getTopSolidOrLiquidBlock(WorldGenEndPodium.field_186139_a));
+            this.targetLocation = new Vec3d(this.dragon.worldObj.getTopSolidOrLiquidBlock(WorldGenEndPodium.END_PODIUM_LOCATION));
         }
 
-        if (this.field_188685_b.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ) < 1.0D)
+        if (this.targetLocation.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ) < 1.0D)
         {
-            ((PhaseSittingFlaming)this.dragon.getPhaseManager().getPhase(PhaseList.SITTING_FLAMING)).func_188663_j();
+            ((PhaseSittingFlaming)this.dragon.getPhaseManager().getPhase(PhaseList.SITTING_FLAMING)).resetFlameCount();
             this.dragon.getPhaseManager().setPhase(PhaseList.SITTING_SCANNING);
         }
     }
@@ -75,15 +76,16 @@ public class PhaseLanding extends PhaseBase
      */
     public void initPhase()
     {
-        this.field_188685_b = null;
+        this.targetLocation = null;
     }
 
     /**
      * Returns the location the dragon is flying toward
      */
+    @Nullable
     public Vec3d getTargetLocation()
     {
-        return this.field_188685_b;
+        return this.targetLocation;
     }
 
     public PhaseList<PhaseLanding> getPhaseList()

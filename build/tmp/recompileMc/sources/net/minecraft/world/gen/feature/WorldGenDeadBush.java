@@ -22,9 +22,9 @@ public class WorldGenDeadBush extends WorldGenerator
         {
             BlockPos blockpos = position.add(rand.nextInt(8) - rand.nextInt(8), rand.nextInt(4) - rand.nextInt(4), rand.nextInt(8) - rand.nextInt(8));
 
-            if (worldIn.isAirBlock(blockpos) && Blocks.deadbush.canBlockStay(worldIn, blockpos, Blocks.deadbush.getDefaultState()))
+            if (worldIn.isAirBlock(blockpos) && Blocks.DEADBUSH.canBlockStay(worldIn, blockpos, Blocks.DEADBUSH.getDefaultState()))
             {
-                worldIn.setBlockState(blockpos, Blocks.deadbush.getDefaultState(), 2);
+                worldIn.setBlockState(blockpos, Blocks.DEADBUSH.getDefaultState(), 2);
             }
         }
 

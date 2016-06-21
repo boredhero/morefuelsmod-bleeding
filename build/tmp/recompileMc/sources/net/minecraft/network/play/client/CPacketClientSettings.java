@@ -16,21 +16,21 @@ public class CPacketClientSettings implements Packet<INetHandlerPlayServer>
     private EntityPlayer.EnumChatVisibility chatVisibility;
     private boolean enableColors;
     private int modelPartFlags;
-    private EnumHandSide field_186992_f;
+    private EnumHandSide mainHand;
 
     public CPacketClientSettings()
     {
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketClientSettings(String p_i46885_1_, int p_i46885_2_, EntityPlayer.EnumChatVisibility p_i46885_3_, boolean p_i46885_4_, int p_i46885_5_, EnumHandSide p_i46885_6_)
+    public CPacketClientSettings(String langIn, int renderDistanceIn, EntityPlayer.EnumChatVisibility chatVisibilityIn, boolean chatColorsIn, int modelPartsIn, EnumHandSide mainHandIn)
     {
-        this.lang = p_i46885_1_;
-        this.view = p_i46885_2_;
-        this.chatVisibility = p_i46885_3_;
-        this.enableColors = p_i46885_4_;
-        this.modelPartFlags = p_i46885_5_;
-        this.field_186992_f = p_i46885_6_;
+        this.lang = langIn;
+        this.view = renderDistanceIn;
+        this.chatVisibility = chatVisibilityIn;
+        this.enableColors = chatColorsIn;
+        this.modelPartFlags = modelPartsIn;
+        this.mainHand = mainHandIn;
     }
 
     /**
@@ -43,7 +43,7 @@ public class CPacketClientSettings implements Packet<INetHandlerPlayServer>
         this.chatVisibility = (EntityPlayer.EnumChatVisibility)buf.readEnumValue(EntityPlayer.EnumChatVisibility.class);
         this.enableColors = buf.readBoolean();
         this.modelPartFlags = buf.readUnsignedByte();
-        this.field_186992_f = (EnumHandSide)buf.readEnumValue(EnumHandSide.class);
+        this.mainHand = (EnumHandSide)buf.readEnumValue(EnumHandSide.class);
     }
 
     /**
@@ -56,7 +56,7 @@ public class CPacketClientSettings implements Packet<INetHandlerPlayServer>
         buf.writeEnumValue(this.chatVisibility);
         buf.writeBoolean(this.enableColors);
         buf.writeByte(this.modelPartFlags);
-        buf.writeEnumValue(this.field_186992_f);
+        buf.writeEnumValue(this.mainHand);
     }
 
     /**
@@ -87,8 +87,8 @@ public class CPacketClientSettings implements Packet<INetHandlerPlayServer>
         return this.modelPartFlags;
     }
 
-    public EnumHandSide func_186991_f()
+    public EnumHandSide getMainHand()
     {
-        return this.field_186992_f;
+        return this.mainHand;
     }
 }

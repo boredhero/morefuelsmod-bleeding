@@ -262,7 +262,7 @@ public class VillageCollection extends WorldSavedData
     {
         IBlockState iblockstate = this.worldObj.getBlockState(doorPos);
         Block block = iblockstate.getBlock();
-        return block instanceof BlockDoor ? iblockstate.getMaterial() == Material.wood : false;
+        return block instanceof BlockDoor ? iblockstate.getMaterial() == Material.WOOD : false;
     }
 
     /**
@@ -282,12 +282,9 @@ public class VillageCollection extends WorldSavedData
         }
     }
 
-    /**
-     * write data to NBTTagCompound from this MapDataBase, similar to Entities and TileEntities
-     */
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound p_189551_1_)
     {
-        nbt.setInteger("Tick", this.tickCounter);
+        p_189551_1_.setInteger("Tick", this.tickCounter);
         NBTTagList nbttaglist = new NBTTagList();
 
         for (Village village : this.villageList)
@@ -297,7 +294,8 @@ public class VillageCollection extends WorldSavedData
             nbttaglist.appendTag(nbttagcompound);
         }
 
-        nbt.setTag("Villages", nbttaglist);
+        p_189551_1_.setTag("Villages", nbttaglist);
+        return p_189551_1_;
     }
 
     public static String fileNameForProvider(WorldProvider provider)

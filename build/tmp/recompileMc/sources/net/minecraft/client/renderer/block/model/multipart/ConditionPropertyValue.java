@@ -8,6 +8,7 @@ import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -21,10 +22,10 @@ public class ConditionPropertyValue implements ICondition
     private final String key;
     private final String value;
 
-    public ConditionPropertyValue(String p_i46565_1_, String p_i46565_2_)
+    public ConditionPropertyValue(String keyIn, String valueIn)
     {
-        this.key = p_i46565_1_;
-        this.value = p_i46565_2_;
+        this.key = keyIn;
+        this.value = valueIn;
     }
 
     public Predicate<IBlockState> getPredicate(BlockStateContainer blockState)
@@ -63,7 +64,8 @@ public class ConditionPropertyValue implements ICondition
                 {
                     predicate = Predicates.or(Iterables.transform(list, new Function<String, Predicate<IBlockState>>()
                     {
-                        public Predicate<IBlockState> apply(String p_apply_1_)
+                        @Nullable
+                        public Predicate<IBlockState> apply(@Nullable String p_apply_1_)
                         {
                             return ConditionPropertyValue.this.makePredicate(iproperty, p_apply_1_);
                         }
@@ -75,9 +77,9 @@ public class ConditionPropertyValue implements ICondition
         }
     }
 
-    private Predicate<IBlockState> makePredicate(final IProperty<?> p_188123_1_, String p_188123_2_)
+    private Predicate<IBlockState> makePredicate(final IProperty<?> property, String valueIn)
     {
-        final Optional<?> optional = p_188123_1_.parseValue(p_188123_2_);
+        final Optional<?> optional = property.parseValue(valueIn);
 
         if (!optional.isPresent())
         {
@@ -87,9 +89,9 @@ public class ConditionPropertyValue implements ICondition
         {
             return new Predicate<IBlockState>()
             {
-                public boolean apply(IBlockState p_apply_1_)
+                public boolean apply(@Nullable IBlockState p_apply_1_)
                 {
-                    return p_apply_1_ != null && p_apply_1_.getValue(p_188123_1_).equals(optional.get());
+                    return p_apply_1_ != null && p_apply_1_.getValue(property).equals(optional.get());
                 }
             };
         }

@@ -3,6 +3,7 @@ package net.minecraft.entity.ai;
 import com.google.common.base.Predicate;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -37,7 +38,7 @@ public class EntityAIFindEntityNearestPlayer extends EntityAIBase
 
         this.predicate = new Predicate<Entity>()
         {
-            public boolean apply(Entity p_apply_1_)
+            public boolean apply(@Nullable Entity p_apply_1_)
             {
                 if (!(p_apply_1_ instanceof EntityPlayer))
                 {

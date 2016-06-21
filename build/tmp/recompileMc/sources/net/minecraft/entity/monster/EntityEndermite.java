@@ -1,5 +1,6 @@
 package net.minecraft.entity.monster;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -67,24 +68,25 @@ public class EntityEndermite extends EntityMob
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_endermite_ambient;
+        return SoundEvents.ENTITY_ENDERMITE_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_endermite_hurt;
+        return SoundEvents.ENTITY_ENDERMITE_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_endermite_death;
+        return SoundEvents.ENTITY_ENDERMITE_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        this.playSound(SoundEvents.entity_endermite_step, 0.15F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_ENDERMITE_STEP, 0.15F, 1.0F);
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_ENDERMITE;
@@ -93,21 +95,21 @@ public class EntityEndermite extends EntityMob
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.lifetime = tagCompund.getInteger("Lifetime");
-        this.playerSpawned = tagCompund.getBoolean("PlayerSpawned");
+        super.readEntityFromNBT(compound);
+        this.lifetime = compound.getInteger("Lifetime");
+        this.playerSpawned = compound.getBoolean("PlayerSpawned");
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setInteger("Lifetime", this.lifetime);
-        tagCompound.setBoolean("PlayerSpawned", this.playerSpawned);
+        super.writeEntityToNBT(compound);
+        compound.setInteger("Lifetime", this.lifetime);
+        compound.setBoolean("PlayerSpawned", this.playerSpawned);
     }
 
     /**

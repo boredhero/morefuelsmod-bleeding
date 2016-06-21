@@ -33,8 +33,7 @@ public class EntityEnderEye extends Entity
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -58,11 +57,11 @@ public class EntityEnderEye extends Entity
         this.setPosition(x, y, z);
     }
 
-    public void moveTowards(BlockPos p_180465_1_)
+    public void moveTowards(BlockPos pos)
     {
-        double d0 = (double)p_180465_1_.getX();
-        int i = p_180465_1_.getY();
-        double d1 = (double)p_180465_1_.getZ();
+        double d0 = (double)pos.getX();
+        int i = pos.getY();
+        double d1 = (double)pos.getZ();
         double d2 = d0 - this.posX;
         double d3 = d1 - this.posZ;
         float f = MathHelper.sqrt_double(d2 * d2 + d3 * d3);
@@ -85,7 +84,7 @@ public class EntityEnderEye extends Entity
     }
 
     /**
-     * Sets the velocity to the args. Args: x, y, z
+     * Updates the velocity of the entity to a new value.
      */
     @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
@@ -192,11 +191,11 @@ public class EntityEnderEye extends Entity
 
                 if (this.shatterOrDrop)
                 {
-                    this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Items.ender_eye)));
+                    this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY, this.posZ, new ItemStack(Items.ENDER_EYE)));
                 }
                 else
                 {
-                    this.worldObj.playAuxSFX(2003, new BlockPos(this), 0);
+                    this.worldObj.playEvent(2003, new BlockPos(this), 0);
                 }
             }
         }
@@ -205,14 +204,14 @@ public class EntityEnderEye extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
     }
 
@@ -231,9 +230,9 @@ public class EntityEnderEye extends Entity
     }
 
     /**
-     * If returns false, the item will not inflict any damage against entities.
+     * Returns true if it's possible to attack this entity with an item.
      */
-    public boolean canAttackWithItem()
+    public boolean canBeAttackedWithItem()
     {
         return false;
     }

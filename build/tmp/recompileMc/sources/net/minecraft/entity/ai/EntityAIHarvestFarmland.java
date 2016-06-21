@@ -16,8 +16,8 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
     /** Villager that is harvesting */
     private final EntityVillager theVillager;
     private boolean hasFarmItem;
-    private boolean field_179503_e;
-    private int field_179501_f;
+    private boolean wantsToReapStuff;
+    private int currentTask;
 
     public EntityAIHarvestFarmland(EntityVillager theVillagerIn, double speedIn)
     {
@@ -37,9 +37,9 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
                 return false;
             }
 
-            this.field_179501_f = -1;
+            this.currentTask = -1;
             this.hasFarmItem = this.theVillager.isFarmItemInInventory();
-            this.field_179503_e = this.theVillager.func_175557_cr();
+            this.wantsToReapStuff = this.theVillager.wantsMoreFood();
         }
 
         return super.shouldExecute();
@@ -50,7 +50,7 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
      */
     public boolean continueExecuting()
     {
-        return this.field_179501_f >= 0 && super.continueExecuting();
+        return this.currentTask >= 0 && super.continueExecuting();
     }
 
     /**
@@ -84,11 +84,11 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
             IBlockState iblockstate = world.getBlockState(blockpos);
             Block block = iblockstate.getBlock();
 
-            if (this.field_179501_f == 0 && block instanceof BlockCrops && ((BlockCrops)block).func_185525_y(iblockstate))
+            if (this.currentTask == 0 && block instanceof BlockCrops && ((BlockCrops)block).isMaxAge(iblockstate))
             {
                 world.destroyBlock(blockpos, true);
             }
-            else if (this.field_179501_f == 1 && block == Blocks.air)
+            else if (this.currentTask == 1 && block == Blocks.AIR)
             {
                 InventoryBasic inventorybasic = this.theVillager.getVillagerInventory();
 
@@ -99,24 +99,24 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
 
                     if (itemstack != null)
                     {
-                        if (itemstack.getItem() == Items.wheat_seeds)
+                        if (itemstack.getItem() == Items.WHEAT_SEEDS)
                         {
-                            world.setBlockState(blockpos, Blocks.wheat.getDefaultState(), 3);
+                            world.setBlockState(blockpos, Blocks.WHEAT.getDefaultState(), 3);
                             flag = true;
                         }
-                        else if (itemstack.getItem() == Items.potato)
+                        else if (itemstack.getItem() == Items.POTATO)
                         {
-                            world.setBlockState(blockpos, Blocks.potatoes.getDefaultState(), 3);
+                            world.setBlockState(blockpos, Blocks.POTATOES.getDefaultState(), 3);
                             flag = true;
                         }
-                        else if (itemstack.getItem() == Items.carrot)
+                        else if (itemstack.getItem() == Items.CARROT)
                         {
-                            world.setBlockState(blockpos, Blocks.carrots.getDefaultState(), 3);
+                            world.setBlockState(blockpos, Blocks.CARROTS.getDefaultState(), 3);
                             flag = true;
                         }
-                        else if (itemstack.getItem() == Items.beetroot_seeds)
+                        else if (itemstack.getItem() == Items.BEETROOT_SEEDS)
                         {
-                            world.setBlockState(blockpos, Blocks.beetroots.getDefaultState(), 3);
+                            world.setBlockState(blockpos, Blocks.BEETROOTS.getDefaultState(), 3);
                             flag = true;
                         }
                     }
@@ -135,7 +135,7 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
                 }
             }
 
-            this.field_179501_f = -1;
+            this.currentTask = -1;
             this.runDelay = 10;
         }
     }
@@ -147,21 +147,21 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
     {
         Block block = worldIn.getBlockState(pos).getBlock();
 
-        if (block == Blocks.farmland)
+        if (block == Blocks.FARMLAND)
         {
             pos = pos.up();
             IBlockState iblockstate = worldIn.getBlockState(pos);
             block = iblockstate.getBlock();
 
-            if (block instanceof BlockCrops && ((BlockCrops)block).func_185525_y(iblockstate) && this.field_179503_e && (this.field_179501_f == 0 || this.field_179501_f < 0))
+            if (block instanceof BlockCrops && ((BlockCrops)block).isMaxAge(iblockstate) && this.wantsToReapStuff && (this.currentTask == 0 || this.currentTask < 0))
             {
-                this.field_179501_f = 0;
+                this.currentTask = 0;
                 return true;
             }
 
-            if (block == Blocks.air && this.hasFarmItem && (this.field_179501_f == 1 || this.field_179501_f < 0))
+            if (block == Blocks.AIR && this.hasFarmItem && (this.currentTask == 1 || this.currentTask < 0))
             {
-                this.field_179501_f = 1;
+                this.currentTask = 1;
                 return true;
             }
         }

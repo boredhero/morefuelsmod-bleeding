@@ -11,8 +11,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class PhaseSittingFlaming extends PhaseSittingBase
 {
-    private int field_188664_b;
-    private int field_188665_c;
+    private int flameTicks;
+    private int flameCount;
     private EntityAreaEffectCloud areaEffectCloud;
 
     public PhaseSittingFlaming(EntityDragon dragonIn)
@@ -26,11 +26,11 @@ public class PhaseSittingFlaming extends PhaseSittingBase
      */
     public void doClientRenderEffects()
     {
-        ++this.field_188664_b;
+        ++this.flameTicks;
 
-        if (this.field_188664_b % 2 == 0 && this.field_188664_b < 10)
+        if (this.flameTicks % 2 == 0 && this.flameTicks < 10)
         {
-            Vec3d vec3d = this.dragon.func_184665_a(1.0F).normalize();
+            Vec3d vec3d = this.dragon.getHeadLookVec(1.0F).normalize();
             vec3d.rotateYaw(-((float)Math.PI / 4F));
             double d0 = this.dragon.dragonPartHead.posX;
             double d1 = this.dragon.dragonPartHead.posY + (double)(this.dragon.dragonPartHead.height / 2.0F);
@@ -58,11 +58,11 @@ public class PhaseSittingFlaming extends PhaseSittingBase
      */
     public void doLocalUpdate()
     {
-        ++this.field_188664_b;
+        ++this.flameTicks;
 
-        if (this.field_188664_b >= 200)
+        if (this.flameTicks >= 200)
         {
-            if (this.field_188665_c >= 4)
+            if (this.flameCount >= 4)
             {
                 this.dragon.getPhaseManager().setPhase(PhaseList.TAKEOFF);
             }
@@ -71,7 +71,7 @@ public class PhaseSittingFlaming extends PhaseSittingBase
                 this.dragon.getPhaseManager().setPhase(PhaseList.SITTING_SCANNING);
             }
         }
-        else if (this.field_188664_b == 10)
+        else if (this.flameTicks == 10)
         {
             Vec3d vec3d = (new Vec3d(this.dragon.dragonPartHead.posX - this.dragon.posX, 0.0D, this.dragon.dragonPartHead.posZ - this.dragon.posZ)).normalize();
             float f = 5.0F;
@@ -83,7 +83,7 @@ public class PhaseSittingFlaming extends PhaseSittingBase
             while (this.dragon.worldObj.isAirBlock(blockpos$mutableblockpos))
             {
                 --d2;
-                blockpos$mutableblockpos.set(MathHelper.floor_double(d0), MathHelper.floor_double(d2), MathHelper.floor_double(d1));
+                blockpos$mutableblockpos.setPos(MathHelper.floor_double(d0), MathHelper.floor_double(d2), MathHelper.floor_double(d1));
             }
 
             d2 = (double)(MathHelper.floor_double(d2) + 1);
@@ -92,7 +92,7 @@ public class PhaseSittingFlaming extends PhaseSittingBase
             this.areaEffectCloud.setRadius(f);
             this.areaEffectCloud.setDuration(200);
             this.areaEffectCloud.setParticle(EnumParticleTypes.DRAGON_BREATH);
-            this.areaEffectCloud.addEffect(new PotionEffect(MobEffects.harm));
+            this.areaEffectCloud.addEffect(new PotionEffect(MobEffects.INSTANT_DAMAGE));
             this.dragon.worldObj.spawnEntityInWorld(this.areaEffectCloud);
         }
     }
@@ -102,8 +102,8 @@ public class PhaseSittingFlaming extends PhaseSittingBase
      */
     public void initPhase()
     {
-        this.field_188664_b = 0;
-        ++this.field_188665_c;
+        this.flameTicks = 0;
+        ++this.flameCount;
     }
 
     public void removeAreaEffect()
@@ -120,8 +120,8 @@ public class PhaseSittingFlaming extends PhaseSittingBase
         return PhaseList.SITTING_FLAMING;
     }
 
-    public void func_188663_j()
+    public void resetFlameCount()
     {
-        this.field_188665_c = 0;
+        this.flameCount = 0;
     }
 }

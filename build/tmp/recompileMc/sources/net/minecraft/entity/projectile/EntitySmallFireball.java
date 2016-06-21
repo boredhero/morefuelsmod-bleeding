@@ -31,20 +31,20 @@ public class EntitySmallFireball extends EntityFireball
     /**
      * Called when this EntityFireball hits a block or entity.
      */
-    protected void onImpact(RayTraceResult movingObject)
+    protected void onImpact(RayTraceResult result)
     {
         if (!this.worldObj.isRemote)
         {
-            if (movingObject.entityHit != null)
+            if (result.entityHit != null)
             {
-                if (!movingObject.entityHit.isImmuneToFire())
+                if (!result.entityHit.isImmuneToFire())
                 {
-                    boolean flag = movingObject.entityHit.attackEntityFrom(DamageSource.causeFireballDamage(this, this.shootingEntity), 5.0F);
+                    boolean flag = result.entityHit.attackEntityFrom(DamageSource.causeFireballDamage(this, this.shootingEntity), 5.0F);
 
                     if (flag)
                     {
-                        this.applyEnchantments(this.shootingEntity, movingObject.entityHit);
-                        movingObject.entityHit.setFire(5);
+                        this.applyEnchantments(this.shootingEntity, result.entityHit);
+                        result.entityHit.setFire(5);
                     }
                 }
             }
@@ -59,11 +59,11 @@ public class EntitySmallFireball extends EntityFireball
 
                 if (flag1)
                 {
-                    BlockPos blockpos = movingObject.getBlockPos().offset(movingObject.sideHit);
+                    BlockPos blockpos = result.getBlockPos().offset(result.sideHit);
 
                     if (this.worldObj.isAirBlock(blockpos))
                     {
-                        this.worldObj.setBlockState(blockpos, Blocks.fire.getDefaultState());
+                        this.worldObj.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
                     }
                 }
             }

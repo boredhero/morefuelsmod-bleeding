@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -74,7 +75,7 @@ public class EntitySpider extends EntityMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(CLIMBING, Byte.valueOf((byte)0));
+        this.dataManager.register(CLIMBING, Byte.valueOf((byte)0));
     }
 
     /**
@@ -99,24 +100,25 @@ public class EntitySpider extends EntityMob
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_spider_ambient;
+        return SoundEvents.ENTITY_SPIDER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_spider_hurt;
+        return SoundEvents.ENTITY_SPIDER_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_spider_death;
+        return SoundEvents.ENTITY_SPIDER_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        this.playSound(SoundEvents.entity_spider_step, 0.15F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_SPIDER_STEP, 0.15F, 1.0F);
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_SPIDER;
@@ -147,7 +149,7 @@ public class EntitySpider extends EntityMob
 
     public boolean isPotionApplicable(PotionEffect potioneffectIn)
     {
-        return potioneffectIn.getPotion() == MobEffects.poison ? false : super.isPotionApplicable(potioneffectIn);
+        return potioneffectIn.getPotion() == MobEffects.POISON ? false : super.isPotionApplicable(potioneffectIn);
     }
 
     /**
@@ -156,7 +158,7 @@ public class EntitySpider extends EntityMob
      */
     public boolean isBesideClimbableBlock()
     {
-        return (((Byte)this.dataWatcher.get(CLIMBING)).byteValue() & 1) != 0;
+        return (((Byte)this.dataManager.get(CLIMBING)).byteValue() & 1) != 0;
     }
 
     /**
@@ -165,7 +167,7 @@ public class EntitySpider extends EntityMob
      */
     public void setBesideClimbableBlock(boolean climbing)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(CLIMBING)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(CLIMBING)).byteValue();
 
         if (climbing)
         {
@@ -176,14 +178,15 @@ public class EntitySpider extends EntityMob
             b0 = (byte)(b0 & -2);
         }
 
-        this.dataWatcher.set(CLIMBING, Byte.valueOf(b0));
+        this.dataManager.set(CLIMBING, Byte.valueOf(b0));
     }
 
     /**
      * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
      * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
      */
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
 
@@ -202,13 +205,13 @@ public class EntitySpider extends EntityMob
 
             if (this.worldObj.getDifficulty() == EnumDifficulty.HARD && this.worldObj.rand.nextFloat() < 0.1F * difficulty.getClampedAdditionalDifficulty())
             {
-                ((EntitySpider.GroupData)livingdata).func_111104_a(this.worldObj.rand);
+                ((EntitySpider.GroupData)livingdata).setRandomEffect(this.worldObj.rand);
             }
         }
 
         if (livingdata instanceof EntitySpider.GroupData)
         {
-            Potion potion = ((EntitySpider.GroupData)livingdata).field_188478_a;
+            Potion potion = ((EntitySpider.GroupData)livingdata).effect;
 
             if (potion != null)
             {
@@ -249,7 +252,7 @@ public class EntitySpider extends EntityMob
                 }
             }
 
-            protected double func_179512_a(EntityLivingBase attackTarget)
+            protected double getAttackReachSqr(EntityLivingBase attackTarget)
             {
                 return (double)(4.0F + attackTarget.width);
             }
@@ -274,27 +277,27 @@ public class EntitySpider extends EntityMob
 
     public static class GroupData implements IEntityLivingData
         {
-            public Potion field_188478_a;
+            public Potion effect;
 
-            public void func_111104_a(Random rand)
+            public void setRandomEffect(Random rand)
             {
                 int i = rand.nextInt(5);
 
                 if (i <= 1)
                 {
-                    this.field_188478_a = MobEffects.moveSpeed;
+                    this.effect = MobEffects.SPEED;
                 }
                 else if (i <= 2)
                 {
-                    this.field_188478_a = MobEffects.damageBoost;
+                    this.effect = MobEffects.STRENGTH;
                 }
                 else if (i <= 3)
                 {
-                    this.field_188478_a = MobEffects.regeneration;
+                    this.effect = MobEffects.REGENERATION;
                 }
                 else if (i <= 4)
                 {
-                    this.field_188478_a = MobEffects.invisibility;
+                    this.effect = MobEffects.INVISIBILITY;
                 }
             }
         }

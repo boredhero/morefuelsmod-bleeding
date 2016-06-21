@@ -1,9 +1,10 @@
 package net.minecraft.world.gen.structure.template;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 
 public class PlacementSettings
@@ -14,7 +15,7 @@ public class PlacementSettings
     /** the type of block in the world that will get replaced by the structure */
     private Block replacedBlock;
     /** the chunk the structure is within */
-    private ChunkCoordIntPair chunk;
+    private ChunkPos chunk;
     /** the bounds the structure is contained within */
     private StructureBoundingBox boundingBox;
     private boolean ignoreStructureBlock;
@@ -24,7 +25,7 @@ public class PlacementSettings
         this(Mirror.NONE, Rotation.NONE, false, (Block)null, (StructureBoundingBox)null);
     }
 
-    public PlacementSettings(Mirror mirrorIn, Rotation rotationIn, boolean ignoreEntitiesIn, Block replacedBlockIn, StructureBoundingBox boundingBoxIn)
+    public PlacementSettings(Mirror mirrorIn, Rotation rotationIn, boolean ignoreEntitiesIn, @Nullable Block replacedBlockIn, @Nullable StructureBoundingBox boundingBoxIn)
     {
         this.rotation = rotationIn;
         this.mirror = mirrorIn;
@@ -64,7 +65,7 @@ public class PlacementSettings
         return this;
     }
 
-    public PlacementSettings setChunk(ChunkCoordIntPair chunkPosIn)
+    public PlacementSettings setChunk(ChunkPos chunkPosIn)
     {
         this.chunk = chunkPosIn;
         return this;
@@ -102,6 +103,7 @@ public class PlacementSettings
         return this.replacedBlock;
     }
 
+    @Nullable
     public StructureBoundingBox getBoundingBox()
     {
         if (this.boundingBox == null && this.chunk != null)
@@ -122,16 +124,17 @@ public class PlacementSettings
         this.boundingBox = this.getBoundingBoxFromChunk(this.chunk);
     }
 
-    private StructureBoundingBox getBoundingBoxFromChunk(ChunkCoordIntPair p_186216_1_)
+    @Nullable
+    private StructureBoundingBox getBoundingBoxFromChunk(@Nullable ChunkPos pos)
     {
-        if (p_186216_1_ == null)
+        if (pos == null)
         {
             return null;
         }
         else
         {
-            int i = p_186216_1_.chunkXPos * 16;
-            int j = p_186216_1_.chunkZPos * 16;
+            int i = pos.chunkXPos * 16;
+            int j = pos.chunkZPos * 16;
             return new StructureBoundingBox(i, 0, j, i + 16 - 1, 255, j + 16 - 1);
         }
     }

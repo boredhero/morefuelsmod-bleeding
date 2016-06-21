@@ -32,7 +32,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
 
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected)
     {
-        int i = this.func_183019_a();
+        int i = this.getResourcePackFormat();
 
         if (i != 2)
         {
@@ -40,13 +40,13 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
             Gui.drawRect(x - 1, y - 1, x + listWidth - 9, y + slotHeight + 1, -8978432);
         }
 
-        this.func_148313_c();
+        this.bindResourcePackIcon();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         Gui.drawModalRectWithCustomSizedTexture(x, y, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
         String s = this.getResourcePackName();
-        String s1 = this.func_148311_a();
+        String s1 = this.getResourcePackDescription();
 
-        if (this.func_148310_d() && (this.mc.gameSettings.touchscreen || isSelected))
+        if (this.showHoverOverlay() && (this.mc.gameSettings.touchscreen || isSelected))
         {
             this.mc.getTextureManager().bindTexture(RESOURCE_PACKS_TEXTURE);
             Gui.drawRect(x, y, x + 32, y + 32, -1601138544);
@@ -65,7 +65,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                 s1 = INCOMPATIBLE_NEW.getFormattedText();
             }
 
-            if (this.func_148309_e())
+            if (this.canMoveRight())
             {
                 if (j < 32)
                 {
@@ -78,7 +78,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
             }
             else
             {
-                if (this.func_148308_f())
+                if (this.canMoveLeft())
                 {
                     if (j < 16)
                     {
@@ -90,7 +90,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                     }
                 }
 
-                if (this.func_148314_g())
+                if (this.canMoveUp())
                 {
                     if (j < 32 && j > 16 && k < 16)
                     {
@@ -102,7 +102,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                     }
                 }
 
-                if (this.func_148307_h())
+                if (this.canMoveDown())
                 {
                     if (j < 32 && j > 16 && k > 16)
                     {
@@ -132,62 +132,56 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
         }
     }
 
-    protected abstract int func_183019_a();
+    protected abstract int getResourcePackFormat();
 
-    protected abstract String func_148311_a();
+    protected abstract String getResourcePackDescription();
 
     protected abstract String getResourcePackName();
 
-    protected abstract void func_148313_c();
+    protected abstract void bindResourcePackIcon();
 
-    protected boolean func_148310_d()
+    protected boolean showHoverOverlay()
     {
         return true;
     }
 
-    protected boolean func_148309_e()
+    protected boolean canMoveRight()
     {
         return !this.resourcePacksGUI.hasResourcePackEntry(this);
     }
 
-    protected boolean func_148308_f()
+    protected boolean canMoveLeft()
     {
         return this.resourcePacksGUI.hasResourcePackEntry(this);
     }
 
-    protected boolean func_148314_g()
+    protected boolean canMoveUp()
     {
         List<ResourcePackListEntry> list = this.resourcePacksGUI.getListContaining(this);
         int i = list.indexOf(this);
-        return i > 0 && ((ResourcePackListEntry)list.get(i - 1)).func_148310_d();
+        return i > 0 && ((ResourcePackListEntry)list.get(i - 1)).showHoverOverlay();
     }
 
-    protected boolean func_148307_h()
+    protected boolean canMoveDown()
     {
         List<ResourcePackListEntry> list = this.resourcePacksGUI.getListContaining(this);
         int i = list.indexOf(this);
-        return i >= 0 && i < list.size() - 1 && ((ResourcePackListEntry)list.get(i + 1)).func_148310_d();
+        return i >= 0 && i < list.size() - 1 && ((ResourcePackListEntry)list.get(i + 1)).showHoverOverlay();
     }
 
     /**
      * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
      * clicked and the list should not be dragged.
-     *  
-     * @param mouseX Scaled X coordinate of the mouse on the entire screen
-     * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-     * @param mouseEvent The button on the mouse that was pressed
-     * @param relativeX Relative X coordinate of the mouse within this entry.
-     * @param relativeY Relative Y coordinate of the mouse within this entry.
      */
     public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
     {
-        if (this.func_148310_d() && relativeX <= 32)
+        if (this.showHoverOverlay() && relativeX <= 32)
         {
-            if (this.func_148309_e())
+            if (this.canMoveRight())
             {
                 this.resourcePacksGUI.markChanged();
-                final int j = ((ResourcePackListEntry)this.resourcePacksGUI.getSelectedResourcePacks().get(0)).func_186768_j() ? 1 : 0;
-                int l = this.func_183019_a();
+                final int j = ((ResourcePackListEntry)this.resourcePacksGUI.getSelectedResourcePacks().get(0)).isServerPack() ? 1 : 0;
+                int l = this.getResourcePackFormat();
 
                 if (l != 2)
                 {
@@ -217,7 +211,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                 return true;
             }
 
-            if (relativeX < 16 && this.func_148308_f())
+            if (relativeX < 16 && this.canMoveLeft())
             {
                 this.resourcePacksGUI.getListContaining(this).remove(this);
                 this.resourcePacksGUI.getAvailableResourcePacks().add(0, this);
@@ -225,7 +219,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                 return true;
             }
 
-            if (relativeX > 16 && relativeY < 16 && this.func_148314_g())
+            if (relativeX > 16 && relativeY < 16 && this.canMoveUp())
             {
                 List<ResourcePackListEntry> list1 = this.resourcePacksGUI.getListContaining(this);
                 int k = list1.indexOf(this);
@@ -235,7 +229,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                 return true;
             }
 
-            if (relativeX > 16 && relativeY > 16 && this.func_148307_h())
+            if (relativeX > 16 && relativeY > 16 && this.canMoveDown())
             {
                 List<ResourcePackListEntry> list = this.resourcePacksGUI.getListContaining(this);
                 int i = list.indexOf(this);
@@ -260,7 +254,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
     {
     }
 
-    public boolean func_186768_j()
+    public boolean isServerPack()
     {
         return false;
     }

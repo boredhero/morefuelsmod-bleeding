@@ -1,6 +1,7 @@
 package net.minecraft.entity.item;
 
 import io.netty.buffer.ByteBuf;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -32,13 +33,20 @@ public class EntityMinecartCommandBlock extends EntityMinecart
             EntityMinecartCommandBlock.this.getDataManager().set(EntityMinecartCommandBlock.COMMAND, this.getCommand());
             EntityMinecartCommandBlock.this.getDataManager().set(EntityMinecartCommandBlock.LAST_OUTPUT, this.getLastOutput());
         }
+        /**
+         * Currently this returns 0 for the traditional command block, and 1 for the minecart command block
+         */
         @SideOnly(Side.CLIENT)
-        public int func_145751_f()
+        public int getCommandBlockType()
         {
             return 1;
         }
+        /**
+         * Fills in information about the command block for the packet. X/Y/Z for the minecart version, and entityId for
+         * the traditional version
+         */
         @SideOnly(Side.CLIENT)
-        public void func_145757_a(ByteBuf buf)
+        public void fillInInfo(ByteBuf buf)
         {
             buf.writeInt(EntityMinecartCommandBlock.this.getEntityId());
         }
@@ -104,10 +112,10 @@ public class EntityMinecartCommandBlock extends EntityMinecart
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.commandBlockLogic.readDataFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
+        this.commandBlockLogic.readDataFromNBT(compound);
         this.getDataManager().set(COMMAND, this.getCommandBlockLogic().getCommand());
         this.getDataManager().set(LAST_OUTPUT, this.getCommandBlockLogic().getLastOutput());
     }
@@ -115,10 +123,10 @@ public class EntityMinecartCommandBlock extends EntityMinecart
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        this.commandBlockLogic.writeDataToNBT(tagCompound);
+        super.writeEntityToNBT(compound);
+        this.commandBlockLogic.writeToNBT(compound);
     }
 
     public EntityMinecart.Type getType()
@@ -128,7 +136,7 @@ public class EntityMinecartCommandBlock extends EntityMinecart
 
     public IBlockState getDefaultDisplayTile()
     {
-        return Blocks.command_block.getDefaultState();
+        return Blocks.COMMAND_BLOCK.getDefaultState();
     }
 
     public CommandBlockBaseLogic getCommandBlockLogic()
@@ -137,7 +145,7 @@ public class EntityMinecartCommandBlock extends EntityMinecart
     }
 
     /**
-     * Called every tick the minecart is on an activator rail. Args: x, y, z, is the rail receiving power
+     * Called every tick the minecart is on an activator rail.
      */
     public void onActivatorRailPass(int x, int y, int z, boolean receivingPower)
     {
@@ -148,7 +156,7 @@ public class EntityMinecartCommandBlock extends EntityMinecart
         }
     }
 
-    public boolean processInitialInteract(EntityPlayer player, ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
     {
         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand))) return true;
         this.commandBlockLogic.tryOpenEditCommandBlock(player);
@@ -176,7 +184,7 @@ public class EntityMinecartCommandBlock extends EntityMinecart
         }
     }
 
-    public boolean func_184213_bq()
+    public boolean ignoreItemEntityData()
     {
         return true;
     }

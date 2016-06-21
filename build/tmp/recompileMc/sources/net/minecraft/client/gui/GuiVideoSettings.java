@@ -15,7 +15,7 @@ public class GuiVideoSettings extends GuiScreen
     private GameSettings guiGameSettings;
     private GuiListExtended optionsRowList;
     /** An array of all of GameSettings.Options's video options. */
-    private static final GameSettings.Options[] videoOptions = new GameSettings.Options[] {GameSettings.Options.GRAPHICS, GameSettings.Options.RENDER_DISTANCE, GameSettings.Options.AMBIENT_OCCLUSION, GameSettings.Options.FRAMERATE_LIMIT, GameSettings.Options.ANAGLYPH, GameSettings.Options.VIEW_BOBBING, GameSettings.Options.GUI_SCALE, GameSettings.Options.ATTACK_INDICATOR, GameSettings.Options.GAMMA, GameSettings.Options.RENDER_CLOUDS, GameSettings.Options.PARTICLES, GameSettings.Options.USE_FULLSCREEN, GameSettings.Options.ENABLE_VSYNC, GameSettings.Options.MIPMAP_LEVELS, GameSettings.Options.USE_VBO, GameSettings.Options.ENTITY_SHADOWS};
+    private static final GameSettings.Options[] VIDEO_OPTIONS = new GameSettings.Options[] {GameSettings.Options.GRAPHICS, GameSettings.Options.RENDER_DISTANCE, GameSettings.Options.AMBIENT_OCCLUSION, GameSettings.Options.FRAMERATE_LIMIT, GameSettings.Options.ANAGLYPH, GameSettings.Options.VIEW_BOBBING, GameSettings.Options.GUI_SCALE, GameSettings.Options.ATTACK_INDICATOR, GameSettings.Options.GAMMA, GameSettings.Options.RENDER_CLOUDS, GameSettings.Options.PARTICLES, GameSettings.Options.USE_FULLSCREEN, GameSettings.Options.ENABLE_VSYNC, GameSettings.Options.MIPMAP_LEVELS, GameSettings.Options.USE_VBO, GameSettings.Options.ENTITY_SHADOWS};
 
     public GuiVideoSettings(GuiScreen parentScreenIn, GameSettings gameSettingsIn)
     {
@@ -35,10 +35,10 @@ public class GuiVideoSettings extends GuiScreen
 
         if (!OpenGlHelper.vboSupported)
         {
-            GameSettings.Options[] agamesettings$options = new GameSettings.Options[videoOptions.length - 1];
+            GameSettings.Options[] agamesettings$options = new GameSettings.Options[VIDEO_OPTIONS.length - 1];
             int i = 0;
 
-            for (GameSettings.Options gamesettings$options : videoOptions)
+            for (GameSettings.Options gamesettings$options : VIDEO_OPTIONS)
             {
                 if (gamesettings$options == GameSettings.Options.USE_VBO)
                 {
@@ -53,7 +53,7 @@ public class GuiVideoSettings extends GuiScreen
         }
         else
         {
-            this.optionsRowList = new GuiOptionsRowList(this.mc, this.width, this.height, 32, this.height - 32, 25, videoOptions);
+            this.optionsRowList = new GuiOptionsRowList(this.mc, this.width, this.height, 32, this.height - 32, 25, VIDEO_OPTIONS);
         }
     }
 
@@ -101,10 +101,6 @@ public class GuiVideoSettings extends GuiScreen
 
     /**
      * Called when a mouse button is released.
-     *  
-     * @param mouseX Current mouse x coordinate
-     * @param mouseY Current mouse y coordinate
-     * @param state The mouse button that was released
      */
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
@@ -123,10 +119,6 @@ public class GuiVideoSettings extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {

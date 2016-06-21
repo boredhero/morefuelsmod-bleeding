@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface IMerchant
 {
-    void setCustomer(EntityPlayer p_70932_1_);
+    void setCustomer(EntityPlayer player);
 
     EntityPlayer getCustomer();
 
-    MerchantRecipeList getRecipes(EntityPlayer p_70934_1_);
+    MerchantRecipeList getRecipes(EntityPlayer player);
 
     @SideOnly(Side.CLIENT)
     void setRecipes(MerchantRecipeList recipeList);

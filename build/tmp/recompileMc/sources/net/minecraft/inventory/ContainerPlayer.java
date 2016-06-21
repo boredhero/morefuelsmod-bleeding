@@ -1,5 +1,6 @@
 package net.minecraft.inventory;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -11,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerPlayer extends Container
 {
-    private static final EntityEquipmentSlot[] field_185003_h = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
+    private static final EntityEquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EntityEquipmentSlot[] {EntityEquipmentSlot.HEAD, EntityEquipmentSlot.CHEST, EntityEquipmentSlot.LEGS, EntityEquipmentSlot.FEET};
     /** The crafting matrix inventory. */
     public InventoryCrafting craftMatrix = new InventoryCrafting(this, 2, 2);
     public IInventory craftResult = new InventoryCraftResult();
@@ -35,7 +36,7 @@ public class ContainerPlayer extends Container
 
         for (int k = 0; k < 4; ++k)
         {
-            final EntityEquipmentSlot entityequipmentslot = field_185003_h[k];
+            final EntityEquipmentSlot entityequipmentslot = VALID_EQUIPMENT_SLOTS[k];
             this.addSlotToContainer(new Slot(playerInventory, 36 + (3 - k), 8, 8 + k * 18)
             {
                 /**
@@ -49,7 +50,7 @@ public class ContainerPlayer extends Container
                 /**
                  * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
                  */
-                public boolean isItemValid(ItemStack stack)
+                public boolean isItemValid(@Nullable ItemStack stack)
                 {
                     if (stack == null)
                     {
@@ -60,6 +61,7 @@ public class ContainerPlayer extends Container
                         return stack.getItem().isValidArmor(stack, entityequipmentslot, thePlayer);
                     }
                 }
+                @Nullable
                 @SideOnly(Side.CLIENT)
                 public String getSlotTexture()
                 {
@@ -86,10 +88,11 @@ public class ContainerPlayer extends Container
             /**
              * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
              */
-            public boolean isItemValid(ItemStack stack)
+            public boolean isItemValid(@Nullable ItemStack stack)
             {
                 return super.isItemValid(stack);
             }
+            @Nullable
             @SideOnly(Side.CLIENT)
             public String getSlotTexture()
             {
@@ -120,7 +123,7 @@ public class ContainerPlayer extends Container
 
             if (itemstack != null)
             {
-                playerIn.dropPlayerItemWithRandomChoice(itemstack, false);
+                playerIn.dropItem(itemstack, false);
             }
         }
 
@@ -135,6 +138,7 @@ public class ContainerPlayer extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
+    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
         ItemStack itemstack = null;

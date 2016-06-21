@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 public class JsonToNBT
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final Pattern INT_ARRAY_MATCHER = Pattern.compile("\\[[-+\\d|,\\s]+\\]");
 
     public static NBTTagCompound getTagFromJson(String jsonString) throws NBTException

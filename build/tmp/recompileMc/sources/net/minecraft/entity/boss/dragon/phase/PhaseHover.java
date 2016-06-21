@@ -1,11 +1,12 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.util.math.Vec3d;
 
 public class PhaseHover extends PhaseBase
 {
-    private Vec3d field_188680_b;
+    private Vec3d targetLocation;
 
     public PhaseHover(EntityDragon dragonIn)
     {
@@ -18,9 +19,9 @@ public class PhaseHover extends PhaseBase
      */
     public void doLocalUpdate()
     {
-        if (this.field_188680_b == null)
+        if (this.targetLocation == null)
         {
-            this.field_188680_b = new Vec3d(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
+            this.targetLocation = new Vec3d(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
         }
     }
 
@@ -34,7 +35,7 @@ public class PhaseHover extends PhaseBase
      */
     public void initPhase()
     {
-        this.field_188680_b = null;
+        this.targetLocation = null;
     }
 
     /**
@@ -48,9 +49,10 @@ public class PhaseHover extends PhaseBase
     /**
      * Returns the location the dragon is flying toward
      */
+    @Nullable
     public Vec3d getTargetLocation()
     {
-        return this.field_188680_b;
+        return this.targetLocation;
     }
 
     public PhaseList<PhaseHover> getPhaseList()

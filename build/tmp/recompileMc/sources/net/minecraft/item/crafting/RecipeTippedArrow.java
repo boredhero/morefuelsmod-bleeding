@@ -1,5 +1,6 @@
 package net.minecraft.item.crafting;
 
+import javax.annotation.Nullable;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
@@ -33,12 +34,12 @@ public class RecipeTippedArrow implements IRecipe
 
                     if (i == 1 && j == 1)
                     {
-                        if (item != Items.lingering_potion)
+                        if (item != Items.LINGERING_POTION)
                         {
                             return false;
                         }
                     }
-                    else if (item != Items.arrow)
+                    else if (item != Items.ARROW)
                     {
                         return false;
                     }
@@ -56,13 +57,14 @@ public class RecipeTippedArrow implements IRecipe
     /**
      * Returns an Item that is the result of this recipe
      */
+    @Nullable
     public ItemStack getCraftingResult(InventoryCrafting inv)
     {
         ItemStack itemstack = inv.getStackInRowAndColumn(1, 1);
 
-        if (itemstack != null && itemstack.getItem() == Items.lingering_potion)
+        if (itemstack != null && itemstack.getItem() == Items.LINGERING_POTION)
         {
-            ItemStack itemstack1 = new ItemStack(Items.tipped_arrow, 8);
+            ItemStack itemstack1 = new ItemStack(Items.TIPPED_ARROW, 8);
             PotionUtils.addPotionToItemStack(itemstack1, PotionUtils.getPotionFromItem(itemstack));
             PotionUtils.appendEffects(itemstack1, PotionUtils.getFullEffectsFromItem(itemstack));
             return itemstack1;
@@ -81,6 +83,7 @@ public class RecipeTippedArrow implements IRecipe
         return 9;
     }
 
+    @Nullable
     public ItemStack getRecipeOutput()
     {
         return null;

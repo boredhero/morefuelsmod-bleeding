@@ -2,6 +2,7 @@ package net.minecraft.entity;
 
 import java.util.Collection;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -14,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 public class SharedMonsterAttributes
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final IAttribute MAX_HEALTH = (new RangedAttribute((IAttribute)null, "generic.maxHealth", 20.0D, 0.0D, 1024.0D)).setDescription("Max Health").setShouldWatch(true);
     public static final IAttribute FOLLOW_RANGE = (new RangedAttribute((IAttribute)null, "generic.followRange", 32.0D, 0.0D, 2048.0D)).setDescription("Follow Range");
     public static final IAttribute KNOCKBACK_RESISTANCE = (new RangedAttribute((IAttribute)null, "generic.knockbackResistance", 0.0D, 0.0D, 1.0D)).setDescription("Knockback Resistance");
@@ -22,6 +23,7 @@ public class SharedMonsterAttributes
     public static final IAttribute ATTACK_DAMAGE = new RangedAttribute((IAttribute)null, "generic.attackDamage", 2.0D, 0.0D, 2048.0D);
     public static final IAttribute ATTACK_SPEED = (new RangedAttribute((IAttribute)null, "generic.attackSpeed", 4.0D, 0.0D, 1024.0D)).setShouldWatch(true);
     public static final IAttribute ARMOR = (new RangedAttribute((IAttribute)null, "generic.armor", 0.0D, 0.0D, 30.0D)).setShouldWatch(true);
+    public static final IAttribute ARMOR_TOUGHNESS = (new RangedAttribute((IAttribute)null, "generic.armorToughness", 0.0D, 0.0D, 20.0D)).setShouldWatch(true);
     public static final IAttribute LUCK = (new RangedAttribute((IAttribute)null, "generic.luck", 0.0D, -1024.0D, 1024.0D)).setShouldWatch(true);
 
     /**
@@ -94,7 +96,7 @@ public class SharedMonsterAttributes
             }
             else
             {
-                logger.warn("Ignoring unknown attribute \'" + nbttagcompound.getString("Name") + "\'");
+                LOGGER.warn("Ignoring unknown attribute \'" + nbttagcompound.getString("Name") + "\'");
             }
         }
     }
@@ -129,6 +131,7 @@ public class SharedMonsterAttributes
     /**
      * Creates an AttributeModifier from an NBTTagCompound
      */
+    @Nullable
     public static AttributeModifier readAttributeModifierFromNBT(NBTTagCompound compound)
     {
         UUID uuid = compound.getUniqueId("UUID");
@@ -139,7 +142,7 @@ public class SharedMonsterAttributes
         }
         catch (Exception exception)
         {
-            logger.warn("Unable to create attribute: " + exception.getMessage());
+            LOGGER.warn("Unable to create attribute: " + exception.getMessage());
             return null;
         }
     }

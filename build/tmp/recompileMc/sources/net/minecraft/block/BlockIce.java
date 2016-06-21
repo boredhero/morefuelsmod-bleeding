@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -23,10 +24,10 @@ public class BlockIce extends BlockBreakable
 {
     public BlockIce()
     {
-        super(Material.ice, false);
+        super(Material.ICE, false);
         this.slipperiness = 0.98F;
         this.setTickRandomly(true);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     @SideOnly(Side.CLIENT)
@@ -35,12 +36,12 @@ public class BlockIce extends BlockBreakable
         return BlockRenderLayer.TRANSLUCENT;
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
     {
-        player.addStat(StatList.func_188055_a(this));
+        player.addStat(StatList.getBlockStats(this));
         player.addExhaustion(0.025F);
 
-        if (this.canSilkHarvest(worldIn, pos, state, player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.silkTouch, stack) > 0)
+        if (this.canSilkHarvest(worldIn, pos, state, player) && EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0)
         {
             java.util.List<ItemStack> items = new java.util.ArrayList<ItemStack>();
             ItemStack itemstack = this.createStackedBlock(state);
@@ -62,7 +63,7 @@ public class BlockIce extends BlockBreakable
                 return;
             }
 
-            int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.fortune, stack);
+            int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack);
             harvesters.set(player);
             this.dropBlockAsItem(worldIn, pos, state, i);
             harvesters.set(null);
@@ -70,7 +71,7 @@ public class BlockIce extends BlockBreakable
 
             if (material.blocksMovement() || material.isLiquid())
             {
-                worldIn.setBlockState(pos, Blocks.flowing_water.getDefaultState());
+                worldIn.setBlockState(pos, Blocks.FLOWING_WATER.getDefaultState());
             }
         }
     }
@@ -87,21 +88,21 @@ public class BlockIce extends BlockBreakable
     {
         if (worldIn.getLightFor(EnumSkyBlock.BLOCK, pos) > 11 - this.getDefaultState().getLightOpacity())
         {
-            this.func_185679_b(worldIn, pos);
+            this.turnIntoWater(worldIn, pos);
         }
     }
 
-    protected void func_185679_b(World p_185679_1_, BlockPos p_185679_2_)
+    protected void turnIntoWater(World worldIn, BlockPos pos)
     {
-        if (p_185679_1_.provider.doesWaterVaporize())
+        if (worldIn.provider.doesWaterVaporize())
         {
-            p_185679_1_.setBlockToAir(p_185679_2_);
+            worldIn.setBlockToAir(pos);
         }
         else
         {
-            this.dropBlockAsItem(p_185679_1_, p_185679_2_, p_185679_1_.getBlockState(p_185679_2_), 0);
-            p_185679_1_.setBlockState(p_185679_2_, Blocks.water.getDefaultState());
-            p_185679_1_.notifyBlockOfStateChange(p_185679_2_, Blocks.water);
+            this.dropBlockAsItem(worldIn, pos, worldIn.getBlockState(pos), 0);
+            worldIn.setBlockState(pos, Blocks.WATER.getDefaultState());
+            worldIn.notifyBlockOfStateChange(pos, Blocks.WATER);
         }
     }
 

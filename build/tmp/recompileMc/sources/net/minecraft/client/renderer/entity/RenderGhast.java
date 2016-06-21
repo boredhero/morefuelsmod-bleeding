@@ -10,8 +10,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderGhast extends RenderLiving<EntityGhast>
 {
-    private static final ResourceLocation ghastTextures = new ResourceLocation("textures/entity/ghast/ghast.png");
-    private static final ResourceLocation ghastShootingTextures = new ResourceLocation("textures/entity/ghast/ghast_shooting.png");
+    private static final ResourceLocation GHAST_TEXTURES = new ResourceLocation("textures/entity/ghast/ghast.png");
+    private static final ResourceLocation GHAST_SHOOTING_TEXTURES = new ResourceLocation("textures/entity/ghast/ghast_shooting.png");
 
     public RenderGhast(RenderManager renderManagerIn)
     {
@@ -23,12 +23,11 @@ public class RenderGhast extends RenderLiving<EntityGhast>
      */
     protected ResourceLocation getEntityTexture(EntityGhast entity)
     {
-        return entity.isAttacking() ? ghastShootingTextures : ghastTextures;
+        return entity.isAttacking() ? GHAST_SHOOTING_TEXTURES : GHAST_TEXTURES;
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntityGhast entitylivingbaseIn, float partialTickTime)
     {

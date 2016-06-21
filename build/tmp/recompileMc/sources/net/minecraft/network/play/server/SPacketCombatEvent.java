@@ -12,9 +12,9 @@ import net.minecraft.util.text.TextComponentString;
 public class SPacketCombatEvent implements Packet<INetHandlerPlayClient>
 {
     public SPacketCombatEvent.Event eventType;
-    public int field_179774_b;
-    public int field_179775_c;
-    public int field_179772_d;
+    public int playerId;
+    public int entityId;
+    public int duration;
     public ITextComponent deathMessage;
 
     public SPacketCombatEvent()
@@ -30,17 +30,17 @@ public class SPacketCombatEvent implements Packet<INetHandlerPlayClient>
     public SPacketCombatEvent(CombatTracker tracker, SPacketCombatEvent.Event eventIn, boolean p_i46932_3_)
     {
         this.eventType = eventIn;
-        EntityLivingBase entitylivingbase = tracker.func_94550_c();
+        EntityLivingBase entitylivingbase = tracker.getBestAttacker();
 
         switch (eventIn)
         {
             case END_COMBAT:
-                this.field_179772_d = tracker.func_180134_f();
-                this.field_179775_c = entitylivingbase == null ? -1 : entitylivingbase.getEntityId();
+                this.duration = tracker.getCombatDuration();
+                this.entityId = entitylivingbase == null ? -1 : entitylivingbase.getEntityId();
                 break;
             case ENTITY_DIED:
-                this.field_179774_b = tracker.getFighter().getEntityId();
-                this.field_179775_c = entitylivingbase == null ? -1 : entitylivingbase.getEntityId();
+                this.playerId = tracker.getFighter().getEntityId();
+                this.entityId = entitylivingbase == null ? -1 : entitylivingbase.getEntityId();
 
                 if (p_i46932_3_)
                 {
@@ -62,14 +62,14 @@ public class SPacketCombatEvent implements Packet<INetHandlerPlayClient>
 
         if (this.eventType == SPacketCombatEvent.Event.END_COMBAT)
         {
-            this.field_179772_d = buf.readVarIntFromBuffer();
-            this.field_179775_c = buf.readInt();
+            this.duration = buf.readVarIntFromBuffer();
+            this.entityId = buf.readInt();
         }
         else if (this.eventType == SPacketCombatEvent.Event.ENTITY_DIED)
         {
-            this.field_179774_b = buf.readVarIntFromBuffer();
-            this.field_179775_c = buf.readInt();
-            this.deathMessage = buf.readChatComponent();
+            this.playerId = buf.readVarIntFromBuffer();
+            this.entityId = buf.readInt();
+            this.deathMessage = buf.readTextComponent();
         }
     }
 
@@ -82,14 +82,14 @@ public class SPacketCombatEvent implements Packet<INetHandlerPlayClient>
 
         if (this.eventType == SPacketCombatEvent.Event.END_COMBAT)
         {
-            buf.writeVarIntToBuffer(this.field_179772_d);
-            buf.writeInt(this.field_179775_c);
+            buf.writeVarIntToBuffer(this.duration);
+            buf.writeInt(this.entityId);
         }
         else if (this.eventType == SPacketCombatEvent.Event.ENTITY_DIED)
         {
-            buf.writeVarIntToBuffer(this.field_179774_b);
-            buf.writeInt(this.field_179775_c);
-            buf.writeChatComponent(this.deathMessage);
+            buf.writeVarIntToBuffer(this.playerId);
+            buf.writeInt(this.entityId);
+            buf.writeTextComponent(this.deathMessage);
         }
     }
 

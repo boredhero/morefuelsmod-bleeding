@@ -43,19 +43,19 @@ public class AttributeMap extends AbstractAttributeMap
         return iattributeinstance;
     }
 
-    protected IAttributeInstance func_180376_c(IAttribute attribute)
+    protected IAttributeInstance createInstance(IAttribute attribute)
     {
         return new ModifiableAttributeInstance(this, attribute);
     }
 
-    public void func_180794_a(IAttributeInstance instance)
+    public void onAttributeModified(IAttributeInstance instance)
     {
         if (instance.getAttribute().getShouldWatch())
         {
             this.attributeInstanceSet.add(instance);
         }
 
-        for (IAttribute iattribute : this.field_180377_c.get(instance.getAttribute()))
+        for (IAttribute iattribute : this.descendantsByParent.get(instance.getAttribute()))
         {
             ModifiableAttributeInstance modifiableattributeinstance = this.getAttributeInstance(iattribute);
 

@@ -56,8 +56,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets the GuiResponder associated with this text box.
-     *  
-     * @param guiResponderIn The new GuiResponder to use
      */
     public void setGuiResponder(GuiPageButtonList.GuiResponder guiResponderIn)
     {
@@ -74,8 +72,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets the text of the textbox, and moves the cursor to the end.
-     *  
-     * @param textIn The text to set. Will be trimmed if longer than the maximum length.
      */
     public void setText(String textIn)
     {
@@ -119,8 +115,6 @@ public class GuiTextField extends Gui
 
     /**
      * Adds the given text after the cursor, or replaces the currently selected text if there is a selection.
-     *  
-     * @param textToWrite The text to write
      */
     public void writeText(String textToWrite)
     {
@@ -159,7 +153,7 @@ public class GuiTextField extends Gui
 
             if (this.guiResponder != null)
             {
-                this.guiResponder.func_175319_a(this.id, this.text);
+                this.guiResponder.setEntryValue(this.id, this.text);
             }
         }
     }
@@ -167,9 +161,6 @@ public class GuiTextField extends Gui
     /**
      * Deletes the given number of words from the current cursor's position, unless there is currently a selection, in
      * which case the selection is deleted instead.
-     *  
-     * @param num Number of words to delete. If negative, words are deleted from behind the cursor (IE, backspace). If
-     * positive, words are deleted from in front of the cursor (IE, the delete key on PCs).
      */
     public void deleteWords(int num)
     {
@@ -189,9 +180,6 @@ public class GuiTextField extends Gui
     /**
      * Deletes the given number of characters from the current cursor's position, unless there is currently a selection,
      * in which case the selection is deleted instead.
-     *  
-     * @param num Number of characters to delete. If negative, letters are from behind the cursor (IE, backspace). If
-     * positive, letters are deleted from in front of the cursor (IE, the delete key on PCs).
      */
     public void deleteFromCursor(int num)
     {
@@ -229,7 +217,7 @@ public class GuiTextField extends Gui
 
                     if (this.guiResponder != null)
                     {
-                        this.guiResponder.func_175319_a(this.id, this.text);
+                        this.guiResponder.setEntryValue(this.id, this.text);
                     }
                 }
             }
@@ -243,9 +231,6 @@ public class GuiTextField extends Gui
 
     /**
      * Gets the starting index of the word at the specified number of words away from the cursor position.
-     *  
-     * @param numWords The number of words away to look. If negative, it looks behind the cursor; if positive, it looks
-     * in front of the cursor. If 0, the current cursor position is returned.
      */
     public int getNthWordFromCursor(int numWords)
     {
@@ -254,10 +239,6 @@ public class GuiTextField extends Gui
 
     /**
      * Gets the starting index of the word at a distance of the specified number of words away from the given position.
-     *  
-     * @param n The number of words away to look. If negative, it looks behind the given position; if positive, it looks
-     * in front of the given position. If 0, the position is returned.
-     * @param pos The position to start from
      */
     public int getNthWordFromPos(int n, int pos)
     {
@@ -266,12 +247,6 @@ public class GuiTextField extends Gui
 
     /**
      * Like getNthWordFromPos (which wraps this), but adds option for skipping consecutive spaces
-     *  
-     * @param n The number of words away to look. If negative, it looks behind the given position; if positive, it looks
-     * in front of the given position. If 0, the position is returned.
-     * @param pos The position to start at
-     * @param skipWs Whether consecutive spaces should be skipped. If set to false, then checking more than one word
-     * does not work.
      */
     public int getNthWordFromPosWS(int n, int pos, boolean skipWs)
     {
@@ -317,8 +292,6 @@ public class GuiTextField extends Gui
 
     /**
      * Moves the text cursor by a specified number of characters and clears the selection
-     *  
-     * @param num The number of characters to move the cursor by. May be positive or negative.
      */
     public void moveCursorBy(int num)
     {
@@ -327,8 +300,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets the current position of the cursor.
-     *  
-     * @param pos The new position for the cursor. Will be clamped to between 0 and the length of the string.
      */
     public void setCursorPosition(int pos)
     {
@@ -356,9 +327,6 @@ public class GuiTextField extends Gui
 
     /**
      * Call this method from your GuiScreen to process the keys into the textbox
-     *  
-     * @param typedChar The character that was typed.
-     * @param keyCode LWJQL key code for the key that was pressed.
      */
     public boolean textboxKeyTyped(char typedChar, int keyCode)
     {
@@ -522,10 +490,6 @@ public class GuiTextField extends Gui
 
     /**
      * Called when mouse is clicked, regardless as to whether it is over this button or not.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param mouseButton The on the mouse that was pressed
      */
     public void mouseClicked(int mouseX, int mouseY, int mouseButton)
     {
@@ -624,13 +588,6 @@ public class GuiTextField extends Gui
 
     /**
      * Draws the current selection and a vertical line cursor in the text box.
-     *  
-     * @param startX The x coordinate to start drawing at. If beyond the edge of the text box, it will be moved to the
-     * edge.
-     * @param startY The y coordinate to start drawing at.
-     * @param endX The x coordinate to stop drawing at. If beyond the edge of the text box, it will be moved to the
-     * edge.
-     * @param endY The y coordinate to stop drawing at.
      */
     private void drawCursorVertical(int startX, int startY, int endX, int endY)
     {
@@ -677,8 +634,6 @@ public class GuiTextField extends Gui
     /**
      * Sets the maximum length for the text in this text box. If the current text is longer than this length, the
      * current text will be trimmed.
-     *  
-     * @param length The new maximum length to use
      */
     public void setMaxStringLength(int length)
     {
@@ -716,8 +671,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets whether or not the background and outline of this text box should be drawn.
-     *  
-     * @param enableBackgroundDrawingIn True if the background and outline should be drawn.
      */
     public void setEnableBackgroundDrawing(boolean enableBackgroundDrawingIn)
     {
@@ -726,8 +679,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets the color to use when drawing this text box's text. A different color is used if this text box is disabled.
-     *  
-     * @param color The new color to use for text
      */
     public void setTextColor(int color)
     {
@@ -736,8 +687,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets the color to use for text in this text box when this text box is disabled.
-     *  
-     * @param color The new color to use for disabled text
      */
     public void setDisabledTextColour(int color)
     {
@@ -746,8 +695,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets focus to this gui element
-     *  
-     * @param isFocusedIn True if this text box is focused.
      */
     public void setFocused(boolean isFocusedIn)
     {
@@ -769,8 +716,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets whether this text box is enabled. Disabled text boxes cannot be typed in.
-     *  
-     * @param enabled True if the text box is enabled
      */
     public void setEnabled(boolean enabled)
     {
@@ -796,8 +741,6 @@ public class GuiTextField extends Gui
     /**
      * Sets the position of the selection anchor (the selection anchor and the cursor position mark the edges of the
      * selection). If the anchor is set beyond the bounds of the current text, it will be put back inside.
-     *  
-     * @param position The position of the selection anchor.
      */
     public void setSelectionPos(int position)
     {
@@ -846,8 +789,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets whether this text box loses focus when something other than it is clicked.
-     *  
-     * @param canLoseFocusIn True if this text box loses focus when something other than it is clicked
      */
     public void setCanLoseFocus(boolean canLoseFocusIn)
     {
@@ -864,8 +805,6 @@ public class GuiTextField extends Gui
 
     /**
      * Sets whether or not this textbox is visible
-     *  
-     * @param isVisible True if this text box is visible
      */
     public void setVisible(boolean isVisible)
     {

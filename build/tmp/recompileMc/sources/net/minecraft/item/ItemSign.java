@@ -20,7 +20,7 @@ public class ItemSign extends Item
     public ItemSign()
     {
         this.maxStackSize = 16;
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     /**
@@ -35,7 +35,7 @@ public class ItemSign extends Item
         {
             pos = pos.offset(facing);
 
-            if (playerIn.canPlayerEdit(pos, facing, stack) && Blocks.standing_sign.canPlaceBlockAt(worldIn, pos))
+            if (playerIn.canPlayerEdit(pos, facing, stack) && Blocks.STANDING_SIGN.canPlaceBlockAt(worldIn, pos))
             {
                 if (worldIn.isRemote)
                 {
@@ -48,11 +48,11 @@ public class ItemSign extends Item
                     if (facing == EnumFacing.UP)
                     {
                         int i = MathHelper.floor_double((double)((playerIn.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
-                        worldIn.setBlockState(pos, Blocks.standing_sign.getDefaultState().withProperty(BlockStandingSign.ROTATION, Integer.valueOf(i)), 11);
+                        worldIn.setBlockState(pos, Blocks.STANDING_SIGN.getDefaultState().withProperty(BlockStandingSign.ROTATION, Integer.valueOf(i)), 11);
                     }
                     else
                     {
-                        worldIn.setBlockState(pos, Blocks.wall_sign.getDefaultState().withProperty(BlockWallSign.FACING, facing), 11);
+                        worldIn.setBlockState(pos, Blocks.WALL_SIGN.getDefaultState().withProperty(BlockWallSign.FACING, facing), 11);
                     }
 
                     --stack.stackSize;

@@ -3,10 +3,11 @@ package net.minecraft.client.gui;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.client.AnvilConverterException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.storage.ISaveFormat;
-import net.minecraft.world.storage.SaveFormatComparator;
+import net.minecraft.world.storage.WorldSummary;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +18,7 @@ public class GuiListWorldSelection extends GuiListExtended
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final GuiWorldSelection worldSelectionObj;
-    private final List<GuiListWorldSelectionEntry> field_186799_w = Lists.<GuiListWorldSelectionEntry>newArrayList();
+    private final List<GuiListWorldSelectionEntry> entries = Lists.<GuiListWorldSelectionEntry>newArrayList();
     /** Index to the currently selected world */
     private int selectedIdx = -1;
 
@@ -25,13 +26,13 @@ public class GuiListWorldSelection extends GuiListExtended
     {
         super(clientIn, p_i46590_3_, p_i46590_4_, p_i46590_5_, p_i46590_6_, p_i46590_7_);
         this.worldSelectionObj = p_i46590_1_;
-        this.func_186795_e();
+        this.refreshList();
     }
 
-    public void func_186795_e()
+    public void refreshList()
     {
         ISaveFormat isaveformat = this.mc.getSaveLoader();
-        List<SaveFormatComparator> list;
+        List<WorldSummary> list;
 
         try
         {
@@ -46,9 +47,9 @@ public class GuiListWorldSelection extends GuiListExtended
 
         Collections.sort(list);
 
-        for (SaveFormatComparator saveformatcomparator : list)
+        for (WorldSummary worldsummary : list)
         {
-            this.field_186799_w.add(new GuiListWorldSelectionEntry(this, saveformatcomparator, this.mc.getSaveLoader()));
+            this.entries.add(new GuiListWorldSelectionEntry(this, worldsummary, this.mc.getSaveLoader()));
         }
     }
 
@@ -57,12 +58,12 @@ public class GuiListWorldSelection extends GuiListExtended
      */
     public GuiListWorldSelectionEntry getListEntry(int index)
     {
-        return (GuiListWorldSelectionEntry)this.field_186799_w.get(index);
+        return (GuiListWorldSelectionEntry)this.entries.get(index);
     }
 
     protected int getSize()
     {
-        return this.field_186799_w.size();
+        return this.entries.size();
     }
 
     protected int getScrollBarX()
@@ -92,6 +93,7 @@ public class GuiListWorldSelection extends GuiListExtended
         return slotIndex == this.selectedIdx;
     }
 
+    @Nullable
     public GuiListWorldSelectionEntry getSelectedWorld()
     {
         return this.selectedIdx >= 0 && this.selectedIdx < this.getSize() ? this.getListEntry(this.selectedIdx) : null;

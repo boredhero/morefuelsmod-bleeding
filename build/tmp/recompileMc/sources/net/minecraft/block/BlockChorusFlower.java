@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -25,15 +26,16 @@ public class BlockChorusFlower extends Block
 
     protected BlockChorusFlower()
     {
-        super(Material.plants);
+        super(Material.PLANTS);
         this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
         this.setTickRandomly(true);
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
@@ -41,7 +43,7 @@ public class BlockChorusFlower extends Block
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (!this.func_185606_b(worldIn, pos))
+        if (!this.canSurvive(worldIn, pos))
         {
             worldIn.destroyBlock(pos, true);
         }
@@ -59,11 +61,11 @@ public class BlockChorusFlower extends Block
                     boolean flag1 = false;
                     Block block = worldIn.getBlockState(pos.down()).getBlock();
 
-                    if (block == Blocks.end_stone)
+                    if (block == Blocks.END_STONE)
                     {
                         flag = true;
                     }
-                    else if (block == Blocks.chorus_plant)
+                    else if (block == Blocks.CHORUS_PLANT)
                     {
                         int j = 1;
 
@@ -71,9 +73,9 @@ public class BlockChorusFlower extends Block
                         {
                             Block block1 = worldIn.getBlockState(pos.down(j + 1)).getBlock();
 
-                            if (block1 != Blocks.chorus_plant)
+                            if (block1 != Blocks.CHORUS_PLANT)
                             {
-                                if (block1 == Blocks.end_stone)
+                                if (block1 == Blocks.END_STONE)
                                 {
                                     flag1 = true;
                                 }
@@ -96,15 +98,15 @@ public class BlockChorusFlower extends Block
                             flag = true;
                         }
                     }
-                    else if (block == Blocks.air)
+                    else if (block == Blocks.AIR)
                     {
                         flag = true;
                     }
 
-                    if (flag && func_185604_a(worldIn, blockpos, (EnumFacing)null) && worldIn.isAirBlock(pos.up(2)))
+                    if (flag && areAllNeighborsEmpty(worldIn, blockpos, (EnumFacing)null) && worldIn.isAirBlock(pos.up(2)))
                     {
-                        worldIn.setBlockState(pos, Blocks.chorus_plant.getDefaultState(), 2);
-                        this.func_185602_a(worldIn, blockpos, i);
+                        worldIn.setBlockState(pos, Blocks.CHORUS_PLANT.getDefaultState(), 2);
+                        this.placeGrownFlower(worldIn, blockpos, i);
                     }
                     else if (i < 4)
                     {
@@ -121,44 +123,44 @@ public class BlockChorusFlower extends Block
                             EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.random(rand);
                             BlockPos blockpos1 = pos.offset(enumfacing);
 
-                            if (worldIn.isAirBlock(blockpos1) && worldIn.isAirBlock(blockpos1.down()) && func_185604_a(worldIn, blockpos1, enumfacing.getOpposite()))
+                            if (worldIn.isAirBlock(blockpos1) && worldIn.isAirBlock(blockpos1.down()) && areAllNeighborsEmpty(worldIn, blockpos1, enumfacing.getOpposite()))
                             {
-                                this.func_185602_a(worldIn, blockpos1, i + 1);
+                                this.placeGrownFlower(worldIn, blockpos1, i + 1);
                                 flag2 = true;
                             }
                         }
 
                         if (flag2)
                         {
-                            worldIn.setBlockState(pos, Blocks.chorus_plant.getDefaultState(), 2);
+                            worldIn.setBlockState(pos, Blocks.CHORUS_PLANT.getDefaultState(), 2);
                         }
                         else
                         {
-                            this.func_185605_c(worldIn, pos);
+                            this.placeDeadFlower(worldIn, pos);
                         }
                     }
                     else if (i == 4)
                     {
-                        this.func_185605_c(worldIn, pos);
+                        this.placeDeadFlower(worldIn, pos);
                     }
                 }
             }
         }
     }
 
-    private void func_185602_a(World p_185602_1_, BlockPos p_185602_2_, int p_185602_3_)
+    private void placeGrownFlower(World p_185602_1_, BlockPos p_185602_2_, int p_185602_3_)
     {
         p_185602_1_.setBlockState(p_185602_2_, this.getDefaultState().withProperty(AGE, Integer.valueOf(p_185602_3_)), 2);
-        p_185602_1_.playAuxSFX(1033, p_185602_2_, 0);
+        p_185602_1_.playEvent(1033, p_185602_2_, 0);
     }
 
-    private void func_185605_c(World p_185605_1_, BlockPos p_185605_2_)
+    private void placeDeadFlower(World p_185605_1_, BlockPos p_185605_2_)
     {
         p_185605_1_.setBlockState(p_185605_2_, this.getDefaultState().withProperty(AGE, Integer.valueOf(5)), 2);
-        p_185605_1_.playAuxSFX(1034, p_185605_2_, 0);
+        p_185605_1_.playEvent(1034, p_185605_2_, 0);
     }
 
-    private static boolean func_185604_a(World p_185604_0_, BlockPos p_185604_1_, EnumFacing p_185604_2_)
+    private static boolean areAllNeighborsEmpty(World p_185604_0_, BlockPos p_185604_1_, EnumFacing p_185604_2_)
     {
         for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
         {
@@ -186,27 +188,29 @@ public class BlockChorusFlower extends Block
 
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        return super.canPlaceBlockAt(worldIn, pos) && this.func_185606_b(worldIn, pos);
+        return super.canPlaceBlockAt(worldIn, pos) && this.canSurvive(worldIn, pos);
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
-        if (!this.func_185606_b(worldIn, pos))
+        if (!this.canSurvive(worldIn, pos))
         {
             worldIn.scheduleUpdate(pos, this, 1);
         }
     }
 
-    public boolean func_185606_b(World worldIn, BlockPos pos)
+    public boolean canSurvive(World worldIn, BlockPos pos)
     {
         Block block = worldIn.getBlockState(pos.down()).getBlock();
 
-        if (block != Blocks.chorus_plant && block != Blocks.end_stone)
+        if (block != Blocks.CHORUS_PLANT && block != Blocks.END_STONE)
         {
-            if (block == Blocks.air)
+            if (block == Blocks.AIR)
             {
                 int i = 0;
 
@@ -214,11 +218,11 @@ public class BlockChorusFlower extends Block
                 {
                     Block block1 = worldIn.getBlockState(pos.offset(enumfacing)).getBlock();
 
-                    if (block1 == Blocks.chorus_plant)
+                    if (block1 == Blocks.CHORUS_PLANT)
                     {
                         ++i;
                     }
-                    else if (block1 != Blocks.air)
+                    else if (block1 != Blocks.AIR)
                     {
                         return false;
                     }
@@ -237,7 +241,7 @@ public class BlockChorusFlower extends Block
         }
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
     {
         super.harvestBlock(worldIn, player, pos, state, te, stack);
         spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(this)));
@@ -280,13 +284,13 @@ public class BlockChorusFlower extends Block
         super.onBlockAdded(worldIn, pos, state);
     }
 
-    public static void func_185603_a(World worldIn, BlockPos pos, Random rand, int p_185603_3_)
+    public static void generatePlant(World worldIn, BlockPos pos, Random rand, int p_185603_3_)
     {
-        worldIn.setBlockState(pos, Blocks.chorus_plant.getDefaultState(), 2);
-        func_185601_a(worldIn, pos, rand, pos, p_185603_3_, 0);
+        worldIn.setBlockState(pos, Blocks.CHORUS_PLANT.getDefaultState(), 2);
+        growTreeRecursive(worldIn, pos, rand, pos, p_185603_3_, 0);
     }
 
-    private static void func_185601_a(World worldIn, BlockPos p_185601_1_, Random rand, BlockPos p_185601_3_, int p_185601_4_, int p_185601_5_)
+    private static void growTreeRecursive(World worldIn, BlockPos p_185601_1_, Random rand, BlockPos p_185601_3_, int p_185601_4_, int p_185601_5_)
     {
         int i = rand.nextInt(4) + 1;
 
@@ -299,12 +303,12 @@ public class BlockChorusFlower extends Block
         {
             BlockPos blockpos = p_185601_1_.up(j + 1);
 
-            if (!func_185604_a(worldIn, blockpos, (EnumFacing)null))
+            if (!areAllNeighborsEmpty(worldIn, blockpos, (EnumFacing)null))
             {
                 return;
             }
 
-            worldIn.setBlockState(blockpos, Blocks.chorus_plant.getDefaultState(), 2);
+            worldIn.setBlockState(blockpos, Blocks.CHORUS_PLANT.getDefaultState(), 2);
         }
 
         boolean flag = false;
@@ -323,18 +327,18 @@ public class BlockChorusFlower extends Block
                 EnumFacing enumfacing = EnumFacing.Plane.HORIZONTAL.random(rand);
                 BlockPos blockpos1 = p_185601_1_.up(i).offset(enumfacing);
 
-                if (Math.abs(blockpos1.getX() - p_185601_3_.getX()) < p_185601_4_ && Math.abs(blockpos1.getZ() - p_185601_3_.getZ()) < p_185601_4_ && worldIn.isAirBlock(blockpos1) && worldIn.isAirBlock(blockpos1.down()) && func_185604_a(worldIn, blockpos1, enumfacing.getOpposite()))
+                if (Math.abs(blockpos1.getX() - p_185601_3_.getX()) < p_185601_4_ && Math.abs(blockpos1.getZ() - p_185601_3_.getZ()) < p_185601_4_ && worldIn.isAirBlock(blockpos1) && worldIn.isAirBlock(blockpos1.down()) && areAllNeighborsEmpty(worldIn, blockpos1, enumfacing.getOpposite()))
                 {
                     flag = true;
-                    worldIn.setBlockState(blockpos1, Blocks.chorus_plant.getDefaultState(), 2);
-                    func_185601_a(worldIn, blockpos1, rand, p_185601_3_, p_185601_4_, p_185601_5_ + 1);
+                    worldIn.setBlockState(blockpos1, Blocks.CHORUS_PLANT.getDefaultState(), 2);
+                    growTreeRecursive(worldIn, blockpos1, rand, p_185601_3_, p_185601_4_, p_185601_5_ + 1);
                 }
             }
         }
 
         if (!flag)
         {
-            worldIn.setBlockState(p_185601_1_.up(i), Blocks.chorus_flower.getDefaultState().withProperty(AGE, Integer.valueOf(5)), 2);
+            worldIn.setBlockState(p_185601_1_.up(i), Blocks.CHORUS_FLOWER.getDefaultState().withProperty(AGE, Integer.valueOf(5)), 2);
         }
     }
 }

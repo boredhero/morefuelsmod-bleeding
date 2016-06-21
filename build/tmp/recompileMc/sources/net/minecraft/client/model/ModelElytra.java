@@ -11,26 +11,26 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelElytra extends ModelBase
 {
-    private ModelRenderer field_187060_a;
-    private ModelRenderer field_187061_b = new ModelRenderer(this, 22, 0);
+    private ModelRenderer rightWing;
+    private ModelRenderer leftWing = new ModelRenderer(this, 22, 0);
 
     public ModelElytra()
     {
-        this.field_187061_b.addBox(-10.0F, 0.0F, 0.0F, 10, 20, 2, 1.0F);
-        this.field_187060_a = new ModelRenderer(this, 22, 0);
-        this.field_187060_a.mirror = true;
-        this.field_187060_a.addBox(0.0F, 0.0F, 0.0F, 10, 20, 2, 1.0F);
+        this.leftWing.addBox(-10.0F, 0.0F, 0.0F, 10, 20, 2, 1.0F);
+        this.rightWing = new ModelRenderer(this, 22, 0);
+        this.rightWing.mirror = true;
+        this.rightWing.addBox(0.0F, 0.0F, 0.0F, 10, 20, 2, 1.0F);
     }
 
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float p_78088_2_, float limbSwing, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
         GlStateManager.disableRescaleNormal();
         GlStateManager.disableCull();
-        this.field_187061_b.render(scale);
-        this.field_187060_a.render(scale);
+        this.leftWing.render(scale);
+        this.rightWing.render(scale);
     }
 
     /**
@@ -67,8 +67,8 @@ public class ModelElytra extends ModelBase
             f3 = 0.08726646F;
         }
 
-        this.field_187061_b.rotationPointX = 5.0F;
-        this.field_187061_b.rotationPointY = f2;
+        this.leftWing.rotationPointX = 5.0F;
+        this.leftWing.rotationPointY = f2;
 
         if (entityIn instanceof AbstractClientPlayer)
         {
@@ -76,22 +76,22 @@ public class ModelElytra extends ModelBase
             abstractclientplayer.rotateElytraX = (float)((double)abstractclientplayer.rotateElytraX + (double)(f - abstractclientplayer.rotateElytraX) * 0.1D);
             abstractclientplayer.rotateElytraY = (float)((double)abstractclientplayer.rotateElytraY + (double)(f3 - abstractclientplayer.rotateElytraY) * 0.1D);
             abstractclientplayer.rotateElytraZ = (float)((double)abstractclientplayer.rotateElytraZ + (double)(f1 - abstractclientplayer.rotateElytraZ) * 0.1D);
-            this.field_187061_b.rotateAngleX = abstractclientplayer.rotateElytraX;
-            this.field_187061_b.rotateAngleY = abstractclientplayer.rotateElytraY;
-            this.field_187061_b.rotateAngleZ = abstractclientplayer.rotateElytraZ;
+            this.leftWing.rotateAngleX = abstractclientplayer.rotateElytraX;
+            this.leftWing.rotateAngleY = abstractclientplayer.rotateElytraY;
+            this.leftWing.rotateAngleZ = abstractclientplayer.rotateElytraZ;
         }
         else
         {
-            this.field_187061_b.rotateAngleX = f;
-            this.field_187061_b.rotateAngleZ = f1;
-            this.field_187061_b.rotateAngleY = f3;
+            this.leftWing.rotateAngleX = f;
+            this.leftWing.rotateAngleZ = f1;
+            this.leftWing.rotateAngleY = f3;
         }
 
-        this.field_187060_a.rotationPointX = -this.field_187061_b.rotationPointX;
-        this.field_187060_a.rotateAngleY = -this.field_187061_b.rotateAngleY;
-        this.field_187060_a.rotationPointY = this.field_187061_b.rotationPointY;
-        this.field_187060_a.rotateAngleX = this.field_187061_b.rotateAngleX;
-        this.field_187060_a.rotateAngleZ = -this.field_187061_b.rotateAngleZ;
+        this.rightWing.rotationPointX = -this.leftWing.rotationPointX;
+        this.rightWing.rotateAngleY = -this.leftWing.rotateAngleY;
+        this.rightWing.rotationPointY = this.leftWing.rotationPointY;
+        this.rightWing.rotateAngleX = this.leftWing.rotateAngleX;
+        this.rightWing.rotateAngleZ = -this.leftWing.rotateAngleZ;
     }
 
     /**

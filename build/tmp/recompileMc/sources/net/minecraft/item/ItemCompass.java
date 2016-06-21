@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -17,13 +18,13 @@ public class ItemCompass extends Item
         this.addPropertyOverride(new ResourceLocation("angle"), new IItemPropertyGetter()
         {
             @SideOnly(Side.CLIENT)
-            double field_185095_a;
+            double rotation;
             @SideOnly(Side.CLIENT)
-            double field_185096_b;
+            double rota;
             @SideOnly(Side.CLIENT)
-            long field_185097_c;
+            long lastUpdateTick;
             @SideOnly(Side.CLIENT)
-            public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn)
+            public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
             {
                 if (entityIn == null && !stack.isOnItemFrame())
                 {
@@ -43,9 +44,9 @@ public class ItemCompass extends Item
 
                     if (worldIn.provider.isSurfaceWorld())
                     {
-                        double d1 = flag ? (double)entity.rotationYaw : this.func_185094_a((EntityItemFrame)entity);
+                        double d1 = flag ? (double)entity.rotationYaw : this.getFrameRotation((EntityItemFrame)entity);
                         d1 = d1 % 360.0D;
-                        double d2 = this.func_185092_a(worldIn, entity);
+                        double d2 = this.getSpawnToAngle(worldIn, entity);
                         d0 = Math.PI - ((d1 - 90.0D) * 0.01745329238474369D - d2);
                     }
                     else
@@ -55,36 +56,36 @@ public class ItemCompass extends Item
 
                     if (flag)
                     {
-                        d0 = this.func_185093_a(worldIn, d0);
+                        d0 = this.wobble(worldIn, d0);
                     }
 
                     float f = (float)(d0 / (Math.PI * 2D));
-                    return MathHelper.func_188207_b(f, 1.0F);
+                    return MathHelper.positiveModulo(f, 1.0F);
                 }
             }
             @SideOnly(Side.CLIENT)
-            private double func_185093_a(World p_185093_1_, double p_185093_2_)
+            private double wobble(World p_185093_1_, double p_185093_2_)
             {
-                if (p_185093_1_.getTotalWorldTime() != this.field_185097_c)
+                if (p_185093_1_.getTotalWorldTime() != this.lastUpdateTick)
                 {
-                    this.field_185097_c = p_185093_1_.getTotalWorldTime();
-                    double d0 = p_185093_2_ - this.field_185095_a;
+                    this.lastUpdateTick = p_185093_1_.getTotalWorldTime();
+                    double d0 = p_185093_2_ - this.rotation;
                     d0 = d0 % (Math.PI * 2D);
                     d0 = MathHelper.clamp_double(d0, -1.0D, 1.0D);
-                    this.field_185096_b += d0 * 0.1D;
-                    this.field_185096_b *= 0.8D;
-                    this.field_185095_a += this.field_185096_b;
+                    this.rota += d0 * 0.1D;
+                    this.rota *= 0.8D;
+                    this.rotation += this.rota;
                 }
 
-                return this.field_185095_a;
+                return this.rotation;
             }
             @SideOnly(Side.CLIENT)
-            private double func_185094_a(EntityItemFrame p_185094_1_)
+            private double getFrameRotation(EntityItemFrame p_185094_1_)
             {
                 return (double)MathHelper.clampAngle(180 + p_185094_1_.facingDirection.getHorizontalIndex() * 90);
             }
             @SideOnly(Side.CLIENT)
-            private double func_185092_a(World p_185092_1_, Entity p_185092_2_)
+            private double getSpawnToAngle(World p_185092_1_, Entity p_185092_2_)
             {
                 BlockPos blockpos = p_185092_1_.getSpawnPoint();
                 return Math.atan2((double)blockpos.getZ() - p_185092_2_.posZ, (double)blockpos.getX() - p_185092_2_.posX);

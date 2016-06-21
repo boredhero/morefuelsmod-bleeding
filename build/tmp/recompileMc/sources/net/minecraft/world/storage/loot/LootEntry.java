@@ -18,24 +18,28 @@ import net.minecraft.world.storage.loot.conditions.LootCondition;
 
 public abstract class LootEntry
 {
+    protected final String entryName;
     protected final int weight;
     protected final int quality;
     protected final LootCondition[] conditions;
 
-    protected LootEntry(int weightIn, int qualityIn, LootCondition[] conditionsIn)
+    protected LootEntry(int weightIn, int qualityIn, LootCondition[] conditionsIn, String entryName)
     {
         this.weight = weightIn;
         this.quality = qualityIn;
         this.conditions = conditionsIn;
+        this.entryName = entryName;
     }
 
     /**
-     * Gets the effective quality, computed from the weight and quality tags, and entity's luck
+     * Gets the effective weight based on the loot entry's weight and quality multiplied by looter's luck.
      */
-    public int getEffectiveQuality(float luck)
+    public int getEffectiveWeight(float luck)
     {
         return Math.max(MathHelper.floor_float((float)this.weight + (float)this.quality * luck), 0);
     }
+
+    public String getEntryName(){ return this.entryName; }
 
     public abstract void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context);
 
@@ -60,6 +64,9 @@ public abstract class LootEntry
                     alootcondition = new LootCondition[0];
                 }
 
+                LootEntry ret = net.minecraftforge.common.ForgeHooks.deserializeJsonLootEntry(s, jsonobject, i, j, alootcondition);
+                if (ret != null) return ret;
+
                 if (s.equals("item"))
                 {
                     return LootEntryItem.deserialize(jsonobject, p_deserialize_3_, i, j, alootcondition);
@@ -81,6 +88,8 @@ public abstract class LootEntry
             public JsonElement serialize(LootEntry p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_)
             {
                 JsonObject jsonobject = new JsonObject();
+                if (p_serialize_1_.entryName != null && !p_serialize_1_.entryName.startsWith("custom#"))
+                    jsonobject.addProperty("entryName", p_serialize_1_.entryName);
                 jsonobject.addProperty("weight", (Number)Integer.valueOf(p_serialize_1_.weight));
                 jsonobject.addProperty("quality", (Number)Integer.valueOf(p_serialize_1_.quality));
 
@@ -89,6 +98,9 @@ public abstract class LootEntry
                     jsonobject.add("conditions", p_serialize_3_.serialize(p_serialize_1_.conditions));
                 }
 
+                String type = net.minecraftforge.common.ForgeHooks.getLootEntryType(p_serialize_1_);
+                if (type != null) jsonobject.addProperty("type", type);
+                else
                 if (p_serialize_1_ instanceof LootEntryItem)
                 {
                     jsonobject.addProperty("type", "item");

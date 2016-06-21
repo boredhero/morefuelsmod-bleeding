@@ -1,6 +1,7 @@
 package net.minecraft.entity.item;
 
 import com.google.common.base.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityItem extends Entity
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final DataParameter<Optional<ItemStack>> ITEM = EntityDataManager.<Optional<ItemStack>>createKey(EntityItem.class, DataSerializers.OPTIONAL_ITEM_STACK);
     /** The age of this EntityItem (used to animate it up and down as well as expire it) */
     private int age;
@@ -80,7 +81,7 @@ public class EntityItem extends Entity
         this.health = 5;
         this.hoverStart = (float)(Math.random() * Math.PI * 2.0D);
         this.setSize(0.25F, 0.25F);
-        this.setEntityItemStack(new ItemStack(Blocks.air, 0));
+        this.setEntityItemStack(new ItemStack(Blocks.AIR, 0));
     }
 
     protected void entityInit()
@@ -118,12 +119,12 @@ public class EntityItem extends Entity
 
             if (flag || this.ticksExisted % 25 == 0)
             {
-                if (this.worldObj.getBlockState(new BlockPos(this)).getMaterial() == Material.lava)
+                if (this.worldObj.getBlockState(new BlockPos(this)).getMaterial() == Material.LAVA)
                 {
                     this.motionY = 0.20000000298023224D;
                     this.motionX = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
                     this.motionZ = (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F);
-                    this.playSound(SoundEvents.entity_generic_burn, 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
+                    this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.rand.nextFloat() * 0.4F);
                 }
 
                 if (!this.worldObj.isRemote)
@@ -268,7 +269,7 @@ public class EntityItem extends Entity
      */
     public boolean handleWaterMovement()
     {
-        if (this.worldObj.handleMaterialAcceleration(this.getEntityBoundingBox(), Material.water, this))
+        if (this.worldObj.handleMaterialAcceleration(this.getEntityBoundingBox(), Material.WATER, this))
         {
             if (!this.inWater && !this.firstUpdate)
             {
@@ -286,8 +287,7 @@ public class EntityItem extends Entity
     }
 
     /**
-     * Will deal the specified amount of damage to the entity if the entity isn't immune to fire damage. Args:
-     * amountDamage
+     * Will deal the specified amount of fire damage to the entity if the entity isn't immune to fire damage.
      */
     protected void dealFireDamage(int amount)
     {
@@ -303,7 +303,7 @@ public class EntityItem extends Entity
         {
             return false;
         }
-        else if (this.getEntityItem() != null && this.getEntityItem().getItem() == Items.nether_star && source.isExplosion())
+        else if (this.getEntityItem() != null && this.getEntityItem().getItem() == Items.NETHER_STAR && source.isExplosion())
         {
             return false;
         }
@@ -324,58 +324,58 @@ public class EntityItem extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setShort("Health", (short)this.health);
-        tagCompound.setShort("Age", (short)this.age);
-        tagCompound.setShort("PickupDelay", (short)this.delayBeforeCanPickup);
-        tagCompound.setInteger("Lifespan", lifespan);
+        compound.setShort("Health", (short)this.health);
+        compound.setShort("Age", (short)this.age);
+        compound.setShort("PickupDelay", (short)this.delayBeforeCanPickup);
+        compound.setInteger("Lifespan", lifespan);
 
         if (this.getThrower() != null)
         {
-            tagCompound.setString("Thrower", this.thrower);
+            compound.setString("Thrower", this.thrower);
         }
 
         if (this.getOwner() != null)
         {
-            tagCompound.setString("Owner", this.owner);
+            compound.setString("Owner", this.owner);
         }
 
         if (this.getEntityItem() != null)
         {
-            tagCompound.setTag("Item", this.getEntityItem().writeToNBT(new NBTTagCompound()));
+            compound.setTag("Item", this.getEntityItem().writeToNBT(new NBTTagCompound()));
         }
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.health = tagCompund.getShort("Health");
-        this.age = tagCompund.getShort("Age");
+        this.health = compound.getShort("Health");
+        this.age = compound.getShort("Age");
 
-        if (tagCompund.hasKey("PickupDelay"))
+        if (compound.hasKey("PickupDelay"))
         {
-            this.delayBeforeCanPickup = tagCompund.getShort("PickupDelay");
+            this.delayBeforeCanPickup = compound.getShort("PickupDelay");
         }
 
-        if (tagCompund.hasKey("Owner"))
+        if (compound.hasKey("Owner"))
         {
-            this.owner = tagCompund.getString("Owner");
+            this.owner = compound.getString("Owner");
         }
 
-        if (tagCompund.hasKey("Thrower"))
+        if (compound.hasKey("Thrower"))
         {
-            this.thrower = tagCompund.getString("Thrower");
+            this.thrower = compound.getString("Thrower");
         }
 
-        NBTTagCompound nbttagcompound = tagCompund.getCompoundTag("Item");
+        NBTTagCompound nbttagcompound = compound.getCompoundTag("Item");
         this.setEntityItemStack(ItemStack.loadItemStackFromNBT(nbttagcompound));
 
         ItemStack item = this.getDataManager().get(ITEM).orNull();
         if (item == null || item.stackSize <= 0) this.setDead();
-        if (tagCompund.hasKey("Lifespan")) lifespan = tagCompund.getInteger("Lifespan");
+        if (compound.hasKey("Lifespan")) lifespan = compound.getInteger("Lifespan");
     }
 
     /**
@@ -394,45 +394,45 @@ public class EntityItem extends Entity
 
             if (this.delayBeforeCanPickup <= 0 && (this.owner == null || lifespan - this.age <= 200 || this.owner.equals(entityIn.getName())) && (hook == 1 || i <= 0 || entityIn.inventory.addItemStackToInventory(itemstack)))
             {
-                if (itemstack.getItem() == Item.getItemFromBlock(Blocks.log))
+                if (itemstack.getItem() == Item.getItemFromBlock(Blocks.LOG))
                 {
-                    entityIn.addStat(AchievementList.mineWood);
+                    entityIn.addStat(AchievementList.MINE_WOOD);
                 }
 
-                if (itemstack.getItem() == Item.getItemFromBlock(Blocks.log2))
+                if (itemstack.getItem() == Item.getItemFromBlock(Blocks.LOG2))
                 {
-                    entityIn.addStat(AchievementList.mineWood);
+                    entityIn.addStat(AchievementList.MINE_WOOD);
                 }
 
-                if (itemstack.getItem() == Items.leather)
+                if (itemstack.getItem() == Items.LEATHER)
                 {
-                    entityIn.addStat(AchievementList.killCow);
+                    entityIn.addStat(AchievementList.KILL_COW);
                 }
 
-                if (itemstack.getItem() == Items.diamond)
+                if (itemstack.getItem() == Items.DIAMOND)
                 {
-                    entityIn.addStat(AchievementList.diamonds);
+                    entityIn.addStat(AchievementList.DIAMONDS);
                 }
 
-                if (itemstack.getItem() == Items.blaze_rod)
+                if (itemstack.getItem() == Items.BLAZE_ROD)
                 {
-                    entityIn.addStat(AchievementList.blazeRod);
+                    entityIn.addStat(AchievementList.BLAZE_ROD);
                 }
 
-                if (itemstack.getItem() == Items.diamond && this.getThrower() != null)
+                if (itemstack.getItem() == Items.DIAMOND && this.getThrower() != null)
                 {
                     EntityPlayer entityplayer = this.worldObj.getPlayerEntityByName(this.getThrower());
 
                     if (entityplayer != null && entityplayer != entityIn)
                     {
-                        entityplayer.addStat(AchievementList.diamondsToYou);
+                        entityplayer.addStat(AchievementList.DIAMONDS_TO_YOU);
                     }
                 }
 
                 net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerItemPickupEvent(entityIn, this);
                 if (!this.isSilent())
                 {
-                    this.worldObj.playSound((EntityPlayer)null, entityIn.posX, entityIn.posY, entityIn.posZ, SoundEvents.entity_item_pickup, SoundCategory.PLAYERS, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                    this.worldObj.playSound((EntityPlayer)null, entityIn.posX, entityIn.posY, entityIn.posZ, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
                 }
 
                 entityIn.onItemPickup(this, i);
@@ -442,7 +442,7 @@ public class EntityItem extends Entity
                     this.setDead();
                 }
 
-                entityIn.addStat(StatList.func_188056_d(itemstack.getItem()), i);
+                entityIn.addStat(StatList.getObjectsPickedUpStats(itemstack.getItem()), i);
             }
         }
     }
@@ -456,13 +456,14 @@ public class EntityItem extends Entity
     }
 
     /**
-     * If returns false, the item will not inflict any damage against entities.
+     * Returns true if it's possible to attack this entity with an item.
      */
-    public boolean canAttackWithItem()
+    public boolean canBeAttackedWithItem()
     {
         return false;
     }
 
+    @Nullable
     public Entity changeDimension(int dimensionIn)
     {
         Entity entity = super.changeDimension(dimensionIn);
@@ -485,7 +486,7 @@ public class EntityItem extends Entity
 
         if (itemstack == null)
         {
-            return new ItemStack(Blocks.stone);
+            return new ItemStack(Blocks.STONE);
         }
         else
         {
@@ -496,7 +497,7 @@ public class EntityItem extends Entity
     /**
      * Sets the ItemStack for this entity
      */
-    public void setEntityItemStack(ItemStack stack)
+    public void setEntityItemStack(@Nullable ItemStack stack)
     {
         this.getDataManager().set(ITEM, Optional.fromNullable(stack));
         this.getDataManager().setDirty(ITEM);
@@ -558,7 +559,7 @@ public class EntityItem extends Entity
         this.age = -6000;
     }
 
-    public void func_174870_v()
+    public void makeFakeItem()
     {
         this.setInfinitePickupDelay();
         this.age = getEntityItem().getItem().getEntityLifespan(getEntityItem(), worldObj) - 1;

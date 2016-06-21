@@ -9,7 +9,7 @@ import net.minecraft.init.Blocks;
 
 public class ItemPickaxe extends ItemTool
 {
-    private static final Set<Block> EFFECTIVE_ON = Sets.newHashSet(new Block[] {Blocks.activator_rail, Blocks.coal_ore, Blocks.cobblestone, Blocks.detector_rail, Blocks.diamond_block, Blocks.diamond_ore, Blocks.double_stone_slab, Blocks.golden_rail, Blocks.gold_block, Blocks.gold_ore, Blocks.ice, Blocks.iron_block, Blocks.iron_ore, Blocks.lapis_block, Blocks.lapis_ore, Blocks.lit_redstone_ore, Blocks.mossy_cobblestone, Blocks.netherrack, Blocks.packed_ice, Blocks.rail, Blocks.redstone_ore, Blocks.sandstone, Blocks.red_sandstone, Blocks.stone, Blocks.stone_slab, Blocks.stone_button, Blocks.stone_pressure_plate});
+    private static final Set<Block> EFFECTIVE_ON = Sets.newHashSet(new Block[] {Blocks.ACTIVATOR_RAIL, Blocks.COAL_ORE, Blocks.COBBLESTONE, Blocks.DETECTOR_RAIL, Blocks.DIAMOND_BLOCK, Blocks.DIAMOND_ORE, Blocks.DOUBLE_STONE_SLAB, Blocks.GOLDEN_RAIL, Blocks.GOLD_BLOCK, Blocks.GOLD_ORE, Blocks.ICE, Blocks.IRON_BLOCK, Blocks.IRON_ORE, Blocks.LAPIS_BLOCK, Blocks.LAPIS_ORE, Blocks.LIT_REDSTONE_ORE, Blocks.MOSSY_COBBLESTONE, Blocks.NETHERRACK, Blocks.PACKED_ICE, Blocks.RAIL, Blocks.REDSTONE_ORE, Blocks.SANDSTONE, Blocks.RED_SANDSTONE, Blocks.STONE, Blocks.STONE_SLAB, Blocks.STONE_BUTTON, Blocks.STONE_PRESSURE_PLATE});
 
     protected ItemPickaxe(Item.ToolMaterial material)
     {
@@ -23,24 +23,24 @@ public class ItemPickaxe extends ItemTool
     {
         Block block = blockIn.getBlock();
 
-        if (block == Blocks.obsidian)
+        if (block == Blocks.OBSIDIAN)
         {
             return this.toolMaterial.getHarvestLevel() == 3;
         }
-        else if (block != Blocks.diamond_block && block != Blocks.diamond_ore)
+        else if (block != Blocks.DIAMOND_BLOCK && block != Blocks.DIAMOND_ORE)
         {
-            if (block != Blocks.emerald_ore && block != Blocks.emerald_block)
+            if (block != Blocks.EMERALD_ORE && block != Blocks.EMERALD_BLOCK)
             {
-                if (block != Blocks.gold_block && block != Blocks.gold_ore)
+                if (block != Blocks.GOLD_BLOCK && block != Blocks.GOLD_ORE)
                 {
-                    if (block != Blocks.iron_block && block != Blocks.iron_ore)
+                    if (block != Blocks.IRON_BLOCK && block != Blocks.IRON_ORE)
                     {
-                        if (block != Blocks.lapis_block && block != Blocks.lapis_ore)
+                        if (block != Blocks.LAPIS_BLOCK && block != Blocks.LAPIS_ORE)
                         {
-                            if (block != Blocks.redstone_ore && block != Blocks.lit_redstone_ore)
+                            if (block != Blocks.REDSTONE_ORE && block != Blocks.LIT_REDSTONE_ORE)
                             {
                                 Material material = blockIn.getMaterial();
-                                return material == Material.rock ? true : (material == Material.iron ? true : material == Material.anvil);
+                                return material == Material.ROCK ? true : (material == Material.IRON ? true : material == Material.ANVIL);
                             }
                             else
                             {
@@ -76,6 +76,6 @@ public class ItemPickaxe extends ItemTool
     public float getStrVsBlock(ItemStack stack, IBlockState state)
     {
         Material material = state.getMaterial();
-        return material != Material.iron && material != Material.anvil && material != Material.rock ? super.getStrVsBlock(stack, state) : this.efficiencyOnProperMaterial;
+        return material != Material.IRON && material != Material.ANVIL && material != Material.ROCK ? super.getStrVsBlock(stack, state) : this.efficiencyOnProperMaterial;
     }
 }

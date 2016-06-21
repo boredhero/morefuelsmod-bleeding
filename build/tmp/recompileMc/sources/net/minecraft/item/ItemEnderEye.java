@@ -24,7 +24,7 @@ public class ItemEnderEye extends Item
 {
     public ItemEnderEye()
     {
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
     }
 
     /**
@@ -34,7 +34,7 @@ public class ItemEnderEye extends Item
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (playerIn.canPlayerEdit(pos.offset(facing), facing, stack) && iblockstate.getBlock() == Blocks.end_portal_frame && !((Boolean)iblockstate.getValue(BlockEndPortalFrame.EYE)).booleanValue())
+        if (playerIn.canPlayerEdit(pos.offset(facing), facing, stack) && iblockstate.getBlock() == Blocks.END_PORTAL_FRAME && !((Boolean)iblockstate.getValue(BlockEndPortalFrame.EYE)).booleanValue())
         {
             if (worldIn.isRemote)
             {
@@ -43,7 +43,7 @@ public class ItemEnderEye extends Item
             else
             {
                 worldIn.setBlockState(pos, iblockstate.withProperty(BlockEndPortalFrame.EYE, Boolean.valueOf(true)), 2);
-                worldIn.updateComparatorOutputLevel(pos, Blocks.end_portal_frame);
+                worldIn.updateComparatorOutputLevel(pos, Blocks.END_PORTAL_FRAME);
                 --stack.stackSize;
 
                 for (int i = 0; i < 16; ++i)
@@ -58,17 +58,17 @@ public class ItemEnderEye extends Item
                 }
 
                 EnumFacing enumfacing = (EnumFacing)iblockstate.getValue(BlockEndPortalFrame.FACING);
-                BlockPattern.PatternHelper blockpattern$patternhelper = BlockEndPortalFrame.func_185661_e().match(worldIn, pos);
+                BlockPattern.PatternHelper blockpattern$patternhelper = BlockEndPortalFrame.getOrCreatePortalShape().match(worldIn, pos);
 
                 if (blockpattern$patternhelper != null)
                 {
-                    BlockPos blockpos = blockpattern$patternhelper.getPos().add(-3, 0, -3);
+                    BlockPos blockpos = blockpattern$patternhelper.getFrontTopLeft().add(-3, 0, -3);
 
                     for (int k = 0; k < 3; ++k)
                     {
                         for (int j = 0; j < 3; ++j)
                         {
-                            worldIn.setBlockState(blockpos.add(k, 0, j), Blocks.end_portal.getDefaultState(), 2);
+                            worldIn.setBlockState(blockpos.add(k, 0, j), Blocks.END_PORTAL.getDefaultState(), 2);
                         }
                     }
                 }
@@ -84,9 +84,9 @@ public class ItemEnderEye extends Item
 
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
-        RayTraceResult raytraceresult = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, false);
+        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, false);
 
-        if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && worldIn.getBlockState(raytraceresult.getBlockPos()).getBlock() == Blocks.end_portal_frame)
+        if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK && worldIn.getBlockState(raytraceresult.getBlockPos()).getBlock() == Blocks.END_PORTAL_FRAME)
         {
             return new ActionResult(EnumActionResult.PASS, itemStackIn);
         }
@@ -101,15 +101,15 @@ public class ItemEnderEye extends Item
                     EntityEnderEye entityendereye = new EntityEnderEye(worldIn, playerIn.posX, playerIn.posY + (double)(playerIn.height / 2.0F), playerIn.posZ);
                     entityendereye.moveTowards(blockpos);
                     worldIn.spawnEntityInWorld(entityendereye);
-                    worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.entity_endereye_launch, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
-                    worldIn.playAuxSFXAtEntity((EntityPlayer)null, 1003, new BlockPos(playerIn), 0);
+                    worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_ENDEREYE_LAUNCH, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+                    worldIn.playEvent((EntityPlayer)null, 1003, new BlockPos(playerIn), 0);
 
                     if (!playerIn.capabilities.isCreativeMode)
                     {
                         --itemStackIn.stackSize;
                     }
 
-                    playerIn.addStat(StatList.func_188057_b(this));
+                    playerIn.addStat(StatList.getObjectUseStats(this));
                     return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
                 }
             }

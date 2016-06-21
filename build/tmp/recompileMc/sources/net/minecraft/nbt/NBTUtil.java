@@ -1,8 +1,10 @@
 package net.minecraft.nbt;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.math.BlockPos;
 
@@ -11,6 +13,7 @@ public final class NBTUtil
     /**
      * Reads and returns a GameProfile that has been saved to the passed in NBTTagCompound
      */
+    @Nullable
     public static GameProfile readGameProfileFromNBT(NBTTagCompound compound)
     {
         String s = null;
@@ -119,6 +122,7 @@ public final class NBTUtil
         return tagCompound;
     }
 
+    @VisibleForTesting
     public static boolean areNBTEquals(NBTBase nbt1, NBTBase nbt2, boolean compareTagList)
     {
         if (nbt1 == nbt2)
@@ -196,8 +200,6 @@ public final class NBTUtil
 
     /**
      * Creates a new NBTTagCompound which stores a UUID.
-     *  
-     * @param uuid The UUID to create a NBTTagCompound for.
      */
     public static NBTTagCompound createUUIDTag(UUID uuid)
     {
@@ -209,8 +211,6 @@ public final class NBTUtil
 
     /**
      * Reads a UUID from the passed NBTTagCompound.
-     *  
-     * @param tag The NBTTagCompound to read the UUID from.
      */
     public static UUID getUUIDFromTag(NBTTagCompound tag)
     {
@@ -219,8 +219,6 @@ public final class NBTUtil
 
     /**
      * Creates a BlockPos object from the data stored in the passed NBTTagCompound.
-     *  
-     * @param tag The NBTTagCompound to read position data from.
      */
     public static BlockPos getPosFromTag(NBTTagCompound tag)
     {
@@ -229,8 +227,6 @@ public final class NBTUtil
 
     /**
      * Creates a new NBTTagCompound from a BlockPos.
-     *  
-     * @param pos The BlockPos to create a NBTTagCompound for.
      */
     public static NBTTagCompound createPosTag(BlockPos pos)
     {

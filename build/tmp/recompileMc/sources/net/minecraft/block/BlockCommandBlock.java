@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -32,7 +33,7 @@ public class BlockCommandBlock extends BlockContainer
 
     public BlockCommandBlock(MapColor color)
     {
-        super(Material.iron, color);
+        super(Material.IRON, color);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(CONDITIONAL, Boolean.valueOf(false)));
     }
 
@@ -42,14 +43,16 @@ public class BlockCommandBlock extends BlockContainer
     public TileEntity createNewTileEntity(World worldIn, int meta)
     {
         TileEntityCommandBlock tileentitycommandblock = new TileEntityCommandBlock();
-        tileentitycommandblock.setAuto(this == Blocks.chain_command_block);
+        tileentitycommandblock.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
         return tileentitycommandblock;
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!worldIn.isRemote)
         {
@@ -66,9 +69,9 @@ public class BlockCommandBlock extends BlockContainer
                 {
                     tileentitycommandblock.setPowered(true);
 
-                    if (tileentitycommandblock.func_184251_i() != TileEntityCommandBlock.Mode.SEQUENCE && !flag2)
+                    if (tileentitycommandblock.getMode() != TileEntityCommandBlock.Mode.SEQUENCE && !flag2)
                     {
-                        boolean flag3 = !tileentitycommandblock.func_184258_j() || this.isNextToSuccessfulCommandBlock(worldIn, pos, state);
+                        boolean flag3 = !tileentitycommandblock.isConditional() || this.isNextToSuccessfulCommandBlock(worldIn, pos, state);
                         tileentitycommandblock.setConditionMet(flag3);
                         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
 
@@ -97,8 +100,8 @@ public class BlockCommandBlock extends BlockContainer
                 TileEntityCommandBlock tileentitycommandblock = (TileEntityCommandBlock)tileentity;
                 CommandBlockBaseLogic commandblockbaselogic = tileentitycommandblock.getCommandBlockLogic();
                 boolean flag = !StringUtils.isNullOrEmpty(commandblockbaselogic.getCommand());
-                TileEntityCommandBlock.Mode tileentitycommandblock$mode = tileentitycommandblock.func_184251_i();
-                boolean flag1 = !tileentitycommandblock.func_184258_j() || this.isNextToSuccessfulCommandBlock(worldIn, pos, state);
+                TileEntityCommandBlock.Mode tileentitycommandblock$mode = tileentitycommandblock.getMode();
+                boolean flag1 = !tileentitycommandblock.isConditional() || this.isNextToSuccessfulCommandBlock(worldIn, pos, state);
                 boolean flag2 = tileentitycommandblock.isConditionMet();
                 boolean flag3 = false;
 
@@ -156,7 +159,7 @@ public class BlockCommandBlock extends BlockContainer
         return 1;
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
@@ -213,10 +216,10 @@ public class BlockCommandBlock extends BlockContainer
                 if (nbttagcompound == null || !nbttagcompound.hasKey("BlockEntityTag", 10))
                 {
                     commandblockbaselogic.setTrackOutput(worldIn.getGameRules().getBoolean("sendCommandFeedback"));
-                    tileentitycommandblock.setAuto(this == Blocks.chain_command_block);
+                    tileentitycommandblock.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
                 }
 
-                if (tileentitycommandblock.func_184251_i() == TileEntityCommandBlock.Mode.SEQUENCE)
+                if (tileentitycommandblock.getMode() == TileEntityCommandBlock.Mode.SEQUENCE)
                 {
                     boolean flag = worldIn.isBlockPowered(pos);
                     tileentitycommandblock.setPowered(flag);
@@ -293,16 +296,16 @@ public class BlockCommandBlock extends BlockContainer
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (iblockstate.getBlock() == Blocks.command_block || iblockstate.getBlock() == Blocks.repeating_command_block)
+        if (iblockstate.getBlock() == Blocks.COMMAND_BLOCK || iblockstate.getBlock() == Blocks.REPEATING_COMMAND_BLOCK)
         {
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(pos);
-            blockpos$mutableblockpos.offsetMutable((EnumFacing)iblockstate.getValue(FACING));
+            blockpos$mutableblockpos.move((EnumFacing)iblockstate.getValue(FACING));
 
             for (TileEntity tileentity = worldIn.getTileEntity(blockpos$mutableblockpos); tileentity instanceof TileEntityCommandBlock; tileentity = worldIn.getTileEntity(blockpos$mutableblockpos))
             {
                 TileEntityCommandBlock tileentitycommandblock = (TileEntityCommandBlock)tileentity;
 
-                if (tileentitycommandblock.func_184251_i() != TileEntityCommandBlock.Mode.SEQUENCE)
+                if (tileentitycommandblock.getMode() != TileEntityCommandBlock.Mode.SEQUENCE)
                 {
                     break;
                 }
@@ -310,13 +313,13 @@ public class BlockCommandBlock extends BlockContainer
                 IBlockState iblockstate1 = worldIn.getBlockState(blockpos$mutableblockpos);
                 Block block = iblockstate1.getBlock();
 
-                if (block != Blocks.chain_command_block || worldIn.isUpdateScheduled(blockpos$mutableblockpos, block))
+                if (block != Blocks.CHAIN_COMMAND_BLOCK || worldIn.isUpdateScheduled(blockpos$mutableblockpos, block))
                 {
                     break;
                 }
 
                 worldIn.scheduleUpdate(new BlockPos(blockpos$mutableblockpos), block, this.tickRate(worldIn));
-                blockpos$mutableblockpos.offsetMutable((EnumFacing)iblockstate1.getValue(FACING));
+                blockpos$mutableblockpos.move((EnumFacing)iblockstate1.getValue(FACING));
             }
         }
     }

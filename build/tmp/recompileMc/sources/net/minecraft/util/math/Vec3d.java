@@ -1,5 +1,6 @@
 package net.minecraft.util.math;
 
+import javax.annotation.Nullable;
 public class Vec3d
 {
     public static final Vec3d ZERO = new Vec3d(0.0D, 0.0D, 0.0D);
@@ -138,6 +139,7 @@ public class Vec3d
      * Returns a new vector with x value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
      */
+    @Nullable
     public Vec3d getIntermediateWithXValue(Vec3d vec, double x)
     {
         double d0 = vec.xCoord - this.xCoord;
@@ -159,6 +161,7 @@ public class Vec3d
      * Returns a new vector with y value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
      */
+    @Nullable
     public Vec3d getIntermediateWithYValue(Vec3d vec, double y)
     {
         double d0 = vec.xCoord - this.xCoord;
@@ -180,6 +183,7 @@ public class Vec3d
      * Returns a new vector with z value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
      */
+    @Nullable
     public Vec3d getIntermediateWithZValue(Vec3d vec, double z)
     {
         double d0 = vec.xCoord - this.xCoord;

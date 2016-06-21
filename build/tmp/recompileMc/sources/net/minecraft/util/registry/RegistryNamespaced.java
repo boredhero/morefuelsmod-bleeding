@@ -4,6 +4,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.util.Iterator;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.util.IObjectIntIterable;
 import net.minecraft.util.IntIdentityHashBiMap;
 
@@ -28,7 +29,8 @@ public class RegistryNamespaced<K, V> extends RegistrySimple<K, V> implements IO
         return HashBiMap.<K, V>create();
     }
 
-    public V getObject(K name)
+    @Nullable
+    public V getObject(@Nullable K name)
     {
         return super.getObject(name);
     }
@@ -36,6 +38,7 @@ public class RegistryNamespaced<K, V> extends RegistrySimple<K, V> implements IO
     /**
      * Gets the name we use to identify the given object.
      */
+    @Nullable
     public K getNameForObject(V value)
     {
         return (K)this.inverseObjectRegistry.get(value);
@@ -60,6 +63,7 @@ public class RegistryNamespaced<K, V> extends RegistrySimple<K, V> implements IO
     /**
      * Gets the object identified by the given ID.
      */
+    @Nullable
     public V getObjectById(int id)
     {
         return (V)this.underlyingIntegerMap.get(id);

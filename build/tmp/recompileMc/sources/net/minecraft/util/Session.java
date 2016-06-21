@@ -5,6 +5,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.util.UUIDTypeAdapter;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -102,6 +103,7 @@ public class Session
             this.sessionType = sessionTypeIn;
         }
 
+        @Nullable
         public static Session.Type setSessionType(String sessionTypeIn)
         {
             return (Session.Type)SESSION_TYPES.get(sessionTypeIn.toLowerCase());

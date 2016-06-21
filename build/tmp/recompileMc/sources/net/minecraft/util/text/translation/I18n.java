@@ -1,5 +1,6 @@
 package net.minecraft.util.text.translation;
 
+@Deprecated
 public class I18n
 {
     private static LanguageMap localizedName = LanguageMap.getInstance();
@@ -12,6 +13,7 @@ public class I18n
     /**
      * Translates a Stat name
      */
+    @Deprecated
     public static String translateToLocal(String key)
     {
         return localizedName.translateKey(key);
@@ -20,6 +22,7 @@ public class I18n
     /**
      * Translates a Stat name with format args
      */
+    @Deprecated
     public static String translateToLocalFormatted(String key, Object... format)
     {
         return localizedName.translateKeyFormat(key, format);
@@ -29,6 +32,7 @@ public class I18n
      * Translates a Stat name using the fallback (hardcoded en_US) locale.  Looks like it's only intended to be used if
      * translateToLocal fails.
      */
+    @Deprecated
     public static String translateToFallback(String key)
     {
         return fallbackTranslator.translateKey(key);
@@ -37,6 +41,7 @@ public class I18n
     /**
      * Determines whether or not translateToLocal will find a translation for the given key.
      */
+    @Deprecated
     public static boolean canTranslate(String key)
     {
         return localizedName.isKeyTranslated(key);

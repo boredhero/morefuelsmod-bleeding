@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -30,13 +31,13 @@ public class ItemBucket extends Item
     {
         this.maxStackSize = 1;
         this.isFull = containedBlock;
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
     }
 
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
-        boolean flag = this.isFull == Blocks.air;
-        RayTraceResult raytraceresult = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, flag);
+        boolean flag = this.isFull == Blocks.AIR;
+        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, flag);
         ActionResult<ItemStack> ret = net.minecraftforge.event.ForgeEventFactory.onBucketUse(playerIn, worldIn, itemStackIn, raytraceresult);
         if (ret != null) return ret;
 
@@ -67,19 +68,19 @@ public class ItemBucket extends Item
                     IBlockState iblockstate = worldIn.getBlockState(blockpos);
                     Material material = iblockstate.getMaterial();
 
-                    if (material == Material.water && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
+                    if (material == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
                     {
-                        worldIn.setBlockState(blockpos, Blocks.air.getDefaultState(), 11);
-                        playerIn.addStat(StatList.func_188057_b(this));
-                        playerIn.playSound(SoundEvents.item_bucket_fill, 1.0F, 1.0F);
-                        return new ActionResult(EnumActionResult.SUCCESS, this.fillBucket(itemStackIn, playerIn, Items.water_bucket));
+                        worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 11);
+                        playerIn.addStat(StatList.getObjectUseStats(this));
+                        playerIn.playSound(SoundEvents.ITEM_BUCKET_FILL, 1.0F, 1.0F);
+                        return new ActionResult(EnumActionResult.SUCCESS, this.fillBucket(itemStackIn, playerIn, Items.WATER_BUCKET));
                     }
-                    else if (material == Material.lava && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
+                    else if (material == Material.LAVA && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0)
                     {
-                        playerIn.playSound(SoundEvents.item_bucket_fill_lava, 1.0F, 1.0F);
-                        worldIn.setBlockState(blockpos, Blocks.air.getDefaultState(), 11);
-                        playerIn.addStat(StatList.func_188057_b(this));
-                        return new ActionResult(EnumActionResult.SUCCESS, this.fillBucket(itemStackIn, playerIn, Items.lava_bucket));
+                        playerIn.playSound(SoundEvents.ITEM_BUCKET_FILL_LAVA, 1.0F, 1.0F);
+                        worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 11);
+                        playerIn.addStat(StatList.getObjectUseStats(this));
+                        return new ActionResult(EnumActionResult.SUCCESS, this.fillBucket(itemStackIn, playerIn, Items.LAVA_BUCKET));
                     }
                     else
                     {
@@ -98,8 +99,8 @@ public class ItemBucket extends Item
                 }
                 else if (this.tryPlaceContainedLiquid(playerIn, worldIn, blockpos1))
                 {
-                    playerIn.addStat(StatList.func_188057_b(this));
-                    return !playerIn.capabilities.isCreativeMode ? new ActionResult(EnumActionResult.SUCCESS, new ItemStack(Items.bucket)) : new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+                    playerIn.addStat(StatList.getObjectUseStats(this));
+                    return !playerIn.capabilities.isCreativeMode ? new ActionResult(EnumActionResult.SUCCESS, new ItemStack(Items.BUCKET)) : new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
                 }
                 else
                 {
@@ -123,38 +124,38 @@ public class ItemBucket extends Item
         {
             if (!player.inventory.addItemStackToInventory(new ItemStack(fullBucket)))
             {
-                player.dropPlayerItemWithRandomChoice(new ItemStack(fullBucket), false);
+                player.dropItem(new ItemStack(fullBucket), false);
             }
 
             return emptyBuckets;
         }
     }
 
-    public boolean tryPlaceContainedLiquid(EntityPlayer worldIn, World pos, BlockPos p_180616_3_)
+    public boolean tryPlaceContainedLiquid(@Nullable EntityPlayer worldIn, World pos, BlockPos posIn)
     {
-        if (this.isFull == Blocks.air)
+        if (this.isFull == Blocks.AIR)
         {
             return false;
         }
         else
         {
-            IBlockState iblockstate = pos.getBlockState(p_180616_3_);
+            IBlockState iblockstate = pos.getBlockState(posIn);
             Material material = iblockstate.getMaterial();
             boolean flag = !material.isSolid();
-            boolean flag1 = iblockstate.getBlock().isReplaceable(pos, p_180616_3_);
+            boolean flag1 = iblockstate.getBlock().isReplaceable(pos, posIn);
 
-            if (!pos.isAirBlock(p_180616_3_) && !flag && !flag1)
+            if (!pos.isAirBlock(posIn) && !flag && !flag1)
             {
                 return false;
             }
             else
             {
-                if (pos.provider.doesWaterVaporize() && this.isFull == Blocks.flowing_water)
+                if (pos.provider.doesWaterVaporize() && this.isFull == Blocks.FLOWING_WATER)
                 {
-                    int l = p_180616_3_.getX();
-                    int i = p_180616_3_.getY();
-                    int j = p_180616_3_.getZ();
-                    pos.playSound(worldIn, p_180616_3_, SoundEvents.block_fire_extinguish, SoundCategory.BLOCKS, 0.5F, 2.6F + (pos.rand.nextFloat() - pos.rand.nextFloat()) * 0.8F);
+                    int l = posIn.getX();
+                    int i = posIn.getY();
+                    int j = posIn.getZ();
+                    pos.playSound(worldIn, posIn, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (pos.rand.nextFloat() - pos.rand.nextFloat()) * 0.8F);
 
                     for (int k = 0; k < 8; ++k)
                     {
@@ -165,16 +166,21 @@ public class ItemBucket extends Item
                 {
                     if (!pos.isRemote && (flag || flag1) && !material.isLiquid())
                     {
-                        pos.destroyBlock(p_180616_3_, true);
+                        pos.destroyBlock(posIn, true);
                     }
 
-                    SoundEvent soundevent = this.isFull == Blocks.flowing_lava ? SoundEvents.item_bucket_empty_lava : SoundEvents.item_bucket_empty;
-                    pos.playSound(worldIn, p_180616_3_, soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                    pos.setBlockState(p_180616_3_, this.isFull.getDefaultState(), 11);
+                    SoundEvent soundevent = this.isFull == Blocks.FLOWING_LAVA ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+                    pos.playSound(worldIn, posIn, soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    pos.setBlockState(posIn, this.isFull.getDefaultState(), 11);
                 }
 
                 return true;
             }
         }
+    }
+
+    @Override
+    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, net.minecraft.nbt.NBTTagCompound nbt) {
+        return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
     }
 }

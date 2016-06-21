@@ -17,28 +17,28 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class GuiSubtitleOverlay extends Gui implements ISoundEventListener
 {
     private final Minecraft client;
-    private final List<GuiSubtitleOverlay.Subtitle> field_184070_f = Lists.<GuiSubtitleOverlay.Subtitle>newArrayList();
-    private boolean field_184071_g;
+    private final List<GuiSubtitleOverlay.Subtitle> subtitles = Lists.<GuiSubtitleOverlay.Subtitle>newArrayList();
+    private boolean enabled;
 
     public GuiSubtitleOverlay(Minecraft clientIn)
     {
         this.client = clientIn;
     }
 
-    public void renderSubtitles(ScaledResolution p_184068_1_)
+    public void renderSubtitles(ScaledResolution resolution)
     {
-        if (!this.field_184071_g && this.client.gameSettings.showSubtitles)
+        if (!this.enabled && this.client.gameSettings.showSubtitles)
         {
-            this.client.getSoundHandler().func_184402_a(this);
-            this.field_184071_g = true;
+            this.client.getSoundHandler().addListener(this);
+            this.enabled = true;
         }
-        else if (this.field_184071_g && !this.client.gameSettings.showSubtitles)
+        else if (this.enabled && !this.client.gameSettings.showSubtitles)
         {
-            this.client.getSoundHandler().func_184400_b(this);
-            this.field_184071_g = false;
+            this.client.getSoundHandler().removeListener(this);
+            this.enabled = false;
         }
 
-        if (this.field_184071_g && !this.field_184070_f.isEmpty())
+        if (this.enabled && !this.subtitles.isEmpty())
         {
             GlStateManager.pushMatrix();
             GlStateManager.enableBlend();
@@ -49,7 +49,7 @@ public class GuiSubtitleOverlay extends Gui implements ISoundEventListener
             Vec3d vec3d3 = vec3d1.crossProduct(vec3d2);
             int i = 0;
             int j = 0;
-            Iterator<GuiSubtitleOverlay.Subtitle> iterator = this.field_184070_f.iterator();
+            Iterator<GuiSubtitleOverlay.Subtitle> iterator = this.subtitles.iterator();
 
             while (iterator.hasNext())
             {
@@ -67,7 +67,7 @@ public class GuiSubtitleOverlay extends Gui implements ISoundEventListener
 
             j = j + this.client.fontRendererObj.getStringWidth("<") + this.client.fontRendererObj.getStringWidth(" ") + this.client.fontRendererObj.getStringWidth(">") + this.client.fontRendererObj.getStringWidth(" ");
 
-            for (GuiSubtitleOverlay.Subtitle guisubtitleoverlay$subtitle1 : this.field_184070_f)
+            for (GuiSubtitleOverlay.Subtitle guisubtitleoverlay$subtitle1 : this.subtitles)
             {
                 int k = 255;
                 String s = guisubtitleoverlay$subtitle1.getString();
@@ -83,7 +83,7 @@ public class GuiSubtitleOverlay extends Gui implements ISoundEventListener
                 int l1 = MathHelper.floor_double(MathHelper.denormalizeClamp(255.0D, 75.0D, (double)((float)(Minecraft.getSystemTime() - guisubtitleoverlay$subtitle1.getStartTime()) / 3000.0F)));
                 int i2 = l1 << 16 | l1 << 8 | l1;
                 GlStateManager.pushMatrix();
-                GlStateManager.translate((float)p_184068_1_.getScaledWidth() - (float)l * f - 2.0F, (float)(p_184068_1_.getScaledHeight() - 30) - (float)(i * (i1 + 1)) * f, 0.0F);
+                GlStateManager.translate((float)resolution.getScaledWidth() - (float)l * f - 2.0F, (float)(resolution.getScaledHeight() - 30) - (float)(i * (i1 + 1)) * f, 0.0F);
                 GlStateManager.scale(f, f, f);
                 drawRect(-l - 1, -j1 - 1, l + 1, j1 + 1, (int)((double)k * 0.8D) << 24);
                 GlStateManager.enableBlend();
@@ -110,25 +110,25 @@ public class GuiSubtitleOverlay extends Gui implements ISoundEventListener
         }
     }
 
-    public void func_184067_a(ISound soundIn, SoundEventAccessor accessor)
+    public void soundPlay(ISound soundIn, SoundEventAccessor accessor)
     {
-        if (accessor.func_188712_c() != null)
+        if (accessor.getSubtitle() != null)
         {
-            String s = accessor.func_188712_c().getFormattedText();
+            String s = accessor.getSubtitle().getFormattedText();
 
-            if (!this.field_184070_f.isEmpty())
+            if (!this.subtitles.isEmpty())
             {
-                for (GuiSubtitleOverlay.Subtitle guisubtitleoverlay$subtitle : this.field_184070_f)
+                for (GuiSubtitleOverlay.Subtitle guisubtitleoverlay$subtitle : this.subtitles)
                 {
                     if (guisubtitleoverlay$subtitle.getString().equals(s))
                     {
-                        guisubtitleoverlay$subtitle.func_186823_a(new Vec3d((double)soundIn.getXPosF(), (double)soundIn.getYPosF(), (double)soundIn.getZPosF()));
+                        guisubtitleoverlay$subtitle.refresh(new Vec3d((double)soundIn.getXPosF(), (double)soundIn.getYPosF(), (double)soundIn.getZPosF()));
                         return;
                     }
                 }
             }
 
-            this.field_184070_f.add(new GuiSubtitleOverlay.Subtitle(s, new Vec3d((double)soundIn.getXPosF(), (double)soundIn.getYPosF(), (double)soundIn.getZPosF())));
+            this.subtitles.add(new GuiSubtitleOverlay.Subtitle(s, new Vec3d((double)soundIn.getXPosF(), (double)soundIn.getYPosF(), (double)soundIn.getZPosF())));
         }
     }
 
@@ -161,9 +161,9 @@ public class GuiSubtitleOverlay extends Gui implements ISoundEventListener
             return this.location;
         }
 
-        public void func_186823_a(Vec3d p_186823_1_)
+        public void refresh(Vec3d locationIn)
         {
-            this.location = p_186823_1_;
+            this.location = locationIn;
             this.startTime = Minecraft.getSystemTime();
         }
     }

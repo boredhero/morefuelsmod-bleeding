@@ -15,17 +15,17 @@ public class ItemShears extends Item
     {
         this.setMaxStackSize(1);
         this.setMaxDamage(238);
-        this.setCreativeTab(CreativeTabs.tabTools);
+        this.setCreativeTab(CreativeTabs.TOOLS);
     }
 
     /**
      * Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
      */
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState blockIn, BlockPos pos, EntityLivingBase entityLiving)
+    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving)
     {
         stack.damageItem(1, entityLiving);
-        Block block = blockIn.getBlock();
-        return blockIn.getMaterial() != Material.leaves && block != Blocks.web && block != Blocks.tallgrass && block != Blocks.vine && block != Blocks.tripwire && block != Blocks.wool && !(blockIn instanceof net.minecraftforge.common.IShearable) ? super.onBlockDestroyed(stack, worldIn, blockIn, pos, entityLiving) : true;
+        Block block = state.getBlock();
+        return state.getMaterial() != Material.LEAVES && block != Blocks.WEB && block != Blocks.TALLGRASS && block != Blocks.VINE && block != Blocks.TRIPWIRE && block != Blocks.WOOL && !(state instanceof net.minecraftforge.common.IShearable) ? super.onBlockDestroyed(stack, worldIn, state, pos, entityLiving) : true;
     }
 
     /**
@@ -34,13 +34,13 @@ public class ItemShears extends Item
     public boolean canHarvestBlock(IBlockState blockIn)
     {
         Block block = blockIn.getBlock();
-        return block == Blocks.web || block == Blocks.redstone_wire || block == Blocks.tripwire;
+        return block == Blocks.WEB || block == Blocks.REDSTONE_WIRE || block == Blocks.TRIPWIRE;
     }
 
     public float getStrVsBlock(ItemStack stack, IBlockState state)
     {
         Block block = state.getBlock();
-        return block != Blocks.web && state.getMaterial() != Material.leaves ? (block == Blocks.wool ? 5.0F : super.getStrVsBlock(stack, state)) : 15.0F;
+        return block != Blocks.WEB && state.getMaterial() != Material.LEAVES ? (block == Blocks.WOOL ? 5.0F : super.getStrVsBlock(stack, state)) : 15.0F;
     }
 
 
@@ -61,7 +61,7 @@ public class ItemShears extends Item
             if (target.isShearable(itemstack, entity.worldObj, pos))
             {
                 java.util.List<ItemStack> drops = target.onSheared(itemstack, entity.worldObj, pos,
-                        net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.fortune, itemstack));
+                        net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.FORTUNE, itemstack));
 
                 java.util.Random rand = new java.util.Random();
                 for(ItemStack stack : drops)
@@ -92,7 +92,7 @@ public class ItemShears extends Item
             if (target.isShearable(itemstack, player.worldObj, pos))
             {
                 java.util.List<ItemStack> drops = target.onSheared(itemstack, player.worldObj, pos,
-                        net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.fortune, itemstack));
+                        net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.FORTUNE, itemstack));
                 java.util.Random rand = new java.util.Random();
 
                 for(ItemStack stack : drops)
@@ -107,7 +107,7 @@ public class ItemShears extends Item
                 }
 
                 itemstack.damageItem(1, player);
-                player.addStat(net.minecraft.stats.StatList.func_188055_a(block));
+                player.addStat(net.minecraft.stats.StatList.getBlockStats(block));
             }
         }
         return false;

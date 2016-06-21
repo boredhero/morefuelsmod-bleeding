@@ -1,6 +1,7 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.base.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -56,7 +57,7 @@ public class EntityOcelot extends EntityTameable
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, this.aiSit = new EntityAISit(this));
-        this.tasks.addTask(3, this.aiTempt = new EntityAITempt(this, 0.6D, Items.fish, true));
+        this.tasks.addTask(3, this.aiTempt = new EntityAITempt(this, 0.6D, Items.FISH, true));
         this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 5.0F));
         this.tasks.addTask(6, new EntityAIOcelotSit(this, 0.8D));
         this.tasks.addTask(7, new EntityAILeapAtTarget(this, 0.3F));
@@ -70,7 +71,7 @@ public class EntityOcelot extends EntityTameable
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(OCELOT_VARIANT, Integer.valueOf(0));
+        this.dataManager.register(OCELOT_VARIANT, Integer.valueOf(0));
     }
 
     public void updateAITasks()
@@ -124,34 +125,35 @@ public class EntityOcelot extends EntityTameable
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setInteger("CatType", this.getTameSkin());
+        super.writeEntityToNBT(compound);
+        compound.setInteger("CatType", this.getTameSkin());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.setTameSkin(tagCompund.getInteger("CatType"));
+        super.readEntityFromNBT(compound);
+        this.setTameSkin(compound.getInteger("CatType"));
     }
 
+    @Nullable
     protected SoundEvent getAmbientSound()
     {
-        return this.isTamed() ? (this.isInLove() ? SoundEvents.entity_cat_purr : (this.rand.nextInt(4) == 0 ? SoundEvents.entity_cat_purreow : SoundEvents.entity_cat_ambient)) : null;
+        return this.isTamed() ? (this.isInLove() ? SoundEvents.ENTITY_CAT_PURR : (this.rand.nextInt(4) == 0 ? SoundEvents.ENTITY_CAT_PURREOW : SoundEvents.ENTITY_CAT_AMBIENT)) : null;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_cat_hurt;
+        return SoundEvents.ENTITY_CAT_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_cat_death;
+        return SoundEvents.ENTITY_CAT_DEATH;
     }
 
     /**
@@ -187,12 +189,13 @@ public class EntityOcelot extends EntityTameable
         }
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_OCELOT;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand p_184645_2_, ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
         if (this.isTamed())
         {
@@ -201,7 +204,7 @@ public class EntityOcelot extends EntityTameable
                 this.aiSit.setSitting(!this.isSitting());
             }
         }
-        else if ((this.aiTempt == null || this.aiTempt.isRunning()) && stack != null && stack.getItem() == Items.fish && player.getDistanceSqToEntity(this) < 9.0D)
+        else if ((this.aiTempt == null || this.aiTempt.isRunning()) && stack != null && stack.getItem() == Items.FISH && player.getDistanceSqToEntity(this) < 9.0D)
         {
             if (!player.capabilities.isCreativeMode)
             {
@@ -229,7 +232,7 @@ public class EntityOcelot extends EntityTameable
             return true;
         }
 
-        return super.processInteract(player, p_184645_2_, stack);
+        return super.processInteract(player, hand, stack);
     }
 
     public EntityOcelot createChild(EntityAgeable ageable)
@@ -250,9 +253,9 @@ public class EntityOcelot extends EntityTameable
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(ItemStack stack)
+    public boolean isBreedingItem(@Nullable ItemStack stack)
     {
-        return stack != null && stack.getItem() == Items.fish;
+        return stack != null && stack.getItem() == Items.FISH;
     }
 
     /**
@@ -281,12 +284,12 @@ public class EntityOcelot extends EntityTameable
 
     public int getTameSkin()
     {
-        return ((Integer)this.dataWatcher.get(OCELOT_VARIANT)).intValue();
+        return ((Integer)this.dataManager.get(OCELOT_VARIANT)).intValue();
     }
 
     public void setTameSkin(int skinId)
     {
-        this.dataWatcher.set(OCELOT_VARIANT, Integer.valueOf(skinId));
+        this.dataManager.set(OCELOT_VARIANT, Integer.valueOf(skinId));
     }
 
     /**
@@ -302,7 +305,7 @@ public class EntityOcelot extends EntityTameable
      */
     public boolean isNotColliding()
     {
-        if (this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCubes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.isAnyLiquid(this.getEntityBoundingBox()))
+        if (this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.containsAnyLiquid(this.getEntityBoundingBox()))
         {
             BlockPos blockpos = new BlockPos(this.posX, this.getEntityBoundingBox().minY, this.posZ);
 
@@ -314,7 +317,7 @@ public class EntityOcelot extends EntityTameable
             IBlockState iblockstate = this.worldObj.getBlockState(blockpos.down());
             Block block = iblockstate.getBlock();
 
-            if (block == Blocks.grass || block.isLeaves(iblockstate, this.worldObj, blockpos.down()))
+            if (block == Blocks.GRASS || block.isLeaves(iblockstate, this.worldObj, blockpos.down()))
             {
                 return true;
             }
@@ -355,7 +358,8 @@ public class EntityOcelot extends EntityTameable
      * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
      * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
      */
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
 

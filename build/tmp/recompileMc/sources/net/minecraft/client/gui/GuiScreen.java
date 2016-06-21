@@ -73,10 +73,6 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -268,9 +264,9 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
      */
     protected void handleComponentHover(ITextComponent component, int x, int y)
     {
-        if (component != null && component.getChatStyle().getChatHoverEvent() != null)
+        if (component != null && component.getStyle().getHoverEvent() != null)
         {
-            HoverEvent hoverevent = component.getChatStyle().getChatHoverEvent();
+            HoverEvent hoverevent = component.getStyle().getHoverEvent();
 
             if (hoverevent.getAction() == HoverEvent.Action.SHOW_ITEM)
             {
@@ -345,7 +341,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                 {
                     ITextComponent itextcomponent = statbase.getStatName();
                     ITextComponent itextcomponent1 = new TextComponentTranslation("stats.tooltip.type." + (statbase.isAchievement() ? "achievement" : "statistic"), new Object[0]);
-                    itextcomponent1.getChatStyle().setItalic(Boolean.valueOf(true));
+                    itextcomponent1.getStyle().setItalic(Boolean.valueOf(true));
                     String s1 = statbase instanceof Achievement ? ((Achievement)statbase).getDescription() : null;
                     List<String> list = Lists.newArrayList(new String[] {itextcomponent.getFormattedText(), itextcomponent1.getFormattedText()});
 
@@ -384,13 +380,13 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         }
         else
         {
-            ClickEvent clickevent = component.getChatStyle().getChatClickEvent();
+            ClickEvent clickevent = component.getStyle().getClickEvent();
 
             if (isShiftKeyDown())
             {
-                if (component.getChatStyle().getInsertion() != null)
+                if (component.getStyle().getInsertion() != null)
                 {
-                    this.setText(component.getChatStyle().getInsertion(), false);
+                    this.setText(component.getStyle().getInsertion(), false);
                 }
             }
             else if (clickevent != null)
@@ -505,10 +501,6 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
     /**
      * Called when a mouse button is released.
-     *  
-     * @param mouseX Current mouse x coordinate
-     * @param mouseY Current mouse y coordinate
-     * @param state The mouse button that was released
      */
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
@@ -692,7 +684,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         GlStateManager.disableFog();
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
-        this.mc.getTextureManager().bindTexture(optionsBackground);
+        this.mc.getTextureManager().bindTexture(OPTIONS_BACKGROUND);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         float f = 32.0F;
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -745,7 +737,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
      */
     public static boolean isCtrlKeyDown()
     {
-        return Minecraft.isRunningOnMac ? Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220) : Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157);
+        return Minecraft.IS_RUNNING_ON_MAC ? Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220) : Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157);
     }
 
     /**

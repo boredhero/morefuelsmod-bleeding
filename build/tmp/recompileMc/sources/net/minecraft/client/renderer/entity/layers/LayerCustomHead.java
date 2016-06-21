@@ -62,7 +62,7 @@ public class LayerCustomHead implements LayerRenderer<EntityLivingBase>
             this.modelRenderer.postRender(0.0625F);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
-            if (item == Items.skull)
+            if (item == Items.SKULL)
             {
                 float f2 = 1.1875F;
                 GlStateManager.scale(f2, -f2, -f2);

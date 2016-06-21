@@ -37,7 +37,7 @@ public class EntityDragonFireball extends EntityFireball
     /**
      * Called when this EntityFireball hits a block or entity.
      */
-    protected void onImpact(RayTraceResult movingObject)
+    protected void onImpact(RayTraceResult result)
     {
         if (!this.worldObj.isRemote)
         {
@@ -48,7 +48,7 @@ public class EntityDragonFireball extends EntityFireball
             entityareaeffectcloud.setRadius(3.0F);
             entityareaeffectcloud.setDuration(2400);
             entityareaeffectcloud.setRadiusPerTick((7.0F - entityareaeffectcloud.getRadius()) / (float)entityareaeffectcloud.getDuration());
-            entityareaeffectcloud.addEffect(new PotionEffect(MobEffects.harm, 1, 1));
+            entityareaeffectcloud.addEffect(new PotionEffect(MobEffects.INSTANT_DAMAGE, 1, 1));
 
             if (!list.isEmpty())
             {
@@ -64,7 +64,7 @@ public class EntityDragonFireball extends EntityFireball
                 }
             }
 
-            this.worldObj.playAuxSFX(2006, new BlockPos(this.posX, this.posY, this.posZ), 0);
+            this.worldObj.playEvent(2006, new BlockPos(this.posX, this.posY, this.posZ), 0);
             this.worldObj.spawnEntityInWorld(entityareaeffectcloud);
             this.setDead();
         }
@@ -91,7 +91,7 @@ public class EntityDragonFireball extends EntityFireball
         return EnumParticleTypes.DRAGON_BREATH;
     }
 
-    protected boolean func_184564_k()
+    protected boolean isFireballFiery()
     {
         return false;
     }

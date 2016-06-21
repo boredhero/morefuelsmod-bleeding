@@ -13,17 +13,18 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.server.management.PlayerManager;
+import net.minecraft.server.management.PlayerChunkMapEntry;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public final class WorldEntitySpawner
 {
     private static final int MOB_COUNT_DIV = (int)Math.pow(17.0D, 2.0D);
-    private final Set<ChunkCoordIntPair> eligibleChunksForSpawning = Sets.<ChunkCoordIntPair>newHashSet();
+    private final Set<ChunkPos> eligibleChunksForSpawning = Sets.<ChunkPos>newHashSet();
 
     /**
      * adds all chunks within the spawn radius of the players to eligibleChunksForSpawning. pars: the world,
@@ -53,19 +54,19 @@ public final class WorldEntitySpawner
                         for (int j1 = -l; j1 <= l; ++j1)
                         {
                             boolean flag = i1 == -l || i1 == l || j1 == -l || j1 == l;
-                            ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i1 + j, j1 + k);
+                            ChunkPos chunkpos = new ChunkPos(i1 + j, j1 + k);
 
-                            if (!this.eligibleChunksForSpawning.contains(chunkcoordintpair))
+                            if (!this.eligibleChunksForSpawning.contains(chunkpos))
                             {
                                 ++i;
 
-                                if (!flag && worldServerIn.getWorldBorder().contains(chunkcoordintpair))
+                                if (!flag && worldServerIn.getWorldBorder().contains(chunkpos))
                                 {
-                                    PlayerManager.PlayerInstance playermanager$playerinstance = worldServerIn.getPlayerChunkManager().func_187301_b(chunkcoordintpair.chunkXPos, chunkcoordintpair.chunkZPos);
+                                    PlayerChunkMapEntry playerchunkmapentry = worldServerIn.getPlayerChunkMap().getEntry(chunkpos.chunkXPos, chunkpos.chunkZPos);
 
-                                    if (playermanager$playerinstance != null && playermanager$playerinstance.isSentToPlayers())
+                                    if (playerchunkmapentry != null && playerchunkmapentry.isSentToPlayers())
                                     {
-                                        this.eligibleChunksForSpawning.add(chunkcoordintpair);
+                                        this.eligibleChunksForSpawning.add(chunkpos);
                                     }
                                 }
                             }
@@ -86,14 +87,14 @@ public final class WorldEntitySpawner
 
                     if (k4 <= l4)
                     {
-                        java.util.ArrayList<ChunkCoordIntPair> shuffled = com.google.common.collect.Lists.newArrayList(this.eligibleChunksForSpawning);
+                        java.util.ArrayList<ChunkPos> shuffled = com.google.common.collect.Lists.newArrayList(this.eligibleChunksForSpawning);
                         java.util.Collections.shuffle(shuffled);
                         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
                         label415:
 
-                        for (ChunkCoordIntPair chunkcoordintpair1 : shuffled)
+                        for (ChunkPos chunkpos1 : shuffled)
                         {
-                            BlockPos blockpos = getRandomChunkPosition(worldServerIn, chunkcoordintpair1.chunkXPos, chunkcoordintpair1.chunkZPos);
+                            BlockPos blockpos = getRandomChunkPosition(worldServerIn, chunkpos1.chunkXPos, chunkpos1.chunkZPos);
                             int k1 = blockpos.getX();
                             int l1 = blockpos.getY();
                             int i2 = blockpos.getZ();
@@ -109,7 +110,7 @@ public final class WorldEntitySpawner
                                     int i3 = l1;
                                     int j3 = i2;
                                     int k3 = 6;
-                                    BiomeGenBase.SpawnListEntry biomegenbase$spawnlistentry = null;
+                                    Biome.SpawnListEntry biome$spawnlistentry = null;
                                     IEntityLivingData ientitylivingdata = null;
                                     int l3 = MathHelper.ceiling_double_int(Math.random() * 4.0D);
 
@@ -118,29 +119,29 @@ public final class WorldEntitySpawner
                                         l2 += worldServerIn.rand.nextInt(k3) - worldServerIn.rand.nextInt(k3);
                                         i3 += worldServerIn.rand.nextInt(1) - worldServerIn.rand.nextInt(1);
                                         j3 += worldServerIn.rand.nextInt(k3) - worldServerIn.rand.nextInt(k3);
-                                        blockpos$mutableblockpos.set(l2, i3, j3);
+                                        blockpos$mutableblockpos.setPos(l2, i3, j3);
                                         float f = (float)l2 + 0.5F;
                                         float f1 = (float)j3 + 0.5F;
 
                                         if (!worldServerIn.isAnyPlayerWithinRangeAt((double)f, (double)i3, (double)f1, 24.0D) && blockpos1.distanceSq((double)f, (double)i3, (double)f1) >= 576.0D)
                                         {
-                                            if (biomegenbase$spawnlistentry == null)
+                                            if (biome$spawnlistentry == null)
                                             {
-                                                biomegenbase$spawnlistentry = worldServerIn.getSpawnListEntryForTypeAt(enumcreaturetype, blockpos$mutableblockpos);
+                                                biome$spawnlistentry = worldServerIn.getSpawnListEntryForTypeAt(enumcreaturetype, blockpos$mutableblockpos);
 
-                                                if (biomegenbase$spawnlistentry == null)
+                                                if (biome$spawnlistentry == null)
                                                 {
                                                     break;
                                                 }
                                             }
 
-                                            if (worldServerIn.canCreatureTypeSpawnHere(enumcreaturetype, biomegenbase$spawnlistentry, blockpos$mutableblockpos) && canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.getPlacementForEntity(biomegenbase$spawnlistentry.entityClass), worldServerIn, blockpos$mutableblockpos))
+                                            if (worldServerIn.canCreatureTypeSpawnHere(enumcreaturetype, biome$spawnlistentry, blockpos$mutableblockpos) && canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.getPlacementForEntity(biome$spawnlistentry.entityClass), worldServerIn, blockpos$mutableblockpos))
                                             {
                                                 EntityLiving entityliving;
 
                                                 try
                                                 {
-                                                    entityliving = (EntityLiving)biomegenbase$spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {worldServerIn});
+                                                    entityliving = (EntityLiving)biome$spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {worldServerIn});
                                                 }
                                                 catch (Exception exception)
                                                 {
@@ -197,9 +198,9 @@ public final class WorldEntitySpawner
         return new BlockPos(i, l, j);
     }
 
-    public static boolean func_185331_a(IBlockState p_185331_0_)
+    public static boolean isValidEmptySpawnBlock(IBlockState state)
     {
-        return p_185331_0_.isBlockNormalCube() ? false : (p_185331_0_.canProvidePower() ? false : (p_185331_0_.getMaterial().isLiquid() ? false : !BlockRailBase.isRailBlock(p_185331_0_)));
+        return state.isBlockNormalCube() ? false : (state.canProvidePower() ? false : (state.getMaterial().isLiquid() ? false : !BlockRailBase.isRailBlock(state)));
     }
 
     public static boolean canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType spawnPlacementTypeIn, World worldIn, BlockPos pos)
@@ -228,8 +229,8 @@ public final class WorldEntitySpawner
                 else
                 {
                     Block block = worldIn.getBlockState(blockpos).getBlock();
-                    boolean flag = block != Blocks.bedrock && block != Blocks.barrier;
-                    return flag && func_185331_a(iblockstate) && func_185331_a(worldIn.getBlockState(pos.up()));
+                    boolean flag = block != Blocks.BEDROCK && block != Blocks.BARRIER;
+                    return flag && isValidEmptySpawnBlock(iblockstate) && isValidEmptySpawnBlock(worldIn.getBlockState(pos.up()));
                 }
             }
         }
@@ -238,16 +239,16 @@ public final class WorldEntitySpawner
     /**
      * Called during chunk generation to spawn initial creatures.
      */
-    public static void performWorldGenSpawning(World worldIn, BiomeGenBase biomeIn, int p_77191_2_, int p_77191_3_, int p_77191_4_, int p_77191_5_, Random randomIn)
+    public static void performWorldGenSpawning(World worldIn, Biome biomeIn, int p_77191_2_, int p_77191_3_, int p_77191_4_, int p_77191_5_, Random randomIn)
     {
-        List<BiomeGenBase.SpawnListEntry> list = biomeIn.getSpawnableList(EnumCreatureType.CREATURE);
+        List<Biome.SpawnListEntry> list = biomeIn.getSpawnableList(EnumCreatureType.CREATURE);
 
         if (!list.isEmpty())
         {
             while (randomIn.nextFloat() < biomeIn.getSpawningChance())
             {
-                BiomeGenBase.SpawnListEntry biomegenbase$spawnlistentry = (BiomeGenBase.SpawnListEntry)WeightedRandom.getRandomItem(worldIn.rand, list);
-                int i = biomegenbase$spawnlistentry.minGroupCount + randomIn.nextInt(1 + biomegenbase$spawnlistentry.maxGroupCount - biomegenbase$spawnlistentry.minGroupCount);
+                Biome.SpawnListEntry biome$spawnlistentry = (Biome.SpawnListEntry)WeightedRandom.getRandomItem(worldIn.rand, list);
+                int i = biome$spawnlistentry.minGroupCount + randomIn.nextInt(1 + biome$spawnlistentry.maxGroupCount - biome$spawnlistentry.minGroupCount);
                 IEntityLivingData ientitylivingdata = null;
                 int j = p_77191_2_ + randomIn.nextInt(p_77191_4_);
                 int k = p_77191_3_ + randomIn.nextInt(p_77191_5_);
@@ -268,7 +269,7 @@ public final class WorldEntitySpawner
 
                             try
                             {
-                                entityliving = (EntityLiving)biomegenbase$spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {worldIn});
+                                entityliving = (EntityLiving)biome$spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {worldIn});
                             }
                             catch (Exception exception)
                             {

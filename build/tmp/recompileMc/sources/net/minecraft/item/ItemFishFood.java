@@ -40,9 +40,9 @@ public class ItemFishFood extends ItemFood
 
         if (itemfishfood$fishtype == ItemFishFood.FishType.PUFFERFISH)
         {
-            player.addPotionEffect(new PotionEffect(MobEffects.poison, 1200, 3));
-            player.addPotionEffect(new PotionEffect(MobEffects.hunger, 300, 2));
-            player.addPotionEffect(new PotionEffect(MobEffects.confusion, 300, 1));
+            player.addPotionEffect(new PotionEffect(MobEffects.POISON, 1200, 3));
+            player.addPotionEffect(new PotionEffect(MobEffects.HUNGER, 300, 2));
+            player.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 300, 1));
         }
 
         super.onFoodEaten(stack, worldIn, player);

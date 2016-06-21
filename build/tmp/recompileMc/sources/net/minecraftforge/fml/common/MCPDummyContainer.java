@@ -14,6 +14,8 @@ package net.minecraftforge.fml.common;
 
 import com.google.common.eventbus.EventBus;
 
+import net.minecraftforge.fml.common.ModContainer.Disableable;
+
 public class MCPDummyContainer extends DummyModContainer {
 	public MCPDummyContainer(ModMetadata metadata) {
 		super(metadata);

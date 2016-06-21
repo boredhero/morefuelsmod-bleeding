@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import com.google.common.base.Predicate;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityAreaEffectCloud;
@@ -22,14 +23,14 @@ public class ItemGlassBottle extends Item
 {
     public ItemGlassBottle()
     {
-        this.setCreativeTab(CreativeTabs.tabBrewing);
+        this.setCreativeTab(CreativeTabs.BREWING);
     }
 
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
         List<EntityAreaEffectCloud> list = worldIn.<EntityAreaEffectCloud>getEntitiesWithinAABB(EntityAreaEffectCloud.class, playerIn.getEntityBoundingBox().expandXyz(2.0D), new Predicate<EntityAreaEffectCloud>()
         {
-            public boolean apply(EntityAreaEffectCloud p_apply_1_)
+            public boolean apply(@Nullable EntityAreaEffectCloud p_apply_1_)
             {
                 return p_apply_1_ != null && p_apply_1_.isEntityAlive() && p_apply_1_.getOwner() instanceof EntityDragon;
             }
@@ -39,12 +40,12 @@ public class ItemGlassBottle extends Item
         {
             EntityAreaEffectCloud entityareaeffectcloud = (EntityAreaEffectCloud)list.get(0);
             entityareaeffectcloud.setRadius(entityareaeffectcloud.getRadius() - 0.5F);
-            worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.item_bottle_fill_dragonbreath, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-            return new ActionResult(EnumActionResult.SUCCESS, this.func_185061_a(itemStackIn, playerIn, new ItemStack(Items.dragon_breath)));
+            worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+            return new ActionResult(EnumActionResult.SUCCESS, this.turnBottleIntoItem(itemStackIn, playerIn, new ItemStack(Items.DRAGON_BREATH)));
         }
         else
         {
-            RayTraceResult raytraceresult = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
+            RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
 
             if (raytraceresult == null)
             {
@@ -61,10 +62,10 @@ public class ItemGlassBottle extends Item
                         return new ActionResult(EnumActionResult.PASS, itemStackIn);
                     }
 
-                    if (worldIn.getBlockState(blockpos).getMaterial() == Material.water)
+                    if (worldIn.getBlockState(blockpos).getMaterial() == Material.WATER)
                     {
-                        worldIn.playSound(playerIn, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.item_bottle_fill, SoundCategory.NEUTRAL, 1.0F, 1.0F);
-                        return new ActionResult(EnumActionResult.SUCCESS, this.func_185061_a(itemStackIn, playerIn, new ItemStack(Items.potionitem)));
+                        worldIn.playSound(playerIn, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+                        return new ActionResult(EnumActionResult.SUCCESS, this.turnBottleIntoItem(itemStackIn, playerIn, new ItemStack(Items.POTIONITEM)));
                     }
                 }
 
@@ -73,10 +74,10 @@ public class ItemGlassBottle extends Item
         }
     }
 
-    protected ItemStack func_185061_a(ItemStack p_185061_1_, EntityPlayer player, ItemStack stack)
+    protected ItemStack turnBottleIntoItem(ItemStack p_185061_1_, EntityPlayer player, ItemStack stack)
     {
         --p_185061_1_.stackSize;
-        player.addStat(StatList.func_188057_b(this));
+        player.addStat(StatList.getObjectUseStats(this));
 
         if (p_185061_1_.stackSize <= 0)
         {
@@ -86,7 +87,7 @@ public class ItemGlassBottle extends Item
         {
             if (!player.inventory.addItemStackToInventory(stack))
             {
-                player.dropPlayerItemWithRandomChoice(stack, false);
+                player.dropItem(stack, false);
             }
 
             return p_185061_1_;

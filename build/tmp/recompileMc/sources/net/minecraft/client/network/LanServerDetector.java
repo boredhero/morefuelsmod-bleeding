@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 public class LanServerDetector
 {
     private static final AtomicInteger ATOMIC_COUNTER = new AtomicInteger(0);
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     @SideOnly(Side.CLIENT)
     public static class LanServer
@@ -77,7 +77,7 @@ public class LanServerDetector
                 return Collections.<LanServerDetector.LanServer>unmodifiableList(this.listOfLanServers);
             }
 
-            public synchronized void func_77551_a(String pingResponse, InetAddress ipAddress)
+            public synchronized void addServer(String pingResponse, InetAddress ipAddress)
             {
                 String s = ThreadLanServerPing.getMotdFromPingResponse(pingResponse);
                 String s1 = ThreadLanServerPing.getAdFromPingResponse(pingResponse);
@@ -116,10 +116,10 @@ public class LanServerDetector
             /** The socket we're using to receive packets on. */
             private final MulticastSocket socket;
 
-            public ThreadLanServerFind(LanServerDetector.LanServerList p_i1320_1_) throws IOException
+            public ThreadLanServerFind(LanServerDetector.LanServerList list) throws IOException
             {
                 super("LanServerDetector #" + LanServerDetector.ATOMIC_COUNTER.incrementAndGet());
-                this.localServerList = p_i1320_1_;
+                this.localServerList = list;
                 this.setDaemon(true);
                 this.socket = new MulticastSocket(4445);
                 this.broadcastAddress = InetAddress.getByName("224.0.2.60");
@@ -145,13 +145,13 @@ public class LanServerDetector
                     }
                     catch (IOException ioexception)
                     {
-                        LanServerDetector.logger.error((String)"Couldn\'t ping server", (Throwable)ioexception);
+                        LanServerDetector.LOGGER.error((String)"Couldn\'t ping server", (Throwable)ioexception);
                         break;
                     }
 
                     String s = new String(datagrampacket.getData(), datagrampacket.getOffset(), datagrampacket.getLength());
-                    LanServerDetector.logger.debug(datagrampacket.getAddress() + ": " + s);
-                    this.localServerList.func_77551_a(s, datagrampacket.getAddress());
+                    LanServerDetector.LOGGER.debug(datagrampacket.getAddress() + ": " + s);
+                    this.localServerList.addServer(s, datagrampacket.getAddress());
                 }
 
                 try

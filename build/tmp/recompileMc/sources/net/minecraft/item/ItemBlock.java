@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
@@ -58,7 +59,7 @@ public class ItemBlock extends Item
 
             if (placeBlockAt(stack, playerIn, worldIn, pos, facing, hitX, hitY, hitZ, iblockstate1))
             {
-                SoundType soundtype = this.block.getStepSound();
+                SoundType soundtype = this.block.getSoundType();
                 worldIn.playSound(playerIn, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
                 --stack.stackSize;
             }
@@ -71,7 +72,7 @@ public class ItemBlock extends Item
         }
     }
 
-    public static boolean setTileEntityNBT(World worldIn, EntityPlayer pos, BlockPos stack, ItemStack stackIn)
+    public static boolean setTileEntityNBT(World worldIn, @Nullable EntityPlayer player, BlockPos pos, ItemStack stackIn)
     {
         MinecraftServer minecraftserver = worldIn.getMinecraftServer();
 
@@ -83,23 +84,22 @@ public class ItemBlock extends Item
         {
             if (stackIn.hasTagCompound() && stackIn.getTagCompound().hasKey("BlockEntityTag", 10))
             {
-                TileEntity tileentity = worldIn.getTileEntity(stack);
+                TileEntity tileentity = worldIn.getTileEntity(pos);
 
                 if (tileentity != null)
                 {
-                    if (!worldIn.isRemote && tileentity.func_183000_F() && (pos == null || !minecraftserver.getPlayerList().canSendCommands(pos.getGameProfile())))
+                    if (!worldIn.isRemote && tileentity.onlyOpsCanSetNbt() && (player == null || !minecraftserver.getPlayerList().canSendCommands(player.getGameProfile())))
                     {
                         return false;
                     }
 
-                    NBTTagCompound nbttagcompound = new NBTTagCompound();
+                    NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
                     NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttagcompound.copy();
-                    tileentity.writeToNBT(nbttagcompound);
                     NBTTagCompound nbttagcompound2 = (NBTTagCompound)stackIn.getTagCompound().getTag("BlockEntityTag");
                     nbttagcompound.merge(nbttagcompound2);
-                    nbttagcompound.setInteger("x", stack.getX());
-                    nbttagcompound.setInteger("y", stack.getY());
-                    nbttagcompound.setInteger("z", stack.getZ());
+                    nbttagcompound.setInteger("x", pos.getX());
+                    nbttagcompound.setInteger("y", pos.getY());
+                    nbttagcompound.setInteger("z", pos.getZ());
 
                     if (!nbttagcompound.equals(nbttagcompound1))
                     {
@@ -119,7 +119,7 @@ public class ItemBlock extends Item
     {
         Block block = worldIn.getBlockState(pos).getBlock();
 
-        if (block == Blocks.snow_layer && block.isReplaceable(worldIn, pos))
+        if (block == Blocks.SNOW_LAYER && block.isReplaceable(worldIn, pos))
         {
             side = EnumFacing.UP;
         }
@@ -191,5 +191,14 @@ public class ItemBlock extends Item
         }
 
         return true;
+    }
+
+    /**
+     * allows items to add custom lines of information to the mouseover description
+     */
+    @SideOnly(Side.CLIENT)
+    public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
+    {
+        block.addInformation(stack, playerIn, tooltip, advanced);
     }
 }

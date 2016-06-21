@@ -3,7 +3,6 @@ package net.minecraft.client.renderer.chunk;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -13,9 +12,9 @@ public class ListedRenderChunk extends RenderChunk
 {
     private final int baseDisplayList = GLAllocation.generateDisplayLists(BlockRenderLayer.values().length);
 
-    public ListedRenderChunk(World worldIn, RenderGlobal renderGlobalIn, BlockPos pos, int indexIn)
+    public ListedRenderChunk(World p_i47121_1_, RenderGlobal p_i47121_2_, int p_i47121_3_)
     {
-        super(worldIn, renderGlobalIn, pos, indexIn);
+        super(p_i47121_1_, p_i47121_2_, p_i47121_3_);
     }
 
     public int getDisplayList(BlockRenderLayer layer, CompiledChunk p_178600_2_)

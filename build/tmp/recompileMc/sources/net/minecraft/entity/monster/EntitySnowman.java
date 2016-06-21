@@ -1,5 +1,6 @@
 package net.minecraft.entity.monster;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -44,7 +45,7 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
         this.tasks.addTask(2, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(4, new EntityAILookIdle(this));
-        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityLiving.class, 10, true, false, IMob.mobSelector));
+        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityLiving.class, 10, true, false, IMob.MOB_SELECTOR));
     }
 
     protected void applyEntityAttributes()
@@ -57,7 +58,7 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(PUMPKIN_EQUIPPED, Byte.valueOf((byte)0));
+        this.dataManager.register(PUMPKIN_EQUIPPED, Byte.valueOf((byte)0));
     }
 
     /**
@@ -96,14 +97,15 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
                 k = MathHelper.floor_double(this.posZ + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
                 BlockPos blockpos = new BlockPos(i, j, k);
 
-                if (this.worldObj.getBlockState(blockpos).getMaterial() == Material.air && this.worldObj.getBiomeGenForCoords(new BlockPos(i, 0, k)).getFloatTemperature(blockpos) < 0.8F && Blocks.snow_layer.canPlaceBlockAt(this.worldObj, blockpos))
+                if (this.worldObj.getBlockState(blockpos).getMaterial() == Material.AIR && this.worldObj.getBiomeGenForCoords(new BlockPos(i, 0, k)).getFloatTemperature(blockpos) < 0.8F && Blocks.SNOW_LAYER.canPlaceBlockAt(this.worldObj, blockpos))
                 {
-                    this.worldObj.setBlockState(blockpos, Blocks.snow_layer.getDefaultState());
+                    this.worldObj.setBlockState(blockpos, Blocks.SNOW_LAYER.getDefaultState());
                 }
             }
         }
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_SNOWMAN;
@@ -121,7 +123,7 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
         double d3 = target.posZ - this.posZ;
         float f = MathHelper.sqrt_double(d1 * d1 + d3 * d3) * 0.2F;
         entitysnowball.setThrowableHeading(d1, d2 + (double)f, d3, 1.6F, 12.0F);
-        this.playSound(SoundEvents.entity_snowman_shoot, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        this.playSound(SoundEvents.ENTITY_SNOWMAN_SHOOT, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         this.worldObj.spawnEntityInWorld(entitysnowball);
     }
 
@@ -130,48 +132,51 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
         return 1.7F;
     }
 
-    protected boolean processInteract(EntityPlayer player, EnumHand p_184645_2_, ItemStack stack)
+    protected boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
-        if (stack != null && stack.getItem() == Items.shears && !this.isPumpkinEquipped() && !this.worldObj.isRemote)
+        if (stack != null && stack.getItem() == Items.SHEARS && !this.isPumpkinEquipped() && !this.worldObj.isRemote)
         {
             this.setPumpkinEquipped(true);
             stack.damageItem(1, player);
         }
 
-        return super.processInteract(player, p_184645_2_, stack);
+        return super.processInteract(player, hand, stack);
     }
 
     public boolean isPumpkinEquipped()
     {
-        return (((Byte)this.dataWatcher.get(PUMPKIN_EQUIPPED)).byteValue() & 16) != 0;
+        return (((Byte)this.dataManager.get(PUMPKIN_EQUIPPED)).byteValue() & 16) != 0;
     }
 
-    public void setPumpkinEquipped(boolean p_184747_1_)
+    public void setPumpkinEquipped(boolean pumpkinEquipped)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(PUMPKIN_EQUIPPED)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(PUMPKIN_EQUIPPED)).byteValue();
 
-        if (p_184747_1_)
+        if (pumpkinEquipped)
         {
-            this.dataWatcher.set(PUMPKIN_EQUIPPED, Byte.valueOf((byte)(b0 | 16)));
+            this.dataManager.set(PUMPKIN_EQUIPPED, Byte.valueOf((byte)(b0 | 16)));
         }
         else
         {
-            this.dataWatcher.set(PUMPKIN_EQUIPPED, Byte.valueOf((byte)(b0 & -17)));
+            this.dataManager.set(PUMPKIN_EQUIPPED, Byte.valueOf((byte)(b0 & -17)));
         }
     }
 
+    @Nullable
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_snowman_ambient;
+        return SoundEvents.ENTITY_SNOWMAN_AMBIENT;
     }
 
+    @Nullable
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_snowman_hurt;
+        return SoundEvents.ENTITY_SNOWMAN_HURT;
     }
 
+    @Nullable
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_snowman_death;
+        return SoundEvents.ENTITY_SNOWMAN_DEATH;
     }
 }

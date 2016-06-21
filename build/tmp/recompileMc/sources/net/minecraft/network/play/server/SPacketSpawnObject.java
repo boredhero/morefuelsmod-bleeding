@@ -52,12 +52,12 @@ public class SPacketSpawnObject implements Packet<INetHandlerPlayClient>
         this.speedZ = (int)(MathHelper.clamp_double(entityIn.motionZ, -3.9D, 3.9D) * 8000.0D);
     }
 
-    public SPacketSpawnObject(Entity p_i46978_1_, int p_i46978_2_, int p_i46978_3_, BlockPos p_i46978_4_)
+    public SPacketSpawnObject(Entity entityIn, int typeIn, int dataIn, BlockPos pos)
     {
-        this(p_i46978_1_, p_i46978_2_, p_i46978_3_);
-        this.x = (double)p_i46978_4_.getX();
-        this.y = (double)p_i46978_4_.getY();
-        this.z = (double)p_i46978_4_.getZ();
+        this(entityIn, typeIn, dataIn);
+        this.x = (double)pos.getX();
+        this.y = (double)pos.getY();
+        this.z = (double)pos.getZ();
     }
 
     /**

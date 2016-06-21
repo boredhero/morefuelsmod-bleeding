@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.client.AnvilConverterException;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -18,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 public class SaveFormatOld implements ISaveFormat
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /** Reference to the File object representing the directory for the world saves */
     public final File savesDirectory;
     protected final DataFixer dataFixer;
@@ -45,9 +46,9 @@ public class SaveFormatOld implements ISaveFormat
     }
 
     @SideOnly(Side.CLIENT)
-    public List<SaveFormatComparator> getSaveList() throws AnvilConverterException
+    public List<WorldSummary> getSaveList() throws AnvilConverterException
     {
-        List<SaveFormatComparator> list = Lists.<SaveFormatComparator>newArrayList();
+        List<WorldSummary> list = Lists.<WorldSummary>newArrayList();
 
         for (int i = 0; i < 5; ++i)
         {
@@ -56,7 +57,7 @@ public class SaveFormatOld implements ISaveFormat
 
             if (worldinfo != null)
             {
-                list.add(new SaveFormatComparator(worldinfo, s, "", worldinfo.getSizeOnDisk(), false));
+                list.add(new WorldSummary(worldinfo, s, "", worldinfo.getSizeOnDisk(), false));
             }
         }
 
@@ -85,7 +86,7 @@ public class SaveFormatOld implements ISaveFormat
 
             if (file2.exists())
             {
-                WorldInfo worldinfo = func_186353_a(file2, this.dataFixer);
+                WorldInfo worldinfo = getWorldData(file2, this.dataFixer);
 
                 if (worldinfo != null)
                 {
@@ -94,11 +95,12 @@ public class SaveFormatOld implements ISaveFormat
             }
 
             file2 = new File(file1, "level.dat_old");
-            return file2.exists() ? func_186353_a(file2, this.dataFixer) : null;
+            return file2.exists() ? getWorldData(file2, this.dataFixer) : null;
         }
     }
 
-    public static WorldInfo func_186353_a(File p_186353_0_, DataFixer dataFixerIn)
+    @Nullable
+    public static WorldInfo getWorldData(File p_186353_0_, DataFixer dataFixerIn)
     {
         try
         {
@@ -108,7 +110,7 @@ public class SaveFormatOld implements ISaveFormat
         }
         catch (Exception exception)
         {
-            logger.error((String)("Exception reading " + p_186353_0_), (Throwable)exception);
+            LOGGER.error((String)("Exception reading " + p_186353_0_), (Throwable)exception);
             return null;
         }
     }
@@ -126,7 +128,7 @@ public class SaveFormatOld implements ISaveFormat
         catch (net.minecraftforge.fml.common.StartupQuery.AbortedException e) { throw e; }
         catch (Exception exception)
         {
-            logger.error((String)("Exception reading " + file), (Throwable)exception);
+            LOGGER.error((String)("Exception reading " + file), (Throwable)exception);
             return null;
         }
     }
@@ -188,15 +190,14 @@ public class SaveFormatOld implements ISaveFormat
             }
             catch (Throwable throwable)
             {
-                logger.warn("Couldn\'t make new level", throwable);
+                LOGGER.warn("Couldn\'t make new level", throwable);
                 return false;
             }
         }
     }
 
     /**
-     * @args: Takes one argument - the name of the directory of the world to delete. @desc: Delete the world by deleting
-     * the associated directory recursively.
+     * Deletes a world directory.
      */
     @SideOnly(Side.CLIENT)
     public boolean deleteWorldDirectory(String saveName)
@@ -209,18 +210,18 @@ public class SaveFormatOld implements ISaveFormat
         }
         else
         {
-            logger.info("Deleting level " + saveName);
+            LOGGER.info("Deleting level " + saveName);
 
             for (int i = 1; i <= 5; ++i)
             {
-                logger.info("Attempt " + i + "...");
+                LOGGER.info("Attempt " + i + "...");
 
                 if (deleteFiles(file1.listFiles()))
                 {
                     break;
                 }
 
-                logger.warn("Unsuccessful in deleting contents.");
+                LOGGER.warn("Unsuccessful in deleting contents.");
 
                 if (i < 5)
                 {
@@ -240,8 +241,7 @@ public class SaveFormatOld implements ISaveFormat
     }
 
     /**
-     * @args: Takes one argument - the list of files and directories to delete. @desc: Deletes the files and directory
-     * listed in the list recursively.
+     * Deletes a list of files and directories.
      */
     @SideOnly(Side.CLIENT)
     protected static boolean deleteFiles(File[] files)
@@ -249,17 +249,17 @@ public class SaveFormatOld implements ISaveFormat
         for (int i = 0; i < files.length; ++i)
         {
             File file1 = files[i];
-            logger.debug("Deleting " + file1);
+            LOGGER.debug("Deleting " + file1);
 
             if (file1.isDirectory() && !deleteFiles(file1.listFiles()))
             {
-                logger.warn("Couldn\'t delete directory " + file1);
+                LOGGER.warn("Couldn\'t delete directory " + file1);
                 return false;
             }
 
             if (!file1.delete())
             {
-                logger.warn("Couldn\'t delete file " + file1);
+                LOGGER.warn("Couldn\'t delete file " + file1);
                 return false;
             }
         }

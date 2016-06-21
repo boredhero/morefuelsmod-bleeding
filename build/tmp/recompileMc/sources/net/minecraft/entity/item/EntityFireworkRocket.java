@@ -1,6 +1,7 @@
 package net.minecraft.entity.item;
 
 import com.google.common.base.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -32,12 +33,11 @@ public class EntityFireworkRocket extends Entity
 
     protected void entityInit()
     {
-        this.dataWatcher.register(FIREWORK_ITEM, Optional.<ItemStack>absent());
+        this.dataManager.register(FIREWORK_ITEM, Optional.<ItemStack>absent());
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -45,7 +45,7 @@ public class EntityFireworkRocket extends Entity
         return distance < 4096.0D;
     }
 
-    public EntityFireworkRocket(World worldIn, double x, double y, double z, ItemStack givenItem)
+    public EntityFireworkRocket(World worldIn, double x, double y, double z, @Nullable ItemStack givenItem)
     {
         super(worldIn);
         this.fireworkAge = 0;
@@ -55,7 +55,7 @@ public class EntityFireworkRocket extends Entity
 
         if (givenItem != null && givenItem.hasTagCompound())
         {
-            this.dataWatcher.set(FIREWORK_ITEM, Optional.of(givenItem));
+            this.dataManager.set(FIREWORK_ITEM, Optional.of(givenItem));
             NBTTagCompound nbttagcompound = givenItem.getTagCompound();
             NBTTagCompound nbttagcompound1 = nbttagcompound.getCompoundTag("Fireworks");
             i += nbttagcompound1.getByte("Flight");
@@ -68,7 +68,7 @@ public class EntityFireworkRocket extends Entity
     }
 
     /**
-     * Sets the velocity to the args. Args: x, y, z
+     * Updates the velocity of the entity to a new value.
      */
     @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
@@ -126,7 +126,7 @@ public class EntityFireworkRocket extends Entity
 
         if (this.fireworkAge == 0 && !this.isSilent())
         {
-            this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.entity_firework_launch, SoundCategory.AMBIENT, 3.0F, 1.0F);
+            this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_FIREWORK_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
         }
 
         ++this.fireworkAge;
@@ -148,7 +148,7 @@ public class EntityFireworkRocket extends Entity
     {
         if (id == 17 && this.worldObj.isRemote)
         {
-            ItemStack itemstack = (ItemStack)((Optional)this.dataWatcher.get(FIREWORK_ITEM)).orNull();
+            ItemStack itemstack = (ItemStack)((Optional)this.dataManager.get(FIREWORK_ITEM)).orNull();
             NBTTagCompound nbttagcompound = null;
 
             if (itemstack != null && itemstack.hasTagCompound())
@@ -165,28 +165,27 @@ public class EntityFireworkRocket extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setInteger("Life", this.fireworkAge);
-        tagCompound.setInteger("LifeTime", this.lifetime);
-        ItemStack itemstack = (ItemStack)((Optional)this.dataWatcher.get(FIREWORK_ITEM)).orNull();
+        compound.setInteger("Life", this.fireworkAge);
+        compound.setInteger("LifeTime", this.lifetime);
+        ItemStack itemstack = (ItemStack)((Optional)this.dataManager.get(FIREWORK_ITEM)).orNull();
 
         if (itemstack != null)
         {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            itemstack.writeToNBT(nbttagcompound);
-            tagCompound.setTag("FireworksItem", nbttagcompound);
+            NBTTagCompound nbttagcompound = itemstack.writeToNBT(new NBTTagCompound());
+            compound.setTag("FireworksItem", nbttagcompound);
         }
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.fireworkAge = tagCompund.getInteger("Life");
-        this.lifetime = tagCompund.getInteger("LifeTime");
-        NBTTagCompound nbttagcompound = tagCompund.getCompoundTag("FireworksItem");
+        this.fireworkAge = compound.getInteger("Life");
+        this.lifetime = compound.getInteger("LifeTime");
+        NBTTagCompound nbttagcompound = compound.getCompoundTag("FireworksItem");
 
         if (nbttagcompound != null)
         {
@@ -194,7 +193,7 @@ public class EntityFireworkRocket extends Entity
 
             if (itemstack != null)
             {
-                this.dataWatcher.set(FIREWORK_ITEM, Optional.of(itemstack));
+                this.dataManager.set(FIREWORK_ITEM, Optional.of(itemstack));
             }
         }
     }
@@ -214,9 +213,9 @@ public class EntityFireworkRocket extends Entity
     }
 
     /**
-     * If returns false, the item will not inflict any damage against entities.
+     * Returns true if it's possible to attack this entity with an item.
      */
-    public boolean canAttackWithItem()
+    public boolean canBeAttackedWithItem()
     {
         return false;
     }

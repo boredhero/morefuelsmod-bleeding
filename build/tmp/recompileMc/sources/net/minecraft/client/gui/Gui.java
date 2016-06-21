@@ -12,13 +12,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class Gui
 {
-    public static final ResourceLocation optionsBackground = new ResourceLocation("textures/gui/options_background.png");
-    public static final ResourceLocation statIcons = new ResourceLocation("textures/gui/container/stats_icons.png");
-    public static final ResourceLocation icons = new ResourceLocation("textures/gui/icons.png");
+    public static final ResourceLocation OPTIONS_BACKGROUND = new ResourceLocation("textures/gui/options_background.png");
+    public static final ResourceLocation STAT_ICONS = new ResourceLocation("textures/gui/container/stats_icons.png");
+    public static final ResourceLocation ICONS = new ResourceLocation("textures/gui/icons.png");
     protected float zLevel;
 
     /**
-     * Draw a 1 pixel wide horizontal line. Args: x1, x2, y, color
+     * Draws a thin horizontal line between two points.
      */
     protected void drawHorizontalLine(int startX, int endX, int y, int color)
     {
@@ -48,7 +48,7 @@ public class Gui
     }
 
     /**
-     * Draws a solid color rectangle with the specified coordinates and color (ARGB format). Args: x1, y1, x2, y2, color
+     * Draws a solid color rectangle with the specified coordinates and color.
      */
     public static void drawRect(int left, int top, int right, int bottom, int color)
     {
@@ -136,7 +136,7 @@ public class Gui
     }
 
     /**
-     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
+     * Draws a textured rectangle at the current z-value.
      */
     public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height)
     {
@@ -186,13 +186,6 @@ public class Gui
 
     /**
      * Draws a textured rectangle at z = 0. Args: x, y, u, v, width, height, textureWidth, textureHeight
-     *  
-     * @param x X coordinate to start drawing at
-     * @param y Y coordinate to start drawing at
-     * @param u Position in the texture to start drawing at, in pixels.
-     * @param v Position in the texture to start drawing at, in pixels.
-     * @param textureWidth Width of the texture in the default texture pack, in pixels.
-     * @param textureHeight Height of the texture in the default texture pack, in pixels.
      */
     public static void drawModalRectWithCustomSizedTexture(int x, int y, float u, float v, int width, int height, float textureWidth, float textureHeight)
     {

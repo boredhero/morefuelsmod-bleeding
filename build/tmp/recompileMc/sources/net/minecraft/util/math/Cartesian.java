@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import javax.annotation.Nullable;
 
 public class Cartesian
 {
@@ -54,7 +55,7 @@ public class Cartesian
             {
             }
 
-            public List<T> apply(Object[] p_apply_1_)
+            public List<T> apply(@Nullable Object[] p_apply_1_)
             {
                 return Arrays.<T>asList((T[])p_apply_1_);
             }

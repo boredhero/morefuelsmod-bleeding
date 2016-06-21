@@ -20,9 +20,9 @@ public class StatBase
     /** The Stat name */
     private final ITextComponent statName;
     public boolean isIndependent;
-    private final IStatType type;
+    private final IStatType formatter;
     private final IScoreCriteria objectiveCriteria;
-    private Class <? extends IJsonSerializable > field_150956_d;
+    private Class <? extends IJsonSerializable > serializableClazz;
     private static NumberFormat numberFormat = NumberFormat.getIntegerInstance(Locale.US);
     public static IStatType simpleStatType = new IStatType()
     {
@@ -65,7 +65,7 @@ public class StatBase
             return d1 > 0.5D ? StatBase.decimalFormat.format(d1) + " km" : (d0 > 0.5D ? StatBase.decimalFormat.format(d0) + " m" : number + " cm");
         }
     };
-    public static IStatType field_111202_k = new IStatType()
+    public static IStatType divideByTen = new IStatType()
     {
         /**
          * Formats a given stat for human consumption.
@@ -77,11 +77,11 @@ public class StatBase
         }
     };
 
-    public StatBase(String statIdIn, ITextComponent statNameIn, IStatType typeIn)
+    public StatBase(String statIdIn, ITextComponent statNameIn, IStatType formatterIn)
     {
         this.statId = statIdIn;
         this.statName = statNameIn;
-        this.type = typeIn;
+        this.formatter = formatterIn;
         this.objectiveCriteria = new ScoreCriteriaStat(this);
         IScoreCriteria.INSTANCES.put(this.objectiveCriteria.getName(), this.objectiveCriteria);
     }
@@ -106,14 +106,14 @@ public class StatBase
      */
     public StatBase registerStat()
     {
-        if (StatList.idToStatMap.containsKey(this.statId))
+        if (StatList.ID_TO_STAT_MAP.containsKey(this.statId))
         {
-            throw new RuntimeException("Duplicate stat id: \"" + ((StatBase)StatList.idToStatMap.get(this.statId)).statName + "\" and \"" + this.statName + "\" at id " + this.statId);
+            throw new RuntimeException("Duplicate stat id: \"" + ((StatBase)StatList.ID_TO_STAT_MAP.get(this.statId)).statName + "\" and \"" + this.statName + "\" at id " + this.statId);
         }
         else
         {
-            StatList.allStats.add(this);
-            StatList.idToStatMap.put(this.statId, this);
+            StatList.ALL_STATS.add(this);
+            StatList.ID_TO_STAT_MAP.put(this.statId, this);
             return this;
         }
     }
@@ -127,16 +127,16 @@ public class StatBase
     }
 
     @SideOnly(Side.CLIENT)
-    public String format(int p_75968_1_)
+    public String format(int number)
     {
-        return this.type.format(p_75968_1_);
+        return this.formatter.format(number);
     }
 
     public ITextComponent getStatName()
     {
         ITextComponent itextcomponent = this.statName.createCopy();
-        itextcomponent.getChatStyle().setColor(TextFormatting.GRAY);
-        itextcomponent.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ACHIEVEMENT, new TextComponentString(this.statId)));
+        itextcomponent.getStyle().setColor(TextFormatting.GRAY);
+        itextcomponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ACHIEVEMENT, new TextComponentString(this.statId)));
         return itextcomponent;
     }
 
@@ -147,7 +147,7 @@ public class StatBase
     {
         ITextComponent itextcomponent = this.getStatName();
         ITextComponent itextcomponent1 = (new TextComponentString("[")).appendSibling(itextcomponent).appendText("]");
-        itextcomponent1.setChatStyle(itextcomponent.getChatStyle());
+        itextcomponent1.setStyle(itextcomponent.getStyle());
         return itextcomponent1;
     }
 
@@ -175,7 +175,7 @@ public class StatBase
 
     public String toString()
     {
-        return "Stat{id=" + this.statId + ", nameId=" + this.statName + ", awardLocallyOnly=" + this.isIndependent + ", formatter=" + this.type + ", objectiveCriteria=" + this.objectiveCriteria + '}';
+        return "Stat{id=" + this.statId + ", nameId=" + this.statName + ", awardLocallyOnly=" + this.isIndependent + ", formatter=" + this.formatter + ", objectiveCriteria=" + this.objectiveCriteria + '}';
     }
 
     /**
@@ -186,14 +186,14 @@ public class StatBase
         return this.objectiveCriteria;
     }
 
-    public Class <? extends IJsonSerializable > func_150954_l()
+    public Class <? extends IJsonSerializable > getSerializableClazz()
     {
-        return this.field_150956_d;
+        return this.serializableClazz;
     }
 
-    public StatBase func_150953_b(Class <? extends IJsonSerializable > p_150953_1_)
+    public StatBase setSerializableClazz(Class <? extends IJsonSerializable > clazz)
     {
-        this.field_150956_d = p_150953_1_;
+        this.serializableClazz = clazz;
         return this;
     }
 }

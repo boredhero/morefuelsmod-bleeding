@@ -10,6 +10,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.init.Items;
@@ -25,9 +26,10 @@ import org.apache.logging.log4j.Logger;
 public class EnchantRandomly extends LootFunction
 {
     private static final Logger LOGGER = LogManager.getLogger();
+    @Nullable
     private final List<Enchantment> enchantments;
 
-    public EnchantRandomly(LootCondition[] conditionsIn, List<Enchantment> enchantmentsIn)
+    public EnchantRandomly(LootCondition[] conditionsIn, @Nullable List<Enchantment> enchantmentsIn)
     {
         super(conditionsIn);
         this.enchantments = enchantmentsIn;
@@ -45,9 +47,9 @@ public class EnchantRandomly extends LootFunction
         {
             List<Enchantment> list = Lists.<Enchantment>newArrayList();
 
-            for (Enchantment enchantment1 : Enchantment.enchantmentRegistry)
+            for (Enchantment enchantment1 : Enchantment.REGISTRY)
             {
-                if (stack.getItem() == Items.book || enchantment1.canApply(stack))
+                if (stack.getItem() == Items.BOOK || enchantment1.canApply(stack))
                 {
                     list.add(enchantment1);
                 }
@@ -64,10 +66,10 @@ public class EnchantRandomly extends LootFunction
 
         int i = MathHelper.getRandomIntegerInRange(rand, enchantment.getMinLevel(), enchantment.getMaxLevel());
 
-        if (stack.getItem() == Items.book)
+        if (stack.getItem() == Items.BOOK)
         {
-            stack.setItem(Items.enchanted_book);
-            Items.enchanted_book.addEnchantment(stack, new EnchantmentData(enchantment, i));
+            stack.setItem(Items.ENCHANTED_BOOK);
+            Items.ENCHANTED_BOOK.addEnchantment(stack, new EnchantmentData(enchantment, i));
         }
         else
         {
@@ -92,7 +94,7 @@ public class EnchantRandomly extends LootFunction
 
                     for (Enchantment enchantment : functionClazz.enchantments)
                     {
-                        ResourceLocation resourcelocation = (ResourceLocation)Enchantment.enchantmentRegistry.getNameForObject(enchantment);
+                        ResourceLocation resourcelocation = (ResourceLocation)Enchantment.REGISTRY.getNameForObject(enchantment);
 
                         if (resourcelocation == null)
                         {
@@ -117,7 +119,7 @@ public class EnchantRandomly extends LootFunction
                     for (JsonElement jsonelement : JsonUtils.getJsonArray(object, "enchantments"))
                     {
                         String s = JsonUtils.getString(jsonelement, "enchantment");
-                        Enchantment enchantment = (Enchantment)Enchantment.enchantmentRegistry.getObject(new ResourceLocation(s));
+                        Enchantment enchantment = (Enchantment)Enchantment.REGISTRY.getObject(new ResourceLocation(s));
 
                         if (enchantment == null)
                         {

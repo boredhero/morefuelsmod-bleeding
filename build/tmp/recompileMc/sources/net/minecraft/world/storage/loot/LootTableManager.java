@@ -12,6 +12,7 @@ import com.google.gson.JsonParseException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import javax.annotation.Nullable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraft.world.storage.loot.conditions.LootConditionManager;
@@ -80,6 +81,7 @@ public class LootTableManager
             }
         }
 
+        @Nullable
         private LootTable loadLootTable(ResourceLocation resource)
         {
             File file1 = new File(new File(LootTableManager.this.baseFolder, resource.getResourceDomain()), resource.getResourcePath() + ".json");
@@ -102,7 +104,7 @@ public class LootTableManager
 
                     try
                     {
-                        return (LootTable)LootTableManager.GSON_INSTANCE.fromJson(s, LootTable.class);
+                        return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.GSON_INSTANCE, resource, s, true);
                     }
                     catch (JsonParseException jsonparseexception)
                     {
@@ -122,6 +124,7 @@ public class LootTableManager
             }
         }
 
+        @Nullable
         private LootTable loadBuiltinLootTable(ResourceLocation resource)
         {
             URL url = LootTableManager.class.getResource("/assets/" + resource.getResourceDomain() + "/loot_tables/" + resource.getResourcePath() + ".json");
@@ -142,7 +145,7 @@ public class LootTableManager
 
                 try
                 {
-                    return (LootTable)LootTableManager.GSON_INSTANCE.fromJson(s, LootTable.class);
+                    return net.minecraftforge.common.ForgeHooks.loadLootTable(LootTableManager.GSON_INSTANCE, resource, s, false);
                 }
                 catch (JsonParseException jsonparseexception)
                 {

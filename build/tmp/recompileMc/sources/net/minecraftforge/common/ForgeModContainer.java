@@ -14,11 +14,20 @@ import java.net.URL;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.logging.log4j.Level;
+
+import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.stats.StatList;
 import net.minecraft.world.storage.SaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.classloading.FMLForgePlugin;
@@ -27,6 +36,7 @@ import net.minecraftforge.common.config.Property;
 import net.minecraftforge.common.model.animation.CapabilityAnimation;
 import net.minecraftforge.common.network.ForgeNetworkHandler;
 import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.fluids.UniversalBucket;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -35,6 +45,7 @@ import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.server.command.ForgeCommand;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -43,10 +54,13 @@ import net.minecraftforge.fml.client.FMLFolderResourcePack;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.FMLLog;
+import net.minecraftforge.fml.common.ICrashCallable;
 import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.WorldAccessContainer;
+import net.minecraftforge.fml.common.discovery.ASMDataTable;
+import net.minecraftforge.fml.common.discovery.ASMDataTable.ASMData;
 import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLModIdMappingEvent;
@@ -74,6 +88,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public static boolean defaultHasSpawnFuzz = true;
     public static boolean forgeLightPipelineEnabled = true;
     public static boolean replaceVanillaBucketModel = true;
+    public static long java8Reminder = 0;
 
     private static Configuration config;
     private static ForgeModContainer INSTANCE;
@@ -259,12 +274,24 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         replaceVanillaBucketModel = prop.getBoolean(Boolean.FALSE);
         propOrder.add(prop.getName());
 
+        prop = config.get(Configuration.CATEGORY_CLIENT, "java8Reminder", java8Reminder,
+                "The timestamp of the last reminder to update to Java 8 in number of milliseconds since January 1, 1970, 00:00:00 GMT. Nag will show only once every 24 hours. To disable it set this to some really high number.");
+        java8Reminder = prop.getLong(java8Reminder);
+        propOrder.add(prop.getName());
+
         config.setCategoryPropertyOrder(CATEGORY_CLIENT, propOrder);
 
         if (config.hasChanged())
         {
             config.save();
         }
+    }
+
+    public static void updateNag()
+    {
+        Property prop = config.get(Configuration.CATEGORY_CLIENT, "java8Reminder", java8Reminder);
+        prop.set((new Date()).getTime());
+        config.save();
     }
 
     /**
@@ -308,6 +335,36 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     @Subscribe
     public void modConstruction(FMLConstructionEvent evt)
     {
+        List<String> all = Lists.newArrayList();
+        for (ASMData asm : evt.getASMHarvestedData().getAll(ICrashReportDetail.class.getName().replace('.', '/')))
+            all.add(asm.getClassName());
+        for (ASMData asm : evt.getASMHarvestedData().getAll(ICrashCallable.class.getName().replace('.', '/')))
+            all.add(asm.getClassName());
+
+        Iterator<String> itr = all.iterator();
+        while (itr.hasNext())
+        {
+            String cls = itr.next();
+            if (!cls.startsWith("net/minecraft/") &&
+                !cls.startsWith("net/minecraftforge/"))
+                itr.remove();
+        }
+
+        FMLLog.log("Forge", Level.DEBUG, "Preloading CrashReport Classes");
+        Collections.sort(all); //Sort it because I like pretty output ;)
+        for (String name : all)
+        {
+            FMLLog.log("Forge", Level.DEBUG, "\t" + name);
+            try
+            {
+                Class.forName(name.replace('/', '.'), false, MinecraftForge.class.getClassLoader());
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
         NetworkRegistry.INSTANCE.register(this, this.getClass(), "*", evt.getASMHarvestedData());
         ForgeNetworkHandler.registerChannel(this, evt.getSide());
     }
@@ -316,6 +373,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public void preInit(FMLPreInitializationEvent evt)
     {
         CapabilityItemHandler.register();
+        CapabilityFluidHandler.register();
         CapabilityAnimation.register();
         MinecraftForge.EVENT_BUS.register(MinecraftForge.INTERNAL_HANDLER);
         ForgeChunkManager.captureConfig(evt.getModConfigurationDirectory());
@@ -379,6 +437,7 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public void mappingChanged(FMLModIdMappingEvent evt)
     {
         OreDictionary.rebakeMap();
+        StatList.reinit();
     }
 
 
@@ -448,4 +507,5 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     {
         return updateJSONUrl;
     }
+
 }

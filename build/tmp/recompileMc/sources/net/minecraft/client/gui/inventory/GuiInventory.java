@@ -24,9 +24,9 @@ public class GuiInventory extends InventoryEffectRenderer
     /** The old y position of the mouse pointer */
     private float oldMouseY;
 
-    public GuiInventory(EntityPlayer p_i1094_1_)
+    public GuiInventory(EntityPlayer player)
     {
-        super(p_i1094_1_.inventoryContainer);
+        super(player.inventoryContainer);
         this.allowUserInput = true;
     }
 
@@ -61,9 +61,6 @@ public class GuiInventory extends InventoryEffectRenderer
 
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
@@ -72,10 +69,6 @@ public class GuiInventory extends InventoryEffectRenderer
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -86,16 +79,11 @@ public class GuiInventory extends InventoryEffectRenderer
 
     /**
      * Draws the background layer of this container (behind the items).
-     *  
-     * @param partialTicks How far into the current tick the game is, with 0.0 being the start of the tick and 1.0 being
-     * the end.
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(inventoryBackground);
+        this.mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
         int i = this.guiLeft;
         int j = this.guiTop;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
@@ -104,14 +92,6 @@ public class GuiInventory extends InventoryEffectRenderer
 
     /**
      * Draws an entity on the screen looking toward the cursor.
-     *  
-     * @param posX X coordinate to start drawing at.
-     * @param posY Y coordinate to start drawing at.
-     * @param scale The scale at which to draw the entity. Seems to be about 1/2 the width of the number of pixels the
-     * drawn entity takes up.
-     * @param mouseX The x coordinate of the mouse on the screen.
-     * @param mouseY The y coordinate of the mouse on the screen.
-     * @param ent The entity to draw.
      */
     public static void drawEntityOnScreen(int posX, int posY, int scale, float mouseX, float mouseY, EntityLivingBase ent)
     {

@@ -12,8 +12,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiBrewingStand extends GuiContainer
 {
-    private static final ResourceLocation brewingStandGuiTextures = new ResourceLocation("textures/gui/container/brewing_stand.png");
-    private static final int[] field_184857_v = new int[] {29, 24, 20, 16, 11, 6, 0};
+    private static final ResourceLocation BREWING_STAND_GUI_TEXTURES = new ResourceLocation("textures/gui/container/brewing_stand.png");
+    private static final int[] BUBBLELENGTHS = new int[] {29, 24, 20, 16, 11, 6, 0};
     /** The player inventory bound to this GUI. */
     private final InventoryPlayer playerInventory;
     private IInventory tileBrewingStand;
@@ -27,9 +27,6 @@ public class GuiBrewingStand extends GuiContainer
 
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
@@ -40,16 +37,11 @@ public class GuiBrewingStand extends GuiContainer
 
     /**
      * Draws the background layer of this container (behind the items).
-     *  
-     * @param partialTicks How far into the current tick the game is, with 0.0 being the start of the tick and 1.0 being
-     * the end.
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(brewingStandGuiTextures);
+        this.mc.getTextureManager().bindTexture(BREWING_STAND_GUI_TEXTURES);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
@@ -72,7 +64,7 @@ public class GuiBrewingStand extends GuiContainer
                 this.drawTexturedModalRect(i + 97, j + 16, 176, 0, 9, j1);
             }
 
-            j1 = field_184857_v[i1 / 2 % 7];
+            j1 = BUBBLELENGTHS[i1 / 2 % 7];
 
             if (j1 > 0)
             {

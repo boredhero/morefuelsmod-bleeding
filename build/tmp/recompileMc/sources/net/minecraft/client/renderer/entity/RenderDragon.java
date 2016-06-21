@@ -17,9 +17,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderDragon extends RenderLiving<EntityDragon>
 {
-    public static final ResourceLocation enderDragonCrystalBeamTextures = new ResourceLocation("textures/entity/endercrystal/endercrystal_beam.png");
-    private static final ResourceLocation enderDragonExplodingTextures = new ResourceLocation("textures/entity/enderdragon/dragon_exploding.png");
-    private static final ResourceLocation enderDragonTextures = new ResourceLocation("textures/entity/enderdragon/dragon.png");
+    public static final ResourceLocation ENDERCRYSTAL_BEAM_TEXTURES = new ResourceLocation("textures/entity/endercrystal/endercrystal_beam.png");
+    private static final ResourceLocation DRAGON_EXPLODING_TEXTURES = new ResourceLocation("textures/entity/enderdragon/dragon_exploding.png");
+    private static final ResourceLocation DRAGON_TEXTURES = new ResourceLocation("textures/entity/enderdragon/dragon.png");
     /** An instance of the dragon model in RenderDragon */
     protected ModelDragon modelDragon;
 
@@ -31,17 +31,17 @@ public class RenderDragon extends RenderLiving<EntityDragon>
         this.addLayer(new LayerEnderDragonDeath());
     }
 
-    protected void rotateCorpse(EntityDragon bat, float p_77043_2_, float p_77043_3_, float partialTicks)
+    protected void rotateCorpse(EntityDragon entityLiving, float p_77043_2_, float p_77043_3_, float partialTicks)
     {
-        float f = (float)bat.getMovementOffsets(7, partialTicks)[0];
-        float f1 = (float)(bat.getMovementOffsets(5, partialTicks)[1] - bat.getMovementOffsets(10, partialTicks)[1]);
+        float f = (float)entityLiving.getMovementOffsets(7, partialTicks)[0];
+        float f1 = (float)(entityLiving.getMovementOffsets(5, partialTicks)[1] - entityLiving.getMovementOffsets(10, partialTicks)[1]);
         GlStateManager.rotate(-f, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(f1 * 10.0F, 1.0F, 0.0F, 0.0F);
         GlStateManager.translate(0.0F, 0.0F, 1.0F);
 
-        if (bat.deathTime > 0)
+        if (entityLiving.deathTime > 0)
         {
-            float f2 = ((float)bat.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
+            float f2 = ((float)entityLiving.deathTime + partialTicks - 1.0F) / 20.0F * 1.6F;
             f2 = MathHelper.sqrt_float(f2);
 
             if (f2 > 1.0F)
@@ -49,14 +49,14 @@ public class RenderDragon extends RenderLiving<EntityDragon>
                 f2 = 1.0F;
             }
 
-            GlStateManager.rotate(f2 * this.getDeathMaxRotation(bat), 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(f2 * this.getDeathMaxRotation(entityLiving), 0.0F, 0.0F, 1.0F);
         }
     }
 
     /**
      * Renders the model in RenderLiving
      */
-    protected void renderModel(EntityDragon entitylivingbaseIn, float p_77036_2_, float p_77036_3_, float p_77036_4_, float p_77036_5_, float p_77036_6_, float scaleFactor)
+    protected void renderModel(EntityDragon entitylivingbaseIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor)
     {
         if (entitylivingbaseIn.deathTicks > 0)
         {
@@ -64,14 +64,14 @@ public class RenderDragon extends RenderLiving<EntityDragon>
             GlStateManager.depthFunc(515);
             GlStateManager.enableAlpha();
             GlStateManager.alphaFunc(516, f);
-            this.bindTexture(enderDragonExplodingTextures);
-            this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+            this.bindTexture(DRAGON_EXPLODING_TEXTURES);
+            this.mainModel.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
             GlStateManager.alphaFunc(516, 0.1F);
             GlStateManager.depthFunc(514);
         }
 
         this.bindEntityTexture(entitylivingbaseIn);
-        this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+        this.mainModel.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
 
         if (entitylivingbaseIn.hurtTime > 0)
         {
@@ -80,7 +80,7 @@ public class RenderDragon extends RenderLiving<EntityDragon>
             GlStateManager.enableBlend();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             GlStateManager.color(1.0F, 0.0F, 0.0F, 0.5F);
-            this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
+            this.mainModel.render(entitylivingbaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor);
             GlStateManager.enableTexture2D();
             GlStateManager.disableBlend();
             GlStateManager.depthFunc(515);
@@ -96,14 +96,14 @@ public class RenderDragon extends RenderLiving<EntityDragon>
 
         if (entity.healingEnderCrystal != null)
         {
-            this.bindTexture(enderDragonCrystalBeamTextures);
+            this.bindTexture(ENDERCRYSTAL_BEAM_TEXTURES);
             float f = MathHelper.sin(((float)entity.healingEnderCrystal.ticksExisted + partialTicks) * 0.2F) / 2.0F + 0.5F;
             f = (f * f + f) * 0.2F;
-            func_188325_a(x, y, z, partialTicks, entity.posX + (entity.prevPosX - entity.posX) * (double)(1.0F - partialTicks), entity.posY + (entity.prevPosY - entity.posY) * (double)(1.0F - partialTicks), entity.posZ + (entity.prevPosZ - entity.posZ) * (double)(1.0F - partialTicks), entity.ticksExisted, entity.healingEnderCrystal.posX, (double)f + entity.healingEnderCrystal.posY, entity.healingEnderCrystal.posZ);
+            renderCrystalBeams(x, y, z, partialTicks, entity.posX + (entity.prevPosX - entity.posX) * (double)(1.0F - partialTicks), entity.posY + (entity.prevPosY - entity.posY) * (double)(1.0F - partialTicks), entity.posZ + (entity.prevPosZ - entity.posZ) * (double)(1.0F - partialTicks), entity.ticksExisted, entity.healingEnderCrystal.posX, (double)f + entity.healingEnderCrystal.posY, entity.healingEnderCrystal.posZ);
         }
     }
 
-    public static void func_188325_a(double p_188325_0_, double p_188325_2_, double p_188325_4_, float p_188325_6_, double p_188325_7_, double p_188325_9_, double p_188325_11_, int p_188325_13_, double p_188325_14_, double p_188325_16_, double p_188325_18_)
+    public static void renderCrystalBeams(double p_188325_0_, double p_188325_2_, double p_188325_4_, float p_188325_6_, double p_188325_7_, double p_188325_9_, double p_188325_11_, int p_188325_13_, double p_188325_14_, double p_188325_16_, double p_188325_18_)
     {
         float f = (float)(p_188325_14_ - p_188325_7_);
         float f1 = (float)(p_188325_16_ - 1.0D - p_188325_9_);
@@ -145,6 +145,6 @@ public class RenderDragon extends RenderLiving<EntityDragon>
      */
     protected ResourceLocation getEntityTexture(EntityDragon entity)
     {
-        return enderDragonTextures;
+        return DRAGON_TEXTURES;
     }
 }

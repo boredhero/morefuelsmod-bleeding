@@ -17,10 +17,10 @@ public abstract class BlockLog extends BlockRotatedPillar
 
     public BlockLog()
     {
-        super(Material.wood);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        super(Material.WOOD);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
         this.setHardness(2.0F);
-        this.setStepSound(SoundType.WOOD);
+        this.setSoundType(SoundType.WOOD);
     }
 
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)

@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +19,7 @@ public class RandomPositionGenerator
     /**
      * finds a random target within par1(x,z) and par2 (y) blocks
      */
+    @Nullable
     public static Vec3d findRandomTarget(EntityCreature entitycreatureIn, int xz, int y)
     {
         /**
@@ -30,6 +32,7 @@ public class RandomPositionGenerator
     /**
      * finds a random target within par1(x,z) and par2 (y) blocks in the direction of the point par3
      */
+    @Nullable
     public static Vec3d findRandomTargetBlockTowards(EntityCreature entitycreatureIn, int xz, int y, Vec3d targetVec3)
     {
         staticVector = targetVec3.subtract(entitycreatureIn.posX, entitycreatureIn.posY, entitycreatureIn.posZ);
@@ -43,6 +46,7 @@ public class RandomPositionGenerator
     /**
      * finds a random target within par1(x,z) and par2 (y) blocks in the reverse direction of the point par3
      */
+    @Nullable
     public static Vec3d findRandomTargetBlockAwayFrom(EntityCreature entitycreatureIn, int xz, int y, Vec3d targetVec3)
     {
         staticVector = (new Vec3d(entitycreatureIn.posX, entitycreatureIn.posY, entitycreatureIn.posZ)).subtract(targetVec3);
@@ -57,7 +61,8 @@ public class RandomPositionGenerator
      * searches 10 blocks at random in a within par1(x,z) and par2 (y) distance, ignores those not in the direction of
      * par3Vec3, then points to the tile for which creature.getBlockPathWeight returns the highest number
      */
-    private static Vec3d findRandomTargetBlock(EntityCreature entitycreatureIn, int xz, int y, Vec3d targetVec3)
+    @Nullable
+    private static Vec3d findRandomTargetBlock(EntityCreature entitycreatureIn, int xz, int y, @Nullable Vec3d targetVec3)
     {
         PathNavigate pathnavigate = entitycreatureIn.getNavigator();
         Random random = entitycreatureIn.getRNG();
@@ -115,7 +120,7 @@ public class RandomPositionGenerator
                 i1 = i1 + MathHelper.floor_double(entitycreatureIn.posZ);
                 BlockPos blockpos1 = new BlockPos(l, k1, i1);
 
-                if ((!flag1 || entitycreatureIn.isWithinHomeDistanceFromPosition(blockpos1)) && pathnavigate.func_188555_b(blockpos1))
+                if ((!flag1 || entitycreatureIn.isWithinHomeDistanceFromPosition(blockpos1)) && pathnavigate.canEntityStandOnPos(blockpos1))
                 {
                     float f1 = entitycreatureIn.getBlockPathWeight(blockpos1);
 

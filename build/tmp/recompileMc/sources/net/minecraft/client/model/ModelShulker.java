@@ -10,26 +10,26 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelShulker extends ModelBase
 {
-    private ModelRenderer field_187067_b;
-    private ModelRenderer field_187068_c;
-    public ModelRenderer field_187066_a;
+    private ModelRenderer base;
+    private ModelRenderer lid;
+    public ModelRenderer head;
 
     public ModelShulker()
     {
         this.textureHeight = 64;
         this.textureWidth = 64;
-        this.field_187068_c = new ModelRenderer(this);
-        this.field_187067_b = new ModelRenderer(this);
-        this.field_187066_a = new ModelRenderer(this);
-        this.field_187068_c.setTextureOffset(0, 0).addBox(-8.0F, -16.0F, -8.0F, 16, 12, 16);
-        this.field_187068_c.setRotationPoint(0.0F, 24.0F, 0.0F);
-        this.field_187067_b.setTextureOffset(0, 28).addBox(-8.0F, -8.0F, -8.0F, 16, 8, 16);
-        this.field_187067_b.setRotationPoint(0.0F, 24.0F, 0.0F);
-        this.field_187066_a.setTextureOffset(0, 52).addBox(-3.0F, 0.0F, -3.0F, 6, 6, 6);
-        this.field_187066_a.setRotationPoint(0.0F, 12.0F, 0.0F);
+        this.lid = new ModelRenderer(this);
+        this.base = new ModelRenderer(this);
+        this.head = new ModelRenderer(this);
+        this.lid.setTextureOffset(0, 0).addBox(-8.0F, -16.0F, -8.0F, 16, 12, 16);
+        this.lid.setRotationPoint(0.0F, 24.0F, 0.0F);
+        this.base.setTextureOffset(0, 28).addBox(-8.0F, -8.0F, -8.0F, 16, 8, 16);
+        this.base.setRotationPoint(0.0F, 24.0F, 0.0F);
+        this.head.setTextureOffset(0, 52).addBox(-3.0F, 0.0F, -3.0F, 6, 6, 6);
+        this.head.setRotationPoint(0.0F, 12.0F, 0.0F);
     }
 
-    public int func_187065_a()
+    public int getModelVersion()
     {
         return 28;
     }
@@ -51,7 +51,7 @@ public class ModelShulker extends ModelBase
     {
         EntityShulker entityshulker = (EntityShulker)entityIn;
         float f = ageInTicks - (float)entityshulker.ticksExisted;
-        float f1 = (0.5F + entityshulker.func_184688_a(f)) * (float)Math.PI;
+        float f1 = (0.5F + entityshulker.getClientPeekAmount(f)) * (float)Math.PI;
         float f2 = -1.0F + MathHelper.sin(f1);
         float f3 = 0.0F;
 
@@ -60,27 +60,27 @@ public class ModelShulker extends ModelBase
             f3 = MathHelper.sin(ageInTicks * 0.1F) * 0.7F;
         }
 
-        this.field_187068_c.setRotationPoint(0.0F, 16.0F + MathHelper.sin(f1) * 8.0F + f3, 0.0F);
+        this.lid.setRotationPoint(0.0F, 16.0F + MathHelper.sin(f1) * 8.0F + f3, 0.0F);
 
-        if (entityshulker.func_184688_a(f) > 0.3F)
+        if (entityshulker.getClientPeekAmount(f) > 0.3F)
         {
-            this.field_187068_c.rotateAngleY = f2 * f2 * f2 * f2 * (float)Math.PI * 0.125F;
+            this.lid.rotateAngleY = f2 * f2 * f2 * f2 * (float)Math.PI * 0.125F;
         }
         else
         {
-            this.field_187068_c.rotateAngleY = 0.0F;
+            this.lid.rotateAngleY = 0.0F;
         }
 
-        this.field_187066_a.rotateAngleX = headPitch * 0.017453292F;
-        this.field_187066_a.rotateAngleY = netHeadYaw * 0.017453292F;
+        this.head.rotateAngleX = headPitch * 0.017453292F;
+        this.head.rotateAngleY = netHeadYaw * 0.017453292F;
     }
 
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float p_78088_2_, float limbSwing, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
-        this.field_187067_b.render(scale);
-        this.field_187068_c.render(scale);
+        this.base.render(scale);
+        this.lid.render(scale);
     }
 }

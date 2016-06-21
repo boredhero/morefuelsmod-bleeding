@@ -16,9 +16,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class StatsComponent extends JComponent
 {
     private static final DecimalFormat FORMATTER = new DecimalFormat("########0.000");
-    private int[] field_120038_b = new int[256];
-    private int field_120039_c;
-    private String[] field_120036_d = new String[11];
+    private int[] values = new int[256];
+    private int vp;
+    private String[] msgs = new String[11];
     private final MinecraftServer server;
 
     public StatsComponent(MinecraftServer serverIn)
@@ -31,18 +31,18 @@ public class StatsComponent extends JComponent
         {
             public void actionPerformed(ActionEvent p_actionPerformed_1_)
             {
-                StatsComponent.this.func_120034_a();
+                StatsComponent.this.tick();
             }
         })).start();
         this.setBackground(Color.BLACK);
     }
 
-    private void func_120034_a()
+    private void tick()
     {
         long i = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
         System.gc();
-        this.field_120036_d[0] = "Memory use: " + i / 1024L / 1024L + " mb (" + Runtime.getRuntime().freeMemory() * 100L / Runtime.getRuntime().maxMemory() + "% free)";
-        this.field_120036_d[1] = "Avg tick: " + FORMATTER.format(this.mean(this.server.tickTimeArray) * 1.0E-6D) + " ms";
+        this.msgs[0] = "Memory use: " + i / 1024L / 1024L + " mb (" + Runtime.getRuntime().freeMemory() * 100L / Runtime.getRuntime().maxMemory() + "% free)";
+        this.msgs[1] = "Avg tick: " + FORMATTER.format(this.mean(this.server.tickTimeArray) * 1.0E-6D) + " ms";
         this.repaint();
     }
 
@@ -65,16 +65,16 @@ public class StatsComponent extends JComponent
 
         for (int i = 0; i < 256; ++i)
         {
-            int j = this.field_120038_b[i + this.field_120039_c & 255];
+            int j = this.values[i + this.vp & 255];
             p_paint_1_.setColor(new Color(j + 28 << 16));
             p_paint_1_.fillRect(i, 100 - j, 1, j);
         }
 
         p_paint_1_.setColor(Color.BLACK);
 
-        for (int k = 0; k < this.field_120036_d.length; ++k)
+        for (int k = 0; k < this.msgs.length; ++k)
         {
-            String s = this.field_120036_d[k];
+            String s = this.msgs[k];
 
             if (s != null)
             {

@@ -1,5 +1,6 @@
 package net.minecraft.world.storage;
 
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DimensionType;
@@ -23,7 +24,7 @@ public class DerivedWorldInfo extends WorldInfo
     /**
      * Creates a new NBTTagCompound for the world, with the given NBTTag as the "Player"
      */
-    public NBTTagCompound cloneNBTCompound(NBTTagCompound nbt)
+    public NBTTagCompound cloneNBTCompound(@Nullable NBTTagCompound nbt)
     {
         return this.theWorldInfo.cloneNBTCompound(nbt);
     }

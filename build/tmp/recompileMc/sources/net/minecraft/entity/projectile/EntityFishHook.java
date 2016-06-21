@@ -32,7 +32,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityFishHook extends Entity
 {
-    private static final DataParameter<Integer> field_184528_c = EntityDataManager.<Integer>createKey(EntityFishHook.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> DATA_HOOKED_ENTITY = EntityDataManager.<Integer>createKey(EntityFishHook.class, DataSerializers.VARINT);
     private int xTile;
     private int yTile;
     private int zTile;
@@ -103,14 +103,14 @@ public class EntityFishHook extends Entity
 
     protected void entityInit()
     {
-        this.getDataManager().register(field_184528_c, Integer.valueOf(0));
+        this.getDataManager().register(DATA_HOOKED_ENTITY, Integer.valueOf(0));
     }
 
     public void notifyDataManagerChange(DataParameter<?> key)
     {
-        if (field_184528_c.equals(key))
+        if (DATA_HOOKED_ENTITY.equals(key))
         {
-            int i = ((Integer)this.getDataManager().get(field_184528_c)).intValue();
+            int i = ((Integer)this.getDataManager().get(DATA_HOOKED_ENTITY)).intValue();
 
             if (i > 0 && this.caughtEntity != null)
             {
@@ -122,8 +122,7 @@ public class EntityFishHook extends Entity
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -160,8 +159,11 @@ public class EntityFishHook extends Entity
         this.ticksInGround = 0;
     }
 
+    /**
+     * Set the position and rotation values directly without any clamping.
+     */
     @SideOnly(Side.CLIENT)
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_)
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
         this.fishX = x;
         this.fishY = y;
@@ -175,7 +177,7 @@ public class EntityFishHook extends Entity
     }
 
     /**
-     * Sets the velocity to the args. Args: x, y, z
+     * Updates the velocity of the entity to a new value.
      */
     @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
@@ -194,7 +196,7 @@ public class EntityFishHook extends Entity
 
         if (this.worldObj.isRemote)
         {
-            int i = ((Integer)this.getDataManager().get(field_184528_c)).intValue();
+            int i = ((Integer)this.getDataManager().get(DATA_HOOKED_ENTITY)).intValue();
 
             if (i > 0 && this.caughtEntity == null)
             {
@@ -205,7 +207,7 @@ public class EntityFishHook extends Entity
         {
             ItemStack itemstack = this.angler.getHeldItemMainhand();
 
-            if (this.angler.isDead || !this.angler.isEntityAlive() || itemstack == null || itemstack.getItem() != Items.fishing_rod || this.getDistanceSqToEntity(this.angler) > 1024.0D)
+            if (this.angler.isDead || !this.angler.isEntityAlive() || itemstack == null || itemstack.getItem() != Items.FISHING_ROD || this.getDistanceSqToEntity(this.angler) > 1024.0D)
             {
                 this.setDead();
                 this.angler.fishEntity = null;
@@ -232,7 +234,7 @@ public class EntityFishHook extends Entity
             double d3 = this.posX + (this.fishX - this.posX) / (double)this.fishPosRotationIncrements;
             double d4 = this.posY + (this.fishY - this.posY) / (double)this.fishPosRotationIncrements;
             double d6 = this.posZ + (this.fishZ - this.posZ) / (double)this.fishPosRotationIncrements;
-            double d8 = MathHelper.wrapAngleTo180_double(this.fishYaw - (double)this.rotationYaw);
+            double d8 = MathHelper.wrapDegrees(this.fishYaw - (double)this.rotationYaw);
             this.rotationYaw = (float)((double)this.rotationYaw + d8 / (double)this.fishPosRotationIncrements);
             this.rotationPitch = (float)((double)this.rotationPitch + (this.fishPitch - (double)this.rotationPitch) / (double)this.fishPosRotationIncrements);
             --this.fishPosRotationIncrements;
@@ -316,7 +318,7 @@ public class EntityFishHook extends Entity
                     if (raytraceresult.entityHit != null)
                     {
                         this.caughtEntity = raytraceresult.entityHit;
-                        this.getDataManager().set(field_184528_c, Integer.valueOf(this.caughtEntity.getEntityId() + 1));
+                        this.getDataManager().set(DATA_HOOKED_ENTITY, Integer.valueOf(this.caughtEntity.getEntityId() + 1));
                     }
                     else
                     {
@@ -371,7 +373,7 @@ public class EntityFishHook extends Entity
                     double d11 = axisalignedbb.minY + d9 * (double)(l + 1) / (double)k;
                     AxisAlignedBB axisalignedbb2 = new AxisAlignedBB(axisalignedbb.minX, d10, axisalignedbb.minZ, axisalignedbb.maxX, d11, axisalignedbb.maxZ);
 
-                    if (this.worldObj.isAABBInMaterial(axisalignedbb2, Material.water))
+                    if (this.worldObj.isAABBInMaterial(axisalignedbb2, Material.WATER))
                     {
                         d5 += 1.0D / (double)k;
                     }
@@ -410,7 +412,7 @@ public class EntityFishHook extends Entity
                         if (this.ticksCatchableDelay <= 0)
                         {
                             this.motionY -= 0.20000000298023224D;
-                            this.playSound(SoundEvents.entity_bobber_splash, 0.25F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
+                            this.playSound(SoundEvents.ENTITY_BOBBER_SPLASH, 0.25F, 1.0F + (this.rand.nextFloat() - this.rand.nextFloat()) * 0.4F);
                             float f6 = (float)MathHelper.floor_double(this.getEntityBoundingBox().minY);
                             worldserver.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX, (double)(f6 + 1.0F), this.posZ, (int)(1.0F + this.width * 20.0F), (double)this.width, 0.0D, (double)this.width, 0.20000000298023224D, new int[0]);
                             worldserver.spawnParticle(EnumParticleTypes.WATER_WAKE, this.posX, (double)(f6 + 1.0F), this.posZ, (int)(1.0F + this.width * 20.0F), (double)this.width, 0.0D, (double)this.width, 0.20000000298023224D, new int[0]);
@@ -427,7 +429,7 @@ public class EntityFishHook extends Entity
                             double d16 = this.posZ + (double)(f10 * (float)this.ticksCatchableDelay * 0.1F);
                             Block block1 = worldserver.getBlockState(new BlockPos((int)d13, (int)d15 - 1, (int)d16)).getBlock();
 
-                            if (block1 == Blocks.water || block1 == Blocks.flowing_water)
+                            if (block1 == Blocks.WATER || block1 == Blocks.FLOWING_WATER)
                             {
                                 if (this.rand.nextFloat() < 0.15F)
                                 {
@@ -468,7 +470,7 @@ public class EntityFishHook extends Entity
                             double d2 = this.posZ + (double)(MathHelper.cos(f7) * f9 * 0.1F);
                             Block block = worldserver.getBlockState(new BlockPos((int)d12, (int)d14 - 1, (int)d2)).getBlock();
 
-                            if (block == Blocks.water || block == Blocks.flowing_water)
+                            if (block == Blocks.WATER || block == Blocks.FLOWING_WATER)
                             {
                                 worldserver.spawnParticle(EnumParticleTypes.WATER_SPLASH, d12, d14, d2, 2 + this.rand.nextInt(2), 0.10000000149011612D, 0.0D, 0.10000000149011612D, 0.0D, new int[0]);
                             }
@@ -512,35 +514,35 @@ public class EntityFishHook extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setInteger("xTile", this.xTile);
-        tagCompound.setInteger("yTile", this.yTile);
-        tagCompound.setInteger("zTile", this.zTile);
-        ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.inTile);
-        tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
-        tagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+        compound.setInteger("xTile", this.xTile);
+        compound.setInteger("yTile", this.yTile);
+        compound.setInteger("zTile", this.zTile);
+        ResourceLocation resourcelocation = (ResourceLocation)Block.REGISTRY.getNameForObject(this.inTile);
+        compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
+        compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.xTile = tagCompund.getInteger("xTile");
-        this.yTile = tagCompund.getInteger("yTile");
-        this.zTile = tagCompund.getInteger("zTile");
+        this.xTile = compound.getInteger("xTile");
+        this.yTile = compound.getInteger("yTile");
+        this.zTile = compound.getInteger("zTile");
 
-        if (tagCompund.hasKey("inTile", 8))
+        if (compound.hasKey("inTile", 8))
         {
-            this.inTile = Block.getBlockFromName(tagCompund.getString("inTile"));
+            this.inTile = Block.getBlockFromName(compound.getString("inTile"));
         }
         else
         {
-            this.inTile = Block.getBlockById(tagCompund.getByte("inTile") & 255);
+            this.inTile = Block.getBlockById(compound.getByte("inTile") & 255);
         }
 
-        this.inGround = tagCompund.getByte("inGround") == 1;
+        this.inGround = compound.getByte("inGround") == 1;
     }
 
     public int handleHookRetraction()
@@ -555,7 +557,7 @@ public class EntityFishHook extends Entity
 
             if (this.caughtEntity != null)
             {
-                this.func_184527_k();
+                this.bringInHookedEntity();
                 this.worldObj.setEntityState(this, (byte)31);
                 i = this.caughtEntity instanceof EntityItem ? 3 : 5;
             }
@@ -598,13 +600,13 @@ public class EntityFishHook extends Entity
     {
         if (id == 31 && this.worldObj.isRemote && this.caughtEntity instanceof EntityPlayer && ((EntityPlayer)this.caughtEntity).isUser())
         {
-            this.func_184527_k();
+            this.bringInHookedEntity();
         }
 
         super.handleStatusUpdate(id);
     }
 
-    protected void func_184527_k()
+    protected void bringInHookedEntity()
     {
         double d0 = this.angler.posX - this.posX;
         double d1 = this.angler.posY - this.posY;

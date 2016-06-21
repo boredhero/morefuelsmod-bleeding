@@ -29,8 +29,8 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class ChunkRenderDispatcher
 {
-    private static final Logger logger = LogManager.getLogger();
-    private static final ThreadFactory threadFactory = (new ThreadFactoryBuilder()).setNameFormat("Chunk Batcher %d").setDaemon(true).build();
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final ThreadFactory THREAD_FACTORY = (new ThreadFactoryBuilder()).setNameFormat("Chunk Batcher %d").setDaemon(true).build();
     private final int countRenderBuilders;
     private final List<Thread> listWorkerThreads = Lists.<Thread>newArrayList();
     private final List<ChunkRenderWorker> listThreadedWorkers = Lists.<ChunkRenderWorker>newArrayList();
@@ -43,16 +43,22 @@ public class ChunkRenderDispatcher
 
     public ChunkRenderDispatcher()
     {
+        this(-1);
+    }
+
+    public ChunkRenderDispatcher(int countRenderBuilders)
+    {
         int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3D) / 10485760);
         int j = Math.max(1, MathHelper.clamp_int(Runtime.getRuntime().availableProcessors(), 1, i / 5));
-        this.countRenderBuilders = MathHelper.clamp_int(j * 10, 1, i);
+        if(countRenderBuilders < 0) countRenderBuilders = MathHelper.clamp_int(j * 10, 1, i);
+        this.countRenderBuilders = countRenderBuilders;
 
         if (j > 1)
         {
             for (int k = 0; k < j; ++k)
             {
                 ChunkRenderWorker chunkrenderworker = new ChunkRenderWorker(this);
-                Thread thread = threadFactory.newThread(chunkrenderworker);
+                Thread thread = THREAD_FACTORY.newThread(chunkrenderworker);
                 thread.start();
                 this.listThreadedWorkers.add(chunkrenderworker);
                 this.listWorkerThreads.add(thread);
@@ -95,7 +101,7 @@ public class ChunkRenderDispatcher
                     }
                     catch (InterruptedException var8)
                     {
-                        logger.warn("Skipped task due to interrupt");
+                        LOGGER.warn("Skipped task due to interrupt");
                     }
                 }
             }
@@ -334,7 +340,7 @@ public class ChunkRenderDispatcher
             }
             catch (InterruptedException interruptedexception)
             {
-                logger.warn((String)"Interrupted whilst waiting for worker to die", (Throwable)interruptedexception);
+                LOGGER.warn((String)"Interrupted whilst waiting for worker to die", (Throwable)interruptedexception);
             }
         }
 

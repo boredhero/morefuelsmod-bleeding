@@ -29,7 +29,7 @@ import org.apache.commons.io.IOUtils;
 @SideOnly(Side.CLIENT)
 public class FontRenderer implements IResourceManagerReloadListener
 {
-    private static final ResourceLocation[] unicodePageLocations = new ResourceLocation[256];
+    private static final ResourceLocation[] UNICODE_PAGE_LOCATIONS = new ResourceLocation[256];
     /** Array of width of all the characters in default.png */
     protected int[] charWidth = new int[256];
     /** the height in pixels of default text */
@@ -249,12 +249,12 @@ public class FontRenderer implements IResourceManagerReloadListener
 
     private ResourceLocation getUnicodePageLocation(int page)
     {
-        if (unicodePageLocations[page] == null)
+        if (UNICODE_PAGE_LOCATIONS[page] == null)
         {
-            unicodePageLocations[page] = new ResourceLocation(String.format("textures/font/unicode_page_%02x.png", new Object[] {Integer.valueOf(page)}));
+            UNICODE_PAGE_LOCATIONS[page] = new ResourceLocation(String.format("textures/font/unicode_page_%02x.png", new Object[] {Integer.valueOf(page)}));
         }
 
-        return unicodePageLocations[page];
+        return UNICODE_PAGE_LOCATIONS[page];
     }
 
     /**

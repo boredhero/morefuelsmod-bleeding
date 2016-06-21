@@ -34,12 +34,12 @@ public class TileEntityItemStackRenderer
 
     public void renderByItem(ItemStack itemStackIn)
     {
-        if (itemStackIn.getItem() == Items.banner)
+        if (itemStackIn.getItem() == Items.BANNER)
         {
             this.banner.setItemValues(itemStackIn);
             TileEntityRendererDispatcher.instance.renderTileEntityAt(this.banner, 0.0D, 0.0D, 0.0D, 0.0F);
         }
-        else if (itemStackIn.getItem() == Items.shield)
+        else if (itemStackIn.getItem() == Items.SHIELD)
         {
             if (itemStackIn.getSubCompound("BlockEntityTag", false) != null)
             {
@@ -56,7 +56,7 @@ public class TileEntityItemStackRenderer
             this.modelShield.render();
             GlStateManager.popMatrix();
         }
-        else if (itemStackIn.getItem() == Items.skull)
+        else if (itemStackIn.getItem() == Items.SKULL)
         {
             GameProfile gameprofile = null;
 
@@ -90,15 +90,15 @@ public class TileEntityItemStackRenderer
         {
             Block block = Block.getBlockFromItem(itemStackIn.getItem());
 
-            if (block == Blocks.ender_chest)
+            if (block == Blocks.ENDER_CHEST)
             {
                 TileEntityRendererDispatcher.instance.renderTileEntityAt(this.enderChest, 0.0D, 0.0D, 0.0D, 0.0F);
             }
-            else if (block == Blocks.trapped_chest)
+            else if (block == Blocks.TRAPPED_CHEST)
             {
                 TileEntityRendererDispatcher.instance.renderTileEntityAt(this.chestTrap, 0.0D, 0.0D, 0.0D, 0.0F);
             }
-            else if (block != Blocks.chest) net.minecraftforge.client.ForgeHooksClient.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
+            else if (block != Blocks.CHEST) net.minecraftforge.client.ForgeHooksClient.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
             else
             {
                 TileEntityRendererDispatcher.instance.renderTileEntityAt(this.chestBasic, 0.0D, 0.0D, 0.0D, 0.0F);

@@ -11,17 +11,17 @@ public class SPacketConfirmTransaction implements Packet<INetHandlerPlayClient>
 {
     private int windowId;
     private short actionNumber;
-    private boolean field_148893_c;
+    private boolean accepted;
 
     public SPacketConfirmTransaction()
     {
     }
 
-    public SPacketConfirmTransaction(int windowIdIn, short actionNumberIn, boolean p_i46958_3_)
+    public SPacketConfirmTransaction(int windowIdIn, short actionNumberIn, boolean acceptedIn)
     {
         this.windowId = windowIdIn;
         this.actionNumber = actionNumberIn;
-        this.field_148893_c = p_i46958_3_;
+        this.accepted = acceptedIn;
     }
 
     /**
@@ -39,7 +39,7 @@ public class SPacketConfirmTransaction implements Packet<INetHandlerPlayClient>
     {
         this.windowId = buf.readUnsignedByte();
         this.actionNumber = buf.readShort();
-        this.field_148893_c = buf.readBoolean();
+        this.accepted = buf.readBoolean();
     }
 
     /**
@@ -49,7 +49,7 @@ public class SPacketConfirmTransaction implements Packet<INetHandlerPlayClient>
     {
         buf.writeByte(this.windowId);
         buf.writeShort(this.actionNumber);
-        buf.writeBoolean(this.field_148893_c);
+        buf.writeBoolean(this.accepted);
     }
 
     @SideOnly(Side.CLIENT)
@@ -65,8 +65,8 @@ public class SPacketConfirmTransaction implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean func_148888_e()
+    public boolean wasAccepted()
     {
-        return this.field_148893_c;
+        return this.accepted;
     }
 }

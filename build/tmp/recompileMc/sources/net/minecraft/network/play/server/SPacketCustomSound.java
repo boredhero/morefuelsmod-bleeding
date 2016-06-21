@@ -24,17 +24,17 @@ public class SPacketCustomSound implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketCustomSound(String soundNameIn, SoundCategory categoryIn, double p_i46948_3_, double p_i46948_5_, double p_i46948_7_, float p_i46948_9_, float p_i46948_10_)
+    public SPacketCustomSound(String soundNameIn, SoundCategory categoryIn, double xIn, double yIn, double zIn, float volumeIn, float pitchIn)
     {
         Validate.notNull(soundNameIn, "name", new Object[0]);
         this.soundName = soundNameIn;
         this.category = categoryIn;
-        this.x = (int)(p_i46948_3_ * 8.0D);
-        this.y = (int)(p_i46948_5_ * 8.0D);
-        this.z = (int)(p_i46948_7_ * 8.0D);
-        this.volume = p_i46948_9_;
-        this.pitch = (int)(p_i46948_10_ * 63.0F);
-        p_i46948_10_ = MathHelper.clamp_float(p_i46948_10_, 0.0F, 255.0F);
+        this.x = (int)(xIn * 8.0D);
+        this.y = (int)(yIn * 8.0D);
+        this.z = (int)(zIn * 8.0D);
+        this.volume = volumeIn;
+        this.pitch = (int)(pitchIn * 63.0F);
+        pitchIn = MathHelper.clamp_float(pitchIn, 0.0F, 255.0F);
     }
 
     /**

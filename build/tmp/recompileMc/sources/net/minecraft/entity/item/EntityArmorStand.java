@@ -3,6 +3,7 @@ package net.minecraft.entity.item;
 import com.google.common.base.Predicate;
 import java.util.Arrays;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -53,7 +54,7 @@ public class EntityArmorStand extends EntityLivingBase
     public static final DataParameter<Rotations> RIGHT_LEG_ROTATION = EntityDataManager.<Rotations>createKey(EntityArmorStand.class, DataSerializers.ROTATIONS);
     private static final Predicate<Entity> IS_RIDEABLE_MINECART = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return p_apply_1_ instanceof EntityMinecart && ((EntityMinecart)p_apply_1_).getType() == EntityMinecart.Type.RIDEABLE;
         }
@@ -64,7 +65,7 @@ public class EntityArmorStand extends EntityLivingBase
     /** After punching the stand, the cooldown before you can punch it again without breaking it. */
     public long punchCooldown;
     private int disabledSlots;
-    private boolean field_181028_bj;
+    private boolean wasMarker;
     private Rotations headRotation;
     private Rotations bodyRotation;
     private Rotations leftArmRotation;
@@ -104,13 +105,13 @@ public class EntityArmorStand extends EntityLivingBase
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(STATUS, Byte.valueOf((byte)0));
-        this.dataWatcher.register(HEAD_ROTATION, DEFAULT_HEAD_ROTATION);
-        this.dataWatcher.register(BODY_ROTATION, DEFAULT_BODY_ROTATION);
-        this.dataWatcher.register(LEFT_ARM_ROTATION, DEFAULT_LEFTARM_ROTATION);
-        this.dataWatcher.register(RIGHT_ARM_ROTATION, DEFAULT_RIGHTARM_ROTATION);
-        this.dataWatcher.register(LEFT_LEG_ROTATION, DEFAULT_LEFTLEG_ROTATION);
-        this.dataWatcher.register(RIGHT_LEG_ROTATION, DEFAULT_RIGHTLEG_ROTATION);
+        this.dataManager.register(STATUS, Byte.valueOf((byte)0));
+        this.dataManager.register(HEAD_ROTATION, DEFAULT_HEAD_ROTATION);
+        this.dataManager.register(BODY_ROTATION, DEFAULT_BODY_ROTATION);
+        this.dataManager.register(LEFT_ARM_ROTATION, DEFAULT_LEFTARM_ROTATION);
+        this.dataManager.register(RIGHT_ARM_ROTATION, DEFAULT_RIGHTARM_ROTATION);
+        this.dataManager.register(LEFT_LEG_ROTATION, DEFAULT_LEFTLEG_ROTATION);
+        this.dataManager.register(RIGHT_LEG_ROTATION, DEFAULT_RIGHTLEG_ROTATION);
     }
 
     public Iterable<ItemStack> getHeldEquipment()
@@ -123,6 +124,7 @@ public class EntityArmorStand extends EntityLivingBase
         return Arrays.<ItemStack>asList(this.armorItems);
     }
 
+    @Nullable
     public ItemStack getItemStackFromSlot(EntityEquipmentSlot slotIn)
     {
         ItemStack itemstack = null;
@@ -139,7 +141,7 @@ public class EntityArmorStand extends EntityLivingBase
         return itemstack;
     }
 
-    public void setItemStackToSlot(EntityEquipmentSlot slotIn, ItemStack stack)
+    public void setItemStackToSlot(EntityEquipmentSlot slotIn, @Nullable ItemStack stack)
     {
         switch (slotIn.getSlotType())
         {
@@ -153,7 +155,7 @@ public class EntityArmorStand extends EntityLivingBase
         }
     }
 
-    public boolean replaceItemInInventory(int inventorySlot, ItemStack itemStackIn)
+    public boolean replaceItemInInventory(int inventorySlot, @Nullable ItemStack itemStackIn)
     {
         EntityEquipmentSlot entityequipmentslot;
 
@@ -187,7 +189,7 @@ public class EntityArmorStand extends EntityLivingBase
             entityequipmentslot = EntityEquipmentSlot.FEET;
         }
 
-        if (itemStackIn != null && !EntityLiving.func_184648_b(entityequipmentslot, itemStackIn) && entityequipmentslot != EntityEquipmentSlot.HEAD)
+        if (itemStackIn != null && !EntityLiving.isItemStackInSlot(entityequipmentslot, itemStackIn) && entityequipmentslot != EntityEquipmentSlot.HEAD)
         {
             return false;
         }
@@ -201,9 +203,9 @@ public class EntityArmorStand extends EntityLivingBase
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
+        super.writeEntityToNBT(compound);
         NBTTagList nbttaglist = new NBTTagList();
 
         for (int i = 0; i < this.armorItems.length; ++i)
@@ -218,7 +220,7 @@ public class EntityArmorStand extends EntityLivingBase
             nbttaglist.appendTag(nbttagcompound);
         }
 
-        tagCompound.setTag("ArmorItems", nbttaglist);
+        compound.setTag("ArmorItems", nbttaglist);
         NBTTagList nbttaglist1 = new NBTTagList();
 
         for (int j = 0; j < this.handItems.length; ++j)
@@ -233,38 +235,38 @@ public class EntityArmorStand extends EntityLivingBase
             nbttaglist1.appendTag(nbttagcompound1);
         }
 
-        tagCompound.setTag("HandItems", nbttaglist1);
+        compound.setTag("HandItems", nbttaglist1);
 
         if (this.getAlwaysRenderNameTag() && (this.getCustomNameTag() == null || this.getCustomNameTag().isEmpty()))
         {
-            tagCompound.setBoolean("CustomNameVisible", this.getAlwaysRenderNameTag());
+            compound.setBoolean("CustomNameVisible", this.getAlwaysRenderNameTag());
         }
 
-        tagCompound.setBoolean("Invisible", this.isInvisible());
-        tagCompound.setBoolean("Small", this.isSmall());
-        tagCompound.setBoolean("ShowArms", this.getShowArms());
-        tagCompound.setInteger("DisabledSlots", this.disabledSlots);
-        tagCompound.setBoolean("NoGravity", this.hasNoGravity());
-        tagCompound.setBoolean("NoBasePlate", this.hasNoBasePlate());
+        compound.setBoolean("Invisible", this.isInvisible());
+        compound.setBoolean("Small", this.isSmall());
+        compound.setBoolean("ShowArms", this.getShowArms());
+        compound.setInteger("DisabledSlots", this.disabledSlots);
+        compound.setBoolean("NoGravity", this.hasNoGravity());
+        compound.setBoolean("NoBasePlate", this.hasNoBasePlate());
 
         if (this.hasMarker())
         {
-            tagCompound.setBoolean("Marker", this.hasMarker());
+            compound.setBoolean("Marker", this.hasMarker());
         }
 
-        tagCompound.setTag("Pose", this.readPoseFromNBT());
+        compound.setTag("Pose", this.readPoseFromNBT());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
 
-        if (tagCompund.hasKey("ArmorItems", 9))
+        if (compound.hasKey("ArmorItems", 9))
         {
-            NBTTagList nbttaglist = tagCompund.getTagList("ArmorItems", 10);
+            NBTTagList nbttaglist = compound.getTagList("ArmorItems", 10);
 
             for (int i = 0; i < this.armorItems.length; ++i)
             {
@@ -272,9 +274,9 @@ public class EntityArmorStand extends EntityLivingBase
             }
         }
 
-        if (tagCompund.hasKey("HandItems", 9))
+        if (compound.hasKey("HandItems", 9))
         {
-            NBTTagList nbttaglist1 = tagCompund.getTagList("HandItems", 10);
+            NBTTagList nbttaglist1 = compound.getTagList("HandItems", 10);
 
             for (int j = 0; j < this.handItems.length; ++j)
             {
@@ -282,16 +284,16 @@ public class EntityArmorStand extends EntityLivingBase
             }
         }
 
-        this.setInvisible(tagCompund.getBoolean("Invisible"));
-        this.setSmall(tagCompund.getBoolean("Small"));
-        this.setShowArms(tagCompund.getBoolean("ShowArms"));
-        this.disabledSlots = tagCompund.getInteger("DisabledSlots");
-        this.setNoGravity(tagCompund.getBoolean("NoGravity"));
-        this.setNoBasePlate(tagCompund.getBoolean("NoBasePlate"));
-        this.setMarker(tagCompund.getBoolean("Marker"));
-        this.field_181028_bj = !this.hasMarker();
+        this.setInvisible(compound.getBoolean("Invisible"));
+        this.setSmall(compound.getBoolean("Small"));
+        this.setShowArms(compound.getBoolean("ShowArms"));
+        this.disabledSlots = compound.getInteger("DisabledSlots");
+        this.setNoGravity(compound.getBoolean("NoGravity"));
+        this.setNoBasePlate(compound.getBoolean("NoBasePlate"));
+        this.setMarker(compound.getBoolean("Marker"));
+        this.wasMarker = !this.hasMarker();
         this.noClip = this.hasNoGravity();
-        NBTTagCompound nbttagcompound = tagCompund.getCompoundTag("Pose");
+        NBTTagCompound nbttagcompound = compound.getCompoundTag("Pose");
         this.writePoseToNBT(nbttagcompound);
     }
 
@@ -380,13 +382,8 @@ public class EntityArmorStand extends EntityLivingBase
 
     /**
      * Applies the given player interaction to this Entity.
-     *  
-     * @param player The player interacting with this Entity.
-     * @param vec The vector representing the precise location of the interaction.
-     * @param stack The ItemStack used to interact with the Entity.
-     * @param hand The hand used to interact with the Entity.
      */
-    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, ItemStack stack, EnumHand hand)
+    public EnumActionResult applyPlayerInteraction(EntityPlayer player, Vec3d vec, @Nullable ItemStack stack, EnumHand hand)
     {
         if (this.hasMarker())
         {
@@ -403,7 +400,7 @@ public class EntityArmorStand extends EntityLivingBase
                 entityequipmentslot = ((ItemArmor)item).armorType;
             }
 
-            if (flag && (item == Items.skull || item == Item.getItemFromBlock(Blocks.pumpkin)))
+            if (flag && (item == Items.SKULL || item == Item.getItemFromBlock(Blocks.PUMPKIN)))
             {
                 entityequipmentslot = EntityEquipmentSlot.HEAD;
             }
@@ -435,11 +432,11 @@ public class EntityArmorStand extends EntityLivingBase
 
             boolean flag2 = this.getItemStackFromSlot(entityequipmentslot1) != null;
 
-            if (this.func_184796_b(entityequipmentslot1) || this.func_184796_b(entityequipmentslot))
+            if (this.isDisabled(entityequipmentslot1) || this.isDisabled(entityequipmentslot))
             {
                 entityequipmentslot1 = entityequipmentslot;
 
-                if (this.func_184796_b(entityequipmentslot))
+                if (this.isDisabled(entityequipmentslot))
                 {
                     return EnumActionResult.FAIL;
                 }
@@ -453,11 +450,11 @@ public class EntityArmorStand extends EntityLivingBase
             {
                 if (flag)
                 {
-                    this.func_184795_a(player, entityequipmentslot, stack, hand);
+                    this.swapItem(player, entityequipmentslot, stack, hand);
                 }
                 else if (flag2)
                 {
-                    this.func_184795_a(player, entityequipmentslot1, stack, hand);
+                    this.swapItem(player, entityequipmentslot1, stack, hand);
                 }
 
                 return EnumActionResult.SUCCESS;
@@ -469,20 +466,20 @@ public class EntityArmorStand extends EntityLivingBase
         }
     }
 
-    private boolean func_184796_b(EntityEquipmentSlot p_184796_1_)
+    private boolean isDisabled(EntityEquipmentSlot slotIn)
     {
-        return (this.disabledSlots & 1 << p_184796_1_.func_188452_c()) != 0;
+        return (this.disabledSlots & 1 << slotIn.getSlotIndex()) != 0;
     }
 
-    private void func_184795_a(EntityPlayer p_184795_1_, EntityEquipmentSlot p_184795_2_, ItemStack p_184795_3_, EnumHand p_184795_4_)
+    private void swapItem(EntityPlayer player, EntityEquipmentSlot p_184795_2_, @Nullable ItemStack p_184795_3_, EnumHand hand)
     {
         ItemStack itemstack = this.getItemStackFromSlot(p_184795_2_);
 
-        if (itemstack == null || (this.disabledSlots & 1 << p_184795_2_.func_188452_c() + 8) == 0)
+        if (itemstack == null || (this.disabledSlots & 1 << p_184795_2_.getSlotIndex() + 8) == 0)
         {
-            if (itemstack != null || (this.disabledSlots & 1 << p_184795_2_.func_188452_c() + 16) == 0)
+            if (itemstack != null || (this.disabledSlots & 1 << p_184795_2_.getSlotIndex() + 16) == 0)
             {
-                if (p_184795_1_.capabilities.isCreativeMode && (itemstack == null || itemstack.getItem() == Item.getItemFromBlock(Blocks.air)) && p_184795_3_ != null)
+                if (player.capabilities.isCreativeMode && (itemstack == null || itemstack.getItem() == Item.getItemFromBlock(Blocks.AIR)) && p_184795_3_ != null)
                 {
                     ItemStack itemstack2 = p_184795_3_.copy();
                     itemstack2.stackSize = 1;
@@ -501,7 +498,7 @@ public class EntityArmorStand extends EntityLivingBase
                 else
                 {
                     this.setItemStackToSlot(p_184795_2_, p_184795_3_);
-                    p_184795_1_.setHeldItem(p_184795_4_, itemstack);
+                    player.setHeldItem(hand, itemstack);
                 }
             }
         }
@@ -610,7 +607,7 @@ public class EntityArmorStand extends EntityLivingBase
         {
             if (this.worldObj.isRemote)
             {
-                this.worldObj.playSound(this.posX, this.posY, this.posZ, SoundEvents.entity_armorstand_hit, this.getSoundCategory(), 0.3F, 1.0F, false);
+                this.worldObj.playSound(this.posX, this.posY, this.posZ, SoundEvents.ENTITY_ARMORSTAND_HIT, this.getSoundCategory(), 0.3F, 1.0F, false);
                 this.punchCooldown = this.worldObj.getTotalWorldTime();
             }
         }
@@ -621,8 +618,7 @@ public class EntityArmorStand extends EntityLivingBase
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -642,14 +638,14 @@ public class EntityArmorStand extends EntityLivingBase
     {
         if (this.worldObj instanceof WorldServer)
         {
-            ((WorldServer)this.worldObj).spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX, this.posY + (double)this.height / 1.5D, this.posZ, 10, (double)(this.width / 4.0F), (double)(this.height / 4.0F), (double)(this.width / 4.0F), 0.05D, new int[] {Block.getStateId(Blocks.planks.getDefaultState())});
+            ((WorldServer)this.worldObj).spawnParticle(EnumParticleTypes.BLOCK_DUST, this.posX, this.posY + (double)this.height / 1.5D, this.posZ, 10, (double)(this.width / 4.0F), (double)(this.height / 4.0F), (double)(this.width / 4.0F), 0.05D, new int[] {Block.getStateId(Blocks.PLANKS.getDefaultState())});
         }
     }
 
-    private void damageArmorStand(float p_175406_1_)
+    private void damageArmorStand(float damage)
     {
         float f = this.getHealth();
-        f = f - p_175406_1_;
+        f = f - damage;
 
         if (f <= 0.5F)
         {
@@ -664,13 +660,13 @@ public class EntityArmorStand extends EntityLivingBase
 
     private void dropBlock()
     {
-        Block.spawnAsEntity(this.worldObj, new BlockPos(this), new ItemStack(Items.armor_stand));
+        Block.spawnAsEntity(this.worldObj, new BlockPos(this), new ItemStack(Items.ARMOR_STAND));
         this.dropContents();
     }
 
     private void dropContents()
     {
-        this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.entity_armorstand_break, this.getSoundCategory(), 1.0F, 1.0F);
+        this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_ARMORSTAND_BREAK, this.getSoundCategory(), 1.0F, 1.0F);
 
         for (int i = 0; i < this.handItems.length; ++i)
         {
@@ -720,7 +716,7 @@ public class EntityArmorStand extends EntityLivingBase
     }
 
     /**
-     * Moves the entity based on the specified heading.  Args: strafe, forward
+     * Moves the entity based on the specified heading.
      */
     public void moveEntityWithHeading(float strafe, float forward)
     {
@@ -736,42 +732,42 @@ public class EntityArmorStand extends EntityLivingBase
     public void onUpdate()
     {
         super.onUpdate();
-        Rotations rotations = (Rotations)this.dataWatcher.get(HEAD_ROTATION);
+        Rotations rotations = (Rotations)this.dataManager.get(HEAD_ROTATION);
 
         if (!this.headRotation.equals(rotations))
         {
             this.setHeadRotation(rotations);
         }
 
-        Rotations rotations1 = (Rotations)this.dataWatcher.get(BODY_ROTATION);
+        Rotations rotations1 = (Rotations)this.dataManager.get(BODY_ROTATION);
 
         if (!this.bodyRotation.equals(rotations1))
         {
             this.setBodyRotation(rotations1);
         }
 
-        Rotations rotations2 = (Rotations)this.dataWatcher.get(LEFT_ARM_ROTATION);
+        Rotations rotations2 = (Rotations)this.dataManager.get(LEFT_ARM_ROTATION);
 
         if (!this.leftArmRotation.equals(rotations2))
         {
             this.setLeftArmRotation(rotations2);
         }
 
-        Rotations rotations3 = (Rotations)this.dataWatcher.get(RIGHT_ARM_ROTATION);
+        Rotations rotations3 = (Rotations)this.dataManager.get(RIGHT_ARM_ROTATION);
 
         if (!this.rightArmRotation.equals(rotations3))
         {
             this.setRightArmRotation(rotations3);
         }
 
-        Rotations rotations4 = (Rotations)this.dataWatcher.get(LEFT_LEG_ROTATION);
+        Rotations rotations4 = (Rotations)this.dataManager.get(LEFT_LEG_ROTATION);
 
         if (!this.leftLegRotation.equals(rotations4))
         {
             this.setLeftLegRotation(rotations4);
         }
 
-        Rotations rotations5 = (Rotations)this.dataWatcher.get(RIGHT_LEG_ROTATION);
+        Rotations rotations5 = (Rotations)this.dataManager.get(RIGHT_LEG_ROTATION);
 
         if (!this.rightLegRotation.equals(rotations5))
         {
@@ -780,26 +776,26 @@ public class EntityArmorStand extends EntityLivingBase
 
         boolean flag = this.hasMarker();
 
-        if (!this.field_181028_bj && flag)
+        if (!this.wasMarker && flag)
         {
-            this.func_181550_a(false);
+            this.updateBoundingBox(false);
             this.preventEntitySpawning = false;
         }
         else
         {
-            if (!this.field_181028_bj || flag)
+            if (!this.wasMarker || flag)
             {
                 return;
             }
 
-            this.func_181550_a(true);
+            this.updateBoundingBox(true);
             this.preventEntitySpawning = true;
         }
 
-        this.field_181028_bj = flag;
+        this.wasMarker = flag;
     }
 
-    private void func_181550_a(boolean p_181550_1_)
+    private void updateBoundingBox(boolean p_181550_1_)
     {
         double d0 = this.posX;
         double d1 = this.posY;
@@ -855,42 +851,42 @@ public class EntityArmorStand extends EntityLivingBase
 
     private void setSmall(boolean small)
     {
-        this.dataWatcher.set(STATUS, Byte.valueOf(this.func_184797_a(((Byte)this.dataWatcher.get(STATUS)).byteValue(), 1, small)));
+        this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 1, small)));
     }
 
     public boolean isSmall()
     {
-        return (((Byte)this.dataWatcher.get(STATUS)).byteValue() & 1) != 0;
+        return (((Byte)this.dataManager.get(STATUS)).byteValue() & 1) != 0;
     }
 
     private void setNoGravity(boolean noGravity)
     {
-        this.dataWatcher.set(STATUS, Byte.valueOf(this.func_184797_a(((Byte)this.dataWatcher.get(STATUS)).byteValue(), 2, noGravity)));
+        this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 2, noGravity)));
     }
 
     public boolean hasNoGravity()
     {
-        return (((Byte)this.dataWatcher.get(STATUS)).byteValue() & 2) != 0;
+        return (((Byte)this.dataManager.get(STATUS)).byteValue() & 2) != 0;
     }
 
     private void setShowArms(boolean showArms)
     {
-        this.dataWatcher.set(STATUS, Byte.valueOf(this.func_184797_a(((Byte)this.dataWatcher.get(STATUS)).byteValue(), 4, showArms)));
+        this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 4, showArms)));
     }
 
     public boolean getShowArms()
     {
-        return (((Byte)this.dataWatcher.get(STATUS)).byteValue() & 4) != 0;
+        return (((Byte)this.dataManager.get(STATUS)).byteValue() & 4) != 0;
     }
 
     private void setNoBasePlate(boolean noBasePlate)
     {
-        this.dataWatcher.set(STATUS, Byte.valueOf(this.func_184797_a(((Byte)this.dataWatcher.get(STATUS)).byteValue(), 8, noBasePlate)));
+        this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 8, noBasePlate)));
     }
 
     public boolean hasNoBasePlate()
     {
-        return (((Byte)this.dataWatcher.get(STATUS)).byteValue() & 8) != 0;
+        return (((Byte)this.dataManager.get(STATUS)).byteValue() & 8) != 0;
     }
 
     /**
@@ -898,7 +894,7 @@ public class EntityArmorStand extends EntityLivingBase
      */
     private void setMarker(boolean marker)
     {
-        this.dataWatcher.set(STATUS, Byte.valueOf(this.func_184797_a(((Byte)this.dataWatcher.get(STATUS)).byteValue(), 16, marker)));
+        this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 16, marker)));
     }
 
     /**
@@ -907,10 +903,10 @@ public class EntityArmorStand extends EntityLivingBase
      */
     public boolean hasMarker()
     {
-        return (((Byte)this.dataWatcher.get(STATUS)).byteValue() & 16) != 0;
+        return (((Byte)this.dataManager.get(STATUS)).byteValue() & 16) != 0;
     }
 
-    private byte func_184797_a(byte p_184797_1_, int p_184797_2_, boolean p_184797_3_)
+    private byte setBit(byte p_184797_1_, int p_184797_2_, boolean p_184797_3_)
     {
         if (p_184797_3_)
         {
@@ -927,37 +923,37 @@ public class EntityArmorStand extends EntityLivingBase
     public void setHeadRotation(Rotations vec)
     {
         this.headRotation = vec;
-        this.dataWatcher.set(HEAD_ROTATION, vec);
+        this.dataManager.set(HEAD_ROTATION, vec);
     }
 
     public void setBodyRotation(Rotations vec)
     {
         this.bodyRotation = vec;
-        this.dataWatcher.set(BODY_ROTATION, vec);
+        this.dataManager.set(BODY_ROTATION, vec);
     }
 
     public void setLeftArmRotation(Rotations vec)
     {
         this.leftArmRotation = vec;
-        this.dataWatcher.set(LEFT_ARM_ROTATION, vec);
+        this.dataManager.set(LEFT_ARM_ROTATION, vec);
     }
 
     public void setRightArmRotation(Rotations vec)
     {
         this.rightArmRotation = vec;
-        this.dataWatcher.set(RIGHT_ARM_ROTATION, vec);
+        this.dataManager.set(RIGHT_ARM_ROTATION, vec);
     }
 
     public void setLeftLegRotation(Rotations vec)
     {
         this.leftLegRotation = vec;
-        this.dataWatcher.set(LEFT_LEG_ROTATION, vec);
+        this.dataManager.set(LEFT_LEG_ROTATION, vec);
     }
 
     public void setRightLegRotation(Rotations vec)
     {
         this.rightLegRotation = vec;
-        this.dataWatcher.set(RIGHT_LEG_ROTATION, vec);
+        this.dataManager.set(RIGHT_LEG_ROTATION, vec);
     }
 
     public Rotations getHeadRotation()
@@ -1009,17 +1005,19 @@ public class EntityArmorStand extends EntityLivingBase
 
     protected SoundEvent getFallSound(int heightIn)
     {
-        return SoundEvents.entity_armorstand_fall;
+        return SoundEvents.ENTITY_ARMORSTAND_FALL;
     }
 
+    @Nullable
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_armorstand_hit;
+        return SoundEvents.ENTITY_ARMORSTAND_HIT;
     }
 
+    @Nullable
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_armorstand_break;
+        return SoundEvents.ENTITY_ARMORSTAND_BREAK;
     }
 
     /**

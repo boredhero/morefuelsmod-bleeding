@@ -28,13 +28,13 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class GuiWinGame extends GuiScreen
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation MINECRAFT_LOGO = new ResourceLocation("textures/gui/title/minecraft.png");
     private static final ResourceLocation VIGNETTE_TEXTURE = new ResourceLocation("textures/misc/vignette.png");
-    private int field_146581_h;
-    private List<String> field_146582_i;
-    private int field_146579_r;
-    private float field_146578_s = 0.5F;
+    private int time;
+    private List<String> lines;
+    private int totalScrollLength;
+    private float scrollSpeed = 0.5F;
 
     /**
      * Called from the main game loop to update the screen.
@@ -44,7 +44,7 @@ public class GuiWinGame extends GuiScreen
         MusicTicker musicticker = this.mc.getMusicTicker();
         SoundHandler soundhandler = this.mc.getSoundHandler();
 
-        if (this.field_146581_h == 0)
+        if (this.time == 0)
         {
             musicticker.stopMusic();
             musicticker.playMusic(MusicTicker.MusicType.CREDITS);
@@ -52,10 +52,10 @@ public class GuiWinGame extends GuiScreen
         }
 
         soundhandler.update();
-        ++this.field_146581_h;
-        float f = (float)(this.field_146579_r + this.height + this.height + 24) / this.field_146578_s;
+        ++this.time;
+        float f = (float)(this.totalScrollLength + this.height + this.height + 24) / this.scrollSpeed;
 
-        if ((float)this.field_146581_h > f)
+        if ((float)this.time > f)
         {
             this.sendRespawnPacket();
         }
@@ -75,7 +75,7 @@ public class GuiWinGame extends GuiScreen
 
     private void sendRespawnPacket()
     {
-        this.mc.thePlayer.sendQueue.addToSendQueue(new CPacketClientStatus(CPacketClientStatus.State.PERFORM_RESPAWN));
+        this.mc.thePlayer.connection.sendPacket(new CPacketClientStatus(CPacketClientStatus.State.PERFORM_RESPAWN));
         this.mc.displayGuiScreen((GuiScreen)null);
     }
 
@@ -93,9 +93,9 @@ public class GuiWinGame extends GuiScreen
      */
     public void initGui()
     {
-        if (this.field_146582_i == null)
+        if (this.lines == null)
         {
-            this.field_146582_i = Lists.<String>newArrayList();
+            this.lines = Lists.<String>newArrayList();
             IResource iresource = null;
 
             try
@@ -120,15 +120,15 @@ public class GuiWinGame extends GuiScreen
                         s3 = s.substring(j + s1.length());
                     }
 
-                    this.field_146582_i.addAll(this.mc.fontRendererObj.listFormattedStringToWidth(s, i));
-                    this.field_146582_i.add("");
+                    this.lines.addAll(this.mc.fontRendererObj.listFormattedStringToWidth(s, i));
+                    this.lines.add("");
                 }
 
                 inputstream.close();
 
                 for (int k = 0; k < 8; ++k)
                 {
-                    this.field_146582_i.add("");
+                    this.lines.add("");
                 }
 
                 inputstream = this.mc.getResourceManager().getResource(new ResourceLocation("texts/credits.txt")).getInputStream();
@@ -138,16 +138,16 @@ public class GuiWinGame extends GuiScreen
                 {
                     s = s.replaceAll("PLAYERNAME", this.mc.getSession().getUsername());
                     s = s.replaceAll("\t", "    ");
-                    this.field_146582_i.addAll(this.mc.fontRendererObj.listFormattedStringToWidth(s, i));
-                    this.field_146582_i.add("");
+                    this.lines.addAll(this.mc.fontRendererObj.listFormattedStringToWidth(s, i));
+                    this.lines.add("");
                 }
 
                 inputstream.close();
-                this.field_146579_r = this.field_146582_i.size() * 12;
+                this.totalScrollLength = this.lines.size() * 12;
             }
             catch (Exception exception)
             {
-                logger.error((String)"Couldn\'t load credits", (Throwable)exception);
+                LOGGER.error((String)"Couldn\'t load credits", (Throwable)exception);
             }
             finally
             {
@@ -160,15 +160,15 @@ public class GuiWinGame extends GuiScreen
     {
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
-        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+        this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
         int i = this.width;
-        float f = 0.0F - ((float)this.field_146581_h + p_146575_3_) * 0.5F * this.field_146578_s;
-        float f1 = (float)this.height - ((float)this.field_146581_h + p_146575_3_) * 0.5F * this.field_146578_s;
+        float f = 0.0F - ((float)this.time + p_146575_3_) * 0.5F * this.scrollSpeed;
+        float f1 = (float)this.height - ((float)this.time + p_146575_3_) * 0.5F * this.scrollSpeed;
         float f2 = 0.015625F;
-        float f3 = ((float)this.field_146581_h + p_146575_3_ - 0.0F) * 0.02F;
-        float f4 = (float)(this.field_146579_r + this.height + this.height + 24) / this.field_146578_s;
-        float f5 = (f4 - 20.0F - ((float)this.field_146581_h + p_146575_3_)) * 0.005F;
+        float f3 = ((float)this.time + p_146575_3_ - 0.0F) * 0.02F;
+        float f4 = (float)(this.totalScrollLength + this.height + this.height + 24) / this.scrollSpeed;
+        float f5 = (f4 - 20.0F - ((float)this.time + p_146575_3_)) * 0.005F;
 
         if (f5 < f3)
         {
@@ -191,10 +191,6 @@ public class GuiWinGame extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -204,7 +200,7 @@ public class GuiWinGame extends GuiScreen
         int i = 274;
         int j = this.width / 2 - i / 2;
         int k = this.height + 50;
-        float f = -((float)this.field_146581_h + partialTicks) * this.field_146578_s;
+        float f = -((float)this.time + partialTicks) * this.scrollSpeed;
         GlStateManager.pushMatrix();
         GlStateManager.translate(0.0F, f, 0.0F);
         this.mc.getTextureManager().bindTexture(MINECRAFT_LOGO);
@@ -213,9 +209,9 @@ public class GuiWinGame extends GuiScreen
         this.drawTexturedModalRect(j + 155, k, 0, 45, 155, 44);
         int l = k + 200;
 
-        for (int i1 = 0; i1 < this.field_146582_i.size(); ++i1)
+        for (int i1 = 0; i1 < this.lines.size(); ++i1)
         {
-            if (i1 == this.field_146582_i.size() - 1)
+            if (i1 == this.lines.size() - 1)
             {
                 float f1 = (float)l + f - (float)(this.height / 2 - 6);
 
@@ -227,7 +223,7 @@ public class GuiWinGame extends GuiScreen
 
             if ((float)l + f + 12.0F + 8.0F > 0.0F && (float)l + f < (float)this.height)
             {
-                String s = (String)this.field_146582_i.get(i1);
+                String s = (String)this.lines.get(i1);
 
                 if (s.startsWith("[C]"))
                 {
@@ -235,7 +231,7 @@ public class GuiWinGame extends GuiScreen
                 }
                 else
                 {
-                    this.fontRendererObj.fontRandom.setSeed((long)i1 * 4238972211L + (long)(this.field_146581_h / 4));
+                    this.fontRendererObj.fontRandom.setSeed((long)i1 * 4238972211L + (long)(this.time / 4));
                     this.fontRendererObj.drawStringWithShadow(s, (float)j, (float)l, 16777215);
                 }
             }

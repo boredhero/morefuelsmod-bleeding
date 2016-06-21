@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -36,10 +37,10 @@ public class BlockDoor extends Block
     public static final PropertyEnum<BlockDoor.EnumHingePosition> HINGE = PropertyEnum.<BlockDoor.EnumHingePosition>create("hinge", BlockDoor.EnumHingePosition.class);
     public static final PropertyBool POWERED = PropertyBool.create("powered");
     public static final PropertyEnum<BlockDoor.EnumDoorHalf> HALF = PropertyEnum.<BlockDoor.EnumDoorHalf>create("half", BlockDoor.EnumDoorHalf.class);
-    protected static final AxisAlignedBB field_185658_f = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.1875D);
-    protected static final AxisAlignedBB field_185659_g = new AxisAlignedBB(0.0D, 0.0D, 0.8125D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB field_185656_B = new AxisAlignedBB(0.8125D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB field_185657_C = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.1875D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB SOUTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.1875D);
+    protected static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.8125D, 1.0D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.8125D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.1875D, 1.0D, 1.0D);
 
     protected BlockDoor(Material materialIn)
     {
@@ -58,13 +59,13 @@ public class BlockDoor extends Block
         {
             case EAST:
             default:
-                return flag ? field_185657_C : (flag1 ? field_185659_g : field_185658_f);
+                return flag ? EAST_AABB : (flag1 ? NORTH_AABB : SOUTH_AABB);
             case SOUTH:
-                return flag ? field_185658_f : (flag1 ? field_185657_C : field_185656_B);
+                return flag ? SOUTH_AABB : (flag1 ? EAST_AABB : WEST_AABB);
             case WEST:
-                return flag ? field_185656_B : (flag1 ? field_185658_f : field_185659_g);
+                return flag ? WEST_AABB : (flag1 ? SOUTH_AABB : NORTH_AABB);
             case NORTH:
-                return flag ? field_185659_g : (flag1 ? field_185656_B : field_185657_C);
+                return flag ? NORTH_AABB : (flag1 ? WEST_AABB : EAST_AABB);
         }
     }
 
@@ -94,14 +95,14 @@ public class BlockDoor extends Block
         return false;
     }
 
-    private int func_185654_e()
+    private int getCloseSound()
     {
-        return this.blockMaterial == Material.iron ? 1011 : 1012;
+        return this.blockMaterial == Material.IRON ? 1011 : 1012;
     }
 
-    private int func_185655_g()
+    private int getOpenSound()
     {
-        return this.blockMaterial == Material.iron ? 1005 : 1006;
+        return this.blockMaterial == Material.IRON ? 1005 : 1006;
     }
 
     /**
@@ -109,12 +110,12 @@ public class BlockDoor extends Block
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return state.getBlock() == Blocks.iron_door ? MapColor.ironColor : (state.getBlock() == Blocks.oak_door ? BlockPlanks.EnumType.OAK.getMapColor() : (state.getBlock() == Blocks.spruce_door ? BlockPlanks.EnumType.SPRUCE.getMapColor() : (state.getBlock() == Blocks.birch_door ? BlockPlanks.EnumType.BIRCH.getMapColor() : (state.getBlock() == Blocks.jungle_door ? BlockPlanks.EnumType.JUNGLE.getMapColor() : (state.getBlock() == Blocks.acacia_door ? BlockPlanks.EnumType.ACACIA.getMapColor() : (state.getBlock() == Blocks.dark_oak_door ? BlockPlanks.EnumType.DARK_OAK.getMapColor() : super.getMapColor(state)))))));
+        return state.getBlock() == Blocks.IRON_DOOR ? MapColor.IRON : (state.getBlock() == Blocks.OAK_DOOR ? BlockPlanks.EnumType.OAK.getMapColor() : (state.getBlock() == Blocks.SPRUCE_DOOR ? BlockPlanks.EnumType.SPRUCE.getMapColor() : (state.getBlock() == Blocks.BIRCH_DOOR ? BlockPlanks.EnumType.BIRCH.getMapColor() : (state.getBlock() == Blocks.JUNGLE_DOOR ? BlockPlanks.EnumType.JUNGLE.getMapColor() : (state.getBlock() == Blocks.ACACIA_DOOR ? BlockPlanks.EnumType.ACACIA.getMapColor() : (state.getBlock() == Blocks.DARK_OAK_DOOR ? BlockPlanks.EnumType.DARK_OAK.getMapColor() : super.getMapColor(state)))))));
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        if (this.blockMaterial == Material.iron)
+        if (this.blockMaterial == Material.IRON)
         {
             return false; //Allow items to interact with the door
         }
@@ -132,7 +133,7 @@ public class BlockDoor extends Block
                 state = iblockstate.cycleProperty(OPEN);
                 worldIn.setBlockState(blockpos, state, 10);
                 worldIn.markBlockRangeForRenderUpdate(blockpos, pos);
-                worldIn.playAuxSFXAtEntity(playerIn, ((Boolean)state.getValue(OPEN)).booleanValue() ? this.func_185655_g() : this.func_185654_e(), pos, 0);
+                worldIn.playEvent(playerIn, ((Boolean)state.getValue(OPEN)).booleanValue() ? this.getOpenSound() : this.getCloseSound(), pos, 0);
                 return true;
             }
         }
@@ -151,15 +152,17 @@ public class BlockDoor extends Block
             {
                 worldIn.setBlockState(blockpos, iblockstate1.withProperty(OPEN, Boolean.valueOf(open)), 10);
                 worldIn.markBlockRangeForRenderUpdate(blockpos, pos);
-                worldIn.playAuxSFXAtEntity((EntityPlayer)null, open ? this.func_185655_g() : this.func_185654_e(), pos, 0);
+                worldIn.playEvent((EntityPlayer)null, open ? this.getOpenSound() : this.getCloseSound(), pos, 0);
             }
         }
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (state.getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER)
         {
@@ -170,9 +173,9 @@ public class BlockDoor extends Block
             {
                 worldIn.setBlockToAir(pos);
             }
-            else if (neighborBlock != this)
+            else if (blockIn != this)
             {
-                this.onNeighborBlockChange(worldIn, blockpos, iblockstate, neighborBlock);
+                iblockstate.neighborChanged(worldIn, blockpos, blockIn);
             }
         }
         else
@@ -209,7 +212,7 @@ public class BlockDoor extends Block
             {
                 boolean flag = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(blockpos1);
 
-                if (neighborBlock != this && (flag || neighborBlock.getDefaultState().canProvidePower()) && flag != ((Boolean)iblockstate1.getValue(POWERED)).booleanValue())
+                if (blockIn != this && (flag || blockIn.getDefaultState().canProvidePower()) && flag != ((Boolean)iblockstate1.getValue(POWERED)).booleanValue())
                 {
                     worldIn.setBlockState(blockpos1, iblockstate1.withProperty(POWERED, Boolean.valueOf(flag)), 2);
 
@@ -217,7 +220,7 @@ public class BlockDoor extends Block
                     {
                         worldIn.setBlockState(pos, state.withProperty(OPEN, Boolean.valueOf(flag)), 2);
                         worldIn.markBlockRangeForRenderUpdate(pos, pos);
-                        worldIn.playAuxSFXAtEntity((EntityPlayer)null, flag ? this.func_185655_g() : this.func_185654_e(), pos, 0);
+                        worldIn.playEvent((EntityPlayer)null, flag ? this.getOpenSound() : this.getCloseSound(), pos, 0);
                     }
                 }
             }
@@ -227,6 +230,7 @@ public class BlockDoor extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return state.getValue(HALF) == BlockDoor.EnumDoorHalf.UPPER ? null : this.getItem();
@@ -265,7 +269,7 @@ public class BlockDoor extends Block
 
     private Item getItem()
     {
-        return this == Blocks.iron_door ? Items.iron_door : (this == Blocks.spruce_door ? Items.spruce_door : (this == Blocks.birch_door ? Items.birch_door : (this == Blocks.jungle_door ? Items.jungle_door : (this == Blocks.acacia_door ? Items.acacia_door : (this == Blocks.dark_oak_door ? Items.dark_oak_door : Items.oak_door)))));
+        return this == Blocks.IRON_DOOR ? Items.IRON_DOOR : (this == Blocks.SPRUCE_DOOR ? Items.SPRUCE_DOOR : (this == Blocks.BIRCH_DOOR ? Items.BIRCH_DOOR : (this == Blocks.JUNGLE_DOOR ? Items.JUNGLE_DOOR : (this == Blocks.ACACIA_DOOR ? Items.ACACIA_DOOR : (this == Blocks.DARK_OAK_DOOR ? Items.DARK_OAK_DOOR : Items.OAK_DOOR)))));
     }
 
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)

@@ -19,6 +19,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 import net.minecraft.block.state.BlockStateContainer.StateImplementation;
+
 public class ExtendedBlockState extends BlockStateContainer
 {
     private final ImmutableSet<IUnlistedProperty<?>> unlistedProperties;
@@ -79,7 +80,7 @@ public class ExtendedBlockState extends BlockStateContainer
             {
                 if (!property.getAllowedValues().contains(value))
                 {
-                    throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on block " + Block.blockRegistry.getNameForObject(getBlock()) + ", it is not an allowed value");
+                    throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on block " + Block.REGISTRY.getNameForObject(getBlock()) + ", it is not an allowed value");
                 } else
                 {
                     if (this.getProperties().get(property) == value)
@@ -107,7 +108,7 @@ public class ExtendedBlockState extends BlockStateContainer
             }
             if(!property.isValid(value))
             {
-                throw new IllegalArgumentException("Cannot set unlisted property " + property + " to " + value + " on block " + Block.blockRegistry.getNameForObject(getBlock()) + ", it is not an allowed value");
+                throw new IllegalArgumentException("Cannot set unlisted property " + property + " to " + value + " on block " + Block.REGISTRY.getNameForObject(getBlock()) + ", it is not an allowed value");
             }
             Map<IUnlistedProperty<?>, Optional<?>> newMap = new HashMap<IUnlistedProperty<?>, Optional<?>>(unlistedProperties);
             newMap.put(property, Optional.fromNullable(value));

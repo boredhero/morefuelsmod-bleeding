@@ -7,16 +7,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class Sound implements ISoundEventAccessor<Sound>
 {
-    private final ResourceLocation field_188726_a;
+    private final ResourceLocation name;
     private final float volume;
     private final float pitch;
     private final int weight;
     private final Sound.Type type;
     private final boolean streaming;
 
-    public Sound(String p_i46526_1_, float volumeIn, float pitchIn, int weightIn, Sound.Type typeIn, boolean p_i46526_6_)
+    public Sound(String nameIn, float volumeIn, float pitchIn, int weightIn, Sound.Type typeIn, boolean p_i46526_6_)
     {
-        this.field_188726_a = new ResourceLocation(p_i46526_1_);
+        this.name = new ResourceLocation(nameIn);
         this.volume = volumeIn;
         this.pitch = pitchIn;
         this.weight = weightIn;
@@ -26,12 +26,12 @@ public class Sound implements ISoundEventAccessor<Sound>
 
     public ResourceLocation getSoundLocation()
     {
-        return this.field_188726_a;
+        return this.name;
     }
 
     public ResourceLocation getSoundAsOggLocation()
     {
-        return new ResourceLocation(this.field_188726_a.getResourceDomain(), "sounds/" + this.field_188726_a.getResourcePath() + ".ogg");
+        return new ResourceLocation(this.name.getResourceDomain(), "sounds/" + this.name.getResourcePath() + ".ogg");
     }
 
     public float getVolume()
@@ -70,18 +70,18 @@ public class Sound implements ISoundEventAccessor<Sound>
         FILE("file"),
         SOUND_EVENT("event");
 
-        private final String field_188708_c;
+        private final String name;
 
-        private Type(String p_i46631_3_)
+        private Type(String nameIn)
         {
-            this.field_188708_c = p_i46631_3_;
+            this.name = nameIn;
         }
 
-        public static Sound.Type func_188704_a(String p_188704_0_)
+        public static Sound.Type getByName(String nameIn)
         {
             for (Sound.Type sound$type : values())
             {
-                if (sound$type.field_188708_c.equals(p_188704_0_))
+                if (sound$type.name.equals(nameIn))
                 {
                     return sound$type;
                 }

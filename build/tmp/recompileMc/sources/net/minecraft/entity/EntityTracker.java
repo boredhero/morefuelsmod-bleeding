@@ -4,9 +4,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityArmorStand;
@@ -48,7 +48,7 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityTracker
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private final WorldServer theWorld;
     private Set<EntityTrackerEntry> trackedEntities = Sets.<EntityTrackerEntry>newHashSet();
     private IntHashMap<EntityTrackerEntry> trackedEntityHashTable = new IntHashMap();
@@ -60,17 +60,17 @@ public class EntityTracker
         this.maxTrackingDistanceThreshold = theWorldIn.getMinecraftServer().getPlayerList().getEntityViewDistance();
     }
 
-    public static long func_187253_a(double p_187253_0_)
+    public static long getPositionLong(double value)
     {
-        return MathHelper.floor_double_long(p_187253_0_ * 4096.0D);
+        return MathHelper.floor_double_long(value * 4096.0D);
     }
 
     @SideOnly(Side.CLIENT)
-    public static void func_187254_a(Entity p_187254_0_, double p_187254_1_, double p_187254_3_, double p_187254_5_)
+    public static void updateServerPosition(Entity entityIn, double x, double y, double z)
     {
-        p_187254_0_.serverPosX = func_187253_a(p_187254_1_);
-        p_187254_0_.serverPosY = func_187253_a(p_187254_3_);
-        p_187254_0_.serverPosZ = func_187253_a(p_187254_5_);
+        entityIn.serverPosX = getPositionLong(x);
+        entityIn.serverPosY = getPositionLong(y);
+        entityIn.serverPosZ = getPositionLong(z);
     }
 
     public void trackEntity(Entity entityIn)
@@ -227,7 +227,7 @@ public class EntityTracker
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Adding entity to track");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Entity To Track");
             crashreportcategory.addCrashSection("Tracking range", trackingRange + " blocks");
-            crashreportcategory.addCrashSectionCallable("Update interval", new Callable<String>()
+            crashreportcategory.setDetail("Update interval", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {
@@ -250,7 +250,7 @@ public class EntityTracker
             }
             catch (ReportedException reportedexception)
             {
-                logger.error((String)"\"Silently\" catching entity tracking error.", (Throwable)reportedexception);
+                LOGGER.error((String)"\"Silently\" catching entity tracking error.", (Throwable)reportedexception);
             }
         }
     }
@@ -309,28 +309,28 @@ public class EntityTracker
         }
     }
 
-    public void func_180245_a(EntityPlayerMP p_180245_1_)
+    public void updateVisibility(EntityPlayerMP player)
     {
         for (EntityTrackerEntry entitytrackerentry : this.trackedEntities)
         {
-            if (entitytrackerentry.getTrackedEntity() == p_180245_1_)
+            if (entitytrackerentry.getTrackedEntity() == player)
             {
                 entitytrackerentry.updatePlayerEntities(this.theWorld.playerEntities);
             }
             else
             {
-                entitytrackerentry.updatePlayerEntity(p_180245_1_);
+                entitytrackerentry.updatePlayerEntity(player);
             }
         }
     }
 
-    public void sendToAllTrackingEntity(Entity entityIn, Packet<?> p_151247_2_)
+    public void sendToAllTrackingEntity(Entity entityIn, Packet<?> packetIn)
     {
         EntityTrackerEntry entitytrackerentry = (EntityTrackerEntry)this.trackedEntityHashTable.lookup(entityIn.getEntityId());
 
         if (entitytrackerentry != null)
         {
-            entitytrackerentry.sendPacketToTrackedPlayers(p_151247_2_);
+            entitytrackerentry.sendPacketToTrackedPlayers(packetIn);
         }
     }
 
@@ -353,21 +353,21 @@ public class EntityTracker
 
     /* ======================================== FORGE END   =====================================*/
 
-    public void func_151248_b(Entity entityIn, Packet<?> p_151248_2_)
+    public void sendToTrackingAndSelf(Entity entityIn, Packet<?> packetIn)
     {
         EntityTrackerEntry entitytrackerentry = (EntityTrackerEntry)this.trackedEntityHashTable.lookup(entityIn.getEntityId());
 
         if (entitytrackerentry != null)
         {
-            entitytrackerentry.func_151261_b(p_151248_2_);
+            entitytrackerentry.sendToTrackingAndSelf(packetIn);
         }
     }
 
-    public void removePlayerFromTrackers(EntityPlayerMP p_72787_1_)
+    public void removePlayerFromTrackers(EntityPlayerMP player)
     {
         for (EntityTrackerEntry entitytrackerentry : this.trackedEntities)
         {
-            entitytrackerentry.removeTrackedPlayerSymmetric(p_72787_1_);
+            entitytrackerentry.removeTrackedPlayerSymmetric(player);
         }
     }
 
@@ -404,7 +404,7 @@ public class EntityTracker
         {
             for (Entity entity1 : list)
             {
-                player.playerNetServerHandler.sendPacket(new SPacketEntityAttach(entity1, ((EntityLiving)entity1).getLeashedToEntity()));
+                player.connection.sendPacket(new SPacketEntityAttach(entity1, ((EntityLiving)entity1).getLeashedToEntity()));
             }
         }
 
@@ -412,18 +412,18 @@ public class EntityTracker
         {
             for (Entity entity2 : list1)
             {
-                player.playerNetServerHandler.sendPacket(new SPacketSetPassengers(entity2));
+                player.connection.sendPacket(new SPacketSetPassengers(entity2));
             }
         }
     }
 
-    public void func_187252_a(int p_187252_1_)
+    public void setViewDistance(int p_187252_1_)
     {
         this.maxTrackingDistanceThreshold = (p_187252_1_ - 1) * 16;
 
         for (EntityTrackerEntry entitytrackerentry : this.trackedEntities)
         {
-            entitytrackerentry.func_187259_a(this.maxTrackingDistanceThreshold);
+            entitytrackerentry.setMaxRange(this.maxTrackingDistanceThreshold);
         }
     }
 }

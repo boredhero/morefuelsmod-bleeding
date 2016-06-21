@@ -25,32 +25,32 @@ import org.apache.logging.log4j.Logger;
 public class GuiConnecting extends GuiScreen
 {
     private static final AtomicInteger CONNECTION_ID = new AtomicInteger(0);
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private NetworkManager networkManager;
     private boolean cancel;
     private final GuiScreen previousGuiScreen;
 
-    public GuiConnecting(GuiScreen p_i1181_1_, Minecraft mcIn, ServerData serverDataIn)
+    public GuiConnecting(GuiScreen parent, Minecraft mcIn, ServerData serverDataIn)
     {
         this.mc = mcIn;
-        this.previousGuiScreen = p_i1181_1_;
+        this.previousGuiScreen = parent;
         ServerAddress serveraddress = ServerAddress.fromString(serverDataIn.serverIP);
         mcIn.loadWorld((WorldClient)null);
         mcIn.setServerData(serverDataIn);
         this.connect(serveraddress.getIP(), serveraddress.getPort());
     }
 
-    public GuiConnecting(GuiScreen p_i1182_1_, Minecraft mcIn, String hostName, int port)
+    public GuiConnecting(GuiScreen parent, Minecraft mcIn, String hostName, int port)
     {
         this.mc = mcIn;
-        this.previousGuiScreen = p_i1182_1_;
+        this.previousGuiScreen = parent;
         mcIn.loadWorld((WorldClient)null);
         this.connect(hostName, port);
     }
 
     private void connect(final String ip, final int port)
     {
-        logger.info("Connecting to " + ip + ", " + port);
+        LOGGER.info("Connecting to " + ip + ", " + port);
         (new Thread("Server Connector #" + CONNECTION_ID.incrementAndGet())
         {
             public void run()
@@ -67,7 +67,7 @@ public class GuiConnecting extends GuiScreen
                     inetaddress = InetAddress.getByName(ip);
                     GuiConnecting.this.networkManager = NetworkManager.createNetworkManagerAndConnect(inetaddress, port, GuiConnecting.this.mc.gameSettings.isUsingNativeTransport());
                     GuiConnecting.this.networkManager.setNetHandler(new NetHandlerLoginClient(GuiConnecting.this.networkManager, GuiConnecting.this.mc, GuiConnecting.this.previousGuiScreen));
-                    GuiConnecting.this.networkManager.sendPacket(new C00Handshake(107, ip, port, EnumConnectionState.LOGIN, true));
+                    GuiConnecting.this.networkManager.sendPacket(new C00Handshake(110, ip, port, EnumConnectionState.LOGIN, true));
                     GuiConnecting.this.networkManager.sendPacket(new CPacketLoginStart(GuiConnecting.this.mc.getSession().getProfile()));
                 }
                 catch (UnknownHostException unknownhostexception)
@@ -77,7 +77,7 @@ public class GuiConnecting extends GuiScreen
                         return;
                     }
 
-                    GuiConnecting.logger.error((String)"Couldn\'t connect to server", (Throwable)unknownhostexception);
+                    GuiConnecting.LOGGER.error((String)"Couldn\'t connect to server", (Throwable)unknownhostexception);
                     GuiConnecting.this.mc.displayGuiScreen(new GuiDisconnected(GuiConnecting.this.previousGuiScreen, "connect.failed", new TextComponentTranslation("disconnect.genericReason", new Object[] {"Unknown host"})));
                 }
                 catch (Exception exception)
@@ -87,7 +87,7 @@ public class GuiConnecting extends GuiScreen
                         return;
                     }
 
-                    GuiConnecting.logger.error((String)"Couldn\'t connect to server", (Throwable)exception);
+                    GuiConnecting.LOGGER.error((String)"Couldn\'t connect to server", (Throwable)exception);
                     String s = exception.toString();
 
                     if (inetaddress != null)
@@ -158,10 +158,6 @@ public class GuiConnecting extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {

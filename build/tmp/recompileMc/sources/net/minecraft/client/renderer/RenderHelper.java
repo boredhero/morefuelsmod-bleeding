@@ -9,7 +9,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class RenderHelper
 {
     /** Float buffer used to set OpenGL material colors */
-    private static final FloatBuffer colorBuffer = GLAllocation.createDirectFloatBuffer(4);
+    private static final FloatBuffer COLOR_BUFFER = GLAllocation.createDirectFloatBuffer(4);
     private static final Vec3d LIGHT0_POS = (new Vec3d(0.20000000298023224D, 1.0D, -0.699999988079071D)).normalize();
     private static final Vec3d LIGHT1_POS = (new Vec3d(-0.20000000298023224D, 1.0D, 0.699999988079071D)).normalize();
 
@@ -64,11 +64,11 @@ public class RenderHelper
      */
     public static FloatBuffer setColorBuffer(float p_74521_0_, float p_74521_1_, float p_74521_2_, float p_74521_3_)
     {
-        colorBuffer.clear();
-        colorBuffer.put(p_74521_0_).put(p_74521_1_).put(p_74521_2_).put(p_74521_3_);
-        colorBuffer.flip();
+        COLOR_BUFFER.clear();
+        COLOR_BUFFER.put(p_74521_0_).put(p_74521_1_).put(p_74521_2_).put(p_74521_3_);
+        COLOR_BUFFER.flip();
         /** Float buffer used to set OpenGL material colors */
-        return colorBuffer;
+        return COLOR_BUFFER;
     }
 
     /**

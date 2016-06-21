@@ -13,7 +13,7 @@ public class ItemSaddle extends Item
     public ItemSaddle()
     {
         this.maxStackSize = 1;
-        this.setCreativeTab(CreativeTabs.tabTransport);
+        this.setCreativeTab(CreativeTabs.TRANSPORTATION);
     }
 
     /**
@@ -28,7 +28,7 @@ public class ItemSaddle extends Item
             if (!entitypig.getSaddled() && !entitypig.isChild())
             {
                 entitypig.setSaddled(true);
-                entitypig.worldObj.playSound(playerIn, entitypig.posX, entitypig.posY, entitypig.posZ, SoundEvents.entity_pig_saddle, SoundCategory.NEUTRAL, 0.5F, 1.0F);
+                entitypig.worldObj.playSound(playerIn, entitypig.posX, entitypig.posY, entitypig.posZ, SoundEvents.ENTITY_PIG_SADDLE, SoundCategory.NEUTRAL, 0.5F, 1.0F);
                 --stack.stackSize;
             }
 

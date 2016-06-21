@@ -40,6 +40,6 @@ public class EnchantmentUntouching extends Enchantment
      */
     public boolean canApplyTogether(Enchantment ench)
     {
-        return super.canApplyTogether(ench) && ench != Enchantments.fortune;
+        return super.canApplyTogether(ench) && ench != Enchantments.FORTUNE;
     }
 }

@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -51,12 +52,14 @@ public class SPacketRemoveEntityEffect implements Packet<INetHandlerPlayClient>
         handler.handleRemoveEntityEffect(this);
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public Entity getEntity(World worldIn)
     {
         return worldIn.getEntityByID(this.entityId);
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public Potion getPotion()
     {

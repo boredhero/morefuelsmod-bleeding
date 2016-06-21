@@ -53,6 +53,8 @@ import org.lwjgl.opengl.Drawable;
 import org.lwjgl.opengl.SharedDrawable;
 import org.lwjgl.util.glu.GLU;
 
+import net.minecraftforge.fml.common.EnhancedRuntimeException.WrappedPrintStream;
+
 /**
  * Not a fully fleshed out API, may change in future MC versions.
  * However feel free to use and suggest additions.

@@ -3,6 +3,7 @@ package net.minecraft.client.renderer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import javax.annotation.Nullable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.BufferUtils;
@@ -110,19 +111,19 @@ public class GlStateManager
         }
     }
 
-    public static void glLight(int p_187438_0_, int p_187438_1_, FloatBuffer p_187438_2_)
+    public static void glLight(int light, int pname, FloatBuffer params)
     {
-        GL11.glLight(p_187438_0_, p_187438_1_, p_187438_2_);
+        GL11.glLight(light, pname, params);
     }
 
-    public static void glLightModel(int p_187424_0_, FloatBuffer p_187424_1_)
+    public static void glLightModel(int pname, FloatBuffer params)
     {
-        GL11.glLightModel(p_187424_0_, p_187424_1_);
+        GL11.glLightModel(pname, params);
     }
 
-    public static void glNormal3f(float p_187432_0_, float p_187432_1_, float p_187432_2_)
+    public static void glNormal3f(float nx, float ny, float nz)
     {
-        GL11.glNormal3f(p_187432_0_, p_187432_1_, p_187432_2_);
+        GL11.glNormal3f(nx, ny, nz);
     }
 
     public static void disableDepth()
@@ -163,9 +164,9 @@ public class GlStateManager
         blendState.blend.setEnabled();
     }
 
-    public static void blendFunc(GlStateManager.SourceFactor p_187401_0_, GlStateManager.DestFactor p_187401_1_)
+    public static void blendFunc(GlStateManager.SourceFactor srcFactor, GlStateManager.DestFactor dstFactor)
     {
-        blendFunc(p_187401_0_.factor, p_187401_1_.factor);
+        blendFunc(srcFactor.factor, dstFactor.factor);
     }
 
     public static void blendFunc(int srcFactor, int dstFactor)
@@ -178,9 +179,9 @@ public class GlStateManager
         }
     }
 
-    public static void tryBlendFuncSeparate(GlStateManager.SourceFactor p_187428_0_, GlStateManager.DestFactor p_187428_1_, GlStateManager.SourceFactor p_187428_2_, GlStateManager.DestFactor p_187428_3_)
+    public static void tryBlendFuncSeparate(GlStateManager.SourceFactor srcFactor, GlStateManager.DestFactor dstFactor, GlStateManager.SourceFactor srcFactorAlpha, GlStateManager.DestFactor dstFactorAlpha)
     {
-        tryBlendFuncSeparate(p_187428_0_.factor, p_187428_1_.factor, p_187428_2_.factor, p_187428_3_.factor);
+        tryBlendFuncSeparate(srcFactor.factor, dstFactor.factor, srcFactorAlpha.factor, dstFactorAlpha.factor);
     }
 
     public static void tryBlendFuncSeparate(int srcFactor, int dstFactor, int srcFactorAlpha, int dstFactorAlpha)
@@ -361,14 +362,14 @@ public class GlStateManager
         }
     }
 
-    public static void enableTexGenCoord(GlStateManager.TexGen p_179087_0_)
+    public static void enableTexGenCoord(GlStateManager.TexGen texGen)
     {
-        texGenCoord(p_179087_0_).textureGen.setEnabled();
+        texGenCoord(texGen).textureGen.setEnabled();
     }
 
-    public static void disableTexGenCoord(GlStateManager.TexGen p_179100_0_)
+    public static void disableTexGenCoord(GlStateManager.TexGen texGen)
     {
-        texGenCoord(p_179100_0_).textureGen.setDisabled();
+        texGenCoord(texGen).textureGen.setDisabled();
     }
 
     public static void texGen(GlStateManager.TexGen texGen, int param)
@@ -382,14 +383,14 @@ public class GlStateManager
         }
     }
 
-    public static void texGen(GlStateManager.TexGen p_179105_0_, int pname, FloatBuffer params)
+    public static void texGen(GlStateManager.TexGen texGen, int pname, FloatBuffer params)
     {
-        GL11.glTexGen(texGenCoord(p_179105_0_).coord, pname, params);
+        GL11.glTexGen(texGenCoord(texGen).coord, pname, params);
     }
 
-    private static GlStateManager.TexGenCoord texGenCoord(GlStateManager.TexGen p_179125_0_)
+    private static GlStateManager.TexGenCoord texGenCoord(GlStateManager.TexGen texGen)
     {
-        switch (p_179125_0_)
+        switch (texGen)
         {
             case S:
                 return texGenState.s;
@@ -480,7 +481,7 @@ public class GlStateManager
         }
     }
 
-    public static void glTexImage2D(int p_187419_0_, int p_187419_1_, int p_187419_2_, int p_187419_3_, int p_187419_4_, int p_187419_5_, int p_187419_6_, int p_187419_7_, IntBuffer p_187419_8_)
+    public static void glTexImage2D(int p_187419_0_, int p_187419_1_, int p_187419_2_, int p_187419_3_, int p_187419_4_, int p_187419_5_, int p_187419_6_, int p_187419_7_, @Nullable IntBuffer p_187419_8_)
     {
         GL11.glTexImage2D(p_187419_0_, p_187419_1_, p_187419_2_, p_187419_3_, p_187419_4_, p_187419_5_, p_187419_6_, p_187419_7_, p_187419_8_);
     }
@@ -823,12 +824,12 @@ public class GlStateManager
 
     public static void enableBlendProfile(GlStateManager.Profile p_187408_0_)
     {
-        p_187408_0_.func_187373_a();
+        p_187408_0_.apply();
     }
 
     public static void disableBlendProfile(GlStateManager.Profile p_187440_0_)
     {
-        p_187440_0_.func_187374_b();
+        p_187440_0_.clean();
     }
 
     static
@@ -941,13 +942,13 @@ public class GlStateManager
         {
             public double depth;
             public GlStateManager.Color color;
-            public int field_179204_c;
+            public int stencil;
 
             private ClearState()
             {
                 this.depth = 1.0D;
                 this.color = new GlStateManager.Color(0.0F, 0.0F, 0.0F, 0.0F);
-                this.field_179204_c = 0;
+                this.stencil = 0;
             }
         }
 
@@ -1080,9 +1081,9 @@ public class GlStateManager
 
         public final int factor;
 
-        private DestFactor(int p_i46519_3_)
+        private DestFactor(int factorIn)
         {
-            this.factor = p_i46519_3_;
+            this.factor = factorIn;
         }
     }
 
@@ -1170,7 +1171,7 @@ public class GlStateManager
     public static enum Profile
     {
         DEFAULT {
-            public void func_187373_a()
+            public void apply()
             {
                 GlStateManager.disableAlpha();
                 GlStateManager.alphaFunc(519, 0.0F);
@@ -1273,24 +1274,24 @@ public class GlStateManager
                 GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_FILL);
             }
 
-            public void func_187374_b()
+            public void clean()
             {
             }
         },
         PLAYER_SKIN {
-            public void func_187373_a()
+            public void apply()
             {
                 GlStateManager.enableBlend();
                 GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             }
 
-            public void func_187374_b()
+            public void clean()
             {
                 GlStateManager.disableBlend();
             }
         },
         TRANSPARENT_MODEL {
-            public void func_187373_a()
+            public void apply()
             {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 0.15F);
                 GlStateManager.depthMask(false);
@@ -1299,7 +1300,7 @@ public class GlStateManager
                 GlStateManager.alphaFunc(516, 0.003921569F);
             }
 
-            public void func_187374_b()
+            public void clean()
             {
                 GlStateManager.disableBlend();
                 GlStateManager.alphaFunc(516, 0.1F);
@@ -1311,9 +1312,9 @@ public class GlStateManager
         {
         }
 
-        public abstract void func_187373_a();
+        public abstract void apply();
 
-        public abstract void func_187374_b();
+        public abstract void clean();
     }
 
     @SideOnly(Side.CLIENT)
@@ -1346,34 +1347,34 @@ public class GlStateManager
     @SideOnly(Side.CLIENT)
     static class StencilFunc
         {
-            public int field_179081_a;
-            public int field_179079_b;
-            public int field_179080_c;
+            public int func;
+            public int ref;
+            public int mask;
 
             private StencilFunc()
             {
-                this.field_179081_a = 519;
-                this.field_179079_b = 0;
-                this.field_179080_c = -1;
+                this.func = 519;
+                this.ref = 0;
+                this.mask = -1;
             }
         }
 
     @SideOnly(Side.CLIENT)
     static class StencilState
         {
-            public GlStateManager.StencilFunc field_179078_a;
-            public int field_179076_b;
-            public int field_179077_c;
-            public int field_179074_d;
-            public int field_179075_e;
+            public GlStateManager.StencilFunc func;
+            public int mask;
+            public int fail;
+            public int zfail;
+            public int zpass;
 
             private StencilState()
             {
-                this.field_179078_a = new GlStateManager.StencilFunc();
-                this.field_179076_b = -1;
-                this.field_179077_c = 7680;
-                this.field_179074_d = 7680;
-                this.field_179075_e = 7680;
+                this.func = new GlStateManager.StencilFunc();
+                this.mask = -1;
+                this.fail = 7680;
+                this.zfail = 7680;
+                this.zpass = 7680;
             }
         }
 

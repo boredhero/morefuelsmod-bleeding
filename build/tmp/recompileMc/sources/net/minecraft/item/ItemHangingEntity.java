@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityHanging;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -18,7 +19,7 @@ public class ItemHangingEntity extends Item
     public ItemHangingEntity(Class <? extends EntityHanging > entityClass)
     {
         this.hangingEntityClass = entityClass;
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     /**
@@ -36,7 +37,7 @@ public class ItemHangingEntity extends Item
             {
                 if (!worldIn.isRemote)
                 {
-                    entityhanging.func_184523_o();
+                    entityhanging.playPlaceSound();
                     worldIn.spawnEntityInWorld(entityhanging);
                 }
 
@@ -51,6 +52,7 @@ public class ItemHangingEntity extends Item
         }
     }
 
+    @Nullable
     private EntityHanging createEntity(World worldIn, BlockPos pos, EnumFacing clickedSide)
     {
         return (EntityHanging)(this.hangingEntityClass == EntityPainting.class ? new EntityPainting(worldIn, pos, clickedSide) : (this.hangingEntityClass == EntityItemFrame.class ? new EntityItemFrame(worldIn, pos, clickedSide) : null));

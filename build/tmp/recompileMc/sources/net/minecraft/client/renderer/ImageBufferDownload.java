@@ -1,5 +1,6 @@
 package net.minecraft.client.renderer;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -27,9 +28,12 @@ public class ImageBufferDownload implements IImageBuffer
             BufferedImage bufferedimage = new BufferedImage(this.imageWidth, this.imageHeight, 2);
             Graphics graphics = bufferedimage.getGraphics();
             graphics.drawImage(image, 0, 0, (ImageObserver)null);
+            boolean flag = image.getHeight() == 32;
 
-            if (image.getHeight() == 32)
+            if (flag)
             {
+                graphics.setColor(new Color(0, 0, 0, 0));
+                graphics.fillRect(0, 32, 64, 32);
                 graphics.drawImage(bufferedimage, 24, 48, 20, 52, 4, 16, 8, 20, (ImageObserver)null);
                 graphics.drawImage(bufferedimage, 28, 48, 24, 52, 8, 16, 12, 20, (ImageObserver)null);
                 graphics.drawImage(bufferedimage, 20, 52, 16, 64, 8, 20, 12, 32, (ImageObserver)null);
@@ -47,14 +51,14 @@ public class ImageBufferDownload implements IImageBuffer
             graphics.dispose();
             this.imageData = ((DataBufferInt)bufferedimage.getRaster().getDataBuffer()).getData();
             this.setAreaOpaque(0, 0, 32, 16);
-            this.setAreaTransparent(32, 0, 64, 32);
+
+            if (flag)
+            {
+                this.doTransparencyHack(32, 0, 64, 32);
+            }
+
             this.setAreaOpaque(0, 16, 64, 32);
-            this.setAreaTransparent(0, 32, 16, 48);
-            this.setAreaTransparent(16, 32, 40, 48);
-            this.setAreaTransparent(40, 32, 56, 48);
-            this.setAreaTransparent(0, 48, 16, 64);
             this.setAreaOpaque(16, 48, 48, 64);
-            this.setAreaTransparent(48, 48, 64, 64);
             return bufferedimage;
         }
     }
@@ -63,21 +67,26 @@ public class ImageBufferDownload implements IImageBuffer
     {
     }
 
-    /**
-     * Makes the given area of the image transparent if it was previously completely opaque (used to remove the outer
-     * layer of a skin around the head if it was saved all opaque; this would be redundant so it's assumed that the skin
-     * maker is just using an image editor without an alpha channel)
-     */
-    private void setAreaTransparent(int x, int y, int width, int height)
+    private void doTransparencyHack(int p_189559_1_, int p_189559_2_, int p_189559_3_, int p_189559_4_)
     {
-        if (!this.hasTransparency(x, y, width, height))
+        for (int i = p_189559_1_; i < p_189559_3_; ++i)
         {
-            for (int i = x; i < width; ++i)
+            for (int j = p_189559_2_; j < p_189559_4_; ++j)
             {
-                for (int j = y; j < height; ++j)
+                int k = this.imageData[i + j * this.imageWidth];
+
+                if ((k >> 24 & 255) < 128)
                 {
-                    this.imageData[i + j * this.imageWidth] &= 16777215;
+                    return;
                 }
+            }
+        }
+
+        for (int l = p_189559_1_; l < p_189559_3_; ++l)
+        {
+            for (int i1 = p_189559_2_; i1 < p_189559_4_; ++i1)
+            {
+                this.imageData[l + i1 * this.imageWidth] &= 16777215;
             }
         }
     }
@@ -94,26 +103,5 @@ public class ImageBufferDownload implements IImageBuffer
                 this.imageData[i + j * this.imageWidth] |= -16777216;
             }
         }
-    }
-
-    /**
-     * Returns true if the given area of the image contains transparent pixels
-     */
-    private boolean hasTransparency(int x, int y, int width, int height)
-    {
-        for (int i = x; i < width; ++i)
-        {
-            for (int j = y; j < height; ++j)
-            {
-                int k = this.imageData[i + j * this.imageWidth];
-
-                if ((k >> 24 & 255) < 128)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }

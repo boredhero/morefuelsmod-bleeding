@@ -16,6 +16,8 @@ import java.util.Set;
 
 import net.minecraftforge.fml.common.versioning.ArtifactVersion;
 
+import net.minecraftforge.fml.common.EnhancedRuntimeException.WrappedPrintStream;
+
 public class MissingModsException extends EnhancedRuntimeException
 {
     private static final long serialVersionUID = 1L;

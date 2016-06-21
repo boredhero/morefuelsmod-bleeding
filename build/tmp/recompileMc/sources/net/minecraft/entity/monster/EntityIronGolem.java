@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import com.google.common.base.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -66,7 +67,7 @@ public class EntityIronGolem extends EntityGolem
         this.targetTasks.addTask(2, new EntityAIHurtByTarget(this, false, new Class[0]));
         this.targetTasks.addTask(3, new EntityAINearestAttackableTarget(this, EntityLiving.class, 10, false, true, new Predicate<EntityLiving>()
         {
-            public boolean apply(EntityLiving p_apply_1_)
+            public boolean apply(@Nullable EntityLiving p_apply_1_)
             {
                 return p_apply_1_ != null && IMob.VISIBLE_MOB_SELECTOR.apply(p_apply_1_) && !(p_apply_1_ instanceof EntityCreeper);
             }
@@ -76,7 +77,7 @@ public class EntityIronGolem extends EntityGolem
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(PLAYER_CREATED, Byte.valueOf((byte)0));
+        this.dataManager.register(PLAYER_CREATED, Byte.valueOf((byte)0));
     }
 
     protected void updateAITasks()
@@ -111,9 +112,9 @@ public class EntityIronGolem extends EntityGolem
     /**
      * Decrements the entity's air supply when underwater
      */
-    protected int decreaseAirSupply(int p_70682_1_)
+    protected int decreaseAirSupply(int air)
     {
-        return p_70682_1_;
+        return air;
     }
 
     protected void collideWithEntity(Entity entityIn)
@@ -151,7 +152,7 @@ public class EntityIronGolem extends EntityGolem
             int k = MathHelper.floor_double(this.posZ);
             IBlockState iblockstate = this.worldObj.getBlockState(new BlockPos(i, j, k));
 
-            if (iblockstate.getMaterial() != Material.air)
+            if (iblockstate.getMaterial() != Material.AIR)
             {
                 this.worldObj.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, this.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, 4.0D * ((double)this.rand.nextFloat() - 0.5D), 0.5D, ((double)this.rand.nextFloat() - 0.5D) * 4.0D, new int[] {Block.getStateId(iblockstate)});
             }
@@ -169,19 +170,19 @@ public class EntityIronGolem extends EntityGolem
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setBoolean("PlayerCreated", this.isPlayerCreated());
+        super.writeEntityToNBT(compound);
+        compound.setBoolean("PlayerCreated", this.isPlayerCreated());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.setPlayerCreated(tagCompund.getBoolean("PlayerCreated"));
+        super.readEntityFromNBT(compound);
+        this.setPlayerCreated(compound.getBoolean("PlayerCreated"));
     }
 
     public boolean attackEntityAsMob(Entity entityIn)
@@ -196,7 +197,7 @@ public class EntityIronGolem extends EntityGolem
             this.applyEnchantments(this, entityIn);
         }
 
-        this.playSound(SoundEvents.entity_irongolem_attack, 1.0F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_IRONGOLEM_ATTACK, 1.0F, 1.0F);
         return flag;
     }
 
@@ -206,7 +207,7 @@ public class EntityIronGolem extends EntityGolem
         if (id == 4)
         {
             this.attackTimer = 10;
-            this.playSound(SoundEvents.entity_irongolem_attack, 1.0F, 1.0F);
+            this.playSound(SoundEvents.ENTITY_IRONGOLEM_ATTACK, 1.0F, 1.0F);
         }
         else if (id == 11)
         {
@@ -237,19 +238,20 @@ public class EntityIronGolem extends EntityGolem
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_irongolem_hurt;
+        return SoundEvents.ENTITY_IRONGOLEM_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_irongolem_death;
+        return SoundEvents.ENTITY_IRONGOLEM_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        this.playSound(SoundEvents.entity_irongolem_step, 1.0F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_IRONGOLEM_STEP, 1.0F, 1.0F);
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_IRON_GOLEM;
@@ -262,20 +264,20 @@ public class EntityIronGolem extends EntityGolem
 
     public boolean isPlayerCreated()
     {
-        return (((Byte)this.dataWatcher.get(PLAYER_CREATED)).byteValue() & 1) != 0;
+        return (((Byte)this.dataManager.get(PLAYER_CREATED)).byteValue() & 1) != 0;
     }
 
-    public void setPlayerCreated(boolean p_70849_1_)
+    public void setPlayerCreated(boolean playerCreated)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(PLAYER_CREATED)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(PLAYER_CREATED)).byteValue();
 
-        if (p_70849_1_)
+        if (playerCreated)
         {
-            this.dataWatcher.set(PLAYER_CREATED, Byte.valueOf((byte)(b0 | 1)));
+            this.dataManager.set(PLAYER_CREATED, Byte.valueOf((byte)(b0 | 1)));
         }
         else
         {
-            this.dataWatcher.set(PLAYER_CREATED, Byte.valueOf((byte)(b0 & -2)));
+            this.dataManager.set(PLAYER_CREATED, Byte.valueOf((byte)(b0 & -2)));
         }
     }
 
@@ -286,7 +288,7 @@ public class EntityIronGolem extends EntityGolem
     {
         if (!this.isPlayerCreated() && this.attackingPlayer != null && this.villageObj != null)
         {
-            this.villageObj.setReputationForPlayer(this.attackingPlayer.getName(), -5);
+            this.villageObj.modifyPlayerReputation(this.attackingPlayer.getName(), -5);
         }
 
         super.onDeath(cause);

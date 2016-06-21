@@ -40,6 +40,6 @@ public class EnchantmentWaterWalker extends Enchantment
      */
     public boolean canApplyTogether(Enchantment ench)
     {
-        return super.canApplyTogether(ench) && ench != Enchantments.frostWalker;
+        return super.canApplyTogether(ench) && ench != Enchantments.FROST_WALKER;
     }
 }

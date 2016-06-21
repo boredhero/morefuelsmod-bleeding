@@ -1,5 +1,6 @@
 package net.minecraft.entity.monster;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumParticleTypes;
@@ -38,7 +39,7 @@ public class EntityMagmaCube extends EntitySlime
      */
     public boolean isNotColliding()
     {
-        return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCubes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.isAnyLiquid(this.getEntityBoundingBox());
+        return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.containsAnyLiquid(this.getEntityBoundingBox());
     }
 
     protected void setSlimeSize(int size)
@@ -71,9 +72,10 @@ public class EntityMagmaCube extends EntitySlime
         return new EntityMagmaCube(this.worldObj);
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
-        return !this.func_189101_db() ? LootTableList.ENTITIES_MAGMA_CUBE : LootTableList.EMPTY;
+        return !this.isSmallSlime() ? LootTableList.ENTITIES_MAGMA_CUBE : LootTableList.EMPTY;
     }
 
     /**
@@ -135,21 +137,21 @@ public class EntityMagmaCube extends EntitySlime
 
     protected SoundEvent getHurtSound()
     {
-        return this.func_189101_db() ? SoundEvents.entity_small_magmacube_hurt : SoundEvents.entity_magmacube_hurt;
+        return this.isSmallSlime() ? SoundEvents.ENTITY_SMALL_MAGMACUBE_HURT : SoundEvents.ENTITY_MAGMACUBE_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return this.func_189101_db() ? SoundEvents.entity_small_magmacube_death : SoundEvents.entity_magmacube_death;
+        return this.isSmallSlime() ? SoundEvents.ENTITY_SMALL_MAGMACUBE_DEATH : SoundEvents.ENTITY_MAGMACUBE_DEATH;
     }
 
-    protected SoundEvent func_184709_cY()
+    protected SoundEvent getSquishSound()
     {
-        return this.func_189101_db() ? SoundEvents.entity_small_magmacube_squish : SoundEvents.entity_magmacube_squish;
+        return this.isSmallSlime() ? SoundEvents.ENTITY_SMALL_MAGMACUBE_SQUISH : SoundEvents.ENTITY_MAGMACUBE_SQUISH;
     }
 
-    protected SoundEvent func_184710_cZ()
+    protected SoundEvent getJumpSound()
     {
-        return SoundEvents.entity_magmacube_jump;
+        return SoundEvents.ENTITY_MAGMACUBE_JUMP;
     }
 }

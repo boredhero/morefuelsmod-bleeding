@@ -8,9 +8,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.data.IMetadataSection;
-import net.minecraft.client.resources.data.IMetadataSerializer;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class DefaultResourcePack implements IResourcePack
 {
-    public static final Set<String> defaultResourceDomains = ImmutableSet.<String>of("minecraft", "realms");
+    public static final Set<String> DEFAULT_RESOURCE_DOMAINS = ImmutableSet.<String>of("minecraft", "realms");
     private final ResourceIndex resourceIndex;
 
     public DefaultResourcePack(ResourceIndex resourceIndexIn)
@@ -49,6 +50,7 @@ public class DefaultResourcePack implements IResourcePack
         }
     }
 
+    @Nullable
     public InputStream getInputStreamAssets(ResourceLocation location) throws IOException, FileNotFoundException
     {
         File file1 = this.resourceIndex.getFile(location);
@@ -67,10 +69,10 @@ public class DefaultResourcePack implements IResourcePack
 
     public Set<String> getResourceDomains()
     {
-        return defaultResourceDomains;
+        return DEFAULT_RESOURCE_DOMAINS;
     }
 
-    public <T extends IMetadataSection> T getPackMetadata(IMetadataSerializer metadataSerializer, String metadataSectionName) throws IOException
+    public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer metadataSerializer, String metadataSectionName) throws IOException
     {
         try
         {

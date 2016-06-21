@@ -14,7 +14,7 @@ public class BlockSeaLantern extends Block
     public BlockSeaLantern(Material materialIn)
     {
         super(materialIn);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -38,7 +38,7 @@ public class BlockSeaLantern extends Block
      */
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.prismarine_crystals;
+        return Items.PRISMARINE_CRYSTALS;
     }
 
     /**
@@ -46,7 +46,7 @@ public class BlockSeaLantern extends Block
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return MapColor.quartzColor;
+        return MapColor.QUARTZ;
     }
 
     protected boolean canSilkHarvest()

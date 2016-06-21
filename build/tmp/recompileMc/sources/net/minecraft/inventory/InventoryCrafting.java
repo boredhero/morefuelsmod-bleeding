@@ -1,5 +1,6 @@
 package net.minecraft.inventory;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -36,14 +37,16 @@ public class InventoryCrafting implements IInventory
     /**
      * Returns the stack in the given slot.
      */
+    @Nullable
     public ItemStack getStackInSlot(int index)
     {
         return index >= this.getSizeInventory() ? null : this.stackList[index];
     }
 
     /**
-     * Returns the itemstack in the slot specified (Top left is 0, 0). Args: row, column
+     * Gets the ItemStack in the slot specified.
      */
+    @Nullable
     public ItemStack getStackInRowAndColumn(int row, int column)
     {
         return row >= 0 && row < this.inventoryWidth && column >= 0 && column <= this.inventoryHeight ? this.getStackInSlot(row + column * this.inventoryWidth) : null;
@@ -76,17 +79,19 @@ public class InventoryCrafting implements IInventory
     /**
      * Removes a stack from the given slot and returns it.
      */
+    @Nullable
     public ItemStack removeStackFromSlot(int index)
     {
-        return ItemStackHelper.func_188383_a(this.stackList, index);
+        return ItemStackHelper.getAndRemove(this.stackList, index);
     }
 
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
+    @Nullable
     public ItemStack decrStackSize(int index, int count)
     {
-        ItemStack itemstack = ItemStackHelper.func_188382_a(this.stackList, index, count);
+        ItemStack itemstack = ItemStackHelper.getAndSplit(this.stackList, index, count);
 
         if (itemstack != null)
         {
@@ -99,7 +104,7 @@ public class InventoryCrafting implements IInventory
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, ItemStack stack)
+    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
     {
         this.stackList[index] = stack;
         this.eventHandler.onCraftMatrixChanged(this);

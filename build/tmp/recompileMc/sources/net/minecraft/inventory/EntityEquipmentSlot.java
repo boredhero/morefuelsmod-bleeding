@@ -11,14 +11,14 @@ public enum EntityEquipmentSlot
 
     private final EntityEquipmentSlot.Type slotType;
     private final int index;
-    private final int field_188464_i;
+    private final int slotIndex;
     private final String name;
 
-    private EntityEquipmentSlot(EntityEquipmentSlot.Type slotTypeIn, int indexIn, int p_i46808_5_, String nameIn)
+    private EntityEquipmentSlot(EntityEquipmentSlot.Type slotTypeIn, int indexIn, int slotIndexIn, String nameIn)
     {
         this.slotType = slotTypeIn;
         this.index = indexIn;
-        this.field_188464_i = p_i46808_5_;
+        this.slotIndex = slotIndexIn;
         this.name = nameIn;
     }
 
@@ -32,9 +32,12 @@ public enum EntityEquipmentSlot
         return this.index;
     }
 
-    public int func_188452_c()
+    /**
+     * Gets the actual slot index.
+     */
+    public int getSlotIndex()
     {
-        return this.field_188464_i;
+        return this.slotIndex;
     }
 
     public String getName()

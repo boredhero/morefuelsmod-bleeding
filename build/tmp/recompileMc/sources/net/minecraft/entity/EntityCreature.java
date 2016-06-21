@@ -19,7 +19,7 @@ public abstract class EntityCreature extends EntityLiving
     private float maximumHomeDistance = -1.0F;
     private EntityAIBase aiBase = new EntityAIMoveTowardsRestriction(this, 1.0D);
     private boolean isMovementAITaskSet;
-    private float field_184661_bw = PathNodeType.WATER.getPriority();
+    private float restoreWaterCost = PathNodeType.WATER.getPriority();
 
     public EntityCreature(World worldIn)
     {
@@ -118,14 +118,14 @@ public abstract class EntityCreature extends EntityLiving
 
                 if (this.getNavigator() instanceof PathNavigateGround)
                 {
-                    this.field_184661_bw = this.getPathPriority(PathNodeType.WATER);
+                    this.restoreWaterCost = this.getPathPriority(PathNodeType.WATER);
                     this.setPathPriority(PathNodeType.WATER, 0.0F);
                 }
 
                 this.isMovementAITaskSet = true;
             }
 
-            this.func_142017_o(f);
+            this.onLeashDistance(f);
 
             if (f > 4.0F)
             {
@@ -154,14 +154,14 @@ public abstract class EntityCreature extends EntityLiving
 
             if (this.getNavigator() instanceof PathNavigateGround)
             {
-                this.setPathPriority(PathNodeType.WATER, this.field_184661_bw);
+                this.setPathPriority(PathNodeType.WATER, this.restoreWaterCost);
             }
 
             this.detachHome();
         }
     }
 
-    protected void func_142017_o(float p_142017_1_)
+    protected void onLeashDistance(float p_142017_1_)
     {
     }
 }

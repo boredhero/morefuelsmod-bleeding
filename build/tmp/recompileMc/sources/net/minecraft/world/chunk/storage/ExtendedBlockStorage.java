@@ -48,7 +48,7 @@ public class ExtendedBlockStorage
         Block block = iblockstate.getBlock();
         Block block1 = state.getBlock();
 
-        if (block != Blocks.air)
+        if (block != Blocks.AIR)
         {
             --this.blockRefCount;
 
@@ -58,7 +58,7 @@ public class ExtendedBlockStorage
             }
         }
 
-        if (block1 != Blocks.air)
+        if (block1 != Blocks.AIR)
         {
             ++this.blockRefCount;
 
@@ -141,7 +141,7 @@ public class ExtendedBlockStorage
                 {
                     Block block = this.get(i, j, k).getBlock();
 
-                    if (block != Blocks.air)
+                    if (block != Blocks.AIR)
                     {
                         ++this.blockRefCount;
 

@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -13,7 +14,7 @@ public class BlockStateMatcher implements Predicate<IBlockState>
 {
     public static final Predicate<IBlockState> ANY = new Predicate<IBlockState>()
     {
-        public boolean apply(IBlockState p_apply_1_)
+        public boolean apply(@Nullable IBlockState p_apply_1_)
         {
             return true;
         }
@@ -31,13 +32,13 @@ public class BlockStateMatcher implements Predicate<IBlockState>
         return new BlockStateMatcher(blockIn.getBlockState());
     }
 
-    public boolean apply(IBlockState p_apply_1_)
+    public boolean apply(@Nullable IBlockState p_apply_1_)
     {
         if (p_apply_1_ != null && p_apply_1_.getBlock().equals(this.blockstate.getBlock()))
         {
             for (Entry < IProperty<?>, Predicate<? >> entry : this.propertyPredicates.entrySet())
             {
-                if (!this.func_185927_a(p_apply_1_, (IProperty)entry.getKey(), (Predicate)entry.getValue()))
+                if (!this.matches(p_apply_1_, (IProperty)entry.getKey(), (Predicate)entry.getValue()))
                 {
                     return false;
                 }
@@ -51,7 +52,7 @@ public class BlockStateMatcher implements Predicate<IBlockState>
         }
     }
 
-    protected <T extends Comparable<T>> boolean func_185927_a(IBlockState blockState, IProperty<T> property, Predicate<T> predicate)
+    protected <T extends Comparable<T>> boolean matches(IBlockState blockState, IProperty<T> property, Predicate<T> predicate)
     {
         return predicate.apply(blockState.getValue(property));
     }

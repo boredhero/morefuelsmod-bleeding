@@ -1,5 +1,6 @@
 package net.minecraft.entity.monster;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.util.SoundEvent;
@@ -16,16 +17,19 @@ public abstract class EntityGolem extends EntityCreature implements IAnimals
     {
     }
 
+    @Nullable
     protected SoundEvent getAmbientSound()
     {
         return null;
     }
 
+    @Nullable
     protected SoundEvent getHurtSound()
     {
         return null;
     }
 
+    @Nullable
     protected SoundEvent getDeathSound()
     {
         return null;

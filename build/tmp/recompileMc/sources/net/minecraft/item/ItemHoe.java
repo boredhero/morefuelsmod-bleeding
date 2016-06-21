@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemHoe extends Item
 {
-    private final float field_185072_b;
+    private final float speed;
     protected Item.ToolMaterial theToolMaterial;
 
     public ItemHoe(Item.ToolMaterial material)
@@ -32,8 +32,8 @@ public class ItemHoe extends Item
         this.theToolMaterial = material;
         this.maxStackSize = 1;
         this.setMaxDamage(material.getMaxUses());
-        this.setCreativeTab(CreativeTabs.tabTools);
-        this.field_185072_b = material.getDamageVsEntity() + 1.0F;
+        this.setCreativeTab(CreativeTabs.TOOLS);
+        this.speed = material.getDamageVsEntity() + 1.0F;
     }
 
     /**
@@ -56,21 +56,21 @@ public class ItemHoe extends Item
 
             if (facing != EnumFacing.DOWN && worldIn.isAirBlock(pos.up()))
             {
-                if (block == Blocks.grass || block == Blocks.grass_path)
+                if (block == Blocks.GRASS || block == Blocks.GRASS_PATH)
                 {
-                    this.func_185071_a(stack, playerIn, worldIn, pos, Blocks.farmland.getDefaultState());
+                    this.setBlock(stack, playerIn, worldIn, pos, Blocks.FARMLAND.getDefaultState());
                     return EnumActionResult.SUCCESS;
                 }
 
-                if (block == Blocks.dirt)
+                if (block == Blocks.DIRT)
                 {
                     switch ((BlockDirt.DirtType)iblockstate.getValue(BlockDirt.VARIANT))
                     {
                         case DIRT:
-                            this.func_185071_a(stack, playerIn, worldIn, pos, Blocks.farmland.getDefaultState());
+                            this.setBlock(stack, playerIn, worldIn, pos, Blocks.FARMLAND.getDefaultState());
                             return EnumActionResult.SUCCESS;
                         case COARSE_DIRT:
-                            this.func_185071_a(stack, playerIn, worldIn, pos, Blocks.dirt.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT));
+                            this.setBlock(stack, playerIn, worldIn, pos, Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT));
                             return EnumActionResult.SUCCESS;
                     }
                 }
@@ -90,9 +90,9 @@ public class ItemHoe extends Item
         return true;
     }
 
-    protected void func_185071_a(ItemStack stack, EntityPlayer player, World worldIn, BlockPos pos, IBlockState state)
+    protected void setBlock(ItemStack stack, EntityPlayer player, World worldIn, BlockPos pos, IBlockState state)
     {
-        worldIn.playSound(player, pos, SoundEvents.item_hoe_till, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        worldIn.playSound(player, pos, SoundEvents.ITEM_HOE_TILL, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
         if (!worldIn.isRemote)
         {
@@ -126,7 +126,7 @@ public class ItemHoe extends Item
         if (equipmentSlot == EntityEquipmentSlot.MAINHAND)
         {
             multimap.put(SharedMonsterAttributes.ATTACK_DAMAGE.getAttributeUnlocalizedName(), new AttributeModifier(ATTACK_DAMAGE_MODIFIER, "Weapon modifier", 0.0D, 0));
-            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getAttributeUnlocalizedName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)(this.field_185072_b - 4.0F), 0));
+            multimap.put(SharedMonsterAttributes.ATTACK_SPEED.getAttributeUnlocalizedName(), new AttributeModifier(ATTACK_SPEED_MODIFIER, "Weapon modifier", (double)(this.speed - 4.0F), 0));
         }
 
         return multimap;

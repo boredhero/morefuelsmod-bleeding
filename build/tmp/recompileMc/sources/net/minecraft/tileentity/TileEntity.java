@@ -2,15 +2,15 @@ package net.minecraft.tileentity;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockJukebox;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static Map < String, Class <? extends TileEntity >> nameToClassMap = Maps. < String, Class <? extends TileEntity >> newHashMap();
     private static Map < Class <? extends TileEntity > , String > classToNameMap = Maps. < Class <? extends TileEntity > , String > newHashMap();
     /** the instance of the world the tile entity is in. */
@@ -78,7 +78,12 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         if (this.capabilities != null && compound.hasKey("ForgeCaps")) this.capabilities.deserializeNBT(compound.getCompoundTag("ForgeCaps"));
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    {
+        return this.writeInternal(compound);
+    }
+
+    private NBTTagCompound writeInternal(NBTTagCompound compound)
     {
         String s = (String)classToNameMap.get(this.getClass());
 
@@ -94,10 +99,11 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
             compound.setInteger("z", this.pos.getZ());
             if (this.customTileData != null) compound.setTag("ForgeData", this.customTileData);
             if (this.capabilities != null) compound.setTag("ForgeCaps", this.capabilities.serializeNBT());
+            return compound;
         }
     }
 
-    public static TileEntity createTileEntity(MinecraftServer server, NBTTagCompound compound)
+    public static TileEntity create(NBTTagCompound compound)
     {
         TileEntity tileentity = null;
         String s = compound.getString("id");
@@ -105,7 +111,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
         try
         {
-            oclass = (Class)nameToClassMap.get(s);
+            oclass = nameToClassMap.get(s);
 
             if (oclass != null)
             {
@@ -114,7 +120,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         }
         catch (Throwable throwable1)
         {
-            logger.error("Failed to create block entity " + s, throwable1);
+            LOGGER.error("Failed to create block entity " + s, throwable1);
             net.minecraftforge.fml.common.FMLLog.log(org.apache.logging.log4j.Level.ERROR, throwable1,
                     "A TileEntity %s(%s) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
                     s, oclass.getName());
@@ -128,7 +134,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
             }
             catch (Throwable throwable)
             {
-                logger.error("Failed to load data for block entity " + s, throwable);
+                LOGGER.error("Failed to load data for block entity " + s, throwable);
                 net.minecraftforge.fml.common.FMLLog.log(org.apache.logging.log4j.Level.ERROR, throwable,
                         "A TileEntity %s(%s) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
                         s, oclass.getName());
@@ -137,7 +143,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         }
         else
         {
-            logger.warn("Skipping BlockEntity with id " + s);
+            LOGGER.warn("Skipping BlockEntity with id " + s);
         }
 
         return tileentity;
@@ -166,7 +172,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
             this.blockMetadata = iblockstate.getBlock().getMetaFromState(iblockstate);
             this.worldObj.markChunkDirty(this.pos, this);
 
-            if (this.getBlockType() != Blocks.air)
+            if (this.getBlockType() != Blocks.AIR)
             {
                 this.worldObj.updateComparatorOutputLevel(this.pos, this.getBlockType());
             }
@@ -208,9 +214,15 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         return this.blockType;
     }
 
-    public Packet<?> getDescriptionPacket()
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket()
     {
         return null;
+    }
+
+    public NBTTagCompound getUpdateTag()
+    {
+        return this.writeInternal(new NBTTagCompound());
     }
 
     public boolean isInvalid()
@@ -247,7 +259,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
     public void addInfoToCrashReport(CrashReportCategory reportCategory)
     {
-        reportCategory.addCrashSectionCallable("Name", new Callable<String>()
+        reportCategory.setDetail("Name", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -258,7 +270,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         if (this.worldObj != null)
         {
             CrashReportCategory.addBlockInfo(reportCategory, this.pos, this.getBlockType(), this.getBlockMetadata());
-            reportCategory.addCrashSectionCallable("Actual block type", new Callable<String>()
+            reportCategory.setDetail("Actual block type", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {
@@ -274,7 +286,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
                     }
                 }
             });
-            reportCategory.addCrashSectionCallable("Actual block data value", new Callable<String>()
+            reportCategory.setDetail("Actual block data value", new ICrashReportDetail<String>()
             {
                 public String call() throws Exception
                 {
@@ -299,14 +311,14 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
     {
         if (posIn instanceof BlockPos.MutableBlockPos || posIn instanceof BlockPos.PooledMutableBlockPos)
         {
-            logger.warn((String)"Tried to assign a mutable BlockPos to a block entity...", (Throwable)(new Error(posIn.getClass().toString())));
+            LOGGER.warn((String)"Tried to assign a mutable BlockPos to a block entity...", (Throwable)(new Error(posIn.getClass().toString())));
             posIn = new BlockPos(posIn);
         }
 
         this.pos = posIn;
     }
 
-    public boolean func_183000_F()
+    public boolean onlyOpsCanSetNbt()
     {
         return false;
     }
@@ -323,6 +335,18 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
      */
     public void onDataPacket(net.minecraft.network.NetworkManager net, net.minecraft.network.play.server.SPacketUpdateTileEntity pkt)
     {
+    }
+
+    /**
+     * Called when the chunk's TE update tag, gotten from {@link #getUpdateTag()}, is received on the client.
+     * <p>
+     * Used to handle this tag in a special way. By default this simply calls {@link #readFromNBT(NBTTagCompound)}.
+     *
+     * @param tag The {@link NBTTagCompound} sent from {@link #getUpdateTag()}
+     */
+    public void handleUpdateTag(NBTTagCompound tag)
+    {
+        this.readFromNBT(tag);
     }
 
     /**
@@ -370,20 +394,20 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         net.minecraft.util.math.AxisAlignedBB bb = INFINITE_EXTENT_AABB;
         Block type = getBlockType();
         BlockPos pos = getPos();
-        if (type == Blocks.enchanting_table)
+        if (type == Blocks.ENCHANTING_TABLE)
         {
             bb = new net.minecraft.util.math.AxisAlignedBB(pos, pos.add(1, 1, 1));
         }
-        else if (type == Blocks.chest || type == Blocks.trapped_chest)
+        else if (type == Blocks.CHEST || type == Blocks.TRAPPED_CHEST)
         {
             bb = new net.minecraft.util.math.AxisAlignedBB(pos.add(-1, 0, -1), pos.add(2, 2, 2));
         }
-        else if (type != null && type != Blocks.beacon)
+        else if (type != null && type != Blocks.BEACON)
         {
             net.minecraft.util.math.AxisAlignedBB cbb = null;
             try
             {
-                cbb = worldObj.getBlockState(getPos()).getSelectedBoundingBox(worldObj, pos).addCoord(pos.getX(), pos.getY(), pos.getZ());
+                cbb = worldObj.getBlockState(getPos()).getCollisionBoundingBox(worldObj, pos).addCoord(pos.getX(), pos.getY(), pos.getZ());
             }
             catch (Exception e)
             {

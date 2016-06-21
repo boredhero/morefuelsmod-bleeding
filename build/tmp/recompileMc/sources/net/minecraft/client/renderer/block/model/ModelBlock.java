@@ -1,5 +1,6 @@
 package net.minecraft.client.renderer.block.model;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -29,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 public class ModelBlock
 {
     private static final Logger LOGGER = LogManager.getLogger();
+    @VisibleForTesting
     static final Gson SERIALIZER = (new GsonBuilder()).registerTypeAdapter(ModelBlock.class, new ModelBlock.Deserializer()).registerTypeAdapter(BlockPart.class, new BlockPart.Deserializer()).registerTypeAdapter(BlockPartFace.class, new BlockPartFace.Deserializer()).registerTypeAdapter(BlockFaceUV.class, new BlockFaceUV.Deserializer()).registerTypeAdapter(ItemTransformVec3f.class, new ItemTransformVec3f.Deserializer()).registerTypeAdapter(ItemCameraTransforms.class, new ItemCameraTransforms.Deserializer()).registerTypeAdapter(ItemOverride.class, new ItemOverride.Deserializer()).create();
     private final List<BlockPart> elements;
     private final boolean gui3d;
@@ -36,8 +39,11 @@ public class ModelBlock
     private ItemCameraTransforms cameraTransforms;
     private final List<ItemOverride> overrides;
     public String name = "";
+    @VisibleForTesting
     public final Map<String, String> textures;
+    @VisibleForTesting
     public ModelBlock parent;
+    @VisibleForTesting
     protected ResourceLocation parentLocation;
 
     public static ModelBlock deserialize(Reader readerIn)
@@ -50,7 +56,7 @@ public class ModelBlock
         return deserialize(new StringReader(jsonString));
     }
 
-    public ModelBlock(ResourceLocation parentLocationIn, List<BlockPart> elementsIn, Map<String, String> texturesIn, boolean ambientOcclusionIn, boolean gui3dIn, ItemCameraTransforms cameraTransformsIn, List<ItemOverride> overridesIn)
+    public ModelBlock(@Nullable ResourceLocation parentLocationIn, List<BlockPart> elementsIn, Map<String, String> texturesIn, boolean ambientOcclusionIn, boolean gui3dIn, ItemCameraTransforms cameraTransformsIn, List<ItemOverride> overridesIn)
     {
         this.elements = elementsIn;
         this.ambientOcclusion = ambientOcclusionIn;
@@ -170,6 +176,7 @@ public class ModelBlock
         return hash.charAt(0) == 35;
     }
 
+    @Nullable
     public ResourceLocation getParentLocation()
     {
         return this.parentLocation;

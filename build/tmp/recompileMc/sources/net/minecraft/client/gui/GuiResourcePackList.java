@@ -19,17 +19,17 @@ public abstract class GuiResourcePackList extends GuiListExtended
         super(mcIn, p_i45055_2_, p_i45055_3_, 32, p_i45055_3_ - 55 + 4, 36);
         this.mc = mcIn;
         this.resourcePackEntries = p_i45055_4_;
-        this.field_148163_i = false;
+        this.centerListVertically = false;
         this.setHasListHeader(true, (int)((float)mcIn.fontRendererObj.FONT_HEIGHT * 1.5F));
     }
 
     /**
      * Handles drawing a list's header row.
      */
-    protected void drawListHeader(int p_148129_1_, int p_148129_2_, Tessellator p_148129_3_)
+    protected void drawListHeader(int insideLeft, int insideTop, Tessellator tessellatorIn)
     {
         String s = TextFormatting.UNDERLINE + "" + TextFormatting.BOLD + this.getListHeader();
-        this.mc.fontRendererObj.drawString(s, p_148129_1_ + this.width / 2 - this.mc.fontRendererObj.getStringWidth(s) / 2, Math.min(this.top + 3, p_148129_2_), 16777215);
+        this.mc.fontRendererObj.drawString(s, insideLeft + this.width / 2 - this.mc.fontRendererObj.getStringWidth(s) / 2, Math.min(this.top + 3, insideTop), 16777215);
     }
 
     protected abstract String getListHeader();

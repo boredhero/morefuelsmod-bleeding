@@ -129,15 +129,19 @@ public abstract class MobSpawnerBaseLogic
                     EntityLiving entityliving = entity instanceof EntityLiving ? (EntityLiving)entity : null;
                     entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, world.rand.nextFloat() * 360.0F, 0.0F);
 
-                    if (entityliving == null || entityliving.getCanSpawnHere() && entityliving.isNotColliding())
+                    net.minecraftforge.fml.common.eventhandler.Event.Result canSpawn = net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, this.getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ);
+                    boolean force = canSpawn == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW ||
+                                (canSpawn == net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT && (entityliving.getCanSpawnHere() && entityliving.isNotColliding()));
+                    if (entityliving == null || force)
                     {
                         if (this.randomEntity.getNbt().getSize() == 1 && this.randomEntity.getNbt().hasKey("id", 8) && entity instanceof EntityLiving)
                         {
+                            if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(entityliving, this.getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ))
                             ((EntityLiving)entity).onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData)null);
                         }
 
                         AnvilChunkLoader.spawnEntity(entity, world);
-                        world.playAuxSFX(2004, blockpos, 0);
+                        world.playEvent(2004, blockpos, 0);
 
                         if (entityliving != null)
                         {
@@ -170,10 +174,10 @@ public abstract class MobSpawnerBaseLogic
 
         if (!this.minecartToSpawn.isEmpty())
         {
-            this.func_184993_a((WeightedSpawnerEntity)WeightedRandom.getRandomItem(this.getSpawnerWorld().rand, this.minecartToSpawn));
+            this.setNextSpawnData((WeightedSpawnerEntity)WeightedRandom.getRandomItem(this.getSpawnerWorld().rand, this.minecartToSpawn));
         }
 
-        this.func_98267_a(1);
+        this.broadcastEvent(1);
     }
 
     public void readFromNBT(NBTTagCompound nbt)
@@ -198,7 +202,7 @@ public abstract class MobSpawnerBaseLogic
             nbttagcompound.setString("id", "Pig");
         }
 
-        this.func_184993_a(new WeightedSpawnerEntity(1, nbttagcompound));
+        this.setNextSpawnData(new WeightedSpawnerEntity(1, nbttagcompound));
 
         if (nbt.hasKey("MinSpawnDelay", 99))
         {
@@ -224,20 +228,24 @@ public abstract class MobSpawnerBaseLogic
         }
     }
 
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound p_189530_1_)
     {
         String s = this.getEntityNameToSpawn();
 
-        if (!StringUtils.isNullOrEmpty(s))
+        if (StringUtils.isNullOrEmpty(s))
         {
-            nbt.setShort("Delay", (short)this.spawnDelay);
-            nbt.setShort("MinSpawnDelay", (short)this.minSpawnDelay);
-            nbt.setShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
-            nbt.setShort("SpawnCount", (short)this.spawnCount);
-            nbt.setShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
-            nbt.setShort("RequiredPlayerRange", (short)this.activatingRangeFromPlayer);
-            nbt.setShort("SpawnRange", (short)this.spawnRange);
-            nbt.setTag("SpawnData", this.randomEntity.getNbt().copy());
+            return p_189530_1_;
+        }
+        else
+        {
+            p_189530_1_.setShort("Delay", (short)this.spawnDelay);
+            p_189530_1_.setShort("MinSpawnDelay", (short)this.minSpawnDelay);
+            p_189530_1_.setShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
+            p_189530_1_.setShort("SpawnCount", (short)this.spawnCount);
+            p_189530_1_.setShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
+            p_189530_1_.setShort("RequiredPlayerRange", (short)this.activatingRangeFromPlayer);
+            p_189530_1_.setShort("SpawnRange", (short)this.spawnRange);
+            p_189530_1_.setTag("SpawnData", this.randomEntity.getNbt().copy());
             NBTTagList nbttaglist = new NBTTagList();
 
             if (!this.minecartToSpawn.isEmpty())
@@ -252,7 +260,8 @@ public abstract class MobSpawnerBaseLogic
                 nbttaglist.appendTag(this.randomEntity.toCompoundTag());
             }
 
-            nbt.setTag("SpawnPotentials", nbttaglist);
+            p_189530_1_.setTag("SpawnPotentials", nbttaglist);
+            return p_189530_1_;
         }
     }
 
@@ -288,12 +297,12 @@ public abstract class MobSpawnerBaseLogic
         return this.cachedEntity;
     }
 
-    public void func_184993_a(WeightedSpawnerEntity p_184993_1_)
+    public void setNextSpawnData(WeightedSpawnerEntity p_184993_1_)
     {
         this.randomEntity = p_184993_1_;
     }
 
-    public abstract void func_98267_a(int id);
+    public abstract void broadcastEvent(int id);
 
     public abstract World getSpawnerWorld();
 

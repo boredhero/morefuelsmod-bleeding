@@ -4,9 +4,9 @@ import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class SoundEvent
+public class SoundEvent extends net.minecraftforge.fml.common.registry.IForgeRegistryEntry.Impl<SoundEvent>
 {
-    public static final RegistryNamespaced<ResourceLocation, SoundEvent> soundEventRegistry = new RegistryNamespaced();
+    public static final RegistryNamespaced<ResourceLocation, SoundEvent> REGISTRY = net.minecraftforge.fml.common.registry.GameData.getSoundEventRegistry();
     private final ResourceLocation soundName;
     private static int soundEventId = 0;
 
@@ -438,6 +438,7 @@ public class SoundEvent
         registerSound("item.bucket.fill");
         registerSound("item.bucket.fill_lava");
         registerSound("item.chorus_fruit.teleport");
+        registerSound("item.elytra.flying");
         registerSound("item.firecharge.use");
         registerSound("item.flintandsteel.use");
         registerSound("item.hoe.till");
@@ -471,6 +472,6 @@ public class SoundEvent
     private static void registerSound(String soundNameIn)
     {
         ResourceLocation resourcelocation = new ResourceLocation(soundNameIn);
-        soundEventRegistry.register(soundEventId++, resourcelocation, new SoundEvent(resourcelocation));
+        REGISTRY.register(soundEventId++, resourcelocation, new SoundEvent(resourcelocation));
     }
 }

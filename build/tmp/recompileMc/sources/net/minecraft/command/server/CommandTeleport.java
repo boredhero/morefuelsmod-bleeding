@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -43,10 +44,6 @@ public class CommandTeleport extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -79,7 +76,7 @@ public class CommandTeleport extends CommandBase
                 {
                     int lvt_6_2_ = i + 1;
                     CommandBase.CoordinateArg commandbase$coordinatearg = parseCoordinate(entity.posX, args[i], true);
-                    CommandBase.CoordinateArg commandbase$coordinatearg1 = parseCoordinate(entity.posY, args[lvt_6_2_++], 0, 0, false);
+                    CommandBase.CoordinateArg commandbase$coordinatearg1 = parseCoordinate(entity.posY, args[lvt_6_2_++], -512, 512, false);
                     CommandBase.CoordinateArg commandbase$coordinatearg2 = parseCoordinate(entity.posZ, args[lvt_6_2_++], true);
                     CommandBase.CoordinateArg commandbase$coordinatearg3 = parseCoordinate((double)entity.rotationYaw, args.length > lvt_6_2_ ? args[lvt_6_2_++] : "~", false);
                     CommandBase.CoordinateArg commandbase$coordinatearg4 = parseCoordinate((double)entity.rotationPitch, args.length > lvt_6_2_ ? args[lvt_6_2_] : "~", false);
@@ -113,34 +110,34 @@ public class CommandTeleport extends CommandBase
                             set.add(SPacketPlayerPosLook.EnumFlags.Y_ROT);
                         }
 
-                        float f = (float)commandbase$coordinatearg3.func_179629_b();
+                        float f = (float)commandbase$coordinatearg3.getAmount();
 
                         if (!commandbase$coordinatearg3.isRelative())
                         {
-                            f = MathHelper.wrapAngleTo180_float(f);
+                            f = MathHelper.wrapDegrees(f);
                         }
 
-                        float f1 = (float)commandbase$coordinatearg4.func_179629_b();
+                        float f1 = (float)commandbase$coordinatearg4.getAmount();
 
                         if (!commandbase$coordinatearg4.isRelative())
                         {
-                            f1 = MathHelper.wrapAngleTo180_float(f1);
+                            f1 = MathHelper.wrapDegrees(f1);
                         }
 
                         entity.dismountRidingEntity();
-                        ((EntityPlayerMP)entity).playerNetServerHandler.setPlayerLocation(commandbase$coordinatearg.func_179629_b(), commandbase$coordinatearg1.func_179629_b(), commandbase$coordinatearg2.func_179629_b(), f, f1, set);
+                        ((EntityPlayerMP)entity).connection.setPlayerLocation(commandbase$coordinatearg.getAmount(), commandbase$coordinatearg1.getAmount(), commandbase$coordinatearg2.getAmount(), f, f1, set);
                         entity.setRotationYawHead(f);
                     }
                     else
                     {
-                        float f2 = (float)MathHelper.wrapAngleTo180_double(commandbase$coordinatearg3.func_179628_a());
-                        float f3 = (float)MathHelper.wrapAngleTo180_double(commandbase$coordinatearg4.func_179628_a());
+                        float f2 = (float)MathHelper.wrapDegrees(commandbase$coordinatearg3.getResult());
+                        float f3 = (float)MathHelper.wrapDegrees(commandbase$coordinatearg4.getResult());
                         f3 = MathHelper.clamp_float(f3, -90.0F, 90.0F);
-                        entity.setLocationAndAngles(commandbase$coordinatearg.func_179628_a(), commandbase$coordinatearg1.func_179628_a(), commandbase$coordinatearg2.func_179628_a(), f2, f3);
+                        entity.setLocationAndAngles(commandbase$coordinatearg.getResult(), commandbase$coordinatearg1.getResult(), commandbase$coordinatearg2.getResult(), f2, f3);
                         entity.setRotationYawHead(f2);
                     }
 
-                    notifyOperators(sender, this, "commands.tp.success.coordinates", new Object[] {entity.getName(), Double.valueOf(commandbase$coordinatearg.func_179628_a()), Double.valueOf(commandbase$coordinatearg1.func_179628_a()), Double.valueOf(commandbase$coordinatearg2.func_179628_a())});
+                    notifyCommandListener(sender, this, "commands.tp.success.coordinates", new Object[] {entity.getName(), Double.valueOf(commandbase$coordinatearg.getResult()), Double.valueOf(commandbase$coordinatearg1.getResult()), Double.valueOf(commandbase$coordinatearg2.getResult())});
                 }
             }
             else
@@ -157,20 +154,20 @@ public class CommandTeleport extends CommandBase
 
                     if (entity instanceof EntityPlayerMP)
                     {
-                        ((EntityPlayerMP)entity).playerNetServerHandler.setPlayerLocation(entity1.posX, entity1.posY, entity1.posZ, entity1.rotationYaw, entity1.rotationPitch);
+                        ((EntityPlayerMP)entity).connection.setPlayerLocation(entity1.posX, entity1.posY, entity1.posZ, entity1.rotationYaw, entity1.rotationPitch);
                     }
                     else
                     {
                         entity.setLocationAndAngles(entity1.posX, entity1.posY, entity1.posZ, entity1.rotationYaw, entity1.rotationPitch);
                     }
 
-                    notifyOperators(sender, this, "commands.tp.success", new Object[] {entity.getName(), entity1.getName()});
+                    notifyCommandListener(sender, this, "commands.tp.success", new Object[] {entity.getName(), entity1.getName()});
                 }
             }
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length != 1 && args.length != 2 ? Collections.<String>emptyList() : getListOfStringsMatchingLastWord(args, server.getAllUsernames());
     }

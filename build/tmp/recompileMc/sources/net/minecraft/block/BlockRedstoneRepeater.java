@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyInteger;
@@ -69,7 +70,7 @@ public class BlockRedstoneRepeater extends BlockRedstoneDiode
         return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (!playerIn.capabilities.allowEdit)
         {
@@ -92,7 +93,7 @@ public class BlockRedstoneRepeater extends BlockRedstoneDiode
         Integer integer = (Integer)unpoweredState.getValue(DELAY);
         Boolean obool = (Boolean)unpoweredState.getValue(LOCKED);
         EnumFacing enumfacing = (EnumFacing)unpoweredState.getValue(FACING);
-        return Blocks.powered_repeater.getDefaultState().withProperty(FACING, enumfacing).withProperty(DELAY, integer).withProperty(LOCKED, obool);
+        return Blocks.POWERED_REPEATER.getDefaultState().withProperty(FACING, enumfacing).withProperty(DELAY, integer).withProperty(LOCKED, obool);
     }
 
     protected IBlockState getUnpoweredState(IBlockState poweredState)
@@ -100,20 +101,21 @@ public class BlockRedstoneRepeater extends BlockRedstoneDiode
         Integer integer = (Integer)poweredState.getValue(DELAY);
         Boolean obool = (Boolean)poweredState.getValue(LOCKED);
         EnumFacing enumfacing = (EnumFacing)poweredState.getValue(FACING);
-        return Blocks.unpowered_repeater.getDefaultState().withProperty(FACING, enumfacing).withProperty(DELAY, integer).withProperty(LOCKED, obool);
+        return Blocks.UNPOWERED_REPEATER.getDefaultState().withProperty(FACING, enumfacing).withProperty(DELAY, integer).withProperty(LOCKED, obool);
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.repeater;
+        return Items.REPEATER;
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Items.repeater);
+        return new ItemStack(Items.REPEATER);
     }
 
     public boolean isLocked(IBlockAccess worldIn, BlockPos pos, IBlockState state)
@@ -121,31 +123,31 @@ public class BlockRedstoneRepeater extends BlockRedstoneDiode
         return this.getPowerOnSides(worldIn, pos, state) > 0;
     }
 
-    protected boolean func_185545_A(IBlockState p_185545_1_)
+    protected boolean isAlternateInput(IBlockState state)
     {
-        return func_185546_B(p_185545_1_);
+        return isDiode(state);
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState worldIn, World pos, BlockPos state, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
         if (this.isRepeaterPowered)
         {
-            EnumFacing enumfacing = (EnumFacing)worldIn.getValue(FACING);
-            double d0 = (double)((float)state.getX() + 0.5F) + (double)(rand.nextFloat() - 0.5F) * 0.2D;
-            double d1 = (double)((float)state.getY() + 0.4F) + (double)(rand.nextFloat() - 0.5F) * 0.2D;
-            double d2 = (double)((float)state.getZ() + 0.5F) + (double)(rand.nextFloat() - 0.5F) * 0.2D;
+            EnumFacing enumfacing = (EnumFacing)stateIn.getValue(FACING);
+            double d0 = (double)((float)pos.getX() + 0.5F) + (double)(rand.nextFloat() - 0.5F) * 0.2D;
+            double d1 = (double)((float)pos.getY() + 0.4F) + (double)(rand.nextFloat() - 0.5F) * 0.2D;
+            double d2 = (double)((float)pos.getZ() + 0.5F) + (double)(rand.nextFloat() - 0.5F) * 0.2D;
             float f = -5.0F;
 
             if (rand.nextBoolean())
             {
-                f = (float)(((Integer)worldIn.getValue(DELAY)).intValue() * 2 - 1);
+                f = (float)(((Integer)stateIn.getValue(DELAY)).intValue() * 2 - 1);
             }
 
             f = f / 16.0F;
             double d3 = (double)(f * (float)enumfacing.getFrontOffsetX());
             double d4 = (double)(f * (float)enumfacing.getFrontOffsetZ());
-            pos.spawnParticle(EnumParticleTypes.REDSTONE, d0 + d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+            worldIn.spawnParticle(EnumParticleTypes.REDSTONE, d0 + d3, d1, d2 + d4, 0.0D, 0.0D, 0.0D, new int[0]);
         }
     }
 

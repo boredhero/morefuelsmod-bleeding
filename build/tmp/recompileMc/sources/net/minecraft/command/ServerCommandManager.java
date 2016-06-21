@@ -84,6 +84,7 @@ public class ServerCommandManager extends CommandHandler implements ICommandList
         this.registerCommand(new CommandWorldBorder());
         this.registerCommand(new CommandTitle());
         this.registerCommand(new CommandEntityData());
+        this.registerCommand(new CommandStopSound());
 
         if (serverIn.isDedicatedServer())
         {
@@ -114,7 +115,7 @@ public class ServerCommandManager extends CommandHandler implements ICommandList
     /**
      * Send an informative message to the server operators
      */
-    public void notifyOperators(ICommandSender sender, ICommand command, int flags, String msgFormat, Object... msgParams)
+    public void notifyListener(ICommandSender sender, ICommand command, int flags, String translationKey, Object... translationArgs)
     {
         boolean flag = true;
         MinecraftServer minecraftserver = this.server;
@@ -124,9 +125,9 @@ public class ServerCommandManager extends CommandHandler implements ICommandList
             flag = false;
         }
 
-        ITextComponent itextcomponent = new TextComponentTranslation("chat.type.admin", new Object[] {sender.getName(), new TextComponentTranslation(msgFormat, msgParams)});
-        itextcomponent.getChatStyle().setColor(TextFormatting.GRAY);
-        itextcomponent.getChatStyle().setItalic(Boolean.valueOf(true));
+        ITextComponent itextcomponent = new TextComponentTranslation("chat.type.admin", new Object[] {sender.getName(), new TextComponentTranslation(translationKey, translationArgs)});
+        itextcomponent.getStyle().setColor(TextFormatting.GRAY);
+        itextcomponent.getStyle().setItalic(Boolean.valueOf(true));
 
         if (flag)
         {
@@ -159,7 +160,7 @@ public class ServerCommandManager extends CommandHandler implements ICommandList
 
         if ((flags & 1) != 1 && flag3 || sender instanceof MinecraftServer)
         {
-            sender.addChatMessage(new TextComponentTranslation(msgFormat, msgParams));
+            sender.addChatMessage(new TextComponentTranslation(translationKey, translationArgs));
         }
     }
 

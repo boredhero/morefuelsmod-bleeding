@@ -1,7 +1,9 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.Objects;
+import javax.annotation.concurrent.Immutable;
 
+@Immutable
 public class Vec3i implements Comparable<Vec3i>
 {
     /** The Null vector constant (0, 0, 0) */
@@ -53,7 +55,7 @@ public class Vec3i implements Comparable<Vec3i>
     }
 
     /**
-     * Get the X coordinate
+     * Gets the X coordinate.
      */
     public int getX()
     {
@@ -61,7 +63,7 @@ public class Vec3i implements Comparable<Vec3i>
     }
 
     /**
-     * Get the Y coordinate
+     * Gets the Y coordinate.
      */
     public int getY()
     {
@@ -69,7 +71,7 @@ public class Vec3i implements Comparable<Vec3i>
     }
 
     /**
-     * Get the Z coordinate
+     * Gets the Z coordinate.
      */
     public int getZ()
     {

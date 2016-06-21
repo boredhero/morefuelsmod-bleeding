@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class ServerList
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /** The Minecraft instance. */
     private final Minecraft mc;
     private final List<ServerData> servers = Lists.<ServerData>newArrayList();
@@ -51,7 +51,7 @@ public class ServerList
         }
         catch (Exception exception)
         {
-            logger.error((String)"Couldn\'t load server list", (Throwable)exception);
+            LOGGER.error((String)"Couldn\'t load server list", (Throwable)exception);
         }
     }
 
@@ -76,7 +76,7 @@ public class ServerList
         }
         catch (Exception exception)
         {
-            logger.error((String)"Couldn\'t save server list", (Throwable)exception);
+            LOGGER.error((String)"Couldn\'t save server list", (Throwable)exception);
         }
     }
 
@@ -123,12 +123,12 @@ public class ServerList
         this.saveServerList();
     }
 
-    public void func_147413_a(int index, ServerData server)
+    public void set(int index, ServerData server)
     {
         this.servers.set(index, server);
     }
 
-    public static void func_147414_b(ServerData p_147414_0_)
+    public static void saveSingleServer(ServerData server)
     {
         ServerList serverlist = new ServerList(Minecraft.getMinecraft());
         serverlist.loadServerList();
@@ -137,9 +137,9 @@ public class ServerList
         {
             ServerData serverdata = serverlist.getServerData(i);
 
-            if (serverdata.serverName.equals(p_147414_0_.serverName) && serverdata.serverIP.equals(p_147414_0_.serverIP))
+            if (serverdata.serverName.equals(server.serverName) && serverdata.serverIP.equals(server.serverIP))
             {
-                serverlist.func_147413_a(i, p_147414_0_);
+                serverlist.set(i, server);
                 break;
             }
         }

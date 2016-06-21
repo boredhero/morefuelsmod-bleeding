@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer<TileEntityBeacon>
 {
-    public static final ResourceLocation beaconBeam = new ResourceLocation("textures/entity/beacon_beam.png");
+    public static final ResourceLocation TEXTURE_BEACON_BEAM = new ResourceLocation("textures/entity/beacon_beam.png");
 
     public void renderTileEntityAt(TileEntityBeacon te, double x, double y, double z, float partialTicks, int destroyStage)
     {
@@ -24,7 +24,7 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer<TileEnti
     public void renderBeacon(double p_188206_1_, double p_188206_3_, double p_188206_5_, double p_188206_7_, double p_188206_9_, List<TileEntityBeacon.BeamSegment> p_188206_11_, double p_188206_12_)
     {
         GlStateManager.alphaFunc(516, 0.1F);
-        this.bindTexture(beaconBeam);
+        this.bindTexture(TEXTURE_BEACON_BEAM);
 
         if (p_188206_9_ > 0.0D)
         {
@@ -134,7 +134,7 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer<TileEnti
         GlStateManager.depthMask(true);
     }
 
-    public boolean isGlobalRenderer(TileEntityBeacon p_188185_1_)
+    public boolean isGlobalRenderer(TileEntityBeacon te)
     {
         return true;
     }

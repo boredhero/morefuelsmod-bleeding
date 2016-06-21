@@ -21,11 +21,11 @@ public class LayerBipedArmor extends LayerArmorBase<ModelBiped>
     }
 
     @SuppressWarnings("incomplete-switch")
-    protected void setModelSlotVisible(ModelBiped p_188359_1_, EntityEquipmentSlot p_188359_2_)
+    protected void setModelSlotVisible(ModelBiped p_188359_1_, EntityEquipmentSlot slotIn)
     {
         this.setModelVisible(p_188359_1_);
 
-        switch (p_188359_2_)
+        switch (slotIn)
         {
             case HEAD:
                 p_188359_1_.bipedHead.showModel = true;

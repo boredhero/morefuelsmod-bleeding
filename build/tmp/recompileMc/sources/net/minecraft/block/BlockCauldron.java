@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -39,17 +40,17 @@ public class BlockCauldron extends Block
 
     public BlockCauldron()
     {
-        super(Material.iron, MapColor.stoneColor);
+        super(Material.IRON, MapColor.STONE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(LEVEL, Integer.valueOf(0)));
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, Entity p_185477_6_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
     {
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, AABB_LEGS);
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, AABB_WALL_WEST);
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, AABB_WALL_NORTH);
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, AABB_WALL_EAST);
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, AABB_WALL_SOUTH);
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, AABB_LEGS);
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, AABB_WALL_WEST);
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, AABB_WALL_NORTH);
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, AABB_WALL_EAST);
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, AABB_WALL_SOUTH);
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -85,7 +86,7 @@ public class BlockCauldron extends Block
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (heldItem == null)
         {
@@ -96,22 +97,22 @@ public class BlockCauldron extends Block
             int i = ((Integer)state.getValue(LEVEL)).intValue();
             Item item = heldItem.getItem();
 
-            if (item == Items.water_bucket)
+            if (item == Items.WATER_BUCKET)
             {
                 if (i < 3 && !worldIn.isRemote)
                 {
                     if (!playerIn.capabilities.isCreativeMode)
                     {
-                        playerIn.setHeldItem(hand, new ItemStack(Items.bucket));
+                        playerIn.setHeldItem(hand, new ItemStack(Items.BUCKET));
                     }
 
-                    playerIn.addStat(StatList.cauldronFilled);
+                    playerIn.addStat(StatList.CAULDRON_FILLED);
                     this.setWaterLevel(worldIn, pos, state, 3);
                 }
 
                 return true;
             }
-            else if (item == Items.bucket)
+            else if (item == Items.BUCKET)
             {
                 if (i == 3 && !worldIn.isRemote)
                 {
@@ -121,28 +122,28 @@ public class BlockCauldron extends Block
 
                         if (heldItem.stackSize == 0)
                         {
-                            playerIn.setHeldItem(hand, new ItemStack(Items.water_bucket));
+                            playerIn.setHeldItem(hand, new ItemStack(Items.WATER_BUCKET));
                         }
-                        else if (!playerIn.inventory.addItemStackToInventory(new ItemStack(Items.water_bucket)))
+                        else if (!playerIn.inventory.addItemStackToInventory(new ItemStack(Items.WATER_BUCKET)))
                         {
-                            playerIn.dropPlayerItemWithRandomChoice(new ItemStack(Items.water_bucket), false);
+                            playerIn.dropItem(new ItemStack(Items.WATER_BUCKET), false);
                         }
                     }
 
-                    playerIn.addStat(StatList.cauldronUsed);
+                    playerIn.addStat(StatList.CAULDRON_USED);
                     this.setWaterLevel(worldIn, pos, state, 0);
                 }
 
                 return true;
             }
-            else if (item == Items.glass_bottle)
+            else if (item == Items.GLASS_BOTTLE)
             {
                 if (i > 0 && !worldIn.isRemote)
                 {
                     if (!playerIn.capabilities.isCreativeMode)
                     {
-                        ItemStack itemstack1 = PotionUtils.addPotionToItemStack(new ItemStack(Items.potionitem), PotionTypes.water);
-                        playerIn.addStat(StatList.cauldronUsed);
+                        ItemStack itemstack1 = PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
+                        playerIn.addStat(StatList.CAULDRON_USED);
 
                         if (--heldItem.stackSize == 0)
                         {
@@ -150,7 +151,7 @@ public class BlockCauldron extends Block
                         }
                         else if (!playerIn.inventory.addItemStackToInventory(itemstack1))
                         {
-                            playerIn.dropPlayerItemWithRandomChoice(itemstack1, false);
+                            playerIn.dropItem(itemstack1, false);
                         }
                         else if (playerIn instanceof EntityPlayerMP)
                         {
@@ -173,7 +174,7 @@ public class BlockCauldron extends Block
                     {
                         itemarmor.removeColor(heldItem);
                         this.setWaterLevel(worldIn, pos, state, i - 1);
-                        playerIn.addStat(StatList.armorCleaned);
+                        playerIn.addStat(StatList.ARMOR_CLEANED);
                         return true;
                     }
                 }
@@ -185,7 +186,7 @@ public class BlockCauldron extends Block
                         ItemStack itemstack = heldItem.copy();
                         itemstack.stackSize = 1;
                         TileEntityBanner.removeBannerData(itemstack);
-                        playerIn.addStat(StatList.bannerCleaned);
+                        playerIn.addStat(StatList.BANNER_CLEANED);
 
                         if (!playerIn.capabilities.isCreativeMode)
                         {
@@ -198,7 +199,7 @@ public class BlockCauldron extends Block
                         }
                         else if (!playerIn.inventory.addItemStackToInventory(itemstack))
                         {
-                            playerIn.dropPlayerItemWithRandomChoice(itemstack, false);
+                            playerIn.dropItem(itemstack, false);
                         }
                         else if (playerIn instanceof EntityPlayerMP)
                         {
@@ -251,14 +252,15 @@ public class BlockCauldron extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.cauldron;
+        return Items.CAULDRON;
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Items.cauldron);
+        return new ItemStack(Items.CAULDRON);
     }
 
     public boolean hasComparatorInputOverride(IBlockState state)

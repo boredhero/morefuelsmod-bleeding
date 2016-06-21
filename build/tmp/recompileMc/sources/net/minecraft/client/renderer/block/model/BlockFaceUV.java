@@ -7,6 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
+import javax.annotation.Nullable;
 import net.minecraft.util.JsonUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -17,7 +18,7 @@ public class BlockFaceUV
     public float[] uvs;
     public final int rotation;
 
-    public BlockFaceUV(float[] uvsIn, int rotationIn)
+    public BlockFaceUV(@Nullable float[] uvsIn, int rotationIn)
     {
         this.uvs = uvsIn;
         this.rotation = rotationIn;
@@ -92,6 +93,7 @@ public class BlockFaceUV
                 }
             }
 
+            @Nullable
             private float[] parseUV(JsonObject object)
             {
                 if (!object.has("uv"))

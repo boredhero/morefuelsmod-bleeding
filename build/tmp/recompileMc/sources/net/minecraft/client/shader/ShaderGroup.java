@@ -38,15 +38,15 @@ public class ShaderGroup
     private Matrix4f projectionMatrix;
     private int mainFramebufferWidth;
     private int mainFramebufferHeight;
-    private float field_148036_j;
-    private float field_148037_k;
+    private float time;
+    private float lastStamp;
 
     public ShaderGroup(TextureManager p_i1050_1_, IResourceManager resourceManagerIn, Framebuffer mainFramebufferIn, ResourceLocation p_i1050_4_) throws JsonException, IOException, JsonSyntaxException
     {
         this.resourceManager = resourceManagerIn;
         this.mainFramebuffer = mainFramebufferIn;
-        this.field_148036_j = 0.0F;
-        this.field_148037_k = 0.0F;
+        this.time = 0.0F;
+        this.lastStamp = 0.0F;
         this.mainFramebufferWidth = mainFramebufferIn.framebufferWidth;
         this.mainFramebufferHeight = mainFramebufferIn.framebufferHeight;
         this.shaderGroupName = p_i1050_4_.toString();
@@ -77,8 +77,8 @@ public class ShaderGroup
                     }
                     catch (Exception exception1)
                     {
-                        JsonException jsonexception1 = JsonException.func_151379_a(exception1);
-                        jsonexception1.func_151380_a("targets[" + i + "]");
+                        JsonException jsonexception1 = JsonException.forException(exception1);
+                        jsonexception1.prependJsonKey("targets[" + i + "]");
                         throw jsonexception1;
                     }
 
@@ -99,8 +99,8 @@ public class ShaderGroup
                     }
                     catch (Exception exception)
                     {
-                        JsonException jsonexception2 = JsonException.func_151379_a(exception);
-                        jsonexception2.func_151380_a("passes[" + j + "]");
+                        JsonException jsonexception2 = JsonException.forException(exception);
+                        jsonexception2.prependJsonKey("passes[" + j + "]");
                         throw jsonexception2;
                     }
 
@@ -110,8 +110,8 @@ public class ShaderGroup
         }
         catch (Exception exception2)
         {
-            JsonException jsonexception = JsonException.func_151379_a(exception2);
-            jsonexception.func_151381_b(p_152765_2_.getResourcePath());
+            JsonException jsonexception = JsonException.forException(exception2);
+            jsonexception.setFilenameAndFlush(p_152765_2_.getResourcePath());
             throw jsonexception;
         }
         finally
@@ -221,8 +221,8 @@ public class ShaderGroup
                     }
                     catch (Exception exception1)
                     {
-                        JsonException jsonexception = JsonException.func_151379_a(exception1);
-                        jsonexception.func_151380_a("auxtargets[" + i + "]");
+                        JsonException jsonexception = JsonException.forException(exception1);
+                        jsonexception.prependJsonKey("auxtargets[" + i + "]");
                         throw jsonexception;
                     }
 
@@ -244,8 +244,8 @@ public class ShaderGroup
                     }
                     catch (Exception exception)
                     {
-                        JsonException jsonexception1 = JsonException.func_151379_a(exception);
-                        jsonexception1.func_151380_a("uniforms[" + l + "]");
+                        JsonException jsonexception1 = JsonException.forException(exception);
+                        jsonexception1.prependJsonKey("uniforms[" + l + "]");
                         throw jsonexception1;
                     }
 
@@ -278,8 +278,8 @@ public class ShaderGroup
                 }
                 catch (Exception exception)
                 {
-                    JsonException jsonexception = JsonException.func_151379_a(exception);
-                    jsonexception.func_151380_a("values[" + i + "]");
+                    JsonException jsonexception = JsonException.forException(exception);
+                    jsonexception.prependJsonKey("values[" + i + "]");
                     throw jsonexception;
                 }
 
@@ -377,24 +377,24 @@ public class ShaderGroup
 
     public void loadShaderGroup(float partialTicks)
     {
-        if (partialTicks < this.field_148037_k)
+        if (partialTicks < this.lastStamp)
         {
-            this.field_148036_j += 1.0F - this.field_148037_k;
-            this.field_148036_j += partialTicks;
+            this.time += 1.0F - this.lastStamp;
+            this.time += partialTicks;
         }
         else
         {
-            this.field_148036_j += partialTicks - this.field_148037_k;
+            this.time += partialTicks - this.lastStamp;
         }
 
-        for (this.field_148037_k = partialTicks; this.field_148036_j > 20.0F; this.field_148036_j -= 20.0F)
+        for (this.lastStamp = partialTicks; this.time > 20.0F; this.time -= 20.0F)
         {
             ;
         }
 
         for (Shader shader : this.listShaders)
         {
-            shader.loadShader(this.field_148036_j / 20.0F);
+            shader.loadShader(this.time / 20.0F);
         }
     }
 

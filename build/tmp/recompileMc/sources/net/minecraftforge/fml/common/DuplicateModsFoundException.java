@@ -17,6 +17,8 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.SetMultimap;
 
+import net.minecraftforge.fml.common.EnhancedRuntimeException.WrappedPrintStream;
+
 public class DuplicateModsFoundException extends LoaderException {
     private static final long serialVersionUID = 1L;
     public SetMultimap<ModContainer,File> dupes;

@@ -1,6 +1,8 @@
 package net.minecraft.util.registry;
 
 import java.util.Random;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.Validate;
 
 public class RegistryNamespacedDefaultedByKey<K, V> extends RegistryNamespaced<K, V>
@@ -45,13 +47,15 @@ public class RegistryNamespacedDefaultedByKey<K, V> extends RegistryNamespaced<K
     /**
      * Gets the name we use to identify the given object.
      */
+    @Nonnull
     public K getNameForObject(V value)
     {
         K k = super.getNameForObject(value);
         return (K)(k == null ? this.defaultValueKey : k);
     }
 
-    public V getObject(K name)
+    @Nonnull
+    public V getObject(@Nullable K name)
     {
         V v = super.getObject(name);
         return (V)(v == null ? this.defaultValue : v);
@@ -60,12 +64,14 @@ public class RegistryNamespacedDefaultedByKey<K, V> extends RegistryNamespaced<K
     /**
      * Gets the object identified by the given ID.
      */
+    @Nonnull
     public V getObjectById(int id)
     {
         V v = super.getObjectById(id);
         return (V)(v == null ? this.defaultValue : v);
     }
 
+    @Nonnull
     public V getRandomObject(Random random)
     {
         V v = super.getRandomObject(random);

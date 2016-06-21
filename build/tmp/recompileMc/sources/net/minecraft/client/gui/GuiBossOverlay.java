@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.network.play.server.SPacketUpdateEntityNBT;
+import net.minecraft.network.play.server.SPacketUpdateBossInfo;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.BossInfoLerping;
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiBossOverlay extends Gui
 {
-    private static final ResourceLocation field_184058_a = new ResourceLocation("textures/gui/bars.png");
+    private static final ResourceLocation GUI_BARS_TEXTURES = new ResourceLocation("textures/gui/bars.png");
     private final Minecraft client;
     private final Map<UUID, BossInfoLerping> mapBossInfos = Maps.<UUID, BossInfoLerping>newLinkedHashMap();
 
@@ -35,13 +35,18 @@ public class GuiBossOverlay extends Gui
             for (BossInfoLerping bossinfolerping : this.mapBossInfos.values())
             {
                 int k = i / 2 - 91;
+                net.minecraftforge.client.event.RenderGameOverlayEvent.BossInfo event =
+                        net.minecraftforge.client.ForgeHooksClient.bossBarRenderPre(scaledresolution, bossinfolerping, k, j, 10 + this.client.fontRendererObj.FONT_HEIGHT);
+                if (!event.isCanceled()) {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                this.client.getTextureManager().bindTexture(field_184058_a);
-                this.func_184052_a(k, j, bossinfolerping);
+                this.client.getTextureManager().bindTexture(GUI_BARS_TEXTURES);
+                this.render(k, j, bossinfolerping);
                 String s = bossinfolerping.getName().getFormattedText();
                 this.client.fontRendererObj.drawStringWithShadow(s, (float)(i / 2 - this.client.fontRendererObj.getStringWidth(s) / 2), (float)(j - 9), 16777215);
-                j += 10 + this.client.fontRendererObj.FONT_HEIGHT;
+                }
+                j += event.getIncrement();
 
+                net.minecraftforge.client.ForgeHooksClient.bossBarRenderPost(scaledresolution);
                 if (j >= scaledresolution.getScaledHeight() / 3)
                 {
                     break;
@@ -50,35 +55,35 @@ public class GuiBossOverlay extends Gui
         }
     }
 
-    private void func_184052_a(int p_184052_1_, int p_184052_2_, BossInfo info)
+    private void render(int x, int y, BossInfo info)
     {
-        this.drawTexturedModalRect(p_184052_1_, p_184052_2_, 0, info.getColor().ordinal() * 5 * 2, 182, 5);
+        this.drawTexturedModalRect(x, y, 0, info.getColor().ordinal() * 5 * 2, 182, 5);
 
         if (info.getOverlay() != BossInfo.Overlay.PROGRESS)
         {
-            this.drawTexturedModalRect(p_184052_1_, p_184052_2_, 0, 80 + (info.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
+            this.drawTexturedModalRect(x, y, 0, 80 + (info.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
         }
 
         int i = (int)(info.getPercent() * 183.0F);
 
         if (i > 0)
         {
-            this.drawTexturedModalRect(p_184052_1_, p_184052_2_, 0, info.getColor().ordinal() * 5 * 2 + 5, i, 5);
+            this.drawTexturedModalRect(x, y, 0, info.getColor().ordinal() * 5 * 2 + 5, i, 5);
 
             if (info.getOverlay() != BossInfo.Overlay.PROGRESS)
             {
-                this.drawTexturedModalRect(p_184052_1_, p_184052_2_, 0, 80 + (info.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
+                this.drawTexturedModalRect(x, y, 0, 80 + (info.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
             }
         }
     }
 
-    public void func_184055_a(SPacketUpdateEntityNBT packetIn)
+    public void read(SPacketUpdateBossInfo packetIn)
     {
-        if (packetIn.getOperation() == SPacketUpdateEntityNBT.Operation.ADD)
+        if (packetIn.getOperation() == SPacketUpdateBossInfo.Operation.ADD)
         {
             this.mapBossInfos.put(packetIn.getUniqueId(), new BossInfoLerping(packetIn));
         }
-        else if (packetIn.getOperation() == SPacketUpdateEntityNBT.Operation.REMOVE)
+        else if (packetIn.getOperation() == SPacketUpdateBossInfo.Operation.REMOVE)
         {
             this.mapBossInfos.remove(packetIn.getUniqueId());
         }

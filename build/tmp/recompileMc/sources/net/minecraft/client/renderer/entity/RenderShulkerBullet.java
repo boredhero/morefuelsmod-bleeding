@@ -11,15 +11,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderShulkerBullet extends Render<EntityShulkerBullet>
 {
-    private static final ResourceLocation field_188348_a = new ResourceLocation("textures/entity/shulker/spark.png");
-    private final ModelShulkerBullet field_188349_b = new ModelShulkerBullet();
+    private static final ResourceLocation SHULKER_SPARK_TEXTURE = new ResourceLocation("textures/entity/shulker/spark.png");
+    private final ModelShulkerBullet model = new ModelShulkerBullet();
 
-    public RenderShulkerBullet(RenderManager p_i46551_1_)
+    public RenderShulkerBullet(RenderManager manager)
     {
-        super(p_i46551_1_);
+        super(manager);
     }
 
-    private float func_188347_a(float p_188347_1_, float p_188347_2_, float p_188347_3_)
+    private float rotLerp(float p_188347_1_, float p_188347_2_, float p_188347_3_)
     {
         float f;
 
@@ -42,7 +42,7 @@ public class RenderShulkerBullet extends Render<EntityShulkerBullet>
     public void doRender(EntityShulkerBullet entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
         GlStateManager.pushMatrix();
-        float f = this.func_188347_a(entity.prevRotationYaw, entity.rotationYaw, partialTicks);
+        float f = this.rotLerp(entity.prevRotationYaw, entity.rotationYaw, partialTicks);
         float f1 = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
         float f2 = (float)entity.ticksExisted + partialTicks;
         GlStateManager.translate((float)x, (float)y + 0.15F, (float)z);
@@ -53,11 +53,11 @@ public class RenderShulkerBullet extends Render<EntityShulkerBullet>
         GlStateManager.enableRescaleNormal();
         GlStateManager.scale(-1.0F, -1.0F, 1.0F);
         this.bindEntityTexture(entity);
-        this.field_188349_b.render(entity, 0.0F, 0.0F, 0.0F, f, f1, f3);
+        this.model.render(entity, 0.0F, 0.0F, 0.0F, f, f1, f3);
         GlStateManager.enableBlend();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 0.5F);
         GlStateManager.scale(1.5F, 1.5F, 1.5F);
-        this.field_188349_b.render(entity, 0.0F, 0.0F, 0.0F, f, f1, f3);
+        this.model.render(entity, 0.0F, 0.0F, 0.0F, f, f1, f3);
         GlStateManager.disableBlend();
         GlStateManager.popMatrix();
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
@@ -68,6 +68,6 @@ public class RenderShulkerBullet extends Render<EntityShulkerBullet>
      */
     protected ResourceLocation getEntityTexture(EntityShulkerBullet entity)
     {
-        return field_188348_a;
+        return SHULKER_SPARK_TEXTURE;
     }
 }

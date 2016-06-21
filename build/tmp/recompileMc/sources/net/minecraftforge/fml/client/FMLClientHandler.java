@@ -19,6 +19,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -67,8 +68,9 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.world.WorldSettings;
-import net.minecraft.world.storage.SaveFormatComparator;
+import net.minecraft.world.storage.WorldSummary;
 import net.minecraft.world.storage.SaveFormatOld;
+import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.DummyModContainer;
 import net.minecraftforge.fml.common.DuplicateModsFoundException;
@@ -76,6 +78,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLContainerHolder;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.IFMLSidedHandler;
+import net.minecraftforge.fml.common.Java8VersionException;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderException;
 import net.minecraftforge.fml.common.MetadataCollection;
@@ -158,6 +161,8 @@ public class FMLClientHandler implements IFMLSidedHandler
 
     private boolean loading = true;
 
+    private Java8VersionException j8onlymods;
+
     private WrongMinecraftVersionException wrongMC;
 
     private CustomModLoadingErrorDisplayException customError;
@@ -199,10 +204,10 @@ public class FMLClientHandler implements IFMLSidedHandler
             return;
         }
 
-        FMLCommonHandler.instance().beginLoading(this);
+        List<String> injectedModContainers = FMLCommonHandler.instance().beginLoading(this);
         try
         {
-            Loader.instance().loadMods();
+            Loader.instance().loadMods(injectedModContainers);
         }
         catch (WrongMinecraftVersionException wrong)
         {
@@ -211,6 +216,10 @@ public class FMLClientHandler implements IFMLSidedHandler
         catch (DuplicateModsFoundException dupes)
         {
             dupesFound = dupes;
+        }
+        catch (Java8VersionException j8mods)
+        {
+            j8onlymods = j8mods;
         }
         catch (MissingModsException missing)
         {
@@ -297,7 +306,7 @@ public class FMLClientHandler implements IFMLSidedHandler
      */
     public void finishMinecraftLoading()
     {
-        if (modsMissing != null || wrongMC != null || customError!=null || dupesFound!=null || modSorting!=null)
+        if (modsMissing != null || wrongMC != null || customError!=null || dupesFound!=null || modSorting!=null || j8onlymods!=null)
         {
             SplashProgress.finish();
             return;
@@ -344,6 +353,8 @@ public class FMLClientHandler implements IFMLSidedHandler
         }
         loading = false;
         client.gameSettings.loadOptions(); //Reload options to load any mod added keybindings.
+        Loader.instance().loadingComplete();
+        SplashProgress.finish();
     }
 
     public void extendModList()
@@ -383,6 +394,10 @@ public class FMLClientHandler implements IFMLSidedHandler
         {
             showGuiScreen(new GuiWrongMinecraft(wrongMC));
         }
+        else if (j8onlymods != null)
+        {
+            showGuiScreen(new GuiJava8Error(j8onlymods));
+        }
         else if (modsMissing != null)
         {
             showGuiScreen(new GuiModsMissing(modsMissing));
@@ -401,10 +416,16 @@ public class FMLClientHandler implements IFMLSidedHandler
         }
         else
         {
-            Loader.instance().loadingComplete();
-            SplashProgress.finish();
+            logMissingTextureErrors();
+            if (!Loader.instance().java8)
+            {
+                if ((new Date()).getTime() >= ForgeModContainer.java8Reminder + (1000 * 60 * 60 * 24))
+                {
+                    showGuiScreen(new GuiJava8Error(new Java8VersionException(Collections.<ModContainer>emptyList())));
+                    ForgeModContainer.updateNag();
+                }
+            }
         }
-        logMissingTextureErrors();
     }
     /**
      * Get the server instance
@@ -641,7 +662,7 @@ public class FMLClientHandler implements IFMLSidedHandler
     @Override
     public NetworkManager getClientToServerNetworkManager()
     {
-        return this.client.getNetHandler()!=null ? this.client.getNetHandler().getNetworkManager() : null;
+        return this.client.getConnection()!=null ? this.client.getConnection().getNetworkManager() : null;
     }
 
     public void handleClientWorldClosing(WorldClient world)
@@ -662,7 +683,7 @@ public class FMLClientHandler implements IFMLSidedHandler
     {
         return new File(client.mcDataDir, "saves");
     }
-    public void tryLoadExistingWorld(GuiWorldSelection selectWorldGUI, SaveFormatComparator comparator)
+    public void tryLoadExistingWorld(GuiWorldSelection selectWorldGUI, WorldSummary comparator)
     {
         File dir = new File(getSavesDir(), comparator.getFileName());
         NBTTagCompound leveldat;

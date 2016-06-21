@@ -10,21 +10,21 @@ public class BiomeColorHelper
 {
     private static final BiomeColorHelper.ColorResolver GRASS_COLOR = new BiomeColorHelper.ColorResolver()
     {
-        public int getColorAtPos(BiomeGenBase biome, BlockPos blockPosition)
+        public int getColorAtPos(Biome biome, BlockPos blockPosition)
         {
             return biome.getGrassColorAtPos(blockPosition);
         }
     };
     private static final BiomeColorHelper.ColorResolver FOLIAGE_COLOR = new BiomeColorHelper.ColorResolver()
     {
-        public int getColorAtPos(BiomeGenBase biome, BlockPos blockPosition)
+        public int getColorAtPos(Biome biome, BlockPos blockPosition)
         {
             return biome.getFoliageColorAtPos(blockPosition);
         }
     };
     private static final BiomeColorHelper.ColorResolver WATER_COLOR = new BiomeColorHelper.ColorResolver()
     {
-        public int getColorAtPos(BiomeGenBase biome, BlockPos blockPosition)
+        public int getColorAtPos(Biome biome, BlockPos blockPosition)
         {
             return biome.getWaterColor();
         }
@@ -65,6 +65,6 @@ public class BiomeColorHelper
     @SideOnly(Side.CLIENT)
     interface ColorResolver
     {
-        int getColorAtPos(BiomeGenBase biome, BlockPos blockPosition);
+        int getColorAtPos(Biome biome, BlockPos blockPosition);
     }
 }

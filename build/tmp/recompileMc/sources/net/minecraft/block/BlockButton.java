@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -41,14 +42,15 @@ public abstract class BlockButton extends BlockDirectional
 
     protected BlockButton(boolean wooden)
     {
-        super(Material.circuits);
+        super(Material.CIRCUITS);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(POWERED, Boolean.valueOf(false)));
         this.setTickRandomly(true);
-        this.setCreativeTab(CreativeTabs.tabRedstone);
+        this.setCreativeTab(CreativeTabs.REDSTONE);
         this.wooden = wooden;
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -79,14 +81,17 @@ public abstract class BlockButton extends BlockDirectional
      */
     public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side)
     {
-        return func_181088_a(worldIn, pos, side.getOpposite());
+        /**
+         * Check whether this block can be placed on the block in the given direction.
+         */
+        return canPlaceBlock(worldIn, pos, side.getOpposite());
     }
 
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         for (EnumFacing enumfacing : EnumFacing.values())
         {
-            if (func_181088_a(worldIn, pos, enumfacing))
+            if (canPlaceBlock(worldIn, pos, enumfacing))
             {
                 return true;
             }
@@ -95,10 +100,13 @@ public abstract class BlockButton extends BlockDirectional
         return false;
     }
 
-    protected static boolean func_181088_a(World p_181088_0_, BlockPos p_181088_1_, EnumFacing p_181088_2_)
+    /**
+     * Check whether this block can be placed on the block in the given direction.
+     */
+    protected static boolean canPlaceBlock(World worldIn, BlockPos pos, EnumFacing direction)
     {
-        BlockPos blockpos = p_181088_1_.offset(p_181088_2_);
-        return p_181088_0_.getBlockState(blockpos).isSideSolid(p_181088_0_, blockpos, p_181088_2_.getOpposite());
+        BlockPos blockpos = pos.offset(direction);
+        return worldIn.getBlockState(blockpos).isSideSolid(worldIn, blockpos, direction.getOpposite());
     }
 
     /**
@@ -107,15 +115,20 @@ public abstract class BlockButton extends BlockDirectional
      */
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return func_181088_a(worldIn, pos, facing.getOpposite()) ? this.getDefaultState().withProperty(FACING, facing).withProperty(POWERED, Boolean.valueOf(false)) : this.getDefaultState().withProperty(FACING, EnumFacing.DOWN).withProperty(POWERED, Boolean.valueOf(false));
+        /**
+         * Check whether this block can be placed on the block in the given direction.
+         */
+        return canPlaceBlock(worldIn, pos, facing.getOpposite()) ? this.getDefaultState().withProperty(FACING, facing).withProperty(POWERED, Boolean.valueOf(false)) : this.getDefaultState().withProperty(FACING, EnumFacing.DOWN).withProperty(POWERED, Boolean.valueOf(false));
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
-        if (this.checkForDrop(worldIn, pos, state) && !func_181088_a(worldIn, pos, ((EnumFacing)state.getValue(FACING)).getOpposite()))
+        if (this.checkForDrop(worldIn, pos, state) && !canPlaceBlock(worldIn, pos, ((EnumFacing)state.getValue(FACING)).getOpposite()))
         {
             this.dropBlockAsItem(worldIn, pos, state, 0);
             worldIn.setBlockToAir(pos);
@@ -159,7 +172,7 @@ public abstract class BlockButton extends BlockDirectional
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (((Boolean)state.getValue(POWERED)).booleanValue())
         {
@@ -169,16 +182,16 @@ public abstract class BlockButton extends BlockDirectional
         {
             worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(true)), 3);
             worldIn.markBlockRangeForRenderUpdate(pos, pos);
-            this.func_185615_a(playerIn, worldIn, pos);
+            this.playClickSound(playerIn, worldIn, pos);
             this.notifyNeighbors(worldIn, pos, (EnumFacing)state.getValue(FACING));
             worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
             return true;
         }
     }
 
-    protected abstract void func_185615_a(EntityPlayer p_185615_1_, World player, BlockPos pos);
+    protected abstract void playClickSound(@Nullable EntityPlayer player, World worldIn, BlockPos pos);
 
-    protected abstract void func_185617_b(World worldIn, BlockPos pos);
+    protected abstract void playReleaseSound(World worldIn, BlockPos pos);
 
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
@@ -223,13 +236,13 @@ public abstract class BlockButton extends BlockDirectional
             {
                 if (this.wooden)
                 {
-                    this.func_185616_e(state, worldIn, pos);
+                    this.checkPressed(state, worldIn, pos);
                 }
                 else
                 {
                     worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(false)));
                     this.notifyNeighbors(worldIn, pos, (EnumFacing)state.getValue(FACING));
-                    this.func_185617_b(worldIn, pos);
+                    this.playReleaseSound(worldIn, pos);
                     worldIn.markBlockRangeForRenderUpdate(pos, pos);
                 }
             }
@@ -247,13 +260,13 @@ public abstract class BlockButton extends BlockDirectional
             {
                 if (!((Boolean)state.getValue(POWERED)).booleanValue())
                 {
-                    this.func_185616_e(state, worldIn, pos);
+                    this.checkPressed(state, worldIn, pos);
                 }
             }
         }
     }
 
-    private void func_185616_e(IBlockState p_185616_1_, World p_185616_2_, BlockPos p_185616_3_)
+    private void checkPressed(IBlockState p_185616_1_, World p_185616_2_, BlockPos p_185616_3_)
     {
         List <? extends Entity > list = p_185616_2_.<Entity>getEntitiesWithinAABB(EntityArrow.class, p_185616_1_.getBoundingBox(p_185616_2_, p_185616_3_).offset(p_185616_3_));
         boolean flag = !list.isEmpty();
@@ -264,7 +277,7 @@ public abstract class BlockButton extends BlockDirectional
             p_185616_2_.setBlockState(p_185616_3_, p_185616_1_.withProperty(POWERED, Boolean.valueOf(true)));
             this.notifyNeighbors(p_185616_2_, p_185616_3_, (EnumFacing)p_185616_1_.getValue(FACING));
             p_185616_2_.markBlockRangeForRenderUpdate(p_185616_3_, p_185616_3_);
-            this.func_185615_a((EntityPlayer)null, p_185616_2_, p_185616_3_);
+            this.playClickSound((EntityPlayer)null, p_185616_2_, p_185616_3_);
         }
 
         if (!flag && flag1)
@@ -272,7 +285,7 @@ public abstract class BlockButton extends BlockDirectional
             p_185616_2_.setBlockState(p_185616_3_, p_185616_1_.withProperty(POWERED, Boolean.valueOf(false)));
             this.notifyNeighbors(p_185616_2_, p_185616_3_, (EnumFacing)p_185616_1_.getValue(FACING));
             p_185616_2_.markBlockRangeForRenderUpdate(p_185616_3_, p_185616_3_);
-            this.func_185617_b(p_185616_2_, p_185616_3_);
+            this.playReleaseSound(p_185616_2_, p_185616_3_);
         }
 
         if (flag)

@@ -19,9 +19,11 @@ public class BlockStandingSign extends BlockSign
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!worldIn.getBlockState(pos.down()).getMaterial().isSolid())
         {
@@ -29,7 +31,7 @@ public class BlockStandingSign extends BlockSign
             worldIn.setBlockToAir(pos);
         }
 
-        super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
+        super.neighborChanged(state, worldIn, pos, blockIn);
     }
 
     /**
@@ -54,7 +56,7 @@ public class BlockStandingSign extends BlockSign
      */
     public IBlockState withRotation(IBlockState state, Rotation rot)
     {
-        return state.withProperty(ROTATION, Integer.valueOf(rot.func_185833_a(((Integer)state.getValue(ROTATION)).intValue(), 16)));
+        return state.withProperty(ROTATION, Integer.valueOf(rot.rotate(((Integer)state.getValue(ROTATION)).intValue(), 16)));
     }
 
     /**

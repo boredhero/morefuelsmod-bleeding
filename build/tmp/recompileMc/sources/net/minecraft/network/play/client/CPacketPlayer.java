@@ -52,29 +52,29 @@ public class CPacketPlayer implements Packet<INetHandlerPlayServer>
         buf.writeByte(this.onGround ? 1 : 0);
     }
 
-    public double func_186997_a(double p_186997_1_)
+    public double getX(double defaultValue)
     {
-        return this.moving ? this.x : p_186997_1_;
+        return this.moving ? this.x : defaultValue;
     }
 
-    public double func_186996_b(double p_186996_1_)
+    public double getY(double defaultValue)
     {
-        return this.moving ? this.y : p_186996_1_;
+        return this.moving ? this.y : defaultValue;
     }
 
-    public double func_187000_c(double p_187000_1_)
+    public double getZ(double defaultValue)
     {
-        return this.moving ? this.z : p_187000_1_;
+        return this.moving ? this.z : defaultValue;
     }
 
-    public float func_186999_a(float p_186999_1_)
+    public float getYaw(float defaultValue)
     {
-        return this.rotating ? this.yaw : p_186999_1_;
+        return this.rotating ? this.yaw : defaultValue;
     }
 
-    public float func_186998_b(float p_186998_1_)
+    public float getPitch(float defaultValue)
     {
-        return this.rotating ? this.pitch : p_186998_1_;
+        return this.rotating ? this.pitch : defaultValue;
     }
 
     public boolean isOnGround()
@@ -82,15 +82,15 @@ public class CPacketPlayer implements Packet<INetHandlerPlayServer>
         return this.onGround;
     }
 
-    public static class C04PacketPlayerPosition extends CPacketPlayer
+    public static class Position extends CPacketPlayer
         {
-            public C04PacketPlayerPosition()
+            public Position()
             {
                 this.moving = true;
             }
 
             @SideOnly(Side.CLIENT)
-            public C04PacketPlayerPosition(double xIn, double yIn, double zIn, boolean onGroundIn)
+            public Position(double xIn, double yIn, double zIn, boolean onGroundIn)
             {
                 this.x = xIn;
                 this.y = yIn;
@@ -122,20 +122,25 @@ public class CPacketPlayer implements Packet<INetHandlerPlayServer>
             }
         }
 
-    public static class C05PacketPlayerLook extends CPacketPlayer
+    public static class PositionRotation extends CPacketPlayer
         {
-            public C05PacketPlayerLook()
+            public PositionRotation()
             {
+                this.moving = true;
                 this.rotating = true;
             }
 
             @SideOnly(Side.CLIENT)
-            public C05PacketPlayerLook(float yawIn, float pitchIn, boolean onGroundIn)
+            public PositionRotation(double xIn, double yIn, double zIn, float yawIn, float pitchIn, boolean onGroundIn)
             {
+                this.x = xIn;
+                this.y = yIn;
+                this.z = zIn;
                 this.yaw = yawIn;
                 this.pitch = pitchIn;
                 this.onGround = onGroundIn;
                 this.rotating = true;
+                this.moving = true;
             }
 
             /**
@@ -143,6 +148,9 @@ public class CPacketPlayer implements Packet<INetHandlerPlayServer>
              */
             public void readPacketData(PacketBuffer buf) throws IOException
             {
+                this.x = buf.readDouble();
+                this.y = buf.readDouble();
+                this.z = buf.readDouble();
                 this.yaw = buf.readFloat();
                 this.pitch = buf.readFloat();
                 super.readPacketData(buf);
@@ -153,31 +161,29 @@ public class CPacketPlayer implements Packet<INetHandlerPlayServer>
              */
             public void writePacketData(PacketBuffer buf) throws IOException
             {
+                buf.writeDouble(this.x);
+                buf.writeDouble(this.y);
+                buf.writeDouble(this.z);
                 buf.writeFloat(this.yaw);
                 buf.writeFloat(this.pitch);
                 super.writePacketData(buf);
             }
         }
 
-    public static class C06PacketPlayerPosLook extends CPacketPlayer
+    public static class Rotation extends CPacketPlayer
         {
-            public C06PacketPlayerPosLook()
+            public Rotation()
             {
-                this.moving = true;
                 this.rotating = true;
             }
 
             @SideOnly(Side.CLIENT)
-            public C06PacketPlayerPosLook(double xIn, double yIn, double zIn, float yawIn, float pitchIn, boolean onGroundIn)
+            public Rotation(float yawIn, float pitchIn, boolean onGroundIn)
             {
-                this.x = xIn;
-                this.y = yIn;
-                this.z = zIn;
                 this.yaw = yawIn;
                 this.pitch = pitchIn;
                 this.onGround = onGroundIn;
                 this.rotating = true;
-                this.moving = true;
             }
 
             /**
@@ -185,9 +191,6 @@ public class CPacketPlayer implements Packet<INetHandlerPlayServer>
              */
             public void readPacketData(PacketBuffer buf) throws IOException
             {
-                this.x = buf.readDouble();
-                this.y = buf.readDouble();
-                this.z = buf.readDouble();
                 this.yaw = buf.readFloat();
                 this.pitch = buf.readFloat();
                 super.readPacketData(buf);
@@ -198,9 +201,6 @@ public class CPacketPlayer implements Packet<INetHandlerPlayServer>
              */
             public void writePacketData(PacketBuffer buf) throws IOException
             {
-                buf.writeDouble(this.x);
-                buf.writeDouble(this.y);
-                buf.writeDouble(this.z);
                 buf.writeFloat(this.yaw);
                 buf.writeFloat(this.pitch);
                 super.writePacketData(buf);

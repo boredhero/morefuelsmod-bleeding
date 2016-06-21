@@ -42,7 +42,7 @@ public class TextComponentScore extends TextComponentBase
      * Gets the text of this component, without any special formatting codes added, for chat.  TODO: why is this two
      * different methods?
      */
-    public String getUnformattedTextForChat()
+    public String getUnformattedComponentText()
     {
         return this.value;
     }
@@ -74,7 +74,7 @@ public class TextComponentScore extends TextComponentBase
     {
         TextComponentScore textcomponentscore = new TextComponentScore(this.name, this.objective);
         textcomponentscore.setValue(this.value);
-        textcomponentscore.setChatStyle(this.getChatStyle().createShallowCopy());
+        textcomponentscore.setStyle(this.getStyle().createShallowCopy());
 
         for (ITextComponent itextcomponent : this.getSiblings())
         {
@@ -103,6 +103,6 @@ public class TextComponentScore extends TextComponentBase
 
     public String toString()
     {
-        return "ScoreComponent{name=\'" + this.name + '\'' + "objective=\'" + this.objective + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
+        return "ScoreComponent{name=\'" + this.name + '\'' + "objective=\'" + this.objective + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
     }
 }

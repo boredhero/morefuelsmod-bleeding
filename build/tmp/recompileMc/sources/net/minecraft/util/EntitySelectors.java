@@ -2,6 +2,7 @@ package net.minecraft.util;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,66 +17,66 @@ public final class EntitySelectors
 {
     public static final Predicate<Entity> IS_ALIVE = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return p_apply_1_.isEntityAlive();
         }
     };
     public static final Predicate<Entity> IS_STANDALONE = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return p_apply_1_.isEntityAlive() && !p_apply_1_.isBeingRidden() && !p_apply_1_.isRiding();
         }
     };
     public static final Predicate<Entity> HAS_INVENTORY = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return p_apply_1_ instanceof IInventory && p_apply_1_.isEntityAlive();
         }
     };
     public static final Predicate<Entity> CAN_AI_TARGET = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return !(p_apply_1_ instanceof EntityPlayer) || !((EntityPlayer)p_apply_1_).isSpectator() && !((EntityPlayer)p_apply_1_).isCreative();
         }
     };
     public static final Predicate<Entity> NOT_SPECTATING = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return !(p_apply_1_ instanceof EntityPlayer) || !((EntityPlayer)p_apply_1_).isSpectator();
         }
     };
     public static final Predicate<Entity> IS_SHULKER = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return p_apply_1_ instanceof EntityShulker && p_apply_1_.isEntityAlive();
         }
     };
 
-    public static <T extends Entity> Predicate<T> func_188443_a(final double p_188443_0_, final double p_188443_2_, final double p_188443_4_, double p_188443_6_)
+    public static <T extends Entity> Predicate<T> withinRange(final double x, final double y, final double z, double range)
     {
-        final double d0 = p_188443_6_ * p_188443_6_;
+        final double d0 = range * range;
         return new Predicate<T>()
         {
-            public boolean apply(T p_apply_1_)
+            public boolean apply(@Nullable T p_apply_1_)
             {
-                return p_apply_1_ != null && p_apply_1_.getDistanceSq(p_188443_0_, p_188443_2_, p_188443_4_) <= d0;
+                return p_apply_1_ != null && p_apply_1_.getDistanceSq(x, y, z) <= d0;
             }
         };
     }
 
-    public static <T extends Entity> Predicate<T> func_188442_a(final Entity entityIn)
+    public static <T extends Entity> Predicate<T> getTeamCollisionPredicate(final Entity entityIn)
     {
         final Team team = entityIn.getTeam();
         final Team.CollisionRule team$collisionrule = team == null ? Team.CollisionRule.ALWAYS : team.getCollisionRule();
         Predicate<?> ret = team$collisionrule == Team.CollisionRule.NEVER ? Predicates.alwaysFalse() : Predicates.and(NOT_SPECTATING, new Predicate<Entity>()
         {
-            public boolean apply(Entity p_apply_1_)
+            public boolean apply(@Nullable Entity p_apply_1_)
             {
                 if (!p_apply_1_.canBePushed())
                 {
@@ -114,7 +115,7 @@ public final class EntitySelectors
                 this.armor = armor;
             }
 
-            public boolean apply(Entity p_apply_1_)
+            public boolean apply(@Nullable Entity p_apply_1_)
             {
                 if (!p_apply_1_.isEntityAlive())
                 {

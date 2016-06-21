@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -36,16 +37,16 @@ public class BlockAnvil extends BlockFalling
 {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final PropertyInteger DAMAGE = PropertyInteger.create("damage", 0, 2);
-    protected static final AxisAlignedBB field_185760_c = new AxisAlignedBB(0.0D, 0.0D, 0.125D, 1.0D, 1.0D, 0.875D);
-    protected static final AxisAlignedBB field_185761_d = new AxisAlignedBB(0.125D, 0.0D, 0.0D, 0.875D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB X_AXIS_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.125D, 1.0D, 1.0D, 0.875D);
+    protected static final AxisAlignedBB Z_AXIS_AABB = new AxisAlignedBB(0.125D, 0.0D, 0.0D, 0.875D, 1.0D, 1.0D);
     protected static final Logger LOGGER = LogManager.getLogger();
 
     protected BlockAnvil()
     {
-        super(Material.anvil);
+        super(Material.ANVIL);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(DAMAGE, Integer.valueOf(0)));
         this.setLightOpacity(0);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     public boolean isFullCube(IBlockState state)
@@ -89,7 +90,7 @@ public class BlockAnvil extends BlockFalling
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (!worldIn.isRemote)
         {
@@ -111,7 +112,7 @@ public class BlockAnvil extends BlockFalling
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
-        return enumfacing.getAxis() == EnumFacing.Axis.X ? field_185760_c : field_185761_d;
+        return enumfacing.getAxis() == EnumFacing.Axis.X ? X_AXIS_AABB : Z_AXIS_AABB;
     }
 
     /**
@@ -132,7 +133,7 @@ public class BlockAnvil extends BlockFalling
 
     public void onEndFalling(World worldIn, BlockPos pos)
     {
-        worldIn.playAuxSFX(1031, pos, 0);
+        worldIn.playEvent(1031, pos, 0);
     }
 
     @SideOnly(Side.CLIENT)
@@ -206,7 +207,7 @@ public class BlockAnvil extends BlockFalling
              */
             public ITextComponent getDisplayName()
             {
-                return new TextComponentTranslation(Blocks.anvil.getUnlocalizedName() + ".name", new Object[0]);
+                return new TextComponentTranslation(Blocks.ANVIL.getUnlocalizedName() + ".name", new Object[0]);
             }
 
             public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)

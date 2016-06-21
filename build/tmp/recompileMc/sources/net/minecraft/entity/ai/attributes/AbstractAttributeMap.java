@@ -12,7 +12,7 @@ public abstract class AbstractAttributeMap
 {
     protected final Map<IAttribute, IAttributeInstance> attributes = Maps.<IAttribute, IAttributeInstance>newHashMap();
     protected final Map<String, IAttributeInstance> attributesByName = new LowerStringMap();
-    protected final Multimap<IAttribute, IAttribute> field_180377_c = HashMultimap.<IAttribute, IAttribute>create();
+    protected final Multimap<IAttribute, IAttribute> descendantsByParent = HashMultimap.<IAttribute, IAttribute>create();
 
     public IAttributeInstance getAttributeInstance(IAttribute attribute)
     {
@@ -35,27 +35,27 @@ public abstract class AbstractAttributeMap
         }
         else
         {
-            IAttributeInstance iattributeinstance = this.func_180376_c(attribute);
+            IAttributeInstance iattributeinstance = this.createInstance(attribute);
             this.attributesByName.put(attribute.getAttributeUnlocalizedName(), iattributeinstance);
             this.attributes.put(attribute, iattributeinstance);
 
-            for (IAttribute iattribute = attribute.func_180372_d(); iattribute != null; iattribute = iattribute.func_180372_d())
+            for (IAttribute iattribute = attribute.getParent(); iattribute != null; iattribute = iattribute.getParent())
             {
-                this.field_180377_c.put(iattribute, attribute);
+                this.descendantsByParent.put(iattribute, attribute);
             }
 
             return iattributeinstance;
         }
     }
 
-    protected abstract IAttributeInstance func_180376_c(IAttribute attribute);
+    protected abstract IAttributeInstance createInstance(IAttribute attribute);
 
     public Collection<IAttributeInstance> getAllAttributes()
     {
         return this.attributesByName.values();
     }
 
-    public void func_180794_a(IAttributeInstance instance)
+    public void onAttributeModified(IAttributeInstance instance)
     {
     }
 

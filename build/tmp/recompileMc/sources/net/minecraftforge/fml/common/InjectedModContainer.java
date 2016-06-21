@@ -24,6 +24,8 @@ import net.minecraftforge.fml.common.versioning.VersionRange;
 
 import com.google.common.eventbus.EventBus;
 
+import net.minecraftforge.fml.common.ModContainer.Disableable;
+
 public class InjectedModContainer implements ModContainer
 {
     private File source;
@@ -213,5 +215,17 @@ public class InjectedModContainer implements ModContainer
     public URL getUpdateUrl()
     {
         return wrappedContainer.getUpdateUrl();
+    }
+
+    @Override
+    public void setClassVersion(int classVersion)
+    {
+        wrappedContainer.setClassVersion(classVersion);
+    }
+
+    @Override
+    public int getClassVersion()
+    {
+        return wrappedContainer.getClassVersion();
     }
 }

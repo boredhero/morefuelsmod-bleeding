@@ -88,7 +88,7 @@ public enum Rotation
         }
     }
 
-    public int func_185833_a(int p_185833_1_, int p_185833_2_)
+    public int rotate(int p_185833_1_, int p_185833_2_)
     {
         switch (this)
         {

@@ -50,8 +50,6 @@ public class UserListWhitelist extends UserList<GameProfile, UserListWhitelistEn
 
     /**
      * Get a GameProfile entry by its name
-     *  
-     * @param profileName The name of the GameProfile
      */
     public GameProfile getByName(String profileName)
     {

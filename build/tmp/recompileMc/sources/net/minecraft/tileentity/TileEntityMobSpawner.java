@@ -1,9 +1,9 @@
 package net.minecraft.tileentity;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.WeightedSpawnerEntity;
@@ -14,9 +14,9 @@ public class TileEntityMobSpawner extends TileEntity implements ITickable
 {
     private final MobSpawnerBaseLogic spawnerLogic = new MobSpawnerBaseLogic()
     {
-        public void func_98267_a(int id)
+        public void broadcastEvent(int id)
         {
-            TileEntityMobSpawner.this.worldObj.addBlockEvent(TileEntityMobSpawner.this.pos, Blocks.mob_spawner, id, 0);
+            TileEntityMobSpawner.this.worldObj.addBlockEvent(TileEntityMobSpawner.this.pos, Blocks.MOB_SPAWNER, id, 0);
         }
         public World getSpawnerWorld()
         {
@@ -26,9 +26,9 @@ public class TileEntityMobSpawner extends TileEntity implements ITickable
         {
             return TileEntityMobSpawner.this.pos;
         }
-        public void func_184993_a(WeightedSpawnerEntity p_184993_1_)
+        public void setNextSpawnData(WeightedSpawnerEntity p_184993_1_)
         {
-            super.func_184993_a(p_184993_1_);
+            super.setNextSpawnData(p_184993_1_);
 
             if (this.getSpawnerWorld() != null)
             {
@@ -44,10 +44,11 @@ public class TileEntityMobSpawner extends TileEntity implements ITickable
         this.spawnerLogic.readFromNBT(compound);
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         this.spawnerLogic.writeToNBT(compound);
+        return compound;
     }
 
     /**
@@ -58,12 +59,17 @@ public class TileEntityMobSpawner extends TileEntity implements ITickable
         this.spawnerLogic.updateSpawner();
     }
 
-    public Packet<?> getDescriptionPacket()
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket()
     {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        this.writeToNBT(nbttagcompound);
+        return new SPacketUpdateTileEntity(this.pos, 1, this.getUpdateTag());
+    }
+
+    public NBTTagCompound getUpdateTag()
+    {
+        NBTTagCompound nbttagcompound = this.writeToNBT(new NBTTagCompound());
         nbttagcompound.removeTag("SpawnPotentials");
-        return new SPacketUpdateTileEntity(this.pos, 1, nbttagcompound);
+        return nbttagcompound;
     }
 
     public boolean receiveClientEvent(int id, int type)
@@ -71,7 +77,7 @@ public class TileEntityMobSpawner extends TileEntity implements ITickable
         return this.spawnerLogic.setDelayToMin(id) ? true : super.receiveClientEvent(id, type);
     }
 
-    public boolean func_183000_F()
+    public boolean onlyOpsCanSetNbt()
     {
         return true;
     }

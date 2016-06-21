@@ -17,6 +17,8 @@ import java.util.Set;
 import net.minecraftforge.fml.common.EnhancedRuntimeException;
 import net.minecraftforge.fml.common.ModContainer;
 
+import net.minecraftforge.fml.common.EnhancedRuntimeException.WrappedPrintStream;
+
 public class ModSortingException extends EnhancedRuntimeException
 {
     private static final long serialVersionUID = 1L;

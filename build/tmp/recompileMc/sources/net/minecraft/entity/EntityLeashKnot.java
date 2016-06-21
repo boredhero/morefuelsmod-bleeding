@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockFence;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -73,8 +74,7 @@ public class EntityLeashKnot extends EntityHanging
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -85,9 +85,9 @@ public class EntityLeashKnot extends EntityHanging
     /**
      * Called when this entity is broken. Entity parameter may be null.
      */
-    public void onBroken(Entity brokenEntity)
+    public void onBroken(@Nullable Entity brokenEntity)
     {
-        this.playSound(SoundEvents.entity_leashknot_break, 1.0F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_LEASHKNOT_BREAK, 1.0F, 1.0F);
     }
 
     /**
@@ -95,7 +95,7 @@ public class EntityLeashKnot extends EntityHanging
      * returns false the entity is not saved on disk. Ridden entities return false here as they are saved with their
      * rider.
      */
-    public boolean writeToNBTOptional(NBTTagCompound tagCompund)
+    public boolean writeToNBTOptional(NBTTagCompound compound)
     {
         return false;
     }
@@ -103,18 +103,18 @@ public class EntityLeashKnot extends EntityHanging
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
     }
 
-    public boolean processInitialInteract(EntityPlayer player, ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
     {
         if (this.worldObj.isRemote)
         {
@@ -124,7 +124,7 @@ public class EntityLeashKnot extends EntityHanging
         {
             boolean flag = false;
 
-            if (stack != null && stack.getItem() == Items.lead)
+            if (stack != null && stack.getItem() == Items.LEAD)
             {
                 double d0 = 7.0D;
 
@@ -173,7 +173,7 @@ public class EntityLeashKnot extends EntityHanging
         EntityLeashKnot entityleashknot = new EntityLeashKnot(worldIn, fence);
         entityleashknot.forceSpawn = true;
         worldIn.spawnEntityInWorld(entityleashknot);
-        entityleashknot.func_184523_o();
+        entityleashknot.playPlaceSound();
         return entityleashknot;
     }
 
@@ -194,8 +194,8 @@ public class EntityLeashKnot extends EntityHanging
         return null;
     }
 
-    public void func_184523_o()
+    public void playPlaceSound()
     {
-        this.playSound(SoundEvents.entity_leashknot_place, 1.0F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_LEASHKNOT_PLACE, 1.0F, 1.0F);
     }
 }

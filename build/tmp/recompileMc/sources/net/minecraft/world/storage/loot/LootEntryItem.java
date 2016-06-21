@@ -18,9 +18,9 @@ public class LootEntryItem extends LootEntry
     protected final Item item;
     protected final LootFunction[] functions;
 
-    public LootEntryItem(Item itemIn, int weightIn, int qualityIn, LootFunction[] functionsIn, LootCondition[] conditionsIn)
+    public LootEntryItem(Item itemIn, int weightIn, int qualityIn, LootFunction[] functionsIn, LootCondition[] conditionsIn, String entryName)
     {
-        super(weightIn, qualityIn, conditionsIn);
+        super(weightIn, qualityIn, conditionsIn, entryName);
         this.item = itemIn;
         this.functions = functionsIn;
     }
@@ -42,7 +42,7 @@ public class LootEntryItem extends LootEntry
 
         if (itemstack.stackSize > 0)
         {
-            if (itemstack.stackSize < this.item.getItemStackLimit())
+            if (itemstack.stackSize < this.item.getItemStackLimit(itemstack))
             {
                 stacks.add(itemstack);
             }
@@ -68,7 +68,7 @@ public class LootEntryItem extends LootEntry
             json.add("functions", context.serialize(this.functions));
         }
 
-        ResourceLocation resourcelocation = (ResourceLocation)Item.itemRegistry.getNameForObject(this.item);
+        ResourceLocation resourcelocation = (ResourceLocation)Item.REGISTRY.getNameForObject(this.item);
 
         if (resourcelocation == null)
         {
@@ -82,6 +82,7 @@ public class LootEntryItem extends LootEntry
 
     public static LootEntryItem deserialize(JsonObject object, JsonDeserializationContext deserializationContext, int weightIn, int qualityIn, LootCondition[] conditionsIn)
     {
+        String name = net.minecraftforge.common.ForgeHooks.readLootEntryName(object, "item");
         Item item = JsonUtils.getItem(object, "name");
         LootFunction[] alootfunction;
 
@@ -94,6 +95,6 @@ public class LootEntryItem extends LootEntry
             alootfunction = new LootFunction[0];
         }
 
-        return new LootEntryItem(item, weightIn, qualityIn, alootfunction, conditionsIn);
+        return new LootEntryItem(item, weightIn, qualityIn, alootfunction, conditionsIn, name);
     }
 }

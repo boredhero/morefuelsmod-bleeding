@@ -10,6 +10,7 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.JsonUtils;
 import net.minecraft.util.math.MathHelper;
@@ -26,7 +27,7 @@ public class BlockPart
     public final BlockPartRotation partRotation;
     public final boolean shade;
 
-    public BlockPart(Vector3f positionFromIn, Vector3f positionToIn, Map<EnumFacing, BlockPartFace> mapFacesIn, BlockPartRotation partRotationIn, boolean shadeIn)
+    public BlockPart(Vector3f positionFromIn, Vector3f positionToIn, Map<EnumFacing, BlockPartFace> mapFacesIn, @Nullable BlockPartRotation partRotationIn, boolean shadeIn)
     {
         this.positionFrom = positionFromIn;
         this.positionTo = positionToIn;
@@ -87,6 +88,7 @@ public class BlockPart
                 }
             }
 
+            @Nullable
             private BlockPartRotation parseRotation(JsonObject object)
             {
                 BlockPartRotation blockpartrotation = null;

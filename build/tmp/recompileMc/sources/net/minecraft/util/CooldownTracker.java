@@ -12,21 +12,21 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class CooldownTracker
 {
     private final Map<Item, CooldownTracker.Cooldown> cooldowns = Maps.<Item, CooldownTracker.Cooldown>newHashMap();
-    private int field_185148_b;
+    private int ticks;
 
     public boolean hasCooldown(Item itemIn)
     {
         return this.getCooldown(itemIn, 0.0F) > 0.0F;
     }
 
-    public float getCooldown(Item itemIn, float p_185143_2_)
+    public float getCooldown(Item itemIn, float partialTicks)
     {
         CooldownTracker.Cooldown cooldowntracker$cooldown = (CooldownTracker.Cooldown)this.cooldowns.get(itemIn);
 
         if (cooldowntracker$cooldown != null)
         {
-            float f = (float)(cooldowntracker$cooldown.field_185138_b - cooldowntracker$cooldown.field_185137_a);
-            float f1 = (float)cooldowntracker$cooldown.field_185138_b - ((float)this.field_185148_b + p_185143_2_);
+            float f = (float)(cooldowntracker$cooldown.expireTicks - cooldowntracker$cooldown.createTicks);
+            float f1 = (float)cooldowntracker$cooldown.expireTicks - ((float)this.ticks + partialTicks);
             return MathHelper.clamp_float(f1 / f, 0.0F, 1.0F);
         }
         else
@@ -37,7 +37,7 @@ public class CooldownTracker
 
     public void tick()
     {
-        ++this.field_185148_b;
+        ++this.ticks;
 
         if (!this.cooldowns.isEmpty())
         {
@@ -47,7 +47,7 @@ public class CooldownTracker
             {
                 Entry<Item, CooldownTracker.Cooldown> entry = (Entry)iterator.next();
 
-                if (((CooldownTracker.Cooldown)entry.getValue()).field_185138_b <= this.field_185148_b)
+                if (((CooldownTracker.Cooldown)entry.getValue()).expireTicks <= this.ticks)
                 {
                     iterator.remove();
                     this.notifyOnRemove((Item)entry.getKey());
@@ -58,7 +58,7 @@ public class CooldownTracker
 
     public void setCooldown(Item itemIn, int ticksIn)
     {
-        this.cooldowns.put(itemIn, new CooldownTracker.Cooldown(this.field_185148_b, this.field_185148_b + ticksIn));
+        this.cooldowns.put(itemIn, new CooldownTracker.Cooldown(this.ticks, this.ticks + ticksIn));
         this.notifyOnSet(itemIn, ticksIn);
     }
 
@@ -79,13 +79,13 @@ public class CooldownTracker
 
     class Cooldown
     {
-        final int field_185137_a;
-        final int field_185138_b;
+        final int createTicks;
+        final int expireTicks;
 
-        private Cooldown(int p_i47037_2_, int p_i47037_3_)
+        private Cooldown(int createTicksIn, int expireTicksIn)
         {
-            this.field_185137_a = p_i47037_2_;
-            this.field_185138_b = p_i47037_3_;
+            this.createTicks = createTicksIn;
+            this.expireTicks = expireTicksIn;
         }
     }
 }

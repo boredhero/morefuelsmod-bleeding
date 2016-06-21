@@ -42,8 +42,6 @@ public abstract class BlockSlab extends Block
 
     /**
      * Checks if an IBlockState represents a block that is opaque and a full cube.
-     *  
-     * @param state The block state to check.
      */
     public boolean isFullyOpaque(IBlockState state)
     {
@@ -105,18 +103,18 @@ public abstract class BlockSlab extends Block
         else if (false) // Forge: Additional logic breaks doesSideBlockRendering and is no longer useful.
         {
             IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
-            boolean flag = func_185675_i(iblockstate) && iblockstate.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
-            boolean flag1 = func_185675_i(blockState) && blockState.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
-            return flag1 ? (side == EnumFacing.DOWN ? true : (side == EnumFacing.UP && super.shouldSideBeRendered(blockState, blockAccess, pos, side) ? true : !func_185675_i(iblockstate) || !flag)) : (side == EnumFacing.UP ? true : (side == EnumFacing.DOWN && super.shouldSideBeRendered(blockState, blockAccess, pos, side) ? true : !func_185675_i(iblockstate) || flag));
+            boolean flag = isHalfSlab(iblockstate) && iblockstate.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
+            boolean flag1 = isHalfSlab(blockState) && blockState.getValue(HALF) == BlockSlab.EnumBlockHalf.TOP;
+            return flag1 ? (side == EnumFacing.DOWN ? true : (side == EnumFacing.UP && super.shouldSideBeRendered(blockState, blockAccess, pos, side) ? true : !isHalfSlab(iblockstate) || !flag)) : (side == EnumFacing.UP ? true : (side == EnumFacing.DOWN && super.shouldSideBeRendered(blockState, blockAccess, pos, side) ? true : !isHalfSlab(iblockstate) || flag));
         }
         return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
     }
 
     @SideOnly(Side.CLIENT)
-    protected static boolean func_185675_i(IBlockState p_185675_0_)
+    protected static boolean isHalfSlab(IBlockState state)
     {
-        Block block = p_185675_0_.getBlock();
-        return block == Blocks.stone_slab || block == Blocks.wooden_slab || block == Blocks.stone_slab2 || block == Blocks.purpur_slab;
+        Block block = state.getBlock();
+        return block == Blocks.STONE_SLAB || block == Blocks.WOODEN_SLAB || block == Blocks.STONE_SLAB2 || block == Blocks.PURPUR_SLAB;
     }
 
     /**

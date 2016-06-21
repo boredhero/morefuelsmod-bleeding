@@ -1,15 +1,16 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 
 public class BlockEmptyDrops extends Block
 {
-    public BlockEmptyDrops(Material p_i46682_1_)
+    public BlockEmptyDrops(Material materialIn)
     {
-        super(p_i46682_1_);
+        super(materialIn);
     }
 
     /**
@@ -23,6 +24,7 @@ public class BlockEmptyDrops extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;

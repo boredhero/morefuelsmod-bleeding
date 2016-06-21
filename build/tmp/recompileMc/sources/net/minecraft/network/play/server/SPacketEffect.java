@@ -21,12 +21,12 @@ public class SPacketEffect implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketEffect(int p_i46940_1_, BlockPos p_i46940_2_, int p_i46940_3_, boolean p_i46940_4_)
+    public SPacketEffect(int soundTypeIn, BlockPos soundPosIn, int soundDataIn, boolean serverWideIn)
     {
-        this.soundType = p_i46940_1_;
-        this.soundPos = p_i46940_2_;
-        this.soundData = p_i46940_3_;
-        this.serverWide = p_i46940_4_;
+        this.soundType = soundTypeIn;
+        this.soundPos = soundPosIn;
+        this.soundData = soundDataIn;
+        this.serverWide = serverWideIn;
     }
 
     /**

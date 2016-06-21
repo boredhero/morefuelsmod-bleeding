@@ -20,11 +20,11 @@ public final class WorldSettings
     private boolean commandsAllowed;
     /** True if the Bonus Chest is enabled. */
     private boolean bonusChestEnabled;
-    private String worldName;
+    private String generatorOptions;
 
     public WorldSettings(long seedIn, WorldSettings.GameType gameType, boolean enableMapFeatures, boolean hardcoreMode, WorldType worldTypeIn)
     {
-        this.worldName = "";
+        this.generatorOptions = "";
         this.seed = seedIn;
         this.theGameType = gameType;
         this.mapFeaturesEnabled = enableMapFeatures;
@@ -46,9 +46,9 @@ public final class WorldSettings
         return this;
     }
 
-    public WorldSettings setWorldName(String name)
+    public WorldSettings setGeneratorOptions(String options)
     {
-        this.worldName = name;
+        this.generatorOptions = options;
         return this;
     }
 
@@ -123,9 +123,9 @@ public final class WorldSettings
         return WorldSettings.GameType.getByID(id);
     }
 
-    public String getWorldName()
+    public String getGeneratorOptions()
     {
-        return this.worldName;
+        return this.generatorOptions;
     }
 
     public static enum GameType
@@ -217,7 +217,7 @@ public final class WorldSettings
         }
 
         /**
-         * Returns the game type with the specified ID, or SURVIVAL if none found. Args: id
+         * Gets the game type by it's ID. Will be survival if none was found.
          */
         public static WorldSettings.GameType getByID(int idIn)
         {
@@ -238,7 +238,7 @@ public final class WorldSettings
         }
 
         /**
-         * Returns the game type with the specified name, or SURVIVAL if none found. This is case sensitive. Args: name
+         * Gets the game type registered with the specified name. If no matches were found, survival will be returned.
          */
         @SideOnly(Side.CLIENT)
         public static WorldSettings.GameType getByName(String gamemodeName)

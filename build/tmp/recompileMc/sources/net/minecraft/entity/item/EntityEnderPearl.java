@@ -64,12 +64,12 @@ public class EntityEnderPearl extends EntityThrowable
 
                 if (entitylivingbase != null)
                 {
-                    tileentityendgateway.func_184306_a(entitylivingbase);
+                    tileentityendgateway.teleportEntity(entitylivingbase);
                     this.setDead();
                     return;
                 }
 
-                tileentityendgateway.func_184306_a(this);
+                tileentityendgateway.teleportEntity(this);
                 return;
             }
         }
@@ -85,7 +85,7 @@ public class EntityEnderPearl extends EntityThrowable
             {
                 EntityPlayerMP entityplayermp = (EntityPlayerMP)entitylivingbase;
 
-                if (entityplayermp.playerNetServerHandler.getNetworkManager().isChannelOpen() && entityplayermp.worldObj == this.worldObj && !entityplayermp.isPlayerSleeping())
+                if (entityplayermp.connection.getNetworkManager().isChannelOpen() && entityplayermp.worldObj == this.worldObj && !entityplayermp.isPlayerSleeping())
                 {
                     net.minecraftforge.event.entity.living.EnderTeleportEvent event = new net.minecraftforge.event.entity.living.EnderTeleportEvent(entityplayermp, this.posX, this.posY, this.posZ, 5.0F);
                     if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))

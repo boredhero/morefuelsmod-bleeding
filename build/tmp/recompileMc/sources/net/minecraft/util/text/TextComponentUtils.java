@@ -36,7 +36,7 @@ public class TextComponentUtils
                 }
                 else
                 {
-                    s = entity.getUniqueID().toString();
+                    s = entity.getCachedUniqueIdString();
                 }
             }
 
@@ -46,7 +46,7 @@ public class TextComponentUtils
         else if (component instanceof TextComponentSelector)
         {
             String s1 = ((TextComponentSelector)component).getSelector();
-            itextcomponent = EntitySelector.matchEntitiesToChatComponent(commandSender, s1);
+            itextcomponent = EntitySelector.matchEntitiesToTextComponent(commandSender, s1);
 
             if (itextcomponent == null)
             {
@@ -55,7 +55,7 @@ public class TextComponentUtils
         }
         else if (component instanceof TextComponentString)
         {
-            itextcomponent = new TextComponentString(((TextComponentString)component).getChatComponentText_TextValue());
+            itextcomponent = new TextComponentString(((TextComponentString)component).getText());
         }
         else
         {
@@ -79,11 +79,11 @@ public class TextComponentUtils
             itextcomponent = new TextComponentTranslation(((TextComponentTranslation)component).getKey(), aobject);
         }
 
-        Style style = component.getChatStyle();
+        Style style = component.getStyle();
 
         if (style != null)
         {
-            itextcomponent.setChatStyle(style.createShallowCopy());
+            itextcomponent.setStyle(style.createShallowCopy());
         }
 
         for (ITextComponent itextcomponent1 : component.getSiblings())

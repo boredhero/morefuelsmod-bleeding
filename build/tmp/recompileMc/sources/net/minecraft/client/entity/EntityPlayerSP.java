@@ -1,6 +1,8 @@
 package net.minecraft.client.entity;
 
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.ElytraSound;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiCommandBlock;
@@ -49,7 +51,7 @@ import net.minecraft.network.play.client.CPacketVehicleMove;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.stats.StatBase;
-import net.minecraft.stats.StatFileWriter;
+import net.minecraft.stats.StatisticsManager;
 import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntitySign;
@@ -71,8 +73,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class EntityPlayerSP extends AbstractClientPlayer
 {
-    public final NetHandlerPlayClient sendQueue;
-    private final StatFileWriter statWriter;
+    public final NetHandlerPlayClient connection;
+    private final StatisticsManager statWriter;
     private int permissionLevel = 0;
     /**
      * The last X position which was transmitted to the server, used to determine when the X position changes and needs
@@ -135,10 +137,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
     private EnumHand activeHand;
     private boolean rowingBoat;
 
-    public EntityPlayerSP(Minecraft mcIn, World worldIn, NetHandlerPlayClient netHandler, StatFileWriter statFile)
+    public EntityPlayerSP(Minecraft mcIn, World worldIn, NetHandlerPlayClient netHandler, StatisticsManager statFile)
     {
         super(worldIn, netHandler.getGameProfile());
-        this.sendQueue = netHandler;
+        this.connection = netHandler;
         this.statWriter = statFile;
         this.mc = mcIn;
         this.dimension = 0;
@@ -200,13 +202,13 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
             if (this.isRiding())
             {
-                this.sendQueue.addToSendQueue(new CPacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
-                this.sendQueue.addToSendQueue(new CPacketInput(this.moveStrafing, this.moveForward, this.movementInput.jump, this.movementInput.sneak));
+                this.connection.sendPacket(new CPacketPlayer.Rotation(this.rotationYaw, this.rotationPitch, this.onGround));
+                this.connection.sendPacket(new CPacketInput(this.moveStrafing, this.moveForward, this.movementInput.jump, this.movementInput.sneak));
                 Entity entity = this.getLowestRidingEntity();
 
                 if (entity != this && entity.canPassengerSteer())
                 {
-                    this.sendQueue.addToSendQueue(new CPacketVehicleMove(entity));
+                    this.connection.sendPacket(new CPacketVehicleMove(entity));
                 }
             }
             else
@@ -227,11 +229,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
         {
             if (flag)
             {
-                this.sendQueue.addToSendQueue(new CPacketEntityAction(this, CPacketEntityAction.Action.START_SPRINTING));
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_SPRINTING));
             }
             else
             {
-                this.sendQueue.addToSendQueue(new CPacketEntityAction(this, CPacketEntityAction.Action.STOP_SPRINTING));
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.STOP_SPRINTING));
             }
 
             this.serverSprintState = flag;
@@ -243,11 +245,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
         {
             if (flag1)
             {
-                this.sendQueue.addToSendQueue(new CPacketEntityAction(this, CPacketEntityAction.Action.START_SNEAKING));
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_SNEAKING));
             }
             else
             {
-                this.sendQueue.addToSendQueue(new CPacketEntityAction(this, CPacketEntityAction.Action.STOP_SNEAKING));
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.STOP_SNEAKING));
             }
 
             this.serverSneakState = flag1;
@@ -267,24 +269,24 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
             if (this.isRiding())
             {
-                this.sendQueue.addToSendQueue(new CPacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0D, this.motionZ, this.rotationYaw, this.rotationPitch, this.onGround));
+                this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.motionX, -999.0D, this.motionZ, this.rotationYaw, this.rotationPitch, this.onGround));
                 flag2 = false;
             }
             else if (flag2 && flag3)
             {
-                this.sendQueue.addToSendQueue(new CPacketPlayer.C06PacketPlayerPosLook(this.posX, axisalignedbb.minY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
+                this.connection.sendPacket(new CPacketPlayer.PositionRotation(this.posX, axisalignedbb.minY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround));
             }
             else if (flag2)
             {
-                this.sendQueue.addToSendQueue(new CPacketPlayer.C04PacketPlayerPosition(this.posX, axisalignedbb.minY, this.posZ, this.onGround));
+                this.connection.sendPacket(new CPacketPlayer.Position(this.posX, axisalignedbb.minY, this.posZ, this.onGround));
             }
             else if (flag3)
             {
-                this.sendQueue.addToSendQueue(new CPacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, this.onGround));
+                this.connection.sendPacket(new CPacketPlayer.Rotation(this.rotationYaw, this.rotationPitch, this.onGround));
             }
             else if (this.prevOnGround != this.onGround)
             {
-                this.sendQueue.addToSendQueue(new CPacketPlayer(this.onGround));
+                this.connection.sendPacket(new CPacketPlayer(this.onGround));
             }
 
             if (flag2)
@@ -306,42 +308,45 @@ public class EntityPlayerSP extends AbstractClientPlayer
     }
 
     /**
-     * Called when player presses the drop item key
+     * Drop one item out of the currently selected stack if {@code dropAll} is false. If {@code dropItem} is true the
+     * entire stack is dropped.
      */
-    public EntityItem dropOneItem(boolean dropAll)
+    @Nullable
+    public EntityItem dropItem(boolean dropAll)
     {
         CPacketPlayerDigging.Action cpacketplayerdigging$action = dropAll ? CPacketPlayerDigging.Action.DROP_ALL_ITEMS : CPacketPlayerDigging.Action.DROP_ITEM;
-        this.sendQueue.addToSendQueue(new CPacketPlayerDigging(cpacketplayerdigging$action, BlockPos.ORIGIN, EnumFacing.DOWN));
+        this.connection.sendPacket(new CPacketPlayerDigging(cpacketplayerdigging$action, BlockPos.ORIGIN, EnumFacing.DOWN));
         return null;
     }
 
+    @Nullable
     public ItemStack dropItemAndGetStack(EntityItem p_184816_1_)
     {
         return null;
     }
 
     /**
-     * Sends a chat message from the player. Args: chatMessage
+     * Sends a chat message from the player.
      */
     public void sendChatMessage(String message)
     {
-        this.sendQueue.addToSendQueue(new CPacketChatMessage(message));
+        this.connection.sendPacket(new CPacketChatMessage(message));
     }
 
     public void swingArm(EnumHand hand)
     {
         super.swingArm(hand);
-        this.sendQueue.addToSendQueue(new CPacketAnimation(hand));
+        this.connection.sendPacket(new CPacketAnimation(hand));
     }
 
     public void respawnPlayer()
     {
-        this.sendQueue.addToSendQueue(new CPacketClientStatus(CPacketClientStatus.State.PERFORM_RESPAWN));
+        this.connection.sendPacket(new CPacketClientStatus(CPacketClientStatus.State.PERFORM_RESPAWN));
     }
 
     /**
-     * Deals damage to the entity. If its a EntityPlayer then will take damage from the armor first and then health
-     * second with the reduced value. Args: damageAmount
+     * Deals damage to the entity. This will take the armor of the entity into consideration before damaging the health
+     * bar.
      */
     protected void damageEntity(DamageSource damageSrc, float damageAmount)
     {
@@ -356,7 +361,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      */
     public void closeScreen()
     {
-        this.sendQueue.addToSendQueue(new CPacketCloseWindow(this.openContainer.windowId));
+        this.connection.sendPacket(new CPacketCloseWindow(this.openContainer.windowId));
         this.closeScreenAndDropStack();
     }
 
@@ -420,7 +425,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      */
     public void sendPlayerAbilities()
     {
-        this.sendQueue.addToSendQueue(new CPacketPlayerAbilities(this.capabilities));
+        this.connection.sendPacket(new CPacketPlayerAbilities(this.capabilities));
     }
 
     /**
@@ -433,12 +438,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     protected void sendHorseJump()
     {
-        this.sendQueue.addToSendQueue(new CPacketEntityAction(this, CPacketEntityAction.Action.START_RIDING_JUMP, MathHelper.floor_float(this.getHorseJumpPower() * 100.0F)));
+        this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_RIDING_JUMP, MathHelper.floor_float(this.getHorseJumpPower() * 100.0F)));
     }
 
     public void sendHorseInventory()
     {
-        this.sendQueue.addToSendQueue(new CPacketEntityAction(this, CPacketEntityAction.Action.OPEN_INVENTORY));
+        this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.OPEN_INVENTORY));
     }
 
     /**
@@ -460,7 +465,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         return this.serverBrand;
     }
 
-    public StatFileWriter getStatFileWriter()
+    public StatisticsManager getStatFileWriter()
     {
         return this.statWriter;
     }
@@ -644,15 +649,15 @@ public class EntityPlayerSP extends AbstractClientPlayer
         return true;
     }
 
-    public void setActiveHand(EnumHand p_184598_1_)
+    public void setActiveHand(EnumHand hand)
     {
-        ItemStack itemstack = this.getHeldItem(p_184598_1_);
+        ItemStack itemstack = this.getHeldItem(hand);
 
         if (itemstack != null && !this.isHandActive())
         {
-            super.setActiveHand(p_184598_1_);
+            super.setActiveHand(hand);
             this.handActive = true;
-            this.activeHand = p_184598_1_;
+            this.activeHand = hand;
         }
     }
 
@@ -678,8 +683,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
         if (HAND_STATES.equals(key))
         {
-            boolean flag = (((Byte)this.dataWatcher.get(HAND_STATES)).byteValue() & 1) > 0;
-            EnumHand enumhand = (((Byte)this.dataWatcher.get(HAND_STATES)).byteValue() & 2) > 0 ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND;
+            boolean flag = (((Byte)this.dataManager.get(HAND_STATES)).byteValue() & 1) > 0;
+            EnumHand enumhand = (((Byte)this.dataManager.get(HAND_STATES)).byteValue() & 2) > 0 ? EnumHand.OFF_HAND : EnumHand.MAIN_HAND;
 
             if (flag && !this.handActive)
             {
@@ -728,14 +733,14 @@ public class EntityPlayerSP extends AbstractClientPlayer
     {
         Item item = stack.getItem();
 
-        if (item == Items.writable_book)
+        if (item == Items.WRITABLE_BOOK)
         {
             this.mc.displayGuiScreen(new GuiScreenBook(this, stack, true));
         }
     }
 
     /**
-     * Displays the GUI for interacting with a chest inventory. Args: chestInventory
+     * Displays the GUI for interacting with a chest inventory.
      */
     public void displayGUIChest(IInventory chestInventory)
     {
@@ -800,7 +805,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
     }
 
     /**
-     * Called when the player performs a critical hit on the Entity. Args: entity that was hit critically
+     * Called when the entity is dealt a critical hit.
      */
     public void onCriticalHit(Entity entityHit)
     {
@@ -866,7 +871,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
             if (this.timeInPortal == 0.0F)
             {
-                this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.block_portal_trigger, this.rand.nextFloat() * 0.4F + 0.8F));
+                this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.BLOCK_PORTAL_TRIGGER, this.rand.nextFloat() * 0.4F + 0.8F));
             }
 
             this.timeInPortal += 0.0125F;
@@ -878,7 +883,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
             this.inPortal = false;
         }
-        else if (this.isPotionActive(MobEffects.confusion) && this.getActivePotionEffect(MobEffects.confusion).getDuration() > 60)
+        else if (this.isPotionActive(MobEffects.NAUSEA) && this.getActivePotionEffect(MobEffects.NAUSEA).getDuration() > 60)
         {
             this.timeInPortal += 0.006666667F;
 
@@ -925,7 +930,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         boolean flag3 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
-        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= f && !this.isSprinting() && flag3 && !this.isHandActive() && !this.isPotionActive(MobEffects.blindness))
+        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= f && !this.isSprinting() && flag3 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS))
         {
             if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown())
             {
@@ -937,7 +942,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
             }
         }
 
-        if (!this.isSprinting() && this.movementInput.moveForward >= f && flag3 && !this.isHandActive() && !this.isPotionActive(MobEffects.blindness) && this.mc.gameSettings.keyBindSprint.isKeyDown())
+        if (!this.isSprinting() && this.movementInput.moveForward >= f && flag3 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS) && this.mc.gameSettings.keyBindSprint.isKeyDown())
         {
             this.setSprinting(true);
         }
@@ -976,9 +981,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
         {
             ItemStack itemstack = this.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 
-            if (itemstack != null && itemstack.getItem() == Items.elytra && ItemElytra.isBroken(itemstack))
+            if (itemstack != null && itemstack.getItem() == Items.ELYTRA && ItemElytra.isBroken(itemstack))
             {
-                this.sendQueue.addToSendQueue(new CPacketEntityAction(this, CPacketEntityAction.Action.START_FALL_FLYING));
+                this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_FALL_FLYING));
+                this.mc.getSoundHandler().playSound(new ElytraSound(this));
             }
         }
 
@@ -1061,7 +1067,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         if (this.getRidingEntity() instanceof EntityBoat)
         {
             EntityBoat entityboat = (EntityBoat)this.getRidingEntity();
-            entityboat.func_184442_a(this.movementInput.leftKeyDown, this.movementInput.rightKeyDown, this.movementInput.forwardKeyDown, this.movementInput.backKeyDown);
+            entityboat.updateInputs(this.movementInput.leftKeyDown, this.movementInput.rightKeyDown, this.movementInput.forwardKeyDown, this.movementInput.backKeyDown);
             this.rowingBoat |= this.movementInput.leftKeyDown || this.movementInput.rightKeyDown || this.movementInput.forwardKeyDown || this.movementInput.backKeyDown;
         }
     }
@@ -1075,9 +1081,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
      * Removes the given potion effect from the active potion map and returns it. Does not call cleanup callbacks for
      * the end of the potion effect.
      */
-    public PotionEffect removeActivePotionEffect(Potion potioneffectin)
+    @Nullable
+    public PotionEffect removeActivePotionEffect(@Nullable Potion potioneffectin)
     {
-        if (potioneffectin == MobEffects.confusion)
+        if (potioneffectin == MobEffects.NAUSEA)
         {
             this.prevTimeInPortal = 0.0F;
             this.timeInPortal = 0.0F;

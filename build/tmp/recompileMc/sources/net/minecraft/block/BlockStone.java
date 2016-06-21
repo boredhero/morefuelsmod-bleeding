@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -23,9 +24,9 @@ public class BlockStone extends Block
 
     public BlockStone()
     {
-        super(Material.rock);
+        super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockStone.EnumType.STONE));
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -41,15 +42,16 @@ public class BlockStone extends Block
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return ((BlockStone.EnumType)state.getValue(VARIANT)).func_181072_c();
+        return ((BlockStone.EnumType)state.getValue(VARIANT)).getMapColor();
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return state.getValue(VARIANT) == BlockStone.EnumType.STONE ? Item.getItemFromBlock(Blocks.cobblestone) : Item.getItemFromBlock(Blocks.stone);
+        return state.getValue(VARIANT) == BlockStone.EnumType.STONE ? Item.getItemFromBlock(Blocks.COBBLESTONE) : Item.getItemFromBlock(Blocks.STONE);
     }
 
     /**
@@ -96,13 +98,13 @@ public class BlockStone extends Block
 
     public static enum EnumType implements IStringSerializable
     {
-        STONE(0, MapColor.stoneColor, "stone"),
-        GRANITE(1, MapColor.dirtColor, "granite"),
-        GRANITE_SMOOTH(2, MapColor.dirtColor, "smooth_granite", "graniteSmooth"),
-        DIORITE(3, MapColor.quartzColor, "diorite"),
-        DIORITE_SMOOTH(4, MapColor.quartzColor, "smooth_diorite", "dioriteSmooth"),
-        ANDESITE(5, MapColor.stoneColor, "andesite"),
-        ANDESITE_SMOOTH(6, MapColor.stoneColor, "smooth_andesite", "andesiteSmooth");
+        STONE(0, MapColor.STONE, "stone"),
+        GRANITE(1, MapColor.DIRT, "granite"),
+        GRANITE_SMOOTH(2, MapColor.DIRT, "smooth_granite", "graniteSmooth"),
+        DIORITE(3, MapColor.QUARTZ, "diorite"),
+        DIORITE_SMOOTH(4, MapColor.QUARTZ, "smooth_diorite", "dioriteSmooth"),
+        ANDESITE(5, MapColor.STONE, "andesite"),
+        ANDESITE_SMOOTH(6, MapColor.STONE, "smooth_andesite", "andesiteSmooth");
 
         /** Array of the Block's BlockStates */
         private static final BlockStone.EnumType[] META_LOOKUP = new BlockStone.EnumType[values().length];
@@ -111,7 +113,7 @@ public class BlockStone extends Block
         /** The EnumType's name. */
         private final String name;
         private final String unlocalizedName;
-        private final MapColor field_181073_l;
+        private final MapColor mapColor;
 
         private EnumType(int p_i46383_3_, MapColor p_i46383_4_, String p_i46383_5_)
         {
@@ -123,7 +125,7 @@ public class BlockStone extends Block
             this.meta = p_i46384_3_;
             this.name = p_i46384_5_;
             this.unlocalizedName = p_i46384_6_;
-            this.field_181073_l = p_i46384_4_;
+            this.mapColor = p_i46384_4_;
         }
 
         /**
@@ -134,9 +136,9 @@ public class BlockStone extends Block
             return this.meta;
         }
 
-        public MapColor func_181072_c()
+        public MapColor getMapColor()
         {
-            return this.field_181073_l;
+            return this.mapColor;
         }
 
         public String toString()

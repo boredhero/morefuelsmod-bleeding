@@ -1,8 +1,11 @@
 package net.minecraft.pathfinding;
 
-import java.util.WeakHashMap;
+import com.google.common.collect.Lists;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -13,35 +16,31 @@ import net.minecraft.world.World;
 
 public class PathWorldListener implements IWorldEventListener
 {
-    private static final Object PRESENT = new Object();
-    private final WeakHashMap<PathNavigate, Object> field_184381_b = new WeakHashMap();
-
-    public void func_184379_a(PathNavigate p_184379_1_)
-    {
-        this.field_184381_b.put(p_184379_1_, PRESENT);
-    }
+    private final List<PathNavigate> navigations = Lists.<PathNavigate>newArrayList();
 
     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags)
     {
-        if (this.func_184378_a(worldIn, pos, oldState, newState))
+        if (this.didBlockChange(worldIn, pos, oldState, newState))
         {
-            PathNavigate[] apathnavigate = (PathNavigate[])this.field_184381_b.keySet().toArray(new PathNavigate[0]);
+            int i = 0;
 
-            for (PathNavigate pathnavigate : apathnavigate)
+            for (int j = this.navigations.size(); i < j; ++i)
             {
-                if (pathnavigate != null && !pathnavigate.func_188553_i())
-                {
-                    PathEntity pathentity = pathnavigate.getPath();
+                PathNavigate pathnavigate = (PathNavigate)this.navigations.get(i);
 
-                    if (pathentity != null && !pathentity.isFinished() && pathentity.getCurrentPathLength() != 0)
+                if (pathnavigate != null && !pathnavigate.canUpdatePathOnTimeout())
+                {
+                    Path path = pathnavigate.getPath();
+
+                    if (path != null && !path.isFinished() && path.getCurrentPathLength() != 0)
                     {
                         PathPoint pathpoint = pathnavigate.currentPath.getFinalPathPoint();
                         double d0 = pos.distanceSq(((double)pathpoint.xCoord + pathnavigate.theEntity.posX) / 2.0D, ((double)pathpoint.yCoord + pathnavigate.theEntity.posY) / 2.0D, ((double)pathpoint.zCoord + pathnavigate.theEntity.posZ) / 2.0D);
-                        int i = (pathentity.getCurrentPathLength() - pathentity.getCurrentPathIndex()) * (pathentity.getCurrentPathLength() - pathentity.getCurrentPathIndex());
+                        int k = (path.getCurrentPathLength() - path.getCurrentPathIndex()) * (path.getCurrentPathLength() - path.getCurrentPathIndex());
 
-                        if (d0 < (double)i)
+                        if (d0 < (double)k)
                         {
-                            pathnavigate.func_188554_j();
+                            pathnavigate.updatePath();
                         }
                     }
                 }
@@ -49,10 +48,10 @@ public class PathWorldListener implements IWorldEventListener
         }
     }
 
-    protected boolean func_184378_a(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState)
+    protected boolean didBlockChange(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState)
     {
-        AxisAlignedBB axisalignedbb = oldState.getSelectedBoundingBox(worldIn, pos);
-        AxisAlignedBB axisalignedbb1 = newState.getSelectedBoundingBox(worldIn, pos);
+        AxisAlignedBB axisalignedbb = oldState.getCollisionBoundingBox(worldIn, pos);
+        AxisAlignedBB axisalignedbb1 = newState.getCollisionBoundingBox(worldIn, pos);
         return axisalignedbb != axisalignedbb1 && (axisalignedbb == null || !axisalignedbb.equals(axisalignedbb1));
     }
 
@@ -62,23 +61,16 @@ public class PathWorldListener implements IWorldEventListener
 
     /**
      * On the client, re-renders all blocks in this range, inclusive. On the server, does nothing.
-     *  
-     * @param x1 Starting x coord
-     * @param y1 Starting y coord
-     * @param z1 Starting z coord
-     * @param x2 Ending x coord
-     * @param y2 Ending y coord
-     * @param z2 Ending z coord
      */
     public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2)
     {
     }
 
-    public void playSoundToAllNearExcept(EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x, double y, double z, float volume, float pitch)
+    public void playSoundToAllNearExcept(@Nullable EntityPlayer player, SoundEvent soundIn, SoundCategory category, double x, double y, double z, float volume, float pitch)
     {
     }
 
-    public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xOffset, double yOffset, double zOffset, int... parameters)
+    public void spawnParticle(int particleID, boolean ignoreRange, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters)
     {
     }
 
@@ -88,6 +80,10 @@ public class PathWorldListener implements IWorldEventListener
      */
     public void onEntityAdded(Entity entityIn)
     {
+        if (entityIn instanceof EntityLiving)
+        {
+            this.navigations.add(((EntityLiving)entityIn).getNavigator());
+        }
     }
 
     /**
@@ -96,6 +92,10 @@ public class PathWorldListener implements IWorldEventListener
      */
     public void onEntityRemoved(Entity entityIn)
     {
+        if (entityIn instanceof EntityLiving)
+        {
+            this.navigations.remove(((EntityLiving)entityIn).getNavigator());
+        }
     }
 
     public void playRecord(SoundEvent soundIn, BlockPos pos)
@@ -106,7 +106,7 @@ public class PathWorldListener implements IWorldEventListener
     {
     }
 
-    public void playAuxSFX(EntityPlayer player, int sfxType, BlockPos blockPosIn, int data)
+    public void playEvent(EntityPlayer player, int type, BlockPos blockPosIn, int data)
     {
     }
 

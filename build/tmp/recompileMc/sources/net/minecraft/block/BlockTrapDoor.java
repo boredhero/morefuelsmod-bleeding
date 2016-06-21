@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -29,12 +30,12 @@ public class BlockTrapDoor extends Block
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final PropertyBool OPEN = PropertyBool.create("open");
     public static final PropertyEnum<BlockTrapDoor.DoorHalf> HALF = PropertyEnum.<BlockTrapDoor.DoorHalf>create("half", BlockTrapDoor.DoorHalf.class);
-    protected static final AxisAlignedBB field_185734_d = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.1875D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB field_185735_e = new AxisAlignedBB(0.8125D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB field_185736_f = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.1875D);
-    protected static final AxisAlignedBB field_185737_g = new AxisAlignedBB(0.0D, 0.0D, 0.8125D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB field_185732_B = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1875D, 1.0D);
-    protected static final AxisAlignedBB field_185733_C = new AxisAlignedBB(0.0D, 0.8125D, 0.0D, 1.0D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB EAST_OPEN_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.1875D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB WEST_OPEN_AABB = new AxisAlignedBB(0.8125D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB SOUTH_OPEN_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.1875D);
+    protected static final AxisAlignedBB NORTH_OPEN_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.8125D, 1.0D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB BOTTOM_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1875D, 1.0D);
+    protected static final AxisAlignedBB TOP_AABB = new AxisAlignedBB(0.0D, 0.8125D, 0.0D, 1.0D, 1.0D, 1.0D);
 
     protected BlockTrapDoor(Material materialIn)
     {
@@ -42,7 +43,7 @@ public class BlockTrapDoor extends Block
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(OPEN, Boolean.valueOf(false)).withProperty(HALF, BlockTrapDoor.DoorHalf.BOTTOM));
         float f = 0.5F;
         float f1 = 1.0F;
-        this.setCreativeTab(CreativeTabs.tabRedstone);
+        this.setCreativeTab(CreativeTabs.REDSTONE);
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -55,25 +56,25 @@ public class BlockTrapDoor extends Block
             {
                 case NORTH:
                 default:
-                    axisalignedbb = field_185737_g;
+                    axisalignedbb = NORTH_OPEN_AABB;
                     break;
                 case SOUTH:
-                    axisalignedbb = field_185736_f;
+                    axisalignedbb = SOUTH_OPEN_AABB;
                     break;
                 case WEST:
-                    axisalignedbb = field_185735_e;
+                    axisalignedbb = WEST_OPEN_AABB;
                     break;
                 case EAST:
-                    axisalignedbb = field_185734_d;
+                    axisalignedbb = EAST_OPEN_AABB;
             }
         }
         else if (state.getValue(HALF) == BlockTrapDoor.DoorHalf.TOP)
         {
-            axisalignedbb = field_185733_C;
+            axisalignedbb = TOP_AABB;
         }
         else
         {
-            axisalignedbb = field_185732_B;
+            axisalignedbb = BOTTOM_AABB;
         }
 
         return axisalignedbb;
@@ -97,9 +98,9 @@ public class BlockTrapDoor extends Block
         return !((Boolean)worldIn.getBlockState(pos).getValue(OPEN)).booleanValue();
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        if (this.blockMaterial == Material.iron)
+        if (this.blockMaterial == Material.IRON)
         {
             return true;
         }
@@ -107,42 +108,44 @@ public class BlockTrapDoor extends Block
         {
             state = state.cycleProperty(OPEN);
             worldIn.setBlockState(pos, state, 2);
-            this.func_185731_a(playerIn, worldIn, pos, ((Boolean)state.getValue(OPEN)).booleanValue());
+            this.playSound(playerIn, worldIn, pos, ((Boolean)state.getValue(OPEN)).booleanValue());
             return true;
         }
     }
 
-    protected void func_185731_a(EntityPlayer p_185731_1_, World p_185731_2_, BlockPos p_185731_3_, boolean p_185731_4_)
+    protected void playSound(@Nullable EntityPlayer player, World worldIn, BlockPos pos, boolean p_185731_4_)
     {
         if (p_185731_4_)
         {
-            int i = this.blockMaterial == Material.iron ? 1037 : 1007;
-            p_185731_2_.playAuxSFXAtEntity(p_185731_1_, i, p_185731_3_, 0);
+            int i = this.blockMaterial == Material.IRON ? 1037 : 1007;
+            worldIn.playEvent(player, i, pos, 0);
         }
         else
         {
-            int j = this.blockMaterial == Material.iron ? 1036 : 1013;
-            p_185731_2_.playAuxSFXAtEntity(p_185731_1_, j, p_185731_3_, 0);
+            int j = this.blockMaterial == Material.IRON ? 1036 : 1013;
+            worldIn.playEvent(player, j, pos, 0);
         }
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!worldIn.isRemote)
         {
             boolean flag = worldIn.isBlockPowered(pos);
 
-            if (flag || neighborBlock.getDefaultState().canProvidePower())
+            if (flag || blockIn.getDefaultState().canProvidePower())
             {
                 boolean flag1 = ((Boolean)state.getValue(OPEN)).booleanValue();
 
                 if (flag1 != flag)
                 {
                     worldIn.setBlockState(pos, state.withProperty(OPEN, Boolean.valueOf(flag)), 2);
-                    this.func_185731_a((EntityPlayer)null, worldIn, pos, flag);
+                    this.playSound((EntityPlayer)null, worldIn, pos, flag);
                 }
             }
         }
@@ -274,7 +277,7 @@ public class BlockTrapDoor extends Block
         if (state.getValue(OPEN))
         {
             IBlockState down = world.getBlockState(pos.down());
-            if (down.getBlock() == net.minecraft.init.Blocks.ladder)
+            if (down.getBlock() == net.minecraft.init.Blocks.LADDER)
                 return down.getValue(BlockLadder.FACING) == state.getValue(FACING);
         }
         return false;

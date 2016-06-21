@@ -47,7 +47,7 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
         this.hardcoreMode = (i & 8) == 8;
         i = i & -9;
         this.gameType = WorldSettings.GameType.getByID(i);
-        this.dimension = buf.readByte();
+        this.dimension = buf.readInt();
         this.difficulty = EnumDifficulty.getDifficultyEnum(buf.readUnsignedByte());
         this.maxPlayers = buf.readUnsignedByte();
         this.worldType = WorldType.parseWorldType(buf.readStringFromBuffer(16));
@@ -74,7 +74,7 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
         }
 
         buf.writeByte(i);
-        buf.writeByte(this.dimension);
+        buf.writeInt(this.dimension);
         buf.writeByte(this.difficulty.getDifficultyId());
         buf.writeByte(this.maxPlayers);
         buf.writeString(this.worldType.getWorldTypeName());

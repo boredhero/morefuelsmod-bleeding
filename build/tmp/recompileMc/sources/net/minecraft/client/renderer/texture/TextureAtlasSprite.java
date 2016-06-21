@@ -5,12 +5,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.data.AnimationFrame;
 import net.minecraft.client.resources.data.AnimationMetadataSection;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
@@ -50,12 +50,10 @@ public class TextureAtlasSprite
         this.originX = originInX;
         this.originY = originInY;
         this.rotated = rotatedIn;
-        float f = (float)(0.009999999776482582D / (double)inX);
-        float f1 = (float)(0.009999999776482582D / (double)inY);
-        this.minU = (float)originInX / (float)((double)inX) + f;
-        this.maxU = (float)(originInX + this.width) / (float)((double)inX) - f;
-        this.minV = (float)originInY / (float)inY + f1;
-        this.maxV = (float)(originInY + this.height) / (float)inY - f1;
+        this.minU = (float)originInX / (float)inX;
+        this.maxU = (float)(originInX + this.width) / (float)inX;
+        this.minV = (float)originInY / (float)inY;
+        this.maxV = (float)(originInY + this.height) / (float)inY;
     }
 
     public void copyFrom(TextureAtlasSprite atlasSpirit)
@@ -276,11 +274,11 @@ public class TextureAtlasSprite
         }
     }
 
-    public void loadSpriteFrames(IResource resource, int p_188539_2_) throws IOException
+    public void loadSpriteFrames(IResource resource, int mipmaplevels) throws IOException
     {
         BufferedImage bufferedimage = TextureUtil.readBufferedImage(resource.getInputStream());
         AnimationMetadataSection animationmetadatasection = (AnimationMetadataSection)resource.getMetadata("animation");
-        int[][] aint = new int[p_188539_2_][];
+        int[][] aint = new int[mipmaplevels][];
         aint[0] = new int[bufferedimage.getWidth() * bufferedimage.getHeight()];
         bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), aint[0], 0, bufferedimage.getWidth());
 
@@ -345,7 +343,7 @@ public class TextureAtlasSprite
                     CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Generating mipmaps for frame");
                     CrashReportCategory crashreportcategory = crashreport.makeCategory("Frame being iterated");
                     crashreportcategory.addCrashSection("Frame index", Integer.valueOf(i));
-                    crashreportcategory.addCrashSectionCallable("Frame sizes", new Callable<String>()
+                    crashreportcategory.setDetail("Frame sizes", new ICrashReportDetail<String>()
                     {
                         public String call() throws Exception
                         {

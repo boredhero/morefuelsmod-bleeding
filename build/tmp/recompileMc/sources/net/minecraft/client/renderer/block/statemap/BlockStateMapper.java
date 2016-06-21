@@ -19,9 +19,9 @@ public class BlockStateMapper
     private Map<Block, IStateMapper> blockStateMap = Maps.<Block, IStateMapper>newIdentityHashMap();
     private Set<Block> setBuiltInBlocks = Sets.<Block>newIdentityHashSet();
 
-    public void registerBlockStateMapper(Block p_178447_1_, IStateMapper stateMapper)
+    public void registerBlockStateMapper(Block blockIn, IStateMapper stateMapper)
     {
-        this.blockStateMap.put(p_178447_1_, stateMapper);
+        this.blockStateMap.put(blockIn, stateMapper);
     }
 
     public void registerBuiltInBlocks(Block... blockIn)
@@ -33,7 +33,7 @@ public class BlockStateMapper
     {
         Map<IBlockState, ModelResourceLocation> map = Maps.<IBlockState, ModelResourceLocation>newIdentityHashMap();
 
-        for (Block block : Block.blockRegistry)
+        for (Block block : Block.REGISTRY)
         {
             map.putAll(this.getVariants(block));
         }
@@ -53,7 +53,7 @@ public class BlockStateMapper
 
             if (istatemapper == null)
             {
-                return Collections.<ResourceLocation>singleton(Block.blockRegistry.getNameForObject(blockIn));
+                return Collections.<ResourceLocation>singleton(Block.REGISTRY.getNameForObject(blockIn));
             }
             else
             {

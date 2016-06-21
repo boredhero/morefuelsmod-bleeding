@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.client.resources.data.IMetadataSerializer;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,11 +18,11 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class FallbackResourceManager implements IResourceManager
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     protected final List<IResourcePack> resourcePacks = Lists.<IResourcePack>newArrayList();
-    private final IMetadataSerializer frmMetadataSerializer;
+    private final MetadataSerializer frmMetadataSerializer;
 
-    public FallbackResourceManager(IMetadataSerializer frmMetadataSerializerIn)
+    public FallbackResourceManager(MetadataSerializer frmMetadataSerializerIn)
     {
         this.frmMetadataSerializer = frmMetadataSerializerIn;
     }
@@ -72,7 +72,7 @@ public class FallbackResourceManager implements IResourceManager
     protected InputStream getInputStream(ResourceLocation location, IResourcePack resourcePack) throws IOException
     {
         InputStream inputstream = resourcePack.getInputStream(location);
-        return (InputStream)(logger.isDebugEnabled() ? new FallbackResourceManager.InputStreamLeakedResourceLogger(inputstream, location, resourcePack.getPackName()) : inputstream);
+        return (InputStream)(LOGGER.isDebugEnabled() ? new FallbackResourceManager.InputStreamLeakedResourceLogger(inputstream, location, resourcePack.getPackName()) : inputstream);
     }
 
     private void checkResourcePath(ResourceLocation p_188552_1_) throws IOException
@@ -138,7 +138,7 @@ public class FallbackResourceManager implements IResourceManager
             {
                 if (!this.isClosed)
                 {
-                    FallbackResourceManager.logger.warn(this.message);
+                    FallbackResourceManager.LOGGER.warn(this.message);
                 }
 
                 super.finalize();

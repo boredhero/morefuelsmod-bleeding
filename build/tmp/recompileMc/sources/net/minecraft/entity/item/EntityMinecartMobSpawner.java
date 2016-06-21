@@ -14,7 +14,7 @@ public class EntityMinecartMobSpawner extends EntityMinecart
     /** Mob spawner logic for this spawner minecart. */
     private final MobSpawnerBaseLogic mobSpawnerLogic = new MobSpawnerBaseLogic()
     {
-        public void func_98267_a(int id)
+        public void broadcastEvent(int id)
         {
             EntityMinecartMobSpawner.this.worldObj.setEntityState(EntityMinecartMobSpawner.this, (byte)id);
         }
@@ -45,25 +45,25 @@ public class EntityMinecartMobSpawner extends EntityMinecart
 
     public IBlockState getDefaultDisplayTile()
     {
-        return Blocks.mob_spawner.getDefaultState();
+        return Blocks.MOB_SPAWNER.getDefaultState();
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.mobSpawnerLogic.readFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
+        this.mobSpawnerLogic.readFromNBT(compound);
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        this.mobSpawnerLogic.writeToNBT(tagCompound);
+        super.writeEntityToNBT(compound);
+        this.mobSpawnerLogic.writeToNBT(compound);
     }
 
     @SideOnly(Side.CLIENT)

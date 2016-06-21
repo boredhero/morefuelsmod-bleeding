@@ -16,14 +16,14 @@ import net.minecraft.world.World;
 
 public class WorldGenMegaPineTree extends WorldGenHugeTrees
 {
-    private static final IBlockState field_181633_e = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
-    private static final IBlockState field_181634_f = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
-    private static final IBlockState field_181635_g = Blocks.dirt.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.PODZOL);
+    private static final IBlockState TRUNK = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
+    private static final IBlockState LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+    private static final IBlockState PODZOL = Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.PODZOL);
     private boolean useBaseHeight;
 
     public WorldGenMegaPineTree(boolean p_i45457_1_, boolean p_i45457_2_)
     {
-        super(p_i45457_1_, 13, 15, field_181633_e, field_181634_f);
+        super(p_i45457_1_, 13, 15, TRUNK, LEAF);
         this.useBaseHeight = p_i45457_2_;
     }
 
@@ -37,7 +37,7 @@ public class WorldGenMegaPineTree extends WorldGenHugeTrees
         }
         else
         {
-            this.func_150541_c(worldIn, position.getX(), position.getZ(), position.getY() + i, 0, rand);
+            this.createCrown(worldIn, position.getX(), position.getZ(), position.getY() + i, 0, rand);
 
             for (int j = 0; j < i; ++j)
             {
@@ -70,7 +70,7 @@ public class WorldGenMegaPineTree extends WorldGenHugeTrees
         }
     }
 
-    private void func_150541_c(World worldIn, int p_150541_2_, int p_150541_3_, int p_150541_4_, int p_150541_5_, Random p_150541_6_)
+    private void createCrown(World worldIn, int p_150541_2_, int p_150541_3_, int p_150541_4_, int p_150541_5_, Random p_150541_6_)
     {
         int i = p_150541_6_.nextInt(5) + (this.useBaseHeight ? this.baseHeight : 3);
         int j = 0;
@@ -84,27 +84,27 @@ public class WorldGenMegaPineTree extends WorldGenHugeTrees
         }
     }
 
-    public void func_180711_a(World worldIn, Random p_180711_2_, BlockPos p_180711_3_)
+    public void generateSaplings(World worldIn, Random random, BlockPos pos)
     {
-        this.func_175933_b(worldIn, p_180711_3_.west().north());
-        this.func_175933_b(worldIn, p_180711_3_.east(2).north());
-        this.func_175933_b(worldIn, p_180711_3_.west().south(2));
-        this.func_175933_b(worldIn, p_180711_3_.east(2).south(2));
+        this.placePodzolCircle(worldIn, pos.west().north());
+        this.placePodzolCircle(worldIn, pos.east(2).north());
+        this.placePodzolCircle(worldIn, pos.west().south(2));
+        this.placePodzolCircle(worldIn, pos.east(2).south(2));
 
         for (int i = 0; i < 5; ++i)
         {
-            int j = p_180711_2_.nextInt(64);
+            int j = random.nextInt(64);
             int k = j % 8;
             int l = j / 8;
 
             if (k == 0 || k == 7 || l == 0 || l == 7)
             {
-                this.func_175933_b(worldIn, p_180711_3_.add(-3 + k, 0, -3 + l));
+                this.placePodzolCircle(worldIn, pos.add(-3 + k, 0, -3 + l));
             }
         }
     }
 
-    private void func_175933_b(World worldIn, BlockPos p_175933_2_)
+    private void placePodzolCircle(World worldIn, BlockPos center)
     {
         for (int i = -2; i <= 2; ++i)
         {
@@ -112,27 +112,27 @@ public class WorldGenMegaPineTree extends WorldGenHugeTrees
             {
                 if (Math.abs(i) != 2 || Math.abs(j) != 2)
                 {
-                    this.func_175934_c(worldIn, p_175933_2_.add(i, 0, j));
+                    this.placePodzolAt(worldIn, center.add(i, 0, j));
                 }
             }
         }
     }
 
-    private void func_175934_c(World worldIn, BlockPos p_175934_2_)
+    private void placePodzolAt(World worldIn, BlockPos pos)
     {
         for (int i = 2; i >= -3; --i)
         {
-            BlockPos blockpos = p_175934_2_.up(i);
+            BlockPos blockpos = pos.up(i);
             IBlockState iblockstate = worldIn.getBlockState(blockpos);
             Block block = iblockstate.getBlock();
 
-            if (block.canSustainPlant(iblockstate, worldIn, blockpos, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.sapling)))
+            if (block.canSustainPlant(iblockstate, worldIn, blockpos, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.SAPLING)))
             {
-                this.setBlockAndNotifyAdequately(worldIn, blockpos, field_181635_g);
+                this.setBlockAndNotifyAdequately(worldIn, blockpos, PODZOL);
                 break;
             }
 
-            if (iblockstate.getMaterial() != Material.air && i < 0)
+            if (iblockstate.getMaterial() != Material.AIR && i < 0)
             {
                 break;
             }

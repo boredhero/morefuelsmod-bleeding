@@ -10,13 +10,13 @@ import net.minecraft.world.gen.ChunkProviderEnd;
 
 public class MapGenEndCity extends MapGenStructure
 {
-    private int field_186131_a = 20;
-    private int field_186132_b = 11;
-    private final ChunkProviderEnd field_186133_d;
+    private int citySpacing = 20;
+    private int minCitySeparation = 11;
+    private final ChunkProviderEnd endProvider;
 
     public MapGenEndCity(ChunkProviderEnd p_i46665_1_)
     {
-        this.field_186133_d = p_i46665_1_;
+        this.endProvider = p_i46665_1_;
     }
 
     public String getStructureName()
@@ -31,27 +31,27 @@ public class MapGenEndCity extends MapGenStructure
 
         if (chunkX < 0)
         {
-            chunkX -= this.field_186131_a - 1;
+            chunkX -= this.citySpacing - 1;
         }
 
         if (chunkZ < 0)
         {
-            chunkZ -= this.field_186131_a - 1;
+            chunkZ -= this.citySpacing - 1;
         }
 
-        int k = chunkX / this.field_186131_a;
-        int l = chunkZ / this.field_186131_a;
+        int k = chunkX / this.citySpacing;
+        int l = chunkZ / this.citySpacing;
         Random random = this.worldObj.setRandomSeed(k, l, 10387313);
-        k = k * this.field_186131_a;
-        l = l * this.field_186131_a;
-        k = k + (random.nextInt(this.field_186131_a - this.field_186132_b) + random.nextInt(this.field_186131_a - this.field_186132_b)) / 2;
-        l = l + (random.nextInt(this.field_186131_a - this.field_186132_b) + random.nextInt(this.field_186131_a - this.field_186132_b)) / 2;
-        return i == k && j == l && this.field_186133_d.func_185961_c(i, j);
+        k = k * this.citySpacing;
+        l = l * this.citySpacing;
+        k = k + (random.nextInt(this.citySpacing - this.minCitySeparation) + random.nextInt(this.citySpacing - this.minCitySeparation)) / 2;
+        l = l + (random.nextInt(this.citySpacing - this.minCitySeparation) + random.nextInt(this.citySpacing - this.minCitySeparation)) / 2;
+        return i == k && j == l && this.endProvider.isIslandChunk(i, j);
     }
 
     protected StructureStart getStructureStart(int chunkX, int chunkZ)
     {
-        return new MapGenEndCity.Start(this.worldObj, this.field_186133_d, this.rand, chunkX, chunkZ);
+        return new MapGenEndCity.Start(this.worldObj, this.endProvider, this.rand, chunkX, chunkZ);
     }
 
     public static class Start extends StructureStart
@@ -62,17 +62,17 @@ public class MapGenEndCity extends MapGenStructure
             {
             }
 
-            public Start(World p_i46760_1_, ChunkProviderEnd p_i46760_2_, Random p_i46760_3_, int p_i46760_4_, int p_i46760_5_)
+            public Start(World worldIn, ChunkProviderEnd chunkProvider, Random random, int chunkX, int chunkZ)
             {
-                super(p_i46760_4_, p_i46760_5_);
-                this.func_186162_a(p_i46760_1_, p_i46760_2_, p_i46760_3_, p_i46760_4_, p_i46760_5_);
+                super(chunkX, chunkZ);
+                this.create(worldIn, chunkProvider, random, chunkX, chunkZ);
             }
 
-            private void func_186162_a(World p_186162_1_, ChunkProviderEnd p_186162_2_, Random p_186162_3_, int p_186162_4_, int p_186162_5_)
+            private void create(World worldIn, ChunkProviderEnd chunkProvider, Random random, int chunkX, int chunkZ)
             {
-                Rotation rotation = Rotation.values()[p_186162_3_.nextInt(Rotation.values().length)];
+                Rotation rotation = Rotation.values()[random.nextInt(Rotation.values().length)];
                 ChunkPrimer chunkprimer = new ChunkPrimer();
-                p_186162_2_.setBlocksInChunk(p_186162_4_, p_186162_5_, chunkprimer);
+                chunkProvider.setBlocksInChunk(chunkX, chunkZ, chunkprimer);
                 int i = 5;
                 int j = 5;
 
@@ -102,8 +102,8 @@ public class MapGenEndCity extends MapGenStructure
                 }
                 else
                 {
-                    BlockPos blockpos = new BlockPos(p_186162_4_ * 16 + 8, k1, p_186162_5_ * 16 + 8);
-                    StructureEndCityPieces.func_186190_a(blockpos, rotation, this.components, p_186162_3_);
+                    BlockPos blockpos = new BlockPos(chunkX * 16 + 8, k1, chunkZ * 16 + 8);
+                    StructureEndCityPieces.beginHouseTower(blockpos, rotation, this.components, random);
                     this.updateBoundingBox();
                     this.isSizeable = true;
                 }

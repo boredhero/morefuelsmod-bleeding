@@ -19,7 +19,7 @@ public class ItemWritableBook extends Item
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
         playerIn.openBook(itemStackIn, hand);
-        playerIn.addStat(StatList.func_188057_b(this));
+        playerIn.addStat(StatList.getObjectUseStats(this));
         return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
     }
 

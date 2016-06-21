@@ -2,6 +2,7 @@ package net.minecraft.entity.item;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.material.Material;
@@ -40,23 +41,23 @@ public class EntityBoat extends Entity
     private static final DataParameter<Integer> FORWARD_DIRECTION = EntityDataManager.<Integer>createKey(EntityBoat.class, DataSerializers.VARINT);
     private static final DataParameter<Float> DAMAGE_TAKEN = EntityDataManager.<Float>createKey(EntityBoat.class, DataSerializers.FLOAT);
     private static final DataParameter<Integer> BOAT_TYPE = EntityDataManager.<Integer>createKey(EntityBoat.class, DataSerializers.VARINT);
-    private static final DataParameter<Boolean>[] field_184468_e = new DataParameter[] {EntityDataManager.createKey(EntityBoat.class, DataSerializers.BOOLEAN), EntityDataManager.createKey(EntityBoat.class, DataSerializers.BOOLEAN)};
-    private float[] field_184470_f;
+    private static final DataParameter<Boolean>[] DATA_ID_PADDLE = new DataParameter[] {EntityDataManager.createKey(EntityBoat.class, DataSerializers.BOOLEAN), EntityDataManager.createKey(EntityBoat.class, DataSerializers.BOOLEAN)};
+    private float[] paddlePositions;
     /** How much of current speed to retain. Value zero to one. */
     private float momentum;
-    private float field_184474_h;
-    private float field_184475_as;
-    private int field_184476_at;
+    private float outOfControlTicks;
+    private float deltaRotation;
+    private int lerpSteps;
     private double boatPitch;
-    private double field_184477_av;
-    private double field_184478_aw;
+    private double lerpY;
+    private double lerpZ;
     private double boatYaw;
-    private double field_184479_ay;
-    private boolean field_184480_az;
-    private boolean field_184459_aA;
-    private boolean field_184461_aB;
-    private boolean field_184463_aC;
-    private double field_184465_aD;
+    private double lerpXRot;
+    private boolean leftInputDown;
+    private boolean rightInputDown;
+    private boolean forwardInputDown;
+    private boolean backInputDown;
+    private double waterLevel;
     /**
      * How much the boat should glide given the slippery blocks it's currently gliding over.
      * Halved every tick.
@@ -64,12 +65,12 @@ public class EntityBoat extends Entity
     private float boatGlide;
     private EntityBoat.Status status;
     private EntityBoat.Status previousStatus;
-    private double field_184473_aH;
+    private double lastYd;
 
     public EntityBoat(World worldIn)
     {
         super(worldIn);
-        this.field_184470_f = new float[2];
+        this.paddlePositions = new float[2];
         this.preventEntitySpawning = true;
         this.setSize(1.375F, 0.5625F);
     }
@@ -97,14 +98,14 @@ public class EntityBoat extends Entity
 
     protected void entityInit()
     {
-        this.dataWatcher.register(TIME_SINCE_HIT, Integer.valueOf(0));
-        this.dataWatcher.register(FORWARD_DIRECTION, Integer.valueOf(1));
-        this.dataWatcher.register(DAMAGE_TAKEN, Float.valueOf(0.0F));
-        this.dataWatcher.register(BOAT_TYPE, Integer.valueOf(EntityBoat.Type.OAK.ordinal()));
+        this.dataManager.register(TIME_SINCE_HIT, Integer.valueOf(0));
+        this.dataManager.register(FORWARD_DIRECTION, Integer.valueOf(1));
+        this.dataManager.register(DAMAGE_TAKEN, Float.valueOf(0.0F));
+        this.dataManager.register(BOAT_TYPE, Integer.valueOf(EntityBoat.Type.OAK.ordinal()));
 
-        for (int i = 0; i < field_184468_e.length; ++i)
+        for (int i = 0; i < DATA_ID_PADDLE.length; ++i)
         {
-            this.dataWatcher.register(field_184468_e[i], Boolean.valueOf(false));
+            this.dataManager.register(DATA_ID_PADDLE[i], Boolean.valueOf(false));
         }
     }
 
@@ -112,6 +113,7 @@ public class EntityBoat extends Entity
      * Returns a boundingBox used to collide the entity with other entities and blocks. This enables the entity to be
      * pushable on contact, like boats or minecarts.
      */
+    @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn)
     {
         return entityIn.getEntityBoundingBox();
@@ -120,6 +122,7 @@ public class EntityBoat extends Entity
     /**
      * Returns the collision bounding box for this entity
      */
+    @Nullable
     public AxisAlignedBB getCollisionBoundingBox()
     {
         return this.getEntityBoundingBox();
@@ -184,7 +187,7 @@ public class EntityBoat extends Entity
     }
 
     /**
-     * Applies a velocity to each of the entities pushing them away from each other. Args: entity
+     * Applies a velocity to the entities, to push them away from eachother.
      */
     public void applyEntityCollision(Entity entityIn)
     {
@@ -207,17 +210,17 @@ public class EntityBoat extends Entity
         {
             case OAK:
             default:
-                return Items.boat;
+                return Items.BOAT;
             case SPRUCE:
-                return Items.spruce_boat;
+                return Items.SPRUCE_BOAT;
             case BIRCH:
-                return Items.birch_boat;
+                return Items.BIRCH_BOAT;
             case JUNGLE:
-                return Items.jungle_boat;
+                return Items.JUNGLE_BOAT;
             case ACACIA:
-                return Items.acacia_boat;
+                return Items.ACACIA_BOAT;
             case DARK_OAK:
-                return Items.dark_oak_boat;
+                return Items.DARK_OAK_BOAT;
         }
     }
 
@@ -240,15 +243,18 @@ public class EntityBoat extends Entity
         return !this.isDead;
     }
 
+    /**
+     * Set the position and rotation values directly without any clamping.
+     */
     @SideOnly(Side.CLIENT)
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_)
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
         this.boatPitch = x;
-        this.field_184477_av = y;
-        this.field_184478_aw = z;
+        this.lerpY = y;
+        this.lerpZ = z;
         this.boatYaw = (double)yaw;
-        this.field_184479_ay = (double)pitch;
-        this.field_184476_at = 10;
+        this.lerpXRot = (double)pitch;
+        this.lerpSteps = 10;
     }
 
     /**
@@ -270,14 +276,14 @@ public class EntityBoat extends Entity
 
         if (this.status != EntityBoat.Status.UNDER_WATER && this.status != EntityBoat.Status.UNDER_FLOWING_WATER)
         {
-            this.field_184474_h = 0.0F;
+            this.outOfControlTicks = 0.0F;
         }
         else
         {
-            ++this.field_184474_h;
+            ++this.outOfControlTicks;
         }
 
-        if (!this.worldObj.isRemote && this.field_184474_h >= 60.0F)
+        if (!this.worldObj.isRemote && this.outOfControlTicks >= 60.0F)
         {
             this.removePassengers();
         }
@@ -296,21 +302,21 @@ public class EntityBoat extends Entity
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
         super.onUpdate();
-        this.func_184447_s();
+        this.tickLerp();
 
         if (this.canPassengerSteer())
         {
             if (this.getPassengers().size() == 0 || !(this.getPassengers().get(0) instanceof EntityPlayer))
             {
-                this.func_184445_a(false, false);
+                this.setPaddleState(false, false);
             }
 
             this.updateMotion();
 
             if (this.worldObj.isRemote)
             {
-                this.func_184443_x();
-                this.worldObj.sendPacketToServer(new CPacketSteerBoat(this.func_184457_a(0), this.func_184457_a(1)));
+                this.controlBoat();
+                this.worldObj.sendPacketToServer(new CPacketSteerBoat(this.getPaddleState(0), this.getPaddleState(1)));
             }
 
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
@@ -324,18 +330,18 @@ public class EntityBoat extends Entity
 
         for (int i = 0; i <= 1; ++i)
         {
-            if (this.func_184457_a(i))
+            if (this.getPaddleState(i))
             {
-                this.field_184470_f[i] = (float)((double)this.field_184470_f[i] + 0.01D);
+                this.paddlePositions[i] = (float)((double)this.paddlePositions[i] + 0.01D);
             }
             else
             {
-                this.field_184470_f[i] = 0.0F;
+                this.paddlePositions[i] = 0.0F;
             }
         }
 
         this.doBlockCollisions();
-        List<Entity> list = this.worldObj.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(0.20000000298023224D, -0.009999999776482582D, 0.20000000298023224D), EntitySelectors.<Entity>func_188442_a(this));
+        List<Entity> list = this.worldObj.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().expand(0.20000000298023224D, -0.009999999776482582D, 0.20000000298023224D), EntitySelectors.<Entity>getTeamCollisionPredicate(this));
 
         if (!list.isEmpty())
         {
@@ -360,32 +366,32 @@ public class EntityBoat extends Entity
         }
     }
 
-    private void func_184447_s()
+    private void tickLerp()
     {
-        if (this.field_184476_at > 0 && !this.canPassengerSteer())
+        if (this.lerpSteps > 0 && !this.canPassengerSteer())
         {
-            double d0 = this.posX + (this.boatPitch - this.posX) / (double)this.field_184476_at;
-            double d1 = this.posY + (this.field_184477_av - this.posY) / (double)this.field_184476_at;
-            double d2 = this.posZ + (this.field_184478_aw - this.posZ) / (double)this.field_184476_at;
-            double d3 = MathHelper.wrapAngleTo180_double(this.boatYaw - (double)this.rotationYaw);
-            this.rotationYaw = (float)((double)this.rotationYaw + d3 / (double)this.field_184476_at);
-            this.rotationPitch = (float)((double)this.rotationPitch + (this.field_184479_ay - (double)this.rotationPitch) / (double)this.field_184476_at);
-            --this.field_184476_at;
+            double d0 = this.posX + (this.boatPitch - this.posX) / (double)this.lerpSteps;
+            double d1 = this.posY + (this.lerpY - this.posY) / (double)this.lerpSteps;
+            double d2 = this.posZ + (this.lerpZ - this.posZ) / (double)this.lerpSteps;
+            double d3 = MathHelper.wrapDegrees(this.boatYaw - (double)this.rotationYaw);
+            this.rotationYaw = (float)((double)this.rotationYaw + d3 / (double)this.lerpSteps);
+            this.rotationPitch = (float)((double)this.rotationPitch + (this.lerpXRot - (double)this.rotationPitch) / (double)this.lerpSteps);
+            --this.lerpSteps;
             this.setPosition(d0, d1, d2);
             this.setRotation(this.rotationYaw, this.rotationPitch);
         }
     }
 
-    public void func_184445_a(boolean p_184445_1_, boolean p_184445_2_)
+    public void setPaddleState(boolean p_184445_1_, boolean p_184445_2_)
     {
-        this.dataWatcher.set(field_184468_e[0], Boolean.valueOf(p_184445_1_));
-        this.dataWatcher.set(field_184468_e[1], Boolean.valueOf(p_184445_2_));
+        this.dataManager.set(DATA_ID_PADDLE[0], Boolean.valueOf(p_184445_1_));
+        this.dataManager.set(DATA_ID_PADDLE[1], Boolean.valueOf(p_184445_2_));
     }
 
     @SideOnly(Side.CLIENT)
-    public float func_184448_a(int p_184448_1_, float limbSwing)
+    public float getRowingTime(int p_184448_1_, float limbSwing)
     {
-        return this.func_184457_a(p_184448_1_) ? (float)MathHelper.denormalizeClamp((double)this.field_184470_f[p_184448_1_] - 0.01D, (double)this.field_184470_f[p_184448_1_], (double)limbSwing) : 0.0F;
+        return this.getPaddleState(p_184448_1_) ? (float)MathHelper.denormalizeClamp((double)this.paddlePositions[p_184448_1_] - 0.01D, (double)this.paddlePositions[p_184448_1_], (double)limbSwing) : 0.0F;
     }
 
     /**
@@ -397,10 +403,10 @@ public class EntityBoat extends Entity
 
         if (entityboat$status != null)
         {
-            this.field_184465_aD = this.getEntityBoundingBox().maxY;
+            this.waterLevel = this.getEntityBoundingBox().maxY;
             return entityboat$status;
         }
-        else if (this.func_184446_u())
+        else if (this.checkInWater())
         {
             return EntityBoat.Status.IN_WATER;
         }
@@ -420,13 +426,13 @@ public class EntityBoat extends Entity
         }
     }
 
-    public float func_184451_k()
+    public float getWaterLevelAbove()
     {
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
         int i = MathHelper.floor_double(axisalignedbb.minX);
         int j = MathHelper.ceiling_double_int(axisalignedbb.maxX);
         int k = MathHelper.floor_double(axisalignedbb.maxY);
-        int l = MathHelper.ceiling_double_int(axisalignedbb.maxY - this.field_184473_aH);
+        int l = MathHelper.ceiling_double_int(axisalignedbb.maxY - this.lastYd);
         int i1 = MathHelper.floor_double(axisalignedbb.minZ);
         int j1 = MathHelper.ceiling_double_int(axisalignedbb.maxZ);
         BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
@@ -458,9 +464,9 @@ public class EntityBoat extends Entity
                         blockpos$pooledmutableblockpos.set(l1, k1, i2);
                         IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
 
-                        if (iblockstate.getMaterial() == Material.water)
+                        if (iblockstate.getMaterial() == Material.WATER)
                         {
-                            f = Math.max(f, func_184456_a(iblockstate, this.worldObj, blockpos$pooledmutableblockpos));
+                            f = Math.max(f, getBlockLiquidHeight(iblockstate, this.worldObj, blockpos$pooledmutableblockpos));
                         }
 
                         if (f >= 1.0F)
@@ -539,7 +545,7 @@ public class EntityBoat extends Entity
         return f / (float)k1;
     }
 
-    private boolean func_184446_u()
+    private boolean checkInWater()
     {
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
         int i = MathHelper.floor_double(axisalignedbb.minX);
@@ -549,7 +555,7 @@ public class EntityBoat extends Entity
         int i1 = MathHelper.floor_double(axisalignedbb.minZ);
         int j1 = MathHelper.ceiling_double_int(axisalignedbb.maxZ);
         boolean flag = false;
-        this.field_184465_aD = Double.MIN_VALUE;
+        this.waterLevel = Double.MIN_VALUE;
         BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
 
         try
@@ -563,10 +569,10 @@ public class EntityBoat extends Entity
                         blockpos$pooledmutableblockpos.set(k1, l1, i2);
                         IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
 
-                        if (iblockstate.getMaterial() == Material.water)
+                        if (iblockstate.getMaterial() == Material.WATER)
                         {
-                            float f = func_184452_b(iblockstate, this.worldObj, blockpos$pooledmutableblockpos);
-                            this.field_184465_aD = Math.max((double)f, this.field_184465_aD);
+                            float f = getLiquidHeight(iblockstate, this.worldObj, blockpos$pooledmutableblockpos);
+                            this.waterLevel = Math.max((double)f, this.waterLevel);
                             flag |= axisalignedbb.minY < (double)f;
                         }
                     }
@@ -584,6 +590,7 @@ public class EntityBoat extends Entity
     /**
      * Decides whether the boat is currently underwater.
      */
+    @Nullable
     private EntityBoat.Status getUnderwaterStatus()
     {
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
@@ -608,7 +615,7 @@ public class EntityBoat extends Entity
                         blockpos$pooledmutableblockpos.set(k1, l1, i2);
                         IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
 
-                        if (iblockstate.getMaterial() == Material.water && d0 < (double)func_184452_b(iblockstate, this.worldObj, blockpos$pooledmutableblockpos))
+                        if (iblockstate.getMaterial() == Material.WATER && d0 < (double)getLiquidHeight(iblockstate, this.worldObj, blockpos$pooledmutableblockpos))
                         {
                             if (((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() != 0)
                             {
@@ -630,15 +637,15 @@ public class EntityBoat extends Entity
         return flag ? EntityBoat.Status.UNDER_WATER : null;
     }
 
-    public static float func_184456_a(IBlockState p_184456_0_, IBlockAccess p_184456_1_, BlockPos p_184456_2_)
+    public static float getBlockLiquidHeight(IBlockState p_184456_0_, IBlockAccess p_184456_1_, BlockPos p_184456_2_)
     {
         int i = ((Integer)p_184456_0_.getValue(BlockLiquid.LEVEL)).intValue();
-        return (i & 7) == 0 && p_184456_1_.getBlockState(p_184456_2_.up()).getMaterial() == Material.water ? 1.0F : 1.0F - BlockLiquid.getLiquidHeightPercent(i);
+        return (i & 7) == 0 && p_184456_1_.getBlockState(p_184456_2_.up()).getMaterial() == Material.WATER ? 1.0F : 1.0F - BlockLiquid.getLiquidHeightPercent(i);
     }
 
-    public static float func_184452_b(IBlockState p_184452_0_, IBlockAccess p_184452_1_, BlockPos p_184452_2_)
+    public static float getLiquidHeight(IBlockState p_184452_0_, IBlockAccess p_184452_1_, BlockPos p_184452_2_)
     {
-        return (float)p_184452_2_.getY() + func_184456_a(p_184452_0_, p_184452_1_, p_184452_2_);
+        return (float)p_184452_2_.getY() + getBlockLiquidHeight(p_184452_0_, p_184452_1_, p_184452_2_);
     }
 
     /**
@@ -653,17 +660,17 @@ public class EntityBoat extends Entity
 
         if (this.previousStatus == EntityBoat.Status.IN_AIR && this.status != EntityBoat.Status.IN_AIR && this.status != EntityBoat.Status.ON_LAND)
         {
-            this.field_184465_aD = this.getEntityBoundingBox().minY + (double)this.height;
-            this.setPosition(this.posX, (double)(this.func_184451_k() - this.height) + 0.101D, this.posZ);
+            this.waterLevel = this.getEntityBoundingBox().minY + (double)this.height;
+            this.setPosition(this.posX, (double)(this.getWaterLevelAbove() - this.height) + 0.101D, this.posZ);
             this.motionY = 0.0D;
-            this.field_184473_aH = 0.0D;
+            this.lastYd = 0.0D;
             this.status = EntityBoat.Status.IN_WATER;
         }
         else
         {
             if (this.status == EntityBoat.Status.IN_WATER)
             {
-                d2 = (this.field_184465_aD - this.getEntityBoundingBox().minY) / (double)this.height;
+                d2 = (this.waterLevel - this.getEntityBoundingBox().minY) / (double)this.height;
                 this.momentum = 0.9F;
             }
             else if (this.status == EntityBoat.Status.UNDER_FLOWING_WATER)
@@ -692,7 +699,7 @@ public class EntityBoat extends Entity
 
             this.motionX *= (double)this.momentum;
             this.motionZ *= (double)this.momentum;
-            this.field_184475_as *= this.momentum;
+            this.deltaRotation *= this.momentum;
             this.motionY += d1;
 
             if (d2 > 0.0D)
@@ -705,42 +712,42 @@ public class EntityBoat extends Entity
         }
     }
 
-    private void func_184443_x()
+    private void controlBoat()
     {
         if (this.isBeingRidden())
         {
             float f = 0.0F;
 
-            if (this.field_184480_az)
+            if (this.leftInputDown)
             {
-                this.field_184475_as += -1.0F;
+                this.deltaRotation += -1.0F;
             }
 
-            if (this.field_184459_aA)
+            if (this.rightInputDown)
             {
-                ++this.field_184475_as;
+                ++this.deltaRotation;
             }
 
-            if (this.field_184459_aA != this.field_184480_az && !this.field_184461_aB && !this.field_184463_aC)
+            if (this.rightInputDown != this.leftInputDown && !this.forwardInputDown && !this.backInputDown)
             {
                 f += 0.005F;
             }
 
-            this.rotationYaw += this.field_184475_as;
+            this.rotationYaw += this.deltaRotation;
 
-            if (this.field_184461_aB)
+            if (this.forwardInputDown)
             {
                 f += 0.04F;
             }
 
-            if (this.field_184463_aC)
+            if (this.backInputDown)
             {
                 f -= 0.005F;
             }
 
             this.motionX += (double)(MathHelper.sin(-this.rotationYaw * 0.017453292F) * f);
             this.motionZ += (double)(MathHelper.cos(this.rotationYaw * 0.017453292F) * f);
-            this.func_184445_a(this.field_184459_aA || this.field_184461_aB, this.field_184480_az || this.field_184461_aB);
+            this.setPaddleState(this.rightInputDown || this.forwardInputDown, this.leftInputDown || this.forwardInputDown);
         }
     }
 
@@ -772,8 +779,8 @@ public class EntityBoat extends Entity
 
             Vec3d vec3d = (new Vec3d((double)f, 0.0D, 0.0D)).rotateYaw(-this.rotationYaw * 0.017453292F - ((float)Math.PI / 2F));
             passenger.setPosition(this.posX + vec3d.xCoord, this.posY + (double)f1, this.posZ + vec3d.zCoord);
-            passenger.rotationYaw += this.field_184475_as;
-            passenger.setRotationYawHead(passenger.getRotationYawHead() + this.field_184475_as);
+            passenger.rotationYaw += this.deltaRotation;
+            passenger.setRotationYawHead(passenger.getRotationYawHead() + this.deltaRotation);
             this.applyYawToEntity(passenger);
 
             if (passenger instanceof EntityAnimal && this.getPassengers().size() > 1)
@@ -791,7 +798,7 @@ public class EntityBoat extends Entity
     protected void applyYawToEntity(Entity entityToUpdate)
     {
         entityToUpdate.setRenderYawOffset(this.rotationYaw);
-        float f = MathHelper.wrapAngleTo180_float(entityToUpdate.rotationYaw - this.rotationYaw);
+        float f = MathHelper.wrapDegrees(entityToUpdate.rotationYaw - this.rotationYaw);
         float f1 = MathHelper.clamp_float(f, -105.0F, 105.0F);
         entityToUpdate.prevRotationYaw += f1 - f;
         entityToUpdate.rotationYaw += f1 - f;
@@ -810,25 +817,25 @@ public class EntityBoat extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setString("Type", this.getBoatType().getName());
+        compound.setString("Type", this.getBoatType().getName());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        if (tagCompund.hasKey("Type", 8))
+        if (compound.hasKey("Type", 8))
         {
-            this.setBoatType(EntityBoat.Type.getTypeFromString(tagCompund.getString("Type")));
+            this.setBoatType(EntityBoat.Type.getTypeFromString(compound.getString("Type")));
         }
     }
 
-    public boolean processInitialInteract(EntityPlayer player, ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
     {
-        if (!this.worldObj.isRemote && !player.isSneaking() && this.field_184474_h < 60.0F)
+        if (!this.worldObj.isRemote && !player.isSneaking() && this.outOfControlTicks < 60.0F)
         {
             player.startRiding(this);
         }
@@ -838,7 +845,7 @@ public class EntityBoat extends Entity
 
     protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)
     {
-        this.field_184473_aH = this.motionY;
+        this.lastYd = this.motionY;
 
         if (!this.isRiding())
         {
@@ -862,12 +869,12 @@ public class EntityBoat extends Entity
                         {
                             for (int i = 0; i < 3; ++i)
                             {
-                                this.entityDropItem(new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, this.getBoatType().getMetadata()), 0.0F);
+                                this.entityDropItem(new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, this.getBoatType().getMetadata()), 0.0F);
                             }
 
                             for (int j = 0; j < 2; ++j)
                             {
-                                this.dropItemWithOffset(Items.stick, 1, 0.0F);
+                                this.dropItemWithOffset(Items.STICK, 1, 0.0F);
                             }
                         }
                     }
@@ -875,16 +882,16 @@ public class EntityBoat extends Entity
 
                 this.fallDistance = 0.0F;
             }
-            else if (this.worldObj.getBlockState((new BlockPos(this)).down()).getMaterial() != Material.water && y < 0.0D)
+            else if (this.worldObj.getBlockState((new BlockPos(this)).down()).getMaterial() != Material.WATER && y < 0.0D)
             {
                 this.fallDistance = (float)((double)this.fallDistance - y);
             }
         }
     }
 
-    public boolean func_184457_a(int p_184457_1_)
+    public boolean getPaddleState(int p_184457_1_)
     {
-        return ((Boolean)this.dataWatcher.get(field_184468_e[p_184457_1_])).booleanValue() && this.getControllingPassenger() != null;
+        return ((Boolean)this.dataManager.get(DATA_ID_PADDLE[p_184457_1_])).booleanValue() && this.getControllingPassenger() != null;
     }
 
     /**
@@ -892,7 +899,7 @@ public class EntityBoat extends Entity
      */
     public void setDamageTaken(float damageTaken)
     {
-        this.dataWatcher.set(DAMAGE_TAKEN, Float.valueOf(damageTaken));
+        this.dataManager.set(DAMAGE_TAKEN, Float.valueOf(damageTaken));
     }
 
     /**
@@ -900,7 +907,7 @@ public class EntityBoat extends Entity
      */
     public float getDamageTaken()
     {
-        return ((Float)this.dataWatcher.get(DAMAGE_TAKEN)).floatValue();
+        return ((Float)this.dataManager.get(DAMAGE_TAKEN)).floatValue();
     }
 
     /**
@@ -908,7 +915,7 @@ public class EntityBoat extends Entity
      */
     public void setTimeSinceHit(int timeSinceHit)
     {
-        this.dataWatcher.set(TIME_SINCE_HIT, Integer.valueOf(timeSinceHit));
+        this.dataManager.set(TIME_SINCE_HIT, Integer.valueOf(timeSinceHit));
     }
 
     /**
@@ -916,7 +923,7 @@ public class EntityBoat extends Entity
      */
     public int getTimeSinceHit()
     {
-        return ((Integer)this.dataWatcher.get(TIME_SINCE_HIT)).intValue();
+        return ((Integer)this.dataManager.get(TIME_SINCE_HIT)).intValue();
     }
 
     /**
@@ -924,7 +931,7 @@ public class EntityBoat extends Entity
      */
     public void setForwardDirection(int forwardDirection)
     {
-        this.dataWatcher.set(FORWARD_DIRECTION, Integer.valueOf(forwardDirection));
+        this.dataManager.set(FORWARD_DIRECTION, Integer.valueOf(forwardDirection));
     }
 
     /**
@@ -932,17 +939,17 @@ public class EntityBoat extends Entity
      */
     public int getForwardDirection()
     {
-        return ((Integer)this.dataWatcher.get(FORWARD_DIRECTION)).intValue();
+        return ((Integer)this.dataManager.get(FORWARD_DIRECTION)).intValue();
     }
 
     public void setBoatType(EntityBoat.Type boatType)
     {
-        this.dataWatcher.set(BOAT_TYPE, Integer.valueOf(boatType.ordinal()));
+        this.dataManager.set(BOAT_TYPE, Integer.valueOf(boatType.ordinal()));
     }
 
     public EntityBoat.Type getBoatType()
     {
-        return EntityBoat.Type.byId(((Integer)this.dataWatcher.get(BOAT_TYPE)).intValue());
+        return EntityBoat.Type.byId(((Integer)this.dataManager.get(BOAT_TYPE)).intValue());
     }
 
     protected boolean canFitPassenger(Entity passenger)
@@ -954,6 +961,7 @@ public class EntityBoat extends Entity
      * For vehicles, the first passenger is generally considered the controller and "drives" the vehicle. For example,
      * Pigs, Horses, and Boats are generally "steered" by the controlling passenger.
      */
+    @Nullable
     public Entity getControllingPassenger()
     {
         List<Entity> list = this.getPassengers();
@@ -961,12 +969,12 @@ public class EntityBoat extends Entity
     }
 
     @SideOnly(Side.CLIENT)
-    public void func_184442_a(boolean p_184442_1_, boolean p_184442_2_, boolean p_184442_3_, boolean p_184442_4_)
+    public void updateInputs(boolean p_184442_1_, boolean p_184442_2_, boolean p_184442_3_, boolean p_184442_4_)
     {
-        this.field_184480_az = p_184442_1_;
-        this.field_184459_aA = p_184442_2_;
-        this.field_184461_aB = p_184442_3_;
-        this.field_184463_aC = p_184442_4_;
+        this.leftInputDown = p_184442_1_;
+        this.rightInputDown = p_184442_2_;
+        this.forwardInputDown = p_184442_3_;
+        this.backInputDown = p_184442_4_;
     }
 
     public static enum Status

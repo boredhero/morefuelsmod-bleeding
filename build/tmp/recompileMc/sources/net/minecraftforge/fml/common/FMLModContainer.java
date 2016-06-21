@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.Mod.Metadata;
 import net.minecraftforge.fml.common.asm.transformers.BlamingTransformer;
@@ -64,6 +65,8 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import net.minecraftforge.fml.common.ModContainer.Disableable;
+
 public class FMLModContainer implements ModContainer
 {
     private Object modInstance;
@@ -90,6 +93,7 @@ public class FMLModContainer implements ModContainer
     private Map<String, String> customModProperties;
     private ModCandidate candidate;
     private URL updateJSONUrl;
+    private int classVersion;
 
     public FMLModContainer(String className, ModCandidate container, Map<String, Object> modDescriptor)
     {
@@ -465,6 +469,10 @@ public class FMLModContainer implements ModContainer
             ModClassLoader modClassLoader = event.getModClassLoader();
             modClassLoader.addFile(source);
             modClassLoader.clearNegativeCacheFor(candidate.getClassList());
+
+            //Only place I could think to add this...
+            MinecraftForge.preloadCrashClasses(event.getASMHarvestedData(), getModId(), candidate.getClassList());
+
             Class<?> clazz = Class.forName(className, true, modClassLoader);
 
             Certificate[] certificates = clazz.getProtectionDomain().getCodeSource().getCertificates();
@@ -698,5 +706,17 @@ public class FMLModContainer implements ModContainer
     public URL getUpdateUrl()
     {
         return updateJSONUrl;
+    }
+
+    @Override
+    public void setClassVersion(int classVersion)
+    {
+        this.classVersion = classVersion;
+    }
+
+    @Override
+    public int getClassVersion()
+    {
+        return this.classVersion;
     }
 }

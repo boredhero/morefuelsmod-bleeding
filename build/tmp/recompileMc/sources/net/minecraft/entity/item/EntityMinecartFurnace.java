@@ -1,5 +1,6 @@
 package net.minecraft.entity.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -43,7 +44,7 @@ public class EntityMinecartFurnace extends EntityMinecart
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(POWERED, Boolean.valueOf(false));
+        this.dataManager.register(POWERED, Boolean.valueOf(false));
     }
 
     /**
@@ -85,13 +86,13 @@ public class EntityMinecartFurnace extends EntityMinecart
 
         if (!source.isExplosion() && this.worldObj.getGameRules().getBoolean("doEntityDrops"))
         {
-            this.entityDropItem(new ItemStack(Blocks.furnace, 1), 0.0F);
+            this.entityDropItem(new ItemStack(Blocks.FURNACE, 1), 0.0F);
         }
     }
 
-    protected void func_180460_a(BlockPos p_180460_1_, IBlockState p_180460_2_)
+    protected void moveAlongTrack(BlockPos p_180460_1_, IBlockState p_180460_2_)
     {
-        super.func_180460_a(p_180460_1_, p_180460_2_);
+        super.moveAlongTrack(p_180460_1_, p_180460_2_);
         double d0 = this.pushX * this.pushX + this.pushZ * this.pushZ;
 
         if (d0 > 1.0E-4D && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.001D)
@@ -140,11 +141,11 @@ public class EntityMinecartFurnace extends EntityMinecart
         super.applyDrag();
     }
 
-    public boolean processInitialInteract(EntityPlayer player, ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
     {
         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand))) return true;
 
-        if (stack != null && stack.getItem() == Items.coal && this.fuel + 3600 <= 32000)
+        if (stack != null && stack.getItem() == Items.COAL && this.fuel + 3600 <= 32000)
         {
             if (!player.capabilities.isCreativeMode)
             {
@@ -162,37 +163,37 @@ public class EntityMinecartFurnace extends EntityMinecart
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setDouble("PushX", this.pushX);
-        tagCompound.setDouble("PushZ", this.pushZ);
-        tagCompound.setShort("Fuel", (short)this.fuel);
+        super.writeEntityToNBT(compound);
+        compound.setDouble("PushX", this.pushX);
+        compound.setDouble("PushZ", this.pushZ);
+        compound.setShort("Fuel", (short)this.fuel);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.pushX = tagCompund.getDouble("PushX");
-        this.pushZ = tagCompund.getDouble("PushZ");
-        this.fuel = tagCompund.getShort("Fuel");
+        super.readEntityFromNBT(compound);
+        this.pushX = compound.getDouble("PushX");
+        this.pushZ = compound.getDouble("PushZ");
+        this.fuel = compound.getShort("Fuel");
     }
 
     protected boolean isMinecartPowered()
     {
-        return ((Boolean)this.dataWatcher.get(POWERED)).booleanValue();
+        return ((Boolean)this.dataManager.get(POWERED)).booleanValue();
     }
 
     protected void setMinecartPowered(boolean p_94107_1_)
     {
-        this.dataWatcher.set(POWERED, Boolean.valueOf(p_94107_1_));
+        this.dataManager.set(POWERED, Boolean.valueOf(p_94107_1_));
     }
 
     public IBlockState getDefaultDisplayTile()
     {
-        return (this.isMinecartPowered() ? Blocks.lit_furnace : Blocks.furnace).getDefaultState().withProperty(BlockFurnace.FACING, EnumFacing.NORTH);
+        return (this.isMinecartPowered() ? Blocks.LIT_FURNACE : Blocks.FURNACE).getDefaultState().withProperty(BlockFurnace.FACING, EnumFacing.NORTH);
     }
 }

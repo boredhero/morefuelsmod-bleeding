@@ -13,7 +13,7 @@ public class BlockGlass extends BlockBreakable
     public BlockGlass(Material materialIn, boolean ignoreSimilarity)
     {
         super(materialIn, ignoreSimilarity);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**

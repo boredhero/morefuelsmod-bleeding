@@ -29,13 +29,13 @@ public abstract class BehaviorProjectileDispense extends BehaviorDefaultDispense
      */
     protected void playDispenseSound(IBlockSource source)
     {
-        source.getWorld().playAuxSFX(1002, source.getBlockPos(), 0);
+        source.getWorld().playEvent(1002, source.getBlockPos(), 0);
     }
 
     /**
      * Return the projectile entity spawned by this dispense behavior.
      */
-    protected abstract IProjectile getProjectileEntity(World worldIn, IPosition position, ItemStack stack);
+    protected abstract IProjectile getProjectileEntity(World worldIn, IPosition position, ItemStack stackIn);
 
     protected float getProjectileInaccuracy()
     {

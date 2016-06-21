@@ -15,10 +15,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemTippedArrow extends ItemArrow
 {
-    public EntityArrow makeTippedArrow(World worldIn, ItemStack p_185052_2_, EntityLivingBase shooter)
+    public EntityArrow createArrow(World worldIn, ItemStack stack, EntityLivingBase shooter)
     {
         EntityTippedArrow entitytippedarrow = new EntityTippedArrow(worldIn, shooter);
-        entitytippedarrow.setPotionEffect(p_185052_2_);
+        entitytippedarrow.setPotionEffect(stack);
         return entitytippedarrow;
     }
 
@@ -28,7 +28,7 @@ public class ItemTippedArrow extends ItemArrow
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
     {
-        for (PotionType potiontype : PotionType.potionTypeRegistry)
+        for (PotionType potiontype : PotionType.REGISTRY)
         {
             subItems.add(PotionUtils.addPotionToItemStack(new ItemStack(itemIn), potiontype));
         }

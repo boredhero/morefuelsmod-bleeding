@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
@@ -15,13 +16,13 @@ public class ItemClock extends Item
         this.addPropertyOverride(new ResourceLocation("time"), new IItemPropertyGetter()
         {
             @SideOnly(Side.CLIENT)
-            double field_185088_a;
+            double rotation;
             @SideOnly(Side.CLIENT)
-            double field_185089_b;
+            double rota;
             @SideOnly(Side.CLIENT)
-            long field_185090_c;
+            long lastUpdateTick;
             @SideOnly(Side.CLIENT)
-            public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn)
+            public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
             {
                 boolean flag = entityIn != null;
                 Entity entity = (Entity)(flag ? entityIn : stack.getItemFrame());
@@ -48,29 +49,29 @@ public class ItemClock extends Item
                         d0 = Math.random();
                     }
 
-                    d0 = this.func_185087_a(worldIn, d0);
-                    return MathHelper.func_188207_b((float)d0, 1.0F);
+                    d0 = this.wobble(worldIn, d0);
+                    return MathHelper.positiveModulo((float)d0, 1.0F);
                 }
             }
             @SideOnly(Side.CLIENT)
-            private double func_185087_a(World p_185087_1_, double p_185087_2_)
+            private double wobble(World p_185087_1_, double p_185087_2_)
             {
-                if (p_185087_1_.getTotalWorldTime() != this.field_185090_c)
+                if (p_185087_1_.getTotalWorldTime() != this.lastUpdateTick)
                 {
-                    this.field_185090_c = p_185087_1_.getTotalWorldTime();
-                    double d0 = p_185087_2_ - this.field_185088_a;
+                    this.lastUpdateTick = p_185087_1_.getTotalWorldTime();
+                    double d0 = p_185087_2_ - this.rotation;
 
                     if (d0 < -0.5D)
                     {
                         ++d0;
                     }
 
-                    this.field_185089_b += d0 * 0.1D;
-                    this.field_185089_b *= 0.9D;
-                    this.field_185088_a += this.field_185089_b;
+                    this.rota += d0 * 0.1D;
+                    this.rota *= 0.9D;
+                    this.rotation += this.rota;
                 }
 
-                return this.field_185088_a;
+                return this.rotation;
             }
         });
     }

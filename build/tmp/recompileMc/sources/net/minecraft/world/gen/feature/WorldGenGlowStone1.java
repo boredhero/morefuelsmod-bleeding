@@ -15,13 +15,13 @@ public class WorldGenGlowStone1 extends WorldGenerator
         {
             return false;
         }
-        else if (worldIn.getBlockState(position.up()).getBlock() != Blocks.netherrack)
+        else if (worldIn.getBlockState(position.up()).getBlock() != Blocks.NETHERRACK)
         {
             return false;
         }
         else
         {
-            worldIn.setBlockState(position, Blocks.glowstone.getDefaultState(), 2);
+            worldIn.setBlockState(position, Blocks.GLOWSTONE.getDefaultState(), 2);
 
             for (int i = 0; i < 1500; ++i)
             {
@@ -33,7 +33,7 @@ public class WorldGenGlowStone1 extends WorldGenerator
 
                     for (EnumFacing enumfacing : EnumFacing.values())
                     {
-                        if (worldIn.getBlockState(blockpos.offset(enumfacing)).getBlock() == Blocks.glowstone)
+                        if (worldIn.getBlockState(blockpos.offset(enumfacing)).getBlock() == Blocks.GLOWSTONE)
                         {
                             ++j;
                         }
@@ -46,7 +46,7 @@ public class WorldGenGlowStone1 extends WorldGenerator
 
                     if (j == 1)
                     {
-                        worldIn.setBlockState(blockpos, Blocks.glowstone.getDefaultState(), 2);
+                        worldIn.setBlockState(blockpos, Blocks.GLOWSTONE.getDefaultState(), 2);
                     }
                 }
             }

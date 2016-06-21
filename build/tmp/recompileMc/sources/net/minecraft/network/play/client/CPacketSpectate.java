@@ -2,6 +2,7 @@ package net.minecraft.network.play.client;
 
 import java.io.IOException;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -45,6 +46,7 @@ public class CPacketSpectate implements Packet<INetHandlerPlayServer>
         handler.handleSpectate(this);
     }
 
+    @Nullable
     public Entity getEntity(WorldServer worldIn)
     {
         return worldIn.getEntityFromUuid(this.id);

@@ -26,10 +26,6 @@ public class CommandPublishLocalServer extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -37,11 +33,11 @@ public class CommandPublishLocalServer extends CommandBase
 
         if (s != null)
         {
-            notifyOperators(sender, this, "commands.publish.started", new Object[] {s});
+            notifyCommandListener(sender, this, "commands.publish.started", new Object[] {s});
         }
         else
         {
-            notifyOperators(sender, this, "commands.publish.failed", new Object[0]);
+            notifyCommandListener(sender, this, "commands.publish.failed", new Object[0]);
         }
     }
 }

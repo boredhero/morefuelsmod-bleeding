@@ -7,8 +7,8 @@ import net.minecraft.network.play.INetHandlerPlayServer;
 
 public class CPacketSteerBoat implements Packet<INetHandlerPlayServer>
 {
-    private boolean field_187015_a;
-    private boolean field_187016_b;
+    private boolean left;
+    private boolean right;
 
     public CPacketSteerBoat()
     {
@@ -16,8 +16,8 @@ public class CPacketSteerBoat implements Packet<INetHandlerPlayServer>
 
     public CPacketSteerBoat(boolean p_i46873_1_, boolean p_i46873_2_)
     {
-        this.field_187015_a = p_i46873_1_;
-        this.field_187016_b = p_i46873_2_;
+        this.left = p_i46873_1_;
+        this.right = p_i46873_2_;
     }
 
     /**
@@ -25,8 +25,8 @@ public class CPacketSteerBoat implements Packet<INetHandlerPlayServer>
      */
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.field_187015_a = buf.readBoolean();
-        this.field_187016_b = buf.readBoolean();
+        this.left = buf.readBoolean();
+        this.right = buf.readBoolean();
     }
 
     /**
@@ -34,8 +34,8 @@ public class CPacketSteerBoat implements Packet<INetHandlerPlayServer>
      */
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeBoolean(this.field_187015_a);
-        buf.writeBoolean(this.field_187016_b);
+        buf.writeBoolean(this.left);
+        buf.writeBoolean(this.right);
     }
 
     /**
@@ -43,16 +43,16 @@ public class CPacketSteerBoat implements Packet<INetHandlerPlayServer>
      */
     public void processPacket(INetHandlerPlayServer handler)
     {
-        handler.func_184340_a(this);
+        handler.processSteerBoat(this);
     }
 
-    public boolean func_187012_a()
+    public boolean getLeft()
     {
-        return this.field_187015_a;
+        return this.left;
     }
 
-    public boolean func_187014_b()
+    public boolean getRight()
     {
-        return this.field_187016_b;
+        return this.right;
     }
 }

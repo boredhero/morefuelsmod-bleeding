@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -108,19 +109,17 @@ public class MapData extends WorldSavedData
         }
     }
 
-    /**
-     * write data to NBTTagCompound from this MapDataBase, similar to Entities and TileEntities
-     */
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound p_189551_1_)
     {
-        nbt.setInteger("dimension", this.dimension);
-        nbt.setInteger("xCenter", this.xCenter);
-        nbt.setInteger("zCenter", this.zCenter);
-        nbt.setByte("scale", this.scale);
-        nbt.setShort("width", (short)128);
-        nbt.setShort("height", (short)128);
-        nbt.setByteArray("colors", this.colors);
-        nbt.setBoolean("trackingPosition", this.trackingPosition);
+        p_189551_1_.setInteger("dimension", this.dimension);
+        p_189551_1_.setInteger("xCenter", this.xCenter);
+        p_189551_1_.setInteger("zCenter", this.zCenter);
+        p_189551_1_.setByte("scale", this.scale);
+        p_189551_1_.setShort("width", (short)128);
+        p_189551_1_.setShort("height", (short)128);
+        p_189551_1_.setByteArray("colors", this.colors);
+        p_189551_1_.setBoolean("trackingPosition", this.trackingPosition);
+        return p_189551_1_;
     }
 
     /**
@@ -237,6 +236,7 @@ public class MapData extends WorldSavedData
         this.mapDecorations.put(entityIdentifier, new Vec4b((byte)type, b0, b1, b2));
     }
 
+    @Nullable
     public Packet<?> getMapPacket(ItemStack mapStack, World worldIn, EntityPlayer player)
     {
         MapData.MapInfo mapdata$mapinfo = (MapData.MapInfo)this.playersHashMap.get(player);
@@ -271,13 +271,13 @@ public class MapData extends WorldSavedData
     {
         /** Reference for EntityPlayer object in MapInfo */
         public final EntityPlayer entityplayerObj;
-        private boolean field_176105_d = true;
+        private boolean isDirty = true;
         private int minX = 0;
         private int minY = 0;
         private int maxX = 127;
         private int maxY = 127;
-        private int field_176109_i;
-        public int field_82569_d;
+        private int tick;
+        public int step;
 
         public MapInfo(EntityPlayer player)
         {
@@ -286,20 +286,20 @@ public class MapData extends WorldSavedData
 
         public Packet<?> getPacket(ItemStack stack)
         {
-            if (this.field_176105_d)
+            if (this.isDirty)
             {
-                this.field_176105_d = false;
+                this.isDirty = false;
                 return new SPacketMaps(stack.getMetadata(), MapData.this.scale, MapData.this.trackingPosition, MapData.this.mapDecorations.values(), MapData.this.colors, this.minX, this.minY, this.maxX + 1 - this.minX, this.maxY + 1 - this.minY);
             }
             else
             {
-                return this.field_176109_i++ % 5 == 0 ? new SPacketMaps(stack.getMetadata(), MapData.this.scale, MapData.this.trackingPosition, MapData.this.mapDecorations.values(), MapData.this.colors, 0, 0, 0, 0) : null;
+                return this.tick++ % 5 == 0 ? new SPacketMaps(stack.getMetadata(), MapData.this.scale, MapData.this.trackingPosition, MapData.this.mapDecorations.values(), MapData.this.colors, 0, 0, 0, 0) : null;
             }
         }
 
         public void update(int x, int y)
         {
-            if (this.field_176105_d)
+            if (this.isDirty)
             {
                 this.minX = Math.min(this.minX, x);
                 this.minY = Math.min(this.minY, y);
@@ -308,7 +308,7 @@ public class MapData extends WorldSavedData
             }
             else
             {
-                this.field_176105_d = true;
+                this.isDirty = true;
                 this.minX = x;
                 this.minY = y;
                 this.maxX = x;

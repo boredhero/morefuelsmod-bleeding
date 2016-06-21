@@ -2,6 +2,7 @@ package net.minecraft.util.datafix.walkers;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.FixTypes;
@@ -15,6 +16,7 @@ public class BlockEntityTag implements IDataWalker
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Map<String, String> ITEM_ID_TO_BLOCK_ENTITY_ID = Maps.<String, String>newHashMap();
 
+    @Nullable
     private static String getBlockEntityID(String blockID)
     {
         return (String)ITEM_ID_TO_BLOCK_ENTITY_ID.get((new ResourceLocation(blockID)).toString());

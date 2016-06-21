@@ -54,7 +54,7 @@ public class SPacketOpenWindow implements Packet<INetHandlerPlayClient>
     {
         this.windowId = buf.readUnsignedByte();
         this.inventoryType = buf.readStringFromBuffer(32);
-        this.windowTitle = buf.readChatComponent();
+        this.windowTitle = buf.readTextComponent();
         this.slotCount = buf.readUnsignedByte();
 
         if (this.inventoryType.equals("EntityHorse"))
@@ -70,7 +70,7 @@ public class SPacketOpenWindow implements Packet<INetHandlerPlayClient>
     {
         buf.writeByte(this.windowId);
         buf.writeString(this.inventoryType);
-        buf.writeChatComponent(this.windowTitle);
+        buf.writeTextComponent(this.windowTitle);
         buf.writeByte(this.slotCount);
 
         if (this.inventoryType.equals("EntityHorse"))

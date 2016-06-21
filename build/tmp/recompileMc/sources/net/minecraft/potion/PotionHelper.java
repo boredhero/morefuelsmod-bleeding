@@ -3,6 +3,7 @@ package net.minecraft.potion;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
@@ -17,7 +18,7 @@ public class PotionHelper
     private static final List<PotionHelper.ItemPredicateInstance> POTION_ITEMS = Lists.<PotionHelper.ItemPredicateInstance>newArrayList();
     private static final Predicate<ItemStack> IS_POTION_ITEM = new Predicate<ItemStack>()
     {
-        public boolean apply(ItemStack p_apply_1_)
+        public boolean apply(@Nullable ItemStack p_apply_1_)
         {
             for (PotionHelper.ItemPredicateInstance potionhelper$itempredicateinstance : PotionHelper.POTION_ITEMS)
             {
@@ -31,18 +32,18 @@ public class PotionHelper
         }
     };
 
-    public static boolean isReagent(ItemStack p_185205_0_)
+    public static boolean isReagent(ItemStack stack)
     {
-        return isItemConversionReagent(p_185205_0_) || isTypeConversionReagent(p_185205_0_);
+        return isItemConversionReagent(stack) || isTypeConversionReagent(stack);
     }
 
-    protected static boolean isItemConversionReagent(ItemStack p_185203_0_)
+    protected static boolean isItemConversionReagent(ItemStack stack)
     {
         int i = 0;
 
         for (int j = POTION_ITEM_CONVERSIONS.size(); i < j; ++i)
         {
-            if (((PotionHelper.MixPredicate)POTION_ITEM_CONVERSIONS.get(i)).reagent.apply(p_185203_0_))
+            if (((PotionHelper.MixPredicate)POTION_ITEM_CONVERSIONS.get(i)).reagent.apply(stack))
             {
                 return true;
             }
@@ -51,13 +52,13 @@ public class PotionHelper
         return false;
     }
 
-    protected static boolean isTypeConversionReagent(ItemStack p_185211_0_)
+    protected static boolean isTypeConversionReagent(ItemStack stack)
     {
         int i = 0;
 
         for (int j = POTION_TYPE_CONVERSIONS.size(); i < j; ++i)
         {
-            if (((PotionHelper.MixPredicate)POTION_TYPE_CONVERSIONS.get(i)).reagent.apply(p_185211_0_))
+            if (((PotionHelper.MixPredicate)POTION_TYPE_CONVERSIONS.get(i)).reagent.apply(stack))
             {
                 return true;
             }
@@ -107,7 +108,8 @@ public class PotionHelper
         return false;
     }
 
-    public static ItemStack doReaction(ItemStack reagent, ItemStack potionIn)
+    @Nullable
+    public static ItemStack doReaction(ItemStack reagent, @Nullable ItemStack potionIn)
     {
         if (potionIn != null)
         {
@@ -143,73 +145,73 @@ public class PotionHelper
 
     public static void init()
     {
-        Predicate<ItemStack> predicate = new PotionHelper.ItemPredicateInstance(Items.nether_wart);
-        Predicate<ItemStack> predicate1 = new PotionHelper.ItemPredicateInstance(Items.golden_carrot);
-        Predicate<ItemStack> predicate2 = new PotionHelper.ItemPredicateInstance(Items.redstone);
-        Predicate<ItemStack> predicate3 = new PotionHelper.ItemPredicateInstance(Items.fermented_spider_eye);
-        Predicate<ItemStack> predicate4 = new PotionHelper.ItemPredicateInstance(Items.rabbit_foot);
-        Predicate<ItemStack> predicate5 = new PotionHelper.ItemPredicateInstance(Items.glowstone_dust);
-        Predicate<ItemStack> predicate6 = new PotionHelper.ItemPredicateInstance(Items.magma_cream);
-        Predicate<ItemStack> predicate7 = new PotionHelper.ItemPredicateInstance(Items.sugar);
-        Predicate<ItemStack> predicate8 = new PotionHelper.ItemPredicateInstance(Items.fish, ItemFishFood.FishType.PUFFERFISH.getMetadata());
-        Predicate<ItemStack> predicate9 = new PotionHelper.ItemPredicateInstance(Items.speckled_melon);
-        Predicate<ItemStack> predicate10 = new PotionHelper.ItemPredicateInstance(Items.spider_eye);
-        Predicate<ItemStack> predicate11 = new PotionHelper.ItemPredicateInstance(Items.ghast_tear);
-        Predicate<ItemStack> predicate12 = new PotionHelper.ItemPredicateInstance(Items.blaze_powder);
-        registerPotionItem(new PotionHelper.ItemPredicateInstance(Items.potionitem));
-        registerPotionItem(new PotionHelper.ItemPredicateInstance(Items.splash_potion));
-        registerPotionItem(new PotionHelper.ItemPredicateInstance(Items.lingering_potion));
-        registerPotionItemConversion(Items.potionitem, new PotionHelper.ItemPredicateInstance(Items.gunpowder), Items.splash_potion);
-        registerPotionItemConversion(Items.splash_potion, new PotionHelper.ItemPredicateInstance(Items.dragon_breath), Items.lingering_potion);
-        registerPotionTypeConversion(PotionTypes.water, predicate9, PotionTypes.mundane);
-        registerPotionTypeConversion(PotionTypes.water, predicate11, PotionTypes.mundane);
-        registerPotionTypeConversion(PotionTypes.water, predicate4, PotionTypes.mundane);
-        registerPotionTypeConversion(PotionTypes.water, predicate12, PotionTypes.mundane);
-        registerPotionTypeConversion(PotionTypes.water, predicate10, PotionTypes.mundane);
-        registerPotionTypeConversion(PotionTypes.water, predicate7, PotionTypes.mundane);
-        registerPotionTypeConversion(PotionTypes.water, predicate6, PotionTypes.mundane);
-        registerPotionTypeConversion(PotionTypes.water, predicate5, PotionTypes.thick);
-        registerPotionTypeConversion(PotionTypes.water, predicate2, PotionTypes.mundane);
-        registerPotionTypeConversion(PotionTypes.water, predicate, PotionTypes.awkward);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate1, PotionTypes.night_vision);
-        registerPotionTypeConversion(PotionTypes.night_vision, predicate2, PotionTypes.long_night_vision);
-        registerPotionTypeConversion(PotionTypes.night_vision, predicate3, PotionTypes.invisibility);
-        registerPotionTypeConversion(PotionTypes.long_night_vision, predicate3, PotionTypes.long_invisibility);
-        registerPotionTypeConversion(PotionTypes.invisibility, predicate2, PotionTypes.long_invisibility);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate6, PotionTypes.fire_resistance);
-        registerPotionTypeConversion(PotionTypes.fire_resistance, predicate2, PotionTypes.long_fire_resistance);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate4, PotionTypes.leaping);
-        registerPotionTypeConversion(PotionTypes.leaping, predicate2, PotionTypes.long_leaping);
-        registerPotionTypeConversion(PotionTypes.leaping, predicate5, PotionTypes.strong_leaping);
-        registerPotionTypeConversion(PotionTypes.leaping, predicate3, PotionTypes.slowness);
-        registerPotionTypeConversion(PotionTypes.long_leaping, predicate3, PotionTypes.long_slowness);
-        registerPotionTypeConversion(PotionTypes.slowness, predicate2, PotionTypes.long_slowness);
-        registerPotionTypeConversion(PotionTypes.swiftness, predicate3, PotionTypes.slowness);
-        registerPotionTypeConversion(PotionTypes.long_swiftness, predicate3, PotionTypes.long_slowness);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate7, PotionTypes.swiftness);
-        registerPotionTypeConversion(PotionTypes.swiftness, predicate2, PotionTypes.long_swiftness);
-        registerPotionTypeConversion(PotionTypes.swiftness, predicate5, PotionTypes.strong_swiftness);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate8, PotionTypes.water_breathing);
-        registerPotionTypeConversion(PotionTypes.water_breathing, predicate2, PotionTypes.long_water_breathing);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate9, PotionTypes.healing);
-        registerPotionTypeConversion(PotionTypes.healing, predicate5, PotionTypes.strong_healing);
-        registerPotionTypeConversion(PotionTypes.healing, predicate3, PotionTypes.harming);
-        registerPotionTypeConversion(PotionTypes.strong_healing, predicate3, PotionTypes.strong_harming);
-        registerPotionTypeConversion(PotionTypes.harming, predicate5, PotionTypes.strong_harming);
-        registerPotionTypeConversion(PotionTypes.poison, predicate3, PotionTypes.harming);
-        registerPotionTypeConversion(PotionTypes.long_poison, predicate3, PotionTypes.harming);
-        registerPotionTypeConversion(PotionTypes.strong_poison, predicate3, PotionTypes.strong_harming);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate10, PotionTypes.poison);
-        registerPotionTypeConversion(PotionTypes.poison, predicate2, PotionTypes.long_poison);
-        registerPotionTypeConversion(PotionTypes.poison, predicate5, PotionTypes.strong_poison);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate11, PotionTypes.regeneration);
-        registerPotionTypeConversion(PotionTypes.regeneration, predicate2, PotionTypes.long_regeneration);
-        registerPotionTypeConversion(PotionTypes.regeneration, predicate5, PotionTypes.strong_regeneration);
-        registerPotionTypeConversion(PotionTypes.awkward, predicate12, PotionTypes.strength);
-        registerPotionTypeConversion(PotionTypes.strength, predicate2, PotionTypes.long_strength);
-        registerPotionTypeConversion(PotionTypes.strength, predicate5, PotionTypes.strong_strength);
-        registerPotionTypeConversion(PotionTypes.water, predicate3, PotionTypes.weakness);
-        registerPotionTypeConversion(PotionTypes.weakness, predicate2, PotionTypes.long_weakness);
+        Predicate<ItemStack> predicate = new PotionHelper.ItemPredicateInstance(Items.NETHER_WART);
+        Predicate<ItemStack> predicate1 = new PotionHelper.ItemPredicateInstance(Items.GOLDEN_CARROT);
+        Predicate<ItemStack> predicate2 = new PotionHelper.ItemPredicateInstance(Items.REDSTONE);
+        Predicate<ItemStack> predicate3 = new PotionHelper.ItemPredicateInstance(Items.FERMENTED_SPIDER_EYE);
+        Predicate<ItemStack> predicate4 = new PotionHelper.ItemPredicateInstance(Items.RABBIT_FOOT);
+        Predicate<ItemStack> predicate5 = new PotionHelper.ItemPredicateInstance(Items.GLOWSTONE_DUST);
+        Predicate<ItemStack> predicate6 = new PotionHelper.ItemPredicateInstance(Items.MAGMA_CREAM);
+        Predicate<ItemStack> predicate7 = new PotionHelper.ItemPredicateInstance(Items.SUGAR);
+        Predicate<ItemStack> predicate8 = new PotionHelper.ItemPredicateInstance(Items.FISH, ItemFishFood.FishType.PUFFERFISH.getMetadata());
+        Predicate<ItemStack> predicate9 = new PotionHelper.ItemPredicateInstance(Items.SPECKLED_MELON);
+        Predicate<ItemStack> predicate10 = new PotionHelper.ItemPredicateInstance(Items.SPIDER_EYE);
+        Predicate<ItemStack> predicate11 = new PotionHelper.ItemPredicateInstance(Items.GHAST_TEAR);
+        Predicate<ItemStack> predicate12 = new PotionHelper.ItemPredicateInstance(Items.BLAZE_POWDER);
+        registerPotionItem(new PotionHelper.ItemPredicateInstance(Items.POTIONITEM));
+        registerPotionItem(new PotionHelper.ItemPredicateInstance(Items.SPLASH_POTION));
+        registerPotionItem(new PotionHelper.ItemPredicateInstance(Items.LINGERING_POTION));
+        registerPotionItemConversion(Items.POTIONITEM, new PotionHelper.ItemPredicateInstance(Items.GUNPOWDER), Items.SPLASH_POTION);
+        registerPotionItemConversion(Items.SPLASH_POTION, new PotionHelper.ItemPredicateInstance(Items.DRAGON_BREATH), Items.LINGERING_POTION);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate9, PotionTypes.MUNDANE);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate11, PotionTypes.MUNDANE);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate4, PotionTypes.MUNDANE);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate12, PotionTypes.MUNDANE);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate10, PotionTypes.MUNDANE);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate7, PotionTypes.MUNDANE);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate6, PotionTypes.MUNDANE);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate5, PotionTypes.THICK);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate2, PotionTypes.MUNDANE);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate, PotionTypes.AWKWARD);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate1, PotionTypes.NIGHT_VISION);
+        registerPotionTypeConversion(PotionTypes.NIGHT_VISION, predicate2, PotionTypes.LONG_NIGHT_VISION);
+        registerPotionTypeConversion(PotionTypes.NIGHT_VISION, predicate3, PotionTypes.INVISIBILITY);
+        registerPotionTypeConversion(PotionTypes.LONG_NIGHT_VISION, predicate3, PotionTypes.LONG_INVISIBILITY);
+        registerPotionTypeConversion(PotionTypes.INVISIBILITY, predicate2, PotionTypes.LONG_INVISIBILITY);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate6, PotionTypes.FIRE_RESISTANCE);
+        registerPotionTypeConversion(PotionTypes.FIRE_RESISTANCE, predicate2, PotionTypes.LONG_FIRE_RESISTANCE);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate4, PotionTypes.LEAPING);
+        registerPotionTypeConversion(PotionTypes.LEAPING, predicate2, PotionTypes.LONG_LEAPING);
+        registerPotionTypeConversion(PotionTypes.LEAPING, predicate5, PotionTypes.STRONG_LEAPING);
+        registerPotionTypeConversion(PotionTypes.LEAPING, predicate3, PotionTypes.SLOWNESS);
+        registerPotionTypeConversion(PotionTypes.LONG_LEAPING, predicate3, PotionTypes.LONG_SLOWNESS);
+        registerPotionTypeConversion(PotionTypes.SLOWNESS, predicate2, PotionTypes.LONG_SLOWNESS);
+        registerPotionTypeConversion(PotionTypes.SWIFTNESS, predicate3, PotionTypes.SLOWNESS);
+        registerPotionTypeConversion(PotionTypes.LONG_SWIFTNESS, predicate3, PotionTypes.LONG_SLOWNESS);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate7, PotionTypes.SWIFTNESS);
+        registerPotionTypeConversion(PotionTypes.SWIFTNESS, predicate2, PotionTypes.LONG_SWIFTNESS);
+        registerPotionTypeConversion(PotionTypes.SWIFTNESS, predicate5, PotionTypes.STRONG_SWIFTNESS);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate8, PotionTypes.WATER_BREATHING);
+        registerPotionTypeConversion(PotionTypes.WATER_BREATHING, predicate2, PotionTypes.LONG_WATER_BREATHING);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate9, PotionTypes.HEALING);
+        registerPotionTypeConversion(PotionTypes.HEALING, predicate5, PotionTypes.STRONG_HEALING);
+        registerPotionTypeConversion(PotionTypes.HEALING, predicate3, PotionTypes.HARMING);
+        registerPotionTypeConversion(PotionTypes.STRONG_HEALING, predicate3, PotionTypes.STRONG_HARMING);
+        registerPotionTypeConversion(PotionTypes.HARMING, predicate5, PotionTypes.STRONG_HARMING);
+        registerPotionTypeConversion(PotionTypes.POISON, predicate3, PotionTypes.HARMING);
+        registerPotionTypeConversion(PotionTypes.LONG_POISON, predicate3, PotionTypes.HARMING);
+        registerPotionTypeConversion(PotionTypes.STRONG_POISON, predicate3, PotionTypes.STRONG_HARMING);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate10, PotionTypes.POISON);
+        registerPotionTypeConversion(PotionTypes.POISON, predicate2, PotionTypes.LONG_POISON);
+        registerPotionTypeConversion(PotionTypes.POISON, predicate5, PotionTypes.STRONG_POISON);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate11, PotionTypes.REGENERATION);
+        registerPotionTypeConversion(PotionTypes.REGENERATION, predicate2, PotionTypes.LONG_REGENERATION);
+        registerPotionTypeConversion(PotionTypes.REGENERATION, predicate5, PotionTypes.STRONG_REGENERATION);
+        registerPotionTypeConversion(PotionTypes.AWKWARD, predicate12, PotionTypes.STRENGTH);
+        registerPotionTypeConversion(PotionTypes.STRENGTH, predicate2, PotionTypes.LONG_STRENGTH);
+        registerPotionTypeConversion(PotionTypes.STRENGTH, predicate5, PotionTypes.STRONG_STRENGTH);
+        registerPotionTypeConversion(PotionTypes.WATER, predicate3, PotionTypes.WEAKNESS);
+        registerPotionTypeConversion(PotionTypes.WEAKNESS, predicate2, PotionTypes.LONG_WEAKNESS);
     }
 
     /**
@@ -253,7 +255,7 @@ public class PotionHelper
                 this.meta = metaIn;
             }
 
-            public boolean apply(ItemStack p_apply_1_)
+            public boolean apply(@Nullable ItemStack p_apply_1_)
             {
                 return p_apply_1_ != null && p_apply_1_.getItem() == this.item && (this.meta == -1 || this.meta == p_apply_1_.getMetadata());
             }

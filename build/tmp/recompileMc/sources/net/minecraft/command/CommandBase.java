@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,8 +52,7 @@ public abstract class CommandBase implements ICommand
 
     protected static NBTTagCompound entityToNBT(Entity theEntity)
     {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        theEntity.writeToNBT(nbttagcompound);
+        NBTTagCompound nbttagcompound = theEntity.writeToNBT(new NBTTagCompound());
 
         if (theEntity instanceof EntityPlayer)
         {
@@ -82,16 +82,13 @@ public abstract class CommandBase implements ICommand
 
     /**
      * Check if the given ICommandSender has permission to execute this command
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The command sender who we are checking permission on
      */
     public boolean checkPermission(MinecraftServer server, ICommandSender sender)
     {
         return sender.canCommandSenderUseCommand(this.getRequiredPermissionLevel(), this.getCommandName());
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return Collections.<String>emptyList();
     }
@@ -318,22 +315,22 @@ public abstract class CommandBase implements ICommand
         }
     }
 
-    public static List<Entity> func_184890_c(MinecraftServer server, ICommandSender sender, String p_184890_2_) throws EntityNotFoundException
+    public static List<Entity> getEntityList(MinecraftServer server, ICommandSender sender, String target) throws EntityNotFoundException
     {
-        return (List<Entity>)(EntitySelector.hasArguments(p_184890_2_) ? EntitySelector.matchEntities(sender, p_184890_2_, Entity.class) : Lists.newArrayList(new Entity[] {getEntity(server, sender, p_184890_2_)}));
+        return (List<Entity>)(EntitySelector.hasArguments(target) ? EntitySelector.matchEntities(sender, target, Entity.class) : Lists.newArrayList(new Entity[] {getEntity(server, sender, target)}));
     }
 
-    public static String func_184886_d(MinecraftServer server, ICommandSender sender, String p_184886_2_) throws PlayerNotFoundException
+    public static String getPlayerName(MinecraftServer server, ICommandSender sender, String target) throws PlayerNotFoundException
     {
         try
         {
-            return getPlayer(server, sender, p_184886_2_).getName();
+            return getPlayer(server, sender, target).getName();
         }
         catch (PlayerNotFoundException playernotfoundexception)
         {
-            if (p_184886_2_ != null && !p_184886_2_.startsWith("@"))
+            if (target != null && !target.startsWith("@"))
             {
-                return p_184886_2_;
+                return target;
             }
             else
             {
@@ -342,23 +339,23 @@ public abstract class CommandBase implements ICommand
         }
     }
 
-    public static String func_184891_e(MinecraftServer server, ICommandSender sender, String p_184891_2_) throws EntityNotFoundException
+    public static String getEntityName(MinecraftServer server, ICommandSender sender, String target) throws EntityNotFoundException
     {
         try
         {
-            return getPlayer(server, sender, p_184891_2_).getName();
+            return getPlayer(server, sender, target).getName();
         }
         catch (PlayerNotFoundException var6)
         {
             try
             {
-                return getEntity(server, sender, p_184891_2_).getUniqueID().toString();
+                return getEntity(server, sender, target).getCachedUniqueIdString();
             }
             catch (EntityNotFoundException entitynotfoundexception)
             {
-                if (p_184891_2_ != null && !p_184891_2_.startsWith("@"))
+                if (target != null && !target.startsWith("@"))
                 {
-                    return p_184891_2_;
+                    return target;
                 }
                 else
                 {
@@ -368,9 +365,9 @@ public abstract class CommandBase implements ICommand
         }
     }
 
-    public static ITextComponent getChatComponentFromNthArg(ICommandSender sender, String[] args, int p_147178_2_) throws CommandException, PlayerNotFoundException
+    public static ITextComponent getChatComponentFromNthArg(ICommandSender sender, String[] args, int index) throws CommandException, PlayerNotFoundException
     {
-        return getChatComponentFromNthArg(sender, args, p_147178_2_, false);
+        return getChatComponentFromNthArg(sender, args, index, false);
     }
 
     public static ITextComponent getChatComponentFromNthArg(ICommandSender sender, String[] args, int index, boolean p_147176_3_) throws PlayerNotFoundException
@@ -388,7 +385,7 @@ public abstract class CommandBase implements ICommand
 
             if (p_147176_3_)
             {
-                ITextComponent itextcomponent2 = EntitySelector.matchEntitiesToChatComponent(sender, args[i]);
+                ITextComponent itextcomponent2 = EntitySelector.matchEntitiesToTextComponent(sender, args[i]);
 
                 if (itextcomponent2 == null)
                 {
@@ -464,20 +461,22 @@ public abstract class CommandBase implements ICommand
                 }
             }
 
+            double d1 = d0 + (flag ? base : 0.0D);
+
             if (min != 0 || max != 0)
             {
-                if (d0 < (double)min)
+                if (d1 < (double)min)
                 {
-                    throw new NumberInvalidException("commands.generic.double.tooSmall", new Object[] {Double.valueOf(d0), Integer.valueOf(min)});
+                    throw new NumberInvalidException("commands.generic.double.tooSmall", new Object[] {Double.valueOf(d1), Integer.valueOf(min)});
                 }
 
-                if (d0 > (double)max)
+                if (d1 > (double)max)
                 {
-                    throw new NumberInvalidException("commands.generic.double.tooBig", new Object[] {Double.valueOf(d0), Integer.valueOf(max)});
+                    throw new NumberInvalidException("commands.generic.double.tooBig", new Object[] {Double.valueOf(d1), Integer.valueOf(max)});
                 }
             }
 
-            return new CommandBase.CoordinateArg(d0 + (flag ? base : 0.0D), d0, flag);
+            return new CommandBase.CoordinateArg(d1, d0, flag);
         }
     }
 
@@ -540,7 +539,7 @@ public abstract class CommandBase implements ICommand
     public static Item getItemByText(ICommandSender sender, String id) throws NumberInvalidException
     {
         ResourceLocation resourcelocation = new ResourceLocation(id);
-        Item item = (Item)Item.itemRegistry.getObject(resourcelocation);
+        Item item = (Item)Item.REGISTRY.getObject(resourcelocation);
 
         if (item == null)
         {
@@ -561,13 +560,13 @@ public abstract class CommandBase implements ICommand
     {
         ResourceLocation resourcelocation = new ResourceLocation(id);
 
-        if (!Block.blockRegistry.containsKey(resourcelocation))
+        if (!Block.REGISTRY.containsKey(resourcelocation))
         {
             throw new NumberInvalidException("commands.give.block.notFound", new Object[] {resourcelocation});
         }
         else
         {
-            Block block = (Block)Block.blockRegistry.getObject(resourcelocation);
+            Block block = (Block)Block.REGISTRY.getObject(resourcelocation);
 
             if (block == null)
             {
@@ -648,7 +647,7 @@ public abstract class CommandBase implements ICommand
         return joinNiceString(strings.toArray(new String[strings.size()]));
     }
 
-    public static List<String> getTabCompletionCoordinate(String[] inputArgs, int index, BlockPos pos)
+    public static List<String> getTabCompletionCoordinate(String[] inputArgs, int index, @Nullable BlockPos pos)
     {
         if (pos == null)
         {
@@ -681,7 +680,8 @@ public abstract class CommandBase implements ICommand
         }
     }
 
-    public static List<String> getTabCompletionCoordinateXZ(String[] inputArgs, int index, BlockPos lookedPos)
+    @Nullable
+    public static List<String> getTabCompletionCoordinateXZ(String[] inputArgs, int index, @Nullable BlockPos lookedPos)
     {
         if (lookedPos == null)
         {
@@ -761,16 +761,16 @@ public abstract class CommandBase implements ICommand
         return false;
     }
 
-    public static void notifyOperators(ICommandSender sender, ICommand command, String msgFormat, Object... msgParams)
+    public static void notifyCommandListener(ICommandSender sender, ICommand command, String translationKey, Object... translationArgs)
     {
-        notifyOperators(sender, command, 0, msgFormat, msgParams);
+        notifyCommandListener(sender, command, 0, translationKey, translationArgs);
     }
 
-    public static void notifyOperators(ICommandSender sender, ICommand command, int flags, String msgFormat, Object... msgParams)
+    public static void notifyCommandListener(ICommandSender sender, ICommand command, int flags, String translationKey, Object... translationArgs)
     {
         if (commandListener != null)
         {
-            commandListener.notifyOperators(sender, command, flags, msgFormat, msgParams);
+            commandListener.notifyListener(sender, command, flags, translationKey, translationArgs);
         }
     }
 
@@ -789,25 +789,25 @@ public abstract class CommandBase implements ICommand
 
     public static class CoordinateArg
         {
-            private final double field_179633_a;
-            private final double field_179631_b;
+            private final double result;
+            private final double amount;
             private final boolean isRelative;
 
-            protected CoordinateArg(double p_i46051_1_, double p_i46051_3_, boolean relative)
+            protected CoordinateArg(double resultIn, double amountIn, boolean relative)
             {
-                this.field_179633_a = p_i46051_1_;
-                this.field_179631_b = p_i46051_3_;
+                this.result = resultIn;
+                this.amount = amountIn;
                 this.isRelative = relative;
             }
 
-            public double func_179628_a()
+            public double getResult()
             {
-                return this.field_179633_a;
+                return this.result;
             }
 
-            public double func_179629_b()
+            public double getAmount()
             {
-                return this.field_179631_b;
+                return this.amount;
             }
 
             public boolean isRelative()

@@ -1,6 +1,7 @@
 package net.minecraft.tileentity;
 
 import java.util.Arrays;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockBrewingStand;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,10 +24,10 @@ import net.minecraft.util.math.BlockPos;
 public class TileEntityBrewingStand extends TileEntityLockable implements ITickable, ISidedInventory
 {
     /** an array of the input slot indices */
-    private static final int[] inputSlots = new int[] {3};
-    private static final int[] field_184277_f = new int[] {0, 1, 2, 3};
+    private static final int[] SLOTS_FOR_UP = new int[] {3};
+    private static final int[] SLOTS_FOR_DOWN = new int[] {0, 1, 2, 3};
     /** an array of the output slot indices */
-    private static final int[] outputSlots = new int[] {0, 1, 2, 4};
+    private static final int[] OUTPUT_SLOTS = new int[] {0, 1, 2, 4};
     /** The ItemStacks currently placed in the slots of the brewing stand */
     private ItemStack[] brewingItemStacks = new ItemStack[5];
     private int brewTime;
@@ -71,7 +72,7 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
      */
     public void update()
     {
-        if (this.fuel <= 0 && this.brewingItemStacks[4] != null && this.brewingItemStacks[4].getItem() == Items.blaze_powder)
+        if (this.fuel <= 0 && this.brewingItemStacks[4] != null && this.brewingItemStacks[4].getItem() == Items.BLAZE_POWDER)
         {
             this.fuel = 20;
             --this.brewingItemStacks[4].stackSize;
@@ -118,7 +119,7 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
 
         if (!this.worldObj.isRemote)
         {
-            boolean[] aboolean = this.func_174902_m();
+            boolean[] aboolean = this.createFilledSlotsArray();
 
             if (!Arrays.equals(aboolean, this.filledSlots))
             {
@@ -140,7 +141,11 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
         }
     }
 
-    public boolean[] func_174902_m()
+    /**
+     * Creates an array of boolean values, each value represents a potion input slot, value is true if the slot is not
+     * null.
+     */
+    public boolean[] createFilledSlotsArray()
     {
         boolean[] aboolean = new boolean[3];
 
@@ -182,7 +187,7 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
         }
         else
         {
-            return net.minecraftforge.common.brewing.BrewingRecipeRegistry.canBrew(brewingItemStacks, brewingItemStacks[3], outputSlots);
+            return net.minecraftforge.common.brewing.BrewingRecipeRegistry.canBrew(brewingItemStacks, brewingItemStacks[3], OUTPUT_SLOTS);
         }
     }
 
@@ -191,7 +196,7 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
         if (net.minecraftforge.event.ForgeEventFactory.onPotionAttemptBrew(brewingItemStacks)) return;
         ItemStack itemstack = this.brewingItemStacks[3];
 
-        net.minecraftforge.common.brewing.BrewingRecipeRegistry.brewPotions(brewingItemStacks, brewingItemStacks[3], outputSlots);
+        net.minecraftforge.common.brewing.BrewingRecipeRegistry.brewPotions(brewingItemStacks, brewingItemStacks[3], OUTPUT_SLOTS);
 
         --itemstack.stackSize;
         BlockPos blockpos = this.getPos();
@@ -216,7 +221,7 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
         }
 
         this.brewingItemStacks[3] = itemstack;
-        this.worldObj.playAuxSFX(1035, blockpos, 0);
+        this.worldObj.playEvent(1035, blockpos, 0);
         net.minecraftforge.event.ForgeEventFactory.onPotionBrewed(brewingItemStacks);
     }
 
@@ -247,7 +252,7 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
         this.fuel = compound.getByte("Fuel");
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         compound.setShort("BrewTime", (short)this.brewTime);
@@ -272,11 +277,13 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
         }
 
         compound.setByte("Fuel", (byte)this.fuel);
+        return compound;
     }
 
     /**
      * Returns the stack in the given slot.
      */
+    @Nullable
     public ItemStack getStackInSlot(int index)
     {
         return index >= 0 && index < this.brewingItemStacks.length ? this.brewingItemStacks[index] : null;
@@ -285,23 +292,25 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
+    @Nullable
     public ItemStack decrStackSize(int index, int count)
     {
-        return ItemStackHelper.func_188382_a(this.brewingItemStacks, index, count);
+        return ItemStackHelper.getAndSplit(this.brewingItemStacks, index, count);
     }
 
     /**
      * Removes a stack from the given slot and returns it.
      */
+    @Nullable
     public ItemStack removeStackFromSlot(int index)
     {
-        return ItemStackHelper.func_188383_a(this.brewingItemStacks, index);
+        return ItemStackHelper.getAndRemove(this.brewingItemStacks, index);
     }
 
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, ItemStack stack)
+    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
     {
         if (index >= 0 && index < this.brewingItemStacks.length)
         {
@@ -345,21 +354,17 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
         else
         {
             Item item = stack.getItem();
-            return index == 4 ? item == Items.blaze_powder : net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(stack);
+            return index == 4 ? item == Items.BLAZE_POWDER : net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(stack);
         }
     }
 
     public int[] getSlotsForFace(EnumFacing side)
     {
-        return side == EnumFacing.UP ? inputSlots : (side == EnumFacing.DOWN ? field_184277_f : outputSlots);
+        return side == EnumFacing.UP ? SLOTS_FOR_UP : (side == EnumFacing.DOWN ? SLOTS_FOR_DOWN : OUTPUT_SLOTS);
     }
 
     /**
      * Returns true if automation can insert the given item in the given slot from the given side.
-     *  
-     * @param index The slot index to test insertion into
-     * @param itemStackIn The item to test insertion of
-     * @param direction The direction to test insertion from
      */
     public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction)
     {
@@ -368,14 +373,10 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
 
     /**
      * Returns true if automation can extract the given item in the given slot from the given side.
-     *  
-     * @param index The slot index to test extraction from
-     * @param stack The item to try to extract
-     * @param direction The direction to extract from
      */
     public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction)
     {
-        return index == 3 ? stack.getItem() == Items.glass_bottle : true;
+        return index == 3 ? stack.getItem() == Items.GLASS_BOTTLE : true;
     }
 
     public String getGuiID()
@@ -415,16 +416,21 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
 
     net.minecraftforge.items.IItemHandler handlerInput = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.UP);
     net.minecraftforge.items.IItemHandler handlerOutput = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.DOWN);
+    net.minecraftforge.items.IItemHandler handlerSides = new net.minecraftforge.items.wrapper.SidedInvWrapper(this, net.minecraft.util.EnumFacing.NORTH);
 
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, net.minecraft.util.EnumFacing facing)
     {
         if (facing != null && capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        {
             if (facing == EnumFacing.UP)
                 return (T) handlerInput;
-            else
+            else if (facing == EnumFacing.DOWN)
                 return (T) handlerOutput;
+            else
+                return (T) handlerSides;
+        }
         return super.getCapability(capability, facing);
     }
 

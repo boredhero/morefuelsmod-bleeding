@@ -21,7 +21,7 @@ public class WorldGenSand extends WorldGenerator
 
     public boolean generate(World worldIn, Random rand, BlockPos position)
     {
-        if (worldIn.getBlockState(position).getMaterial() != Material.water)
+        if (worldIn.getBlockState(position).getMaterial() != Material.WATER)
         {
             return false;
         }
@@ -44,7 +44,7 @@ public class WorldGenSand extends WorldGenerator
                             BlockPos blockpos = new BlockPos(k, k1, l);
                             Block block = worldIn.getBlockState(blockpos).getBlock();
 
-                            if (block == Blocks.dirt || block == Blocks.grass)
+                            if (block == Blocks.DIRT || block == Blocks.GRASS)
                             {
                                 worldIn.setBlockState(blockpos, this.block.getDefaultState(), 2);
                             }

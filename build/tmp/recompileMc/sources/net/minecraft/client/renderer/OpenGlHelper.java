@@ -345,15 +345,15 @@ public class OpenGlHelper
         }
     }
 
-    public static void glDeleteShader(int p_153180_0_)
+    public static void glDeleteShader(int shaderIn)
     {
         if (arbShaders)
         {
-            ARBShaderObjects.glDeleteObjectARB(p_153180_0_);
+            ARBShaderObjects.glDeleteObjectARB(shaderIn);
         }
         else
         {
-            GL20.glDeleteShader(p_153180_0_);
+            GL20.glDeleteShader(shaderIn);
         }
     }
 
@@ -594,9 +594,9 @@ public class OpenGlHelper
         }
     }
 
-    public static int glGetAttribLocation(int p_153164_0_, CharSequence p_153164_1_)
+    public static int glGetAttribLocation(int program, CharSequence name)
     {
-        return arbShaders ? ARBVertexShader.glGetAttribLocationARB(p_153164_0_, p_153164_1_) : GL20.glGetAttribLocation(p_153164_0_, p_153164_1_);
+        return arbShaders ? ARBVertexShader.glGetAttribLocationARB(program, name) : GL20.glGetAttribLocation(program, name);
     }
 
     public static int glGenBuffers()
@@ -873,21 +873,21 @@ public class OpenGlHelper
     /**
      * Sets the current coordinates of the given lightmap texture
      */
-    public static void setLightmapTextureCoords(int target, float p_77475_1_, float p_77475_2_)
+    public static void setLightmapTextureCoords(int target, float p_77475_1_, float t)
     {
         if (arbMultitexture)
         {
-            ARBMultitexture.glMultiTexCoord2fARB(target, p_77475_1_, p_77475_2_);
+            ARBMultitexture.glMultiTexCoord2fARB(target, p_77475_1_, t);
         }
         else
         {
-            GL13.glMultiTexCoord2f(target, p_77475_1_, p_77475_2_);
+            GL13.glMultiTexCoord2f(target, p_77475_1_, t);
         }
 
         if (target == lightmapTexUnit)
         {
             lastBrightnessX = p_77475_1_;
-            lastBrightnessY = p_77475_2_;
+            lastBrightnessY = t;
         }
     }
 
@@ -940,9 +940,9 @@ public class OpenGlHelper
         GlStateManager.enableTexture2D();
     }
 
-    public static void openFile(File p_188786_0_)
+    public static void openFile(File fileIn)
     {
-        String s = p_188786_0_.getAbsolutePath();
+        String s = fileIn.getAbsolutePath();
 
         if (Util.getOSType() == Util.EnumOS.OSX)
         {
@@ -978,7 +978,7 @@ public class OpenGlHelper
         {
             Class<?> oclass = Class.forName("java.awt.Desktop");
             Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object)null, new Object[0]);
-            oclass.getMethod("browse", new Class[] {URI.class}).invoke(object, new Object[] {p_188786_0_.toURI()});
+            oclass.getMethod("browse", new Class[] {URI.class}).invoke(object, new Object[] {fileIn.toURI()});
         }
         catch (Throwable throwable)
         {

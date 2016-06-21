@@ -27,11 +27,14 @@ import net.minecraftforge.fml.common.versioning.VersionRange;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 
+import net.minecraftforge.fml.common.ModContainer.Disableable;
+
 public class DummyModContainer implements ModContainer
 {
     private ModMetadata md;
     private ArtifactVersion processedVersion;
     private String label;
+    private int classVersion;
 
     public DummyModContainer(ModMetadata md)
     {
@@ -212,5 +215,17 @@ public class DummyModContainer implements ModContainer
     public URL getUpdateUrl()
     {
         return null;
+    }
+
+    @Override
+    public void setClassVersion(int classVersion)
+    {
+        this.classVersion = classVersion;
+    }
+
+    @Override
+    public int getClassVersion()
+    {
+        return this.classVersion;
     }
 }

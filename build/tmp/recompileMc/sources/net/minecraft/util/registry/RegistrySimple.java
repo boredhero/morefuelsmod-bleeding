@@ -7,13 +7,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class RegistrySimple<K, V> implements IRegistry<K, V>
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     protected final Map<K, V> registryObjects = this.createUnderlyingMap();
     private Object[] values;
 
@@ -22,7 +23,8 @@ public class RegistrySimple<K, V> implements IRegistry<K, V>
         return Maps.<K, V>newHashMap();
     }
 
-    public V getObject(K name)
+    @Nullable
+    public V getObject(@Nullable K name)
     {
         return this.registryObjects.get(name);
     }
@@ -38,7 +40,7 @@ public class RegistrySimple<K, V> implements IRegistry<K, V>
 
         if (this.registryObjects.containsKey(key))
         {
-            logger.debug("Adding duplicate key \'" + key + "\' to registry");
+            LOGGER.debug("Adding duplicate key \'" + key + "\' to registry");
         }
 
         this.registryObjects.put(key, value);
@@ -49,6 +51,7 @@ public class RegistrySimple<K, V> implements IRegistry<K, V>
         return Collections.<K>unmodifiableSet(this.registryObjects.keySet());
     }
 
+    @Nullable
     public V getRandomObject(Random random)
     {
         if (this.values == null)

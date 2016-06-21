@@ -25,11 +25,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemSkull extends Item
 {
-    private static final String[] skullTypes = new String[] {"skeleton", "wither", "zombie", "char", "creeper", "dragon"};
+    private static final String[] SKULL_TYPES = new String[] {"skeleton", "wither", "zombie", "char", "creeper", "dragon"};
 
     public ItemSkull()
     {
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
         this.setMaxDamage(0);
         this.setHasSubtypes(true);
     }
@@ -64,7 +64,7 @@ public class ItemSkull extends Item
                 pos = pos.offset(facing);
             }
 
-            if (playerIn.canPlayerEdit(pos, facing, stack) && Blocks.skull.canPlaceBlockAt(worldIn, pos))
+            if (playerIn.canPlayerEdit(pos, facing, stack) && Blocks.SKULL.canPlaceBlockAt(worldIn, pos))
             {
                 if (worldIn.isRemote)
                 {
@@ -72,7 +72,7 @@ public class ItemSkull extends Item
                 }
                 else
                 {
-                    worldIn.setBlockState(pos, Blocks.skull.getDefaultState().withProperty(BlockSkull.FACING, facing), 11);
+                    worldIn.setBlockState(pos, Blocks.SKULL.getDefaultState().withProperty(BlockSkull.FACING, facing), 11);
                     int i = 0;
 
                     if (facing == EnumFacing.UP)
@@ -112,7 +112,7 @@ public class ItemSkull extends Item
                         }
 
                         tileentityskull.setSkullRotation(i);
-                        Blocks.skull.checkWitherSpawn(worldIn, pos, tileentityskull);
+                        Blocks.SKULL.checkWitherSpawn(worldIn, pos, tileentityskull);
                     }
 
                     --stack.stackSize;
@@ -132,7 +132,7 @@ public class ItemSkull extends Item
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
     {
-        for (int i = 0; i < skullTypes.length; ++i)
+        for (int i = 0; i < SKULL_TYPES.length; ++i)
         {
             subItems.add(new ItemStack(itemIn, 1, i));
         }
@@ -155,12 +155,12 @@ public class ItemSkull extends Item
     {
         int i = stack.getMetadata();
 
-        if (i < 0 || i >= skullTypes.length)
+        if (i < 0 || i >= SKULL_TYPES.length)
         {
             i = 0;
         }
 
-        return super.getUnlocalizedName() + "." + skullTypes[i];
+        return super.getUnlocalizedName() + "." + SKULL_TYPES[i];
     }
 
     public String getItemStackDisplayName(ItemStack stack)

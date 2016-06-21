@@ -30,7 +30,7 @@ public abstract class GuiSlot
     private int scrollDownButtonID;
     protected int mouseX;
     protected int mouseY;
-    protected boolean field_148163_i = true;
+    protected boolean centerListVertically = true;
     /** Where the mouse was in the window when you first clicked to scroll */
     protected int initialClickY = -2;
     /**
@@ -44,7 +44,7 @@ public abstract class GuiSlot
     protected int selectedElement = -1;
     /** The time when this button was last clicked. */
     protected long lastClicked;
-    protected boolean field_178041_q = true;
+    protected boolean visible = true;
     /** Set to true if a selected element in this gui will show an outline box */
     protected boolean showSelectionBox = true;
     protected boolean hasListHeader;
@@ -115,34 +115,34 @@ public abstract class GuiSlot
 
     protected abstract void drawBackground();
 
-    protected void func_178040_a(int p_178040_1_, int p_178040_2_, int p_178040_3_)
+    protected void updateItemPos(int entryID, int insideLeft, int yPos)
     {
     }
 
-    protected abstract void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn);
+    protected abstract void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn);
 
     /**
      * Handles drawing a list's header row.
      */
-    protected void drawListHeader(int p_148129_1_, int p_148129_2_, Tessellator p_148129_3_)
+    protected void drawListHeader(int insideLeft, int insideTop, Tessellator tessellatorIn)
     {
     }
 
-    protected void func_148132_a(int p_148132_1_, int p_148132_2_)
+    protected void clickedHeader(int p_148132_1_, int p_148132_2_)
     {
     }
 
-    protected void func_148142_b(int p_148142_1_, int p_148142_2_)
+    protected void renderDecorations(int mouseXIn, int mouseYIn)
     {
     }
 
-    public int getSlotIndexFromScreenCoords(int p_148124_1_, int p_148124_2_)
+    public int getSlotIndexFromScreenCoords(int posX, int posY)
     {
         int i = this.left + this.width / 2 - this.getListWidth() / 2;
         int j = this.left + this.width / 2 + this.getListWidth() / 2;
-        int k = p_148124_2_ - this.top - this.headerPadding + (int)this.amountScrolled - 4;
+        int k = posY - this.top - this.headerPadding + (int)this.amountScrolled - 4;
         int l = k / this.slotHeight;
-        return p_148124_1_ < this.getScrollBarX() && p_148124_1_ >= i && p_148124_1_ <= j && l >= 0 && k >= 0 && l < this.getSize() ? l : -1;
+        return posX < this.getScrollBarX() && posX >= i && posX <= j && l >= 0 && k >= 0 && l < this.getSize() ? l : -1;
     }
 
     /**
@@ -159,10 +159,10 @@ public abstract class GuiSlot
      */
     protected void bindAmountScrolled()
     {
-        this.amountScrolled = MathHelper.clamp_float(this.amountScrolled, 0.0F, (float)this.func_148135_f());
+        this.amountScrolled = MathHelper.clamp_float(this.amountScrolled, 0.0F, (float)this.getMaxScroll());
     }
 
-    public int func_148135_f()
+    public int getMaxScroll()
     {
         return Math.max(0, this.getContentHeight() - (this.bottom - this.top - 4));
     }
@@ -209,9 +209,9 @@ public abstract class GuiSlot
         }
     }
 
-    public void drawScreen(int mouseXIn, int mouseYIn, float p_148128_3_)
+    public void drawScreen(int mouseXIn, int mouseYIn, float partialTicks)
     {
-        if (this.field_178041_q)
+        if (this.visible)
         {
             this.mouseX = mouseXIn;
             this.mouseY = mouseYIn;
@@ -255,7 +255,7 @@ public abstract class GuiSlot
             vertexbuffer.pos((double)this.right, (double)(this.bottom - i1), 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 0).endVertex();
             vertexbuffer.pos((double)this.left, (double)(this.bottom - i1), 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 0).endVertex();
             tessellator.draw();
-            int j1 = this.func_148135_f();
+            int j1 = this.getMaxScroll();
 
             if (j1 > 0)
             {
@@ -288,7 +288,7 @@ public abstract class GuiSlot
                 tessellator.draw();
             }
 
-            this.func_148142_b(mouseXIn, mouseYIn);
+            this.renderDecorations(mouseXIn, mouseYIn);
             GlStateManager.enableTexture2D();
             GlStateManager.shadeModel(7424);
             GlStateManager.enableAlpha();
@@ -314,7 +314,7 @@ public abstract class GuiSlot
                 }
                 else if (this.mouseX >= i && this.mouseX <= j && k < 0)
                 {
-                    this.func_148132_a(this.mouseX - i, this.mouseY - this.top + (int)this.amountScrolled - 4);
+                    this.clickedHeader(this.mouseX - i, this.mouseY - this.top + (int)this.amountScrolled - 4);
                 }
             }
 
@@ -340,7 +340,7 @@ public abstract class GuiSlot
                         }
                         else if (this.mouseX >= j2 && this.mouseX <= k2 && l2 < 0)
                         {
-                            this.func_148132_a(this.mouseX - j2, this.mouseY - this.top + (int)this.amountScrolled - 4);
+                            this.clickedHeader(this.mouseX - j2, this.mouseY - this.top + (int)this.amountScrolled - 4);
                             flag1 = false;
                         }
 
@@ -350,7 +350,7 @@ public abstract class GuiSlot
                         if (this.mouseX >= i3 && this.mouseX <= j1)
                         {
                             this.scrollMultiplier = -1.0F;
-                            int k1 = this.func_148135_f();
+                            int k1 = this.getMaxScroll();
 
                             if (k1 < 1)
                             {
@@ -430,7 +430,7 @@ public abstract class GuiSlot
     /**
      * Draws the selection box around the selected slot element.
      */
-    protected void drawSelectionBox(int p_148120_1_, int p_148120_2_, int mouseXIn, int mouseYIn)
+    protected void drawSelectionBox(int insideLeft, int insideTop, int mouseXIn, int mouseYIn)
     {
         int i = this.getSize();
         Tessellator tessellator = Tessellator.getInstance();
@@ -438,12 +438,12 @@ public abstract class GuiSlot
 
         for (int j = 0; j < i; ++j)
         {
-            int k = p_148120_2_ + j * this.slotHeight + this.headerPadding;
+            int k = insideTop + j * this.slotHeight + this.headerPadding;
             int l = this.slotHeight - 4;
 
             if (k > this.bottom || k + l < this.top)
             {
-                this.func_178040_a(j, p_148120_1_, k);
+                this.updateItemPos(j, insideLeft, k);
             }
 
             if (this.showSelectionBox && this.isSelected(j))
@@ -465,7 +465,7 @@ public abstract class GuiSlot
                 GlStateManager.enableTexture2D();
             }
 
-            this.drawSlot(j, p_148120_1_, k, l, mouseXIn, mouseYIn);
+            this.drawSlot(j, insideLeft, k, l, mouseXIn, mouseYIn);
         }
     }
 
@@ -481,7 +481,7 @@ public abstract class GuiSlot
     {
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
-        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+        this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         float f = 32.0F;
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -509,7 +509,7 @@ public abstract class GuiSlot
     protected void drawContainerBackground(Tessellator tessellator)
     {
         VertexBuffer buffer = tessellator.getBuffer();
-        this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+        this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         float f = 32.0F;
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);

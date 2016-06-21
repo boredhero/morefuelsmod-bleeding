@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
@@ -26,12 +27,12 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
 
     public BlockLeaves()
     {
-        super(Material.leaves);
+        super(Material.LEAVES);
         this.setTickRandomly(true);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
         this.setHardness(0.2F);
         this.setLightOpacity(1);
-        this.setStepSound(SoundType.PLANT);
+        this.setSoundType(SoundType.PLANT);
     }
 
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
@@ -93,12 +94,12 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
                         {
                             for (int k2 = -i; k2 <= i; ++k2)
                             {
-                                IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos.set(k + i2, l + j2, i1 + k2));
+                                IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2));
                                 Block block = iblockstate.getBlock();
 
-                                if (!block.canSustainLeaves(iblockstate, worldIn, blockpos$mutableblockpos.set(k + i2, l + j2, i1 + k2)))
+                                if (!block.canSustainLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2)))
                                 {
-                                    if (block.isLeaves(iblockstate, worldIn, blockpos$mutableblockpos.set(k + i2, l + j2, i1 + k2)))
+                                    if (block.isLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(k + i2, l + j2, i1 + k2)))
                                     {
                                         this.surroundings[(i2 + l1) * k1 + (j2 + l1) * j1 + k2 + l1] = -2;
                                     }
@@ -182,14 +183,14 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState worldIn, World pos, BlockPos state, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-        if (pos.isRainingAt(state.up()) && !pos.getBlockState(state.down()).isFullyOpaque() && rand.nextInt(15) == 1)
+        if (worldIn.isRainingAt(pos.up()) && !worldIn.getBlockState(pos.down()).isFullyOpaque() && rand.nextInt(15) == 1)
         {
-            double d0 = (double)((float)state.getX() + rand.nextFloat());
-            double d1 = (double)state.getY() - 0.05D;
-            double d2 = (double)((float)state.getZ() + rand.nextFloat());
-            pos.spawnParticle(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
+            double d0 = (double)((float)pos.getX() + rand.nextFloat());
+            double d1 = (double)pos.getY() - 0.05D;
+            double d2 = (double)((float)pos.getZ() + rand.nextFloat());
+            worldIn.spawnParticle(EnumParticleTypes.DRIP_WATER, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
         }
     }
 
@@ -204,9 +205,10 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Item.getItemFromBlock(Blocks.sapling);
+        return Item.getItemFromBlock(Blocks.SAPLING);
     }
 
     /**

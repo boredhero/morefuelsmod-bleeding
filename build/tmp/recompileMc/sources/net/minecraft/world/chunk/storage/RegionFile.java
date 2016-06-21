@@ -18,7 +18,7 @@ import net.minecraft.server.MinecraftServer;
 
 public class RegionFile
 {
-    private static final byte[] emptySector = new byte[4096];
+    private static final byte[] EMPTY_SECTOR = new byte[4096];
     private final File fileName;
     private RandomAccessFile dataFile;
     private final int[] offsets = new int[1024];
@@ -44,8 +44,8 @@ public class RegionFile
 
             if (this.dataFile.length() < 4096L)
             {
-                this.dataFile.write(emptySector);
-                this.dataFile.write(emptySector);
+                this.dataFile.write(EMPTY_SECTOR);
+                this.dataFile.write(EMPTY_SECTOR);
                 this.sizeDelta += 8192;
             }
 
@@ -209,7 +209,7 @@ public class RegionFile
     }
 
     /**
-     * args: x, z, data, length - write chunk data at (x, z) to disk
+     * Writes the specified chunk to disk.
      */
     protected synchronized void write(int x, int z, byte[] data, int length)
     {
@@ -286,7 +286,7 @@ public class RegionFile
 
                     for (int i2 = 0; i2 < l; ++i2)
                     {
-                        this.dataFile.write(emptySector);
+                        this.dataFile.write(EMPTY_SECTOR);
                         this.sectorFree.add(Boolean.valueOf(false));
                     }
 
@@ -305,7 +305,7 @@ public class RegionFile
     }
 
     /**
-     * args: sectorNumber, data, length - write the chunk data to this RegionFile
+     * Writes the chunk data to this RegionFile.
      */
     private void write(int sectorNumber, byte[] data, int length) throws IOException
     {
@@ -316,7 +316,7 @@ public class RegionFile
     }
 
     /**
-     * args: x, z - check region bounds
+     * Checks if region is out of bounds.
      */
     private boolean outOfBounds(int x, int z)
     {
@@ -324,7 +324,7 @@ public class RegionFile
     }
 
     /**
-     * args: x, z - get chunk's offset in region file
+     * Gets a chunk's offset in region file.
      */
     private int getOffset(int x, int z)
     {
@@ -332,7 +332,7 @@ public class RegionFile
     }
 
     /**
-     * args: x, z, - true if chunk has been saved / converted
+     * Checks if a chunk has been saved.
      */
     public boolean isChunkSaved(int x, int z)
     {
@@ -340,7 +340,7 @@ public class RegionFile
     }
 
     /**
-     * args: x, z, offset - sets the chunk's offset in the region file
+     * Sets the chunk's offset in the region file.
      */
     private void setOffset(int x, int z, int offset) throws IOException
     {
@@ -350,7 +350,7 @@ public class RegionFile
     }
 
     /**
-     * args: x, z, timestamp - sets the chunk's write timestamp
+     * Updates the specified chunk's write timestamp.
      */
     private void setChunkTimestamp(int x, int z, int timestamp) throws IOException
     {

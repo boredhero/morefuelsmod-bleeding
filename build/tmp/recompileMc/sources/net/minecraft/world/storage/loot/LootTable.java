@@ -24,11 +24,11 @@ public class LootTable
 {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final LootTable EMPTY_LOOT_TABLE = new LootTable(new LootPool[0]);
-    private final LootPool[] pools;
+    private final List<LootPool> pools;
 
     public LootTable(LootPool[] poolsIn)
     {
-        this.pools = poolsIn;
+        this.pools = Lists.newArrayList(poolsIn);
     }
 
     public List<ItemStack> generateLootForPools(Random rand, LootContext context)
@@ -52,10 +52,10 @@ public class LootTable
         return list;
     }
 
-    public void fillInventory(IInventory p_186460_1_, Random rand, LootContext context)
+    public void fillInventory(IInventory inventory, Random rand, LootContext context)
     {
         List<ItemStack> list = this.generateLootForPools(rand, context);
-        List<Integer> list1 = this.getEmptySlotsRandomized(p_186460_1_, rand);
+        List<Integer> list1 = this.getEmptySlotsRandomized(inventory, rand);
         this.shuffleItems(list, list1.size(), rand);
 
         for (ItemStack itemstack : list)
@@ -68,11 +68,11 @@ public class LootTable
 
             if (itemstack == null)
             {
-                p_186460_1_.setInventorySlotContents(((Integer)list1.remove(list1.size() - 1)).intValue(), (ItemStack)null);
+                inventory.setInventorySlotContents(((Integer)list1.remove(list1.size() - 1)).intValue(), (ItemStack)null);
             }
             else
             {
-                p_186460_1_.setInventorySlotContents(((Integer)list1.remove(list1.size() - 1)).intValue(), itemstack);
+                inventory.setInventorySlotContents(((Integer)list1.remove(list1.size() - 1)).intValue(), itemstack);
             }
         }
     }
@@ -133,13 +133,13 @@ public class LootTable
         Collections.shuffle(stacks, rand);
     }
 
-    private List<Integer> getEmptySlotsRandomized(IInventory p_186459_1_, Random rand)
+    private List<Integer> getEmptySlotsRandomized(IInventory inventory, Random rand)
     {
         List<Integer> list = Lists.<Integer>newArrayList();
 
-        for (int i = 0; i < p_186459_1_.getSizeInventory(); ++i)
+        for (int i = 0; i < inventory.getSizeInventory(); ++i)
         {
-            if (p_186459_1_.getStackInSlot(i) == null)
+            if (inventory.getStackInSlot(i) == null)
             {
                 list.add(Integer.valueOf(i));
             }
@@ -148,6 +148,58 @@ public class LootTable
         Collections.shuffle(list, rand);
         return list;
     }
+
+    //======================== FORGE START =============================================
+    private boolean isFrozen = false;
+    public void freeze()
+    {
+        this.isFrozen = true;
+        for (LootPool pool : this.pools)
+            pool.freeze();
+    }
+    public boolean isFrozen(){ return this.isFrozen; }
+    private void checkFrozen()
+    {
+        if (this.isFrozen())
+            throw new RuntimeException("Attempted to modify LootTable after being finalized!");
+    }
+
+    public LootPool getPool(String name)
+    {
+        for (LootPool pool : this.pools)
+        {
+            if (name.equals(pool.getName()))
+                return pool;
+        }
+        return null;
+    }
+
+    public LootPool removePool(String name)
+    {
+        checkFrozen();
+        for (LootPool pool : this.pools)
+        {
+            if (name.equals(pool.getName()))
+            {
+                this.pools.remove(pool);
+                return pool;
+            }
+        }
+
+        return null;
+    }
+
+    public void addPool(LootPool pool)
+    {
+        checkFrozen();
+        for (LootPool p : this.pools)
+        {
+            if (p == pool || p.getName().equals(pool.getName()))
+                throw new RuntimeException("Attempted to add a duplicate pool to loot table: " + pool.getName());
+        }
+        this.pools.add(pool);
+    }
+    //======================== FORGE END ===============================================
 
     public static class Serializer implements JsonDeserializer<LootTable>, JsonSerializer<LootTable>
         {

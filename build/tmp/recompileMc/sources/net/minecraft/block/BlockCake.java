@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -28,7 +29,7 @@ public class BlockCake extends Block
 
     protected BlockCake()
     {
-        super(Material.cake);
+        super(Material.CAKE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(BITES, Integer.valueOf(0)));
         this.setTickRandomly(true);
     }
@@ -39,9 +40,9 @@ public class BlockCake extends Block
     }
 
     @SideOnly(Side.CLIENT)
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState worldIn, World pos, BlockPos state)
+    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos)
     {
-        return worldIn.getSelectedBoundingBox(pos, state);
+        return state.getCollisionBoundingBox(worldIn, pos);
     }
 
     public boolean isFullCube(IBlockState state)
@@ -57,7 +58,7 @@ public class BlockCake extends Block
         return false;
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         this.eatCake(worldIn, pos, state, playerIn);
         return true;
@@ -67,7 +68,7 @@ public class BlockCake extends Block
     {
         if (player.canEat(false))
         {
-            player.addStat(StatList.cakeSlicesEaten);
+            player.addStat(StatList.CAKE_SLICES_EATEN);
             player.getFoodStats().addStats(2, 0.1F);
             int i = ((Integer)state.getValue(BITES)).intValue();
 
@@ -88,9 +89,11 @@ public class BlockCake extends Block
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!this.canBlockStay(worldIn, pos))
         {
@@ -114,6 +117,7 @@ public class BlockCake extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
@@ -121,7 +125,7 @@ public class BlockCake extends Block
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Items.cake);
+        return new ItemStack(Items.CAKE);
     }
 
     /**

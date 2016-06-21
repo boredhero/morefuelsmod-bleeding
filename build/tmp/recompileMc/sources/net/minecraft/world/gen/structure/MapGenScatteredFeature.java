@@ -11,12 +11,12 @@ import net.minecraft.init.Biomes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class MapGenScatteredFeature extends MapGenStructure
 {
-    private static final List<BiomeGenBase> biomelist = Arrays.<BiomeGenBase>asList(new BiomeGenBase[] {Biomes.desert, Biomes.desertHills, Biomes.jungle, Biomes.jungleHills, Biomes.swampland, Biomes.icePlains, Biomes.coldTaiga});
-    private List<BiomeGenBase.SpawnListEntry> scatteredFeatureSpawnList;
+    private static final List<Biome> BIOMELIST = Arrays.<Biome>asList(new Biome[] {Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.SWAMPLAND, Biomes.ICE_PLAINS, Biomes.COLD_TAIGA});
+    private List<Biome.SpawnListEntry> scatteredFeatureSpawnList;
     /** the maximum distance between scattered features */
     private int maxDistanceBetweenScatteredFeatures;
     /** the minimum distance between scattered features */
@@ -24,10 +24,10 @@ public class MapGenScatteredFeature extends MapGenStructure
 
     public MapGenScatteredFeature()
     {
-        this.scatteredFeatureSpawnList = Lists.<BiomeGenBase.SpawnListEntry>newArrayList();
+        this.scatteredFeatureSpawnList = Lists.<Biome.SpawnListEntry>newArrayList();
         this.maxDistanceBetweenScatteredFeatures = 32;
         this.minDistanceBetweenScatteredFeatures = 8;
-        this.scatteredFeatureSpawnList.add(new BiomeGenBase.SpawnListEntry(EntityWitch.class, 1, 1, 1));
+        this.scatteredFeatureSpawnList.add(new Biome.SpawnListEntry(EntityWitch.class, 1, 1, 1));
     }
 
     public MapGenScatteredFeature(Map<String, String> p_i2061_1_)
@@ -73,16 +73,16 @@ public class MapGenScatteredFeature extends MapGenStructure
 
         if (i == k && j == l)
         {
-            BiomeGenBase biomegenbase = this.worldObj.getBiomeProvider().getBiomeGenerator(new BlockPos(i * 16 + 8, 0, j * 16 + 8));
+            Biome biome = this.worldObj.getBiomeProvider().getBiomeGenerator(new BlockPos(i * 16 + 8, 0, j * 16 + 8));
 
-            if (biomegenbase == null)
+            if (biome == null)
             {
                 return false;
             }
 
-            for (BiomeGenBase biomegenbase1 : biomelist)
+            for (Biome biome1 : BIOMELIST)
             {
-                if (biomegenbase == biomegenbase1)
+                if (biome == biome1)
                 {
                     return true;
                 }
@@ -97,9 +97,9 @@ public class MapGenScatteredFeature extends MapGenStructure
         return new MapGenScatteredFeature.Start(this.worldObj, this.rand, chunkX, chunkZ);
     }
 
-    public boolean func_175798_a(BlockPos p_175798_1_)
+    public boolean isSwampHut(BlockPos p_175798_1_)
     {
-        StructureStart structurestart = this.func_175797_c(p_175798_1_);
+        StructureStart structurestart = this.getStructureAt(p_175798_1_);
 
         if (structurestart != null && structurestart instanceof MapGenScatteredFeature.Start && !structurestart.components.isEmpty())
         {
@@ -112,7 +112,7 @@ public class MapGenScatteredFeature extends MapGenStructure
         }
     }
 
-    public List<BiomeGenBase.SpawnListEntry> getScatteredFeatureSpawnList()
+    public List<Biome.SpawnListEntry> getScatteredFeatureSpawnList()
     {
         return this.scatteredFeatureSpawnList;
     }
@@ -123,39 +123,39 @@ public class MapGenScatteredFeature extends MapGenStructure
             {
             }
 
-            public Start(World worldIn, Random p_i2060_2_, int p_i2060_3_, int p_i2060_4_)
+            public Start(World worldIn, Random random, int chunkX, int chunkZ)
             {
-                this(worldIn, p_i2060_2_, p_i2060_3_, p_i2060_4_, worldIn.getBiomeGenForCoords(new BlockPos(p_i2060_3_ * 16 + 8, 0, p_i2060_4_ * 16 + 8)));
+                this(worldIn, random, chunkX, chunkZ, worldIn.getBiomeGenForCoords(new BlockPos(chunkX * 16 + 8, 0, chunkZ * 16 + 8)));
             }
 
-            public Start(World p_i47072_1_, Random p_i47072_2_, int p_i47072_3_, int p_i47072_4_, BiomeGenBase p_i47072_5_)
+            public Start(World worldIn, Random random, int chunkX, int chunkZ, Biome biomeIn)
             {
-                super(p_i47072_3_, p_i47072_4_);
+                super(chunkX, chunkZ);
 
-                if (p_i47072_5_ != Biomes.jungle && p_i47072_5_ != Biomes.jungleHills)
+                if (biomeIn != Biomes.JUNGLE && biomeIn != Biomes.JUNGLE_HILLS)
                 {
-                    if (p_i47072_5_ == Biomes.swampland)
+                    if (biomeIn == Biomes.SWAMPLAND)
                     {
-                        ComponentScatteredFeaturePieces.SwampHut componentscatteredfeaturepieces$swamphut = new ComponentScatteredFeaturePieces.SwampHut(p_i47072_2_, p_i47072_3_ * 16, p_i47072_4_ * 16);
+                        ComponentScatteredFeaturePieces.SwampHut componentscatteredfeaturepieces$swamphut = new ComponentScatteredFeaturePieces.SwampHut(random, chunkX * 16, chunkZ * 16);
                         this.components.add(componentscatteredfeaturepieces$swamphut);
                     }
-                    else if (p_i47072_5_ != Biomes.desert && p_i47072_5_ != Biomes.desertHills)
+                    else if (biomeIn != Biomes.DESERT && biomeIn != Biomes.DESERT_HILLS)
                     {
-                        if (p_i47072_5_ == Biomes.icePlains || p_i47072_5_ == Biomes.coldTaiga)
+                        if (biomeIn == Biomes.ICE_PLAINS || biomeIn == Biomes.COLD_TAIGA)
                         {
-                            ComponentScatteredFeaturePieces.Igloo componentscatteredfeaturepieces$igloo = new ComponentScatteredFeaturePieces.Igloo(p_i47072_2_, p_i47072_3_ * 16, p_i47072_4_ * 16);
+                            ComponentScatteredFeaturePieces.Igloo componentscatteredfeaturepieces$igloo = new ComponentScatteredFeaturePieces.Igloo(random, chunkX * 16, chunkZ * 16);
                             this.components.add(componentscatteredfeaturepieces$igloo);
                         }
                     }
                     else
                     {
-                        ComponentScatteredFeaturePieces.DesertPyramid componentscatteredfeaturepieces$desertpyramid = new ComponentScatteredFeaturePieces.DesertPyramid(p_i47072_2_, p_i47072_3_ * 16, p_i47072_4_ * 16);
+                        ComponentScatteredFeaturePieces.DesertPyramid componentscatteredfeaturepieces$desertpyramid = new ComponentScatteredFeaturePieces.DesertPyramid(random, chunkX * 16, chunkZ * 16);
                         this.components.add(componentscatteredfeaturepieces$desertpyramid);
                     }
                 }
                 else
                 {
-                    ComponentScatteredFeaturePieces.JunglePyramid componentscatteredfeaturepieces$junglepyramid = new ComponentScatteredFeaturePieces.JunglePyramid(p_i47072_2_, p_i47072_3_ * 16, p_i47072_4_ * 16);
+                    ComponentScatteredFeaturePieces.JunglePyramid componentscatteredfeaturepieces$junglepyramid = new ComponentScatteredFeaturePieces.JunglePyramid(random, chunkX * 16, chunkZ * 16);
                     this.components.add(componentscatteredfeaturepieces$junglepyramid);
                 }
 

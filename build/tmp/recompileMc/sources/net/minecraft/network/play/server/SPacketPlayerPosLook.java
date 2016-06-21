@@ -44,7 +44,7 @@ public class SPacketPlayerPosLook implements Packet<INetHandlerPlayClient>
         this.z = buf.readDouble();
         this.yaw = buf.readFloat();
         this.pitch = buf.readFloat();
-        this.flags = SPacketPlayerPosLook.EnumFlags.func_187044_a(buf.readUnsignedByte());
+        this.flags = SPacketPlayerPosLook.EnumFlags.unpack(buf.readUnsignedByte());
         this.teleportId = buf.readVarIntFromBuffer();
     }
 
@@ -58,7 +58,7 @@ public class SPacketPlayerPosLook implements Packet<INetHandlerPlayClient>
         buf.writeDouble(this.z);
         buf.writeFloat(this.yaw);
         buf.writeFloat(this.pitch);
-        buf.writeByte(SPacketPlayerPosLook.EnumFlags.func_187040_a(this.flags));
+        buf.writeByte(SPacketPlayerPosLook.EnumFlags.pack(this.flags));
         buf.writeVarIntToBuffer(this.teleportId);
     }
 
@@ -120,30 +120,30 @@ public class SPacketPlayerPosLook implements Packet<INetHandlerPlayClient>
         Y_ROT(3),
         X_ROT(4);
 
-        private final int field_187050_f;
+        private final int bit;
 
         private EnumFlags(int p_i46690_3_)
         {
-            this.field_187050_f = p_i46690_3_;
+            this.bit = p_i46690_3_;
         }
 
-        private int func_187042_a()
+        private int getMask()
         {
-            return 1 << this.field_187050_f;
+            return 1 << this.bit;
         }
 
-        private boolean func_187043_b(int p_187043_1_)
+        private boolean isSet(int p_187043_1_)
         {
-            return (p_187043_1_ & this.func_187042_a()) == this.func_187042_a();
+            return (p_187043_1_ & this.getMask()) == this.getMask();
         }
 
-        public static Set<SPacketPlayerPosLook.EnumFlags> func_187044_a(int p_187044_0_)
+        public static Set<SPacketPlayerPosLook.EnumFlags> unpack(int flags)
         {
             Set<SPacketPlayerPosLook.EnumFlags> set = EnumSet.<SPacketPlayerPosLook.EnumFlags>noneOf(SPacketPlayerPosLook.EnumFlags.class);
 
             for (SPacketPlayerPosLook.EnumFlags spacketplayerposlook$enumflags : values())
             {
-                if (spacketplayerposlook$enumflags.func_187043_b(p_187044_0_))
+                if (spacketplayerposlook$enumflags.isSet(flags))
                 {
                     set.add(spacketplayerposlook$enumflags);
                 }
@@ -152,13 +152,13 @@ public class SPacketPlayerPosLook implements Packet<INetHandlerPlayClient>
             return set;
         }
 
-        public static int func_187040_a(Set<SPacketPlayerPosLook.EnumFlags> p_187040_0_)
+        public static int pack(Set<SPacketPlayerPosLook.EnumFlags> flags)
         {
             int i = 0;
 
-            for (SPacketPlayerPosLook.EnumFlags spacketplayerposlook$enumflags : p_187040_0_)
+            for (SPacketPlayerPosLook.EnumFlags spacketplayerposlook$enumflags : flags)
             {
-                i |= spacketplayerposlook$enumflags.func_187042_a();
+                i |= spacketplayerposlook$enumflags.getMask();
             }
 
             return i;

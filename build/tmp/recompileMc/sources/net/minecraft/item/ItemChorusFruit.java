@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -18,6 +19,7 @@ public class ItemChorusFruit extends ItemFood
      * Called when the player finishes using this Item (E.g. finishes eating.). Not called when the player stops using
      * the Item before the action is complete.
      */
+    @Nullable
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
     {
         ItemStack itemstack = super.onItemUseFinish(stack, worldIn, entityLiving);
@@ -34,10 +36,10 @@ public class ItemChorusFruit extends ItemFood
                 double d4 = MathHelper.clamp_double(entityLiving.posY + (double)(entityLiving.getRNG().nextInt(16) - 8), 0.0D, (double)(worldIn.getActualHeight() - 1));
                 double d5 = entityLiving.posZ + (entityLiving.getRNG().nextDouble() - 0.5D) * 16.0D;
 
-                if (entityLiving.teleportTo_(d3, d4, d5))
+                if (entityLiving.attemptTeleport(d3, d4, d5))
                 {
-                    worldIn.playSound((EntityPlayer)null, d0, d1, d2, SoundEvents.item_chorus_fruit_teleport, SoundCategory.PLAYERS, 1.0F, 1.0F);
-                    entityLiving.playSound(SoundEvents.item_chorus_fruit_teleport, 1.0F, 1.0F);
+                    worldIn.playSound((EntityPlayer)null, d0, d1, d2, SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                    entityLiving.playSound(SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, 1.0F, 1.0F);
                     break;
                 }
             }

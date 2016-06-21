@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -36,14 +37,14 @@ public class BlockDispenser extends BlockContainer
 {
     public static final PropertyDirection FACING = BlockDirectional.FACING;
     public static final PropertyBool TRIGGERED = PropertyBool.create("triggered");
-    public static final RegistryDefaulted<Item, IBehaviorDispenseItem> dispenseBehaviorRegistry = new RegistryDefaulted(new BehaviorDefaultDispenseItem());
+    public static final RegistryDefaulted<Item, IBehaviorDispenseItem> DISPENSE_BEHAVIOR_REGISTRY = new RegistryDefaulted(new BehaviorDefaultDispenseItem());
     protected Random rand = new Random();
 
     protected BlockDispenser()
     {
-        super(Material.rock);
+        super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(TRIGGERED, Boolean.valueOf(false)));
-        this.setCreativeTab(CreativeTabs.tabRedstone);
+        this.setCreativeTab(CreativeTabs.REDSTONE);
     }
 
     /**
@@ -95,7 +96,7 @@ public class BlockDispenser extends BlockContainer
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -111,11 +112,11 @@ public class BlockDispenser extends BlockContainer
 
                 if (tileentity instanceof TileEntityDropper)
                 {
-                    playerIn.addStat(StatList.dropperInspected);
+                    playerIn.addStat(StatList.DROPPER_INSPECTED);
                 }
                 else
                 {
-                    playerIn.addStat(StatList.dispenserInspected);
+                    playerIn.addStat(StatList.DISPENSER_INSPECTED);
                 }
             }
 
@@ -134,14 +135,14 @@ public class BlockDispenser extends BlockContainer
 
             if (i < 0)
             {
-                worldIn.playAuxSFX(1001, pos, 0);
+                worldIn.playEvent(1001, pos, 0);
             }
             else
             {
                 ItemStack itemstack = tileentitydispenser.getStackInSlot(i);
                 IBehaviorDispenseItem ibehaviordispenseitem = this.getBehavior(itemstack);
 
-                if (ibehaviordispenseitem != IBehaviorDispenseItem.itemDispenseBehaviorProvider)
+                if (ibehaviordispenseitem != IBehaviorDispenseItem.DEFAULT_BEHAVIOR)
                 {
                     ItemStack itemstack1 = ibehaviordispenseitem.dispense(blocksourceimpl, itemstack);
                     tileentitydispenser.setInventorySlotContents(i, itemstack1.stackSize <= 0 ? null : itemstack1);
@@ -150,15 +151,17 @@ public class BlockDispenser extends BlockContainer
         }
     }
 
-    protected IBehaviorDispenseItem getBehavior(ItemStack stack)
+    protected IBehaviorDispenseItem getBehavior(@Nullable ItemStack stack)
     {
-        return (IBehaviorDispenseItem)dispenseBehaviorRegistry.getObject(stack == null ? null : stack.getItem());
+        return (IBehaviorDispenseItem)DISPENSE_BEHAVIOR_REGISTRY.getObject(stack == null ? null : stack.getItem());
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         boolean flag = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.up());
         boolean flag1 = ((Boolean)state.getValue(TRIGGERED)).booleanValue();

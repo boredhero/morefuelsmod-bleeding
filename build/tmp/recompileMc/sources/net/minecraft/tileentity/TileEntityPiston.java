@@ -61,11 +61,6 @@ public class TileEntityPiston extends TileEntity implements ITickable
         return this.pistonFacing;
     }
 
-    private float func_184320_e(float p_184320_1_)
-    {
-        return this.extending ? p_184320_1_ - 1.0F : 1.0F - p_184320_1_;
-    }
-
     @SideOnly(Side.CLIENT)
     public boolean shouldPistonHeadBeRendered()
     {
@@ -87,38 +82,43 @@ public class TileEntityPiston extends TileEntity implements ITickable
         return this.lastProgress + (this.progress - this.lastProgress) * ticks;
     }
 
-    public AxisAlignedBB func_184321_a(IBlockAccess p_184321_1_, BlockPos p_184321_2_)
-    {
-        return this.func_184319_a(p_184321_1_, p_184321_2_, this.progress).union(this.func_184319_a(p_184321_1_, p_184321_2_, this.lastProgress));
-    }
-
-    public AxisAlignedBB func_184319_a(IBlockAccess p_184319_1_, BlockPos p_184319_2_, float p_184319_3_)
-    {
-        p_184319_3_ = this.func_184320_e(p_184319_3_);
-        return this.pistonState.getBoundingBox(p_184319_1_, p_184319_2_).offset((double)(p_184319_3_ * (float)this.pistonFacing.getFrontOffsetX()), (double)(p_184319_3_ * (float)this.pistonFacing.getFrontOffsetY()), (double)(p_184319_3_ * (float)this.pistonFacing.getFrontOffsetZ()));
-    }
-
     @SideOnly(Side.CLIENT)
     public float getOffsetX(float ticks)
     {
-        return (float)this.pistonFacing.getFrontOffsetX() * this.func_184320_e(this.getProgress(ticks));
+        return (float)this.pistonFacing.getFrontOffsetX() * this.getExtendedProgress(this.getProgress(ticks));
     }
 
     @SideOnly(Side.CLIENT)
     public float getOffsetY(float ticks)
     {
-        return (float)this.pistonFacing.getFrontOffsetY() * this.func_184320_e(this.getProgress(ticks));
+        return (float)this.pistonFacing.getFrontOffsetY() * this.getExtendedProgress(this.getProgress(ticks));
     }
 
     @SideOnly(Side.CLIENT)
     public float getOffsetZ(float ticks)
     {
-        return (float)this.pistonFacing.getFrontOffsetZ() * this.func_184320_e(this.getProgress(ticks));
+        return (float)this.pistonFacing.getFrontOffsetZ() * this.getExtendedProgress(this.getProgress(ticks));
     }
 
-    private void func_184322_i()
+    private float getExtendedProgress(float p_184320_1_)
     {
-        AxisAlignedBB axisalignedbb = this.func_184321_a(this.worldObj, this.pos).offset(this.pos);
+        return this.extending ? p_184320_1_ - 1.0F : 1.0F - p_184320_1_;
+    }
+
+    public AxisAlignedBB getAABB(IBlockAccess p_184321_1_, BlockPos p_184321_2_)
+    {
+        return this.getAABB(p_184321_1_, p_184321_2_, this.progress).union(this.getAABB(p_184321_1_, p_184321_2_, this.lastProgress));
+    }
+
+    public AxisAlignedBB getAABB(IBlockAccess p_184319_1_, BlockPos p_184319_2_, float p_184319_3_)
+    {
+        p_184319_3_ = this.getExtendedProgress(p_184319_3_);
+        return this.pistonState.getBoundingBox(p_184319_1_, p_184319_2_).offset((double)(p_184319_3_ * (float)this.pistonFacing.getFrontOffsetX()), (double)(p_184319_3_ * (float)this.pistonFacing.getFrontOffsetY()), (double)(p_184319_3_ * (float)this.pistonFacing.getFrontOffsetZ()));
+    }
+
+    private void moveCollidedEntities()
+    {
+        AxisAlignedBB axisalignedbb = this.getAABB(this.worldObj, this.pos).offset(this.pos);
         List<Entity> list = this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)null, axisalignedbb);
 
         if (!list.isEmpty())
@@ -131,7 +131,7 @@ public class TileEntityPiston extends TileEntity implements ITickable
 
                 if (entity.getPushReaction() != EnumPushReaction.IGNORE)
                 {
-                    if (this.pistonState.getBlock() == Blocks.slime_block)
+                    if (this.pistonState.getBlock() == Blocks.SLIME_BLOCK)
                     {
                         switch (enumfacing.getAxis())
                         {
@@ -210,7 +210,7 @@ public class TileEntityPiston extends TileEntity implements ITickable
             this.worldObj.removeTileEntity(this.pos);
             this.invalidate();
 
-            if (this.worldObj.getBlockState(this.pos).getBlock() == Blocks.piston_extension)
+            if (this.worldObj.getBlockState(this.pos).getBlock() == Blocks.PISTON_EXTENSION)
             {
                 this.worldObj.setBlockState(this.pos, this.pistonState, 3);
                 if(!net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldObj, pos, worldObj.getBlockState(pos), java.util.EnumSet.noneOf(EnumFacing.class)).isCanceled())
@@ -228,11 +228,11 @@ public class TileEntityPiston extends TileEntity implements ITickable
 
         if (this.lastProgress >= 1.0F)
         {
-            this.func_184322_i();
+            this.moveCollidedEntities();
             this.worldObj.removeTileEntity(this.pos);
             this.invalidate();
 
-            if (this.worldObj.getBlockState(this.pos).getBlock() == Blocks.piston_extension)
+            if (this.worldObj.getBlockState(this.pos).getBlock() == Blocks.PISTON_EXTENSION)
             {
                 this.worldObj.setBlockState(this.pos, this.pistonState, 3);
                 if(!net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldObj, pos, worldObj.getBlockState(pos), java.util.EnumSet.noneOf(EnumFacing.class)).isCanceled())
@@ -248,7 +248,7 @@ public class TileEntityPiston extends TileEntity implements ITickable
                 this.progress = 1.0F;
             }
 
-            this.func_184322_i();
+            this.moveCollidedEntities();
         }
     }
 
@@ -261,7 +261,7 @@ public class TileEntityPiston extends TileEntity implements ITickable
         this.extending = compound.getBoolean("extending");
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         compound.setInteger("blockId", Block.getIdFromBlock(this.pistonState.getBlock()));
@@ -269,5 +269,6 @@ public class TileEntityPiston extends TileEntity implements ITickable
         compound.setInteger("facing", this.pistonFacing.getIndex());
         compound.setFloat("progress", this.lastProgress);
         compound.setBoolean("extending", this.extending);
+        return compound;
     }
 }

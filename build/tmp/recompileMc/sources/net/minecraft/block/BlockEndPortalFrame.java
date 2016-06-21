@@ -3,6 +3,7 @@ package net.minecraft.block;
 import com.google.common.base.Predicates;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -32,11 +33,11 @@ public class BlockEndPortalFrame extends Block
     public static final PropertyBool EYE = PropertyBool.create("eye");
     protected static final AxisAlignedBB AABB_BLOCK = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.8125D, 1.0D);
     protected static final AxisAlignedBB AABB_EYE = new AxisAlignedBB(0.3125D, 0.8125D, 0.3125D, 0.6875D, 1.0D, 0.6875D);
-    private static BlockPattern field_185664_e;
+    private static BlockPattern portalShape;
 
     public BlockEndPortalFrame()
     {
-        super(Material.rock, MapColor.greenColor);
+        super(Material.ROCK, MapColor.GREEN);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(EYE, Boolean.valueOf(false)));
     }
 
@@ -53,19 +54,20 @@ public class BlockEndPortalFrame extends Block
         return AABB_BLOCK;
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, Entity p_185477_6_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
     {
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, AABB_BLOCK);
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, AABB_BLOCK);
 
         if (((Boolean)worldIn.getBlockState(pos).getValue(EYE)).booleanValue())
         {
-            addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, AABB_EYE);
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, AABB_EYE);
         }
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
@@ -142,13 +144,13 @@ public class BlockEndPortalFrame extends Block
         return false;
     }
 
-    public static BlockPattern func_185661_e()
+    public static BlockPattern getOrCreatePortalShape()
     {
-        if (field_185664_e == null)
+        if (portalShape == null)
         {
-            field_185664_e = FactoryBlockPattern.start().aisle(new String[] {"?vvv?", ">   <", ">   <", ">   <", "?^^^?"}).where('?', BlockWorldState.hasState(BlockStateMatcher.ANY)).where('^', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.end_portal_frame).where(EYE, Predicates.equalTo(Boolean.valueOf(true))).where(FACING, Predicates.equalTo(EnumFacing.SOUTH)))).where('>', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.end_portal_frame).where(EYE, Predicates.equalTo(Boolean.valueOf(true))).where(FACING, Predicates.equalTo(EnumFacing.WEST)))).where('v', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.end_portal_frame).where(EYE, Predicates.equalTo(Boolean.valueOf(true))).where(FACING, Predicates.equalTo(EnumFacing.NORTH)))).where('<', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.end_portal_frame).where(EYE, Predicates.equalTo(Boolean.valueOf(true))).where(FACING, Predicates.equalTo(EnumFacing.EAST)))).where(' ', BlockWorldState.func_185925_a(Blocks.air.getDefaultState())).build();
+            portalShape = FactoryBlockPattern.start().aisle(new String[] {"?vvv?", ">   <", ">   <", ">   <", "?^^^?"}).where('?', BlockWorldState.hasState(BlockStateMatcher.ANY)).where('^', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.END_PORTAL_FRAME).where(EYE, Predicates.equalTo(Boolean.valueOf(true))).where(FACING, Predicates.equalTo(EnumFacing.SOUTH)))).where('>', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.END_PORTAL_FRAME).where(EYE, Predicates.equalTo(Boolean.valueOf(true))).where(FACING, Predicates.equalTo(EnumFacing.WEST)))).where('v', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.END_PORTAL_FRAME).where(EYE, Predicates.equalTo(Boolean.valueOf(true))).where(FACING, Predicates.equalTo(EnumFacing.NORTH)))).where('<', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.END_PORTAL_FRAME).where(EYE, Predicates.equalTo(Boolean.valueOf(true))).where(FACING, Predicates.equalTo(EnumFacing.EAST)))).where(' ', BlockWorldState.hasState(Blocks.AIR.getDefaultState())).build();
         }
 
-        return field_185664_e;
+        return portalShape;
     }
 }

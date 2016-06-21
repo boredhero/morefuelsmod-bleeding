@@ -20,9 +20,9 @@ public class BlockPlanks extends Block
 
     public BlockPlanks()
     {
-        super(Material.wood);
+        super(Material.WOOD);
         this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockPlanks.EnumType.OAK));
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -77,12 +77,12 @@ public class BlockPlanks extends Block
 
     public static enum EnumType implements IStringSerializable
     {
-        OAK(0, "oak", MapColor.woodColor),
-        SPRUCE(1, "spruce", MapColor.obsidianColor),
-        BIRCH(2, "birch", MapColor.sandColor),
-        JUNGLE(3, "jungle", MapColor.dirtColor),
-        ACACIA(4, "acacia", MapColor.adobeColor),
-        DARK_OAK(5, "dark_oak", "big_oak", MapColor.brownColor);
+        OAK(0, "oak", MapColor.WOOD),
+        SPRUCE(1, "spruce", MapColor.OBSIDIAN),
+        BIRCH(2, "birch", MapColor.SAND),
+        JUNGLE(3, "jungle", MapColor.DIRT),
+        ACACIA(4, "acacia", MapColor.ADOBE),
+        DARK_OAK(5, "dark_oak", "big_oak", MapColor.BROWN);
 
         private static final BlockPlanks.EnumType[] META_LOOKUP = new BlockPlanks.EnumType[values().length];
         private final int meta;

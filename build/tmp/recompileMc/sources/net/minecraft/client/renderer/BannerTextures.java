@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.LayeredColorMaskTexture;
 import net.minecraft.item.EnumDyeColor;
@@ -38,6 +39,7 @@ public class BannerTextures
                 this.cacheResourceBase = p_i46998_3_;
             }
 
+            @Nullable
             public ResourceLocation getResourceLocation(String p_187478_1_, List<TileEntityBanner.EnumBannerPattern> p_187478_2_, List<EnumDyeColor> p_187478_3_)
             {
                 if (p_187478_1_.isEmpty())
@@ -51,7 +53,7 @@ public class BannerTextures
 
                     if (bannertextures$cacheentry == null)
                     {
-                        if (this.cacheMap.size() >= 256 && !this.func_187477_a())
+                        if (this.cacheMap.size() >= 256 && !this.freeCacheSlot())
                         {
                             return BannerTextures.BANNER_BASE_TEXTURE;
                         }
@@ -64,17 +66,17 @@ public class BannerTextures
                         }
 
                         bannertextures$cacheentry = new BannerTextures.CacheEntry();
-                        bannertextures$cacheentry.field_187484_b = new ResourceLocation(p_187478_1_);
-                        Minecraft.getMinecraft().getTextureManager().loadTexture(bannertextures$cacheentry.field_187484_b, new LayeredColorMaskTexture(this.cacheResourceLocation, list, p_187478_3_));
+                        bannertextures$cacheentry.textureLocation = new ResourceLocation(p_187478_1_);
+                        Minecraft.getMinecraft().getTextureManager().loadTexture(bannertextures$cacheentry.textureLocation, new LayeredColorMaskTexture(this.cacheResourceLocation, list, p_187478_3_));
                         this.cacheMap.put(p_187478_1_, bannertextures$cacheentry);
                     }
 
-                    bannertextures$cacheentry.field_187483_a = System.currentTimeMillis();
-                    return bannertextures$cacheentry.field_187484_b;
+                    bannertextures$cacheentry.lastUseMillis = System.currentTimeMillis();
+                    return bannertextures$cacheentry.textureLocation;
                 }
             }
 
-            private boolean func_187477_a()
+            private boolean freeCacheSlot()
             {
                 long i = System.currentTimeMillis();
                 Iterator<String> iterator = this.cacheMap.keySet().iterator();
@@ -84,9 +86,9 @@ public class BannerTextures
                     String s = (String)iterator.next();
                     BannerTextures.CacheEntry bannertextures$cacheentry = (BannerTextures.CacheEntry)this.cacheMap.get(s);
 
-                    if (i - bannertextures$cacheentry.field_187483_a > 5000L)
+                    if (i - bannertextures$cacheentry.lastUseMillis > 5000L)
                     {
-                        Minecraft.getMinecraft().getTextureManager().deleteTexture(bannertextures$cacheentry.field_187484_b);
+                        Minecraft.getMinecraft().getTextureManager().deleteTexture(bannertextures$cacheentry.textureLocation);
                         iterator.remove();
                         return true;
                     }
@@ -99,8 +101,8 @@ public class BannerTextures
     @SideOnly(Side.CLIENT)
     static class CacheEntry
         {
-            public long field_187483_a;
-            public ResourceLocation field_187484_b;
+            public long lastUseMillis;
+            public ResourceLocation textureLocation;
 
             private CacheEntry()
             {

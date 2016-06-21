@@ -76,32 +76,32 @@ public class EntityWitherSkull extends EntityFireball
     /**
      * Called when this EntityFireball hits a block or entity.
      */
-    protected void onImpact(RayTraceResult movingObject)
+    protected void onImpact(RayTraceResult result)
     {
         if (!this.worldObj.isRemote)
         {
-            if (movingObject.entityHit != null)
+            if (result.entityHit != null)
             {
                 if (this.shootingEntity != null)
                 {
-                    if (movingObject.entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.shootingEntity), 8.0F))
+                    if (result.entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.shootingEntity), 8.0F))
                     {
-                        if (!movingObject.entityHit.isEntityAlive())
+                        if (!result.entityHit.isEntityAlive())
                         {
                             this.shootingEntity.heal(5.0F);
                         }
                         else
                         {
-                            this.applyEnchantments(this.shootingEntity, movingObject.entityHit);
+                            this.applyEnchantments(this.shootingEntity, result.entityHit);
                         }
                     }
                 }
                 else
                 {
-                    movingObject.entityHit.attackEntityFrom(DamageSource.magic, 5.0F);
+                    result.entityHit.attackEntityFrom(DamageSource.magic, 5.0F);
                 }
 
-                if (movingObject.entityHit instanceof EntityLivingBase)
+                if (result.entityHit instanceof EntityLivingBase)
                 {
                     int i = 0;
 
@@ -116,7 +116,7 @@ public class EntityWitherSkull extends EntityFireball
 
                     if (i > 0)
                     {
-                        ((EntityLivingBase)movingObject.entityHit).addPotionEffect(new PotionEffect(MobEffects.wither, 20 * i, 1));
+                        ((EntityLivingBase)result.entityHit).addPotionEffect(new PotionEffect(MobEffects.WITHER, 20 * i, 1));
                     }
                 }
             }
@@ -144,7 +144,7 @@ public class EntityWitherSkull extends EntityFireball
 
     protected void entityInit()
     {
-        this.dataWatcher.register(INVULNERABLE, Boolean.valueOf(false));
+        this.dataManager.register(INVULNERABLE, Boolean.valueOf(false));
     }
 
     /**
@@ -152,7 +152,7 @@ public class EntityWitherSkull extends EntityFireball
      */
     public boolean isInvulnerable()
     {
-        return ((Boolean)this.dataWatcher.get(INVULNERABLE)).booleanValue();
+        return ((Boolean)this.dataManager.get(INVULNERABLE)).booleanValue();
     }
 
     /**
@@ -160,10 +160,10 @@ public class EntityWitherSkull extends EntityFireball
      */
     public void setInvulnerable(boolean invulnerable)
     {
-        this.dataWatcher.set(INVULNERABLE, Boolean.valueOf(invulnerable));
+        this.dataManager.set(INVULNERABLE, Boolean.valueOf(invulnerable));
     }
 
-    protected boolean func_184564_k()
+    protected boolean isFireballFiery()
     {
         return false;
     }

@@ -78,7 +78,7 @@ public class EntityAIBeg extends EntityAIBase
 
             if (itemstack != null)
             {
-                if (this.theWolf.isTamed() && itemstack.getItem() == Items.bone)
+                if (this.theWolf.isTamed() && itemstack.getItem() == Items.BONE)
                 {
                     return true;
                 }

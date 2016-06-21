@@ -21,6 +21,7 @@ public class LootTableList
     public static final ResourceLocation CHESTS_STRONGHOLD_CORRIDOR = register("chests/stronghold_corridor");
     public static final ResourceLocation CHESTS_DESERT_PYRAMID = register("chests/desert_pyramid");
     public static final ResourceLocation CHESTS_JUNGLE_TEMPLE = register("chests/jungle_temple");
+    public static final ResourceLocation CHESTS_JUNGLE_TEMPLE_DISPENSER = register("chests/jungle_temple_dispenser");
     public static final ResourceLocation CHESTS_IGLOO_CHEST = register("chests/igloo_chest");
     public static final ResourceLocation ENTITIES_WITCH = register("entities/witch");
     public static final ResourceLocation ENTITIES_BLAZE = register("entities/blaze");

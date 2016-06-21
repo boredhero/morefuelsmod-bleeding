@@ -2,6 +2,7 @@ package net.minecraft.item.crafting;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -18,6 +19,7 @@ public class ShapelessRecipes implements IRecipe
         this.recipeItems = inputList;
     }
 
+    @Nullable
     public ItemStack getRecipeOutput()
     {
         return this.recipeOutput;
@@ -77,6 +79,7 @@ public class ShapelessRecipes implements IRecipe
     /**
      * Returns an Item that is the result of this recipe
      */
+    @Nullable
     public ItemStack getCraftingResult(InventoryCrafting inv)
     {
         return this.recipeOutput.copy();

@@ -13,14 +13,14 @@ public class CPacketChatMessage implements Packet<INetHandlerPlayServer>
     {
     }
 
-    public CPacketChatMessage(String p_i46887_1_)
+    public CPacketChatMessage(String messageIn)
     {
-        if (p_i46887_1_.length() > 100)
+        if (messageIn.length() > 100)
         {
-            p_i46887_1_ = p_i46887_1_.substring(0, 100);
+            messageIn = messageIn.substring(0, 100);
         }
 
-        this.message = p_i46887_1_;
+        this.message = messageIn;
     }
 
     /**

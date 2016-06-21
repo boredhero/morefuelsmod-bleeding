@@ -3,6 +3,7 @@ package net.minecraft.command.server;
 import com.mojang.authlib.GameProfile;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -38,9 +39,6 @@ public class CommandPardonPlayer extends CommandBase
 
     /**
      * Check if the given ICommandSender has permission to execute this command
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The command sender who we are checking permission on
      */
     public boolean checkPermission(MinecraftServer server, ICommandSender sender)
     {
@@ -49,16 +47,12 @@ public class CommandPardonPlayer extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (args.length == 1 && args[0].length() > 0)
         {
-            GameProfile gameprofile = server.getPlayerList().getBannedPlayers().isUsernameBanned(args[0]);
+            GameProfile gameprofile = server.getPlayerList().getBannedPlayers().getBannedProfile(args[0]);
 
             if (gameprofile == null)
             {
@@ -67,7 +61,7 @@ public class CommandPardonPlayer extends CommandBase
             else
             {
                 server.getPlayerList().getBannedPlayers().removeEntry(gameprofile);
-                notifyOperators(sender, this, "commands.unban.success", new Object[] {args[0]});
+                notifyCommandListener(sender, this, "commands.unban.success", new Object[] {args[0]});
             }
         }
         else
@@ -76,7 +70,7 @@ public class CommandPardonPlayer extends CommandBase
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getPlayerList().getBannedPlayers().getKeys()) : Collections.<String>emptyList();
     }

@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -23,7 +24,7 @@ public abstract class BlockWoodSlab extends BlockSlab
 
     public BlockWoodSlab()
     {
-        super(Material.wood);
+        super(Material.WOOD);
         IBlockState iblockstate = this.blockState.getBaseState();
 
         if (!this.isDouble())
@@ -32,7 +33,7 @@ public abstract class BlockWoodSlab extends BlockSlab
         }
 
         this.setDefaultState(iblockstate.withProperty(VARIANT, BlockPlanks.EnumType.OAK));
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -46,14 +47,15 @@ public abstract class BlockWoodSlab extends BlockSlab
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Item.getItemFromBlock(Blocks.wooden_slab);
+        return Item.getItemFromBlock(Blocks.WOODEN_SLAB);
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Blocks.wooden_slab, 1, ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata());
+        return new ItemStack(Blocks.WOODEN_SLAB, 1, ((BlockPlanks.EnumType)state.getValue(VARIANT)).getMetadata());
     }
 
     /**
@@ -80,7 +82,7 @@ public abstract class BlockWoodSlab extends BlockSlab
     @SideOnly(Side.CLIENT)
     public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
     {
-        if (itemIn != Item.getItemFromBlock(Blocks.double_wooden_slab))
+        if (itemIn != Item.getItemFromBlock(Blocks.DOUBLE_WOODEN_SLAB))
         {
             for (BlockPlanks.EnumType blockplanks$enumtype : BlockPlanks.EnumType.values())
             {

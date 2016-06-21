@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -14,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 
 public class CommandDebug extends CommandBase
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /** The time (in milliseconds) that profiling was started */
     private long profileStartTime;
     /** The tick number that profiling was started on */
@@ -46,10 +47,6 @@ public class CommandDebug extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -66,7 +63,7 @@ public class CommandDebug extends CommandBase
                     throw new WrongUsageException("commands.debug.usage", new Object[0]);
                 }
 
-                notifyOperators(sender, this, "commands.debug.start", new Object[0]);
+                notifyCommandListener(sender, this, "commands.debug.start", new Object[0]);
                 server.enableProfiling();
                 this.profileStartTime = MinecraftServer.getCurrentTimeMillis();
                 this.profileStartTick = server.getTickCounter();
@@ -92,14 +89,14 @@ public class CommandDebug extends CommandBase
                 int j = server.getTickCounter();
                 long k = i - this.profileStartTime;
                 int l = j - this.profileStartTick;
-                this.func_184894_a(k, l, server);
+                this.saveProfilerResults(k, l, server);
                 server.theProfiler.profilingEnabled = false;
-                notifyOperators(sender, this, "commands.debug.stop", new Object[] {Float.valueOf((float)k / 1000.0F), Integer.valueOf(l)});
+                notifyCommandListener(sender, this, "commands.debug.stop", new Object[] {Float.valueOf((float)k / 1000.0F), Integer.valueOf(l)});
             }
         }
     }
 
-    private void func_184894_a(long timeSpan, int tickSpan, MinecraftServer server)
+    private void saveProfilerResults(long timeSpan, int tickSpan, MinecraftServer server)
     {
         File file1 = new File(server.getFile("debug"), "profile-results-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + ".txt");
         file1.getParentFile().mkdirs();
@@ -107,16 +104,16 @@ public class CommandDebug extends CommandBase
         try
         {
             FileWriter filewriter = new FileWriter(file1);
-            filewriter.write(this.func_184893_b(timeSpan, tickSpan, server));
+            filewriter.write(this.getProfilerResults(timeSpan, tickSpan, server));
             filewriter.close();
         }
         catch (Throwable throwable)
         {
-            logger.error("Could not save profiler results to " + file1, throwable);
+            LOGGER.error("Could not save profiler results to " + file1, throwable);
         }
     }
 
-    private String func_184893_b(long timeSpan, int tickSpan, MinecraftServer server)
+    private String getProfilerResults(long timeSpan, int tickSpan, MinecraftServer server)
     {
         StringBuilder stringbuilder = new StringBuilder();
         stringbuilder.append("---- Minecraft Profiler Results ----\n");
@@ -127,12 +124,12 @@ public class CommandDebug extends CommandBase
         stringbuilder.append("Tick span: ").append(tickSpan).append(" ticks\n");
         stringbuilder.append("// This is approximately ").append(String.format("%.2f", new Object[] {Float.valueOf((float)tickSpan / ((float)timeSpan / 1000.0F))})).append(" ticks per second. It should be ").append((int)20).append(" ticks per second\n\n");
         stringbuilder.append("--- BEGIN PROFILE DUMP ---\n\n");
-        this.func_184895_a(0, "root", stringbuilder, server);
+        this.appendProfilerResults(0, "root", stringbuilder, server);
         stringbuilder.append("--- END PROFILE DUMP ---\n\n");
         return stringbuilder.toString();
     }
 
-    private void func_184895_a(int p_184895_1_, String sectionName, StringBuilder builder, MinecraftServer server)
+    private void appendProfilerResults(int p_184895_1_, String sectionName, StringBuilder builder, MinecraftServer server)
     {
         List<Profiler.Result> list = server.theProfiler.getProfilingData(sectionName);
 
@@ -154,7 +151,7 @@ public class CommandDebug extends CommandBase
                 {
                     try
                     {
-                        this.func_184895_a(p_184895_1_ + 1, sectionName + "." + profiler$result.profilerName, builder, server);
+                        this.appendProfilerResults(p_184895_1_ + 1, sectionName + "." + profiler$result.profilerName, builder, server);
                     }
                     catch (Exception exception)
                     {
@@ -182,7 +179,7 @@ public class CommandDebug extends CommandBase
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"start", "stop"}): Collections.<String>emptyList();
     }

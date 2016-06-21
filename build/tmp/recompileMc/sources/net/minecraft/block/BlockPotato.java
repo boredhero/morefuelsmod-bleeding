@@ -15,12 +15,12 @@ public class BlockPotato extends BlockCrops
 
     protected Item getSeed()
     {
-        return Items.potato;
+        return Items.POTATO;
     }
 
     protected Item getCrop()
     {
-        return Items.potato;
+        return Items.POTATO;
     }
 
     /**
@@ -32,24 +32,24 @@ public class BlockPotato extends BlockCrops
 
         if (false && !worldIn.isRemote) //Forge: Moved to getDrops
         {
-            if (this.func_185525_y(state) && worldIn.rand.nextInt(50) == 0)
+            if (this.isMaxAge(state) && worldIn.rand.nextInt(50) == 0)
             {
-                spawnAsEntity(worldIn, pos, new ItemStack(Items.poisonous_potato));
+                spawnAsEntity(worldIn, pos, new ItemStack(Items.POISONOUS_POTATO));
             }
         }
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
-        return POTATO_AABB[((Integer)state.getValue(this.getAge())).intValue()];
+        return POTATO_AABB[((Integer)state.getValue(this.getAgeProperty())).intValue()];
     }
 
     @Override
     public java.util.List<ItemStack> getDrops(net.minecraft.world.IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
         java.util.List<ItemStack> ret = super.getDrops(world, pos, state, fortune);
-        if (this.func_185525_y(state) && RANDOM.nextInt(50) == 0)
-            ret.add(new ItemStack(Items.poisonous_potato));
+        if (this.isMaxAge(state) && RANDOM.nextInt(50) == 0)
+            ret.add(new ItemStack(Items.POISONOUS_POTATO));
         return ret;
     }
 }

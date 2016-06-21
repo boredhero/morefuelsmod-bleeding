@@ -16,7 +16,7 @@ public class ItemFireball extends Item
 {
     public ItemFireball()
     {
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
     }
 
     /**
@@ -38,10 +38,10 @@ public class ItemFireball extends Item
             }
             else
             {
-                if (worldIn.getBlockState(pos).getMaterial() == Material.air)
+                if (worldIn.getBlockState(pos).getMaterial() == Material.AIR)
                 {
-                    worldIn.playSound((EntityPlayer)null, pos, SoundEvents.item_firecharge_use, SoundCategory.BLOCKS, 1.0F, (itemRand.nextFloat() - itemRand.nextFloat()) * 0.2F + 1.0F);
-                    worldIn.setBlockState(pos, Blocks.fire.getDefaultState());
+                    worldIn.playSound((EntityPlayer)null, pos, SoundEvents.ITEM_FIRECHARGE_USE, SoundCategory.BLOCKS, 1.0F, (itemRand.nextFloat() - itemRand.nextFloat()) * 0.2F + 1.0F);
+                    worldIn.setBlockState(pos, Blocks.FIRE.getDefaultState());
                 }
 
                 if (!playerIn.capabilities.isCreativeMode)

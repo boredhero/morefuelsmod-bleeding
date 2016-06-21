@@ -1,6 +1,7 @@
 package net.minecraft.client.gui;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
@@ -14,11 +15,11 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
 {
     /** The integer value containing the number of ticks that have passed since the player's death */
     private int enableButtonsTimer;
-    private final ITextComponent field_184871_f;
+    private final ITextComponent causeOfDeath;
 
-    public GuiGameOver(ITextComponent p_i46598_1_)
+    public GuiGameOver(@Nullable ITextComponent p_i46598_1_)
     {
-        this.field_184871_f = p_i46598_1_;
+        this.causeOfDeath = p_i46598_1_;
     }
 
     /**
@@ -107,10 +108,6 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -121,18 +118,18 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
         this.drawCenteredString(this.fontRendererObj, flag ? I18n.format("deathScreen.title.hardcore", new Object[0]) : I18n.format("deathScreen.title", new Object[0]), this.width / 2 / 2, 30, 16777215);
         GlStateManager.popMatrix();
 
-        if (this.field_184871_f != null)
+        if (this.causeOfDeath != null)
         {
-            this.drawCenteredString(this.fontRendererObj, this.field_184871_f.getFormattedText(), this.width / 2, 85, 16777215);
+            this.drawCenteredString(this.fontRendererObj, this.causeOfDeath.getFormattedText(), this.width / 2, 85, 16777215);
         }
 
         this.drawCenteredString(this.fontRendererObj, I18n.format("deathScreen.score", new Object[0]) + ": " + TextFormatting.YELLOW + this.mc.thePlayer.getScore(), this.width / 2, 100, 16777215);
 
-        if (this.field_184871_f != null && mouseY > 85 && mouseY < 85 + this.fontRendererObj.FONT_HEIGHT)
+        if (this.causeOfDeath != null && mouseY > 85 && mouseY < 85 + this.fontRendererObj.FONT_HEIGHT)
         {
-            ITextComponent itextcomponent = this.func_184870_b(mouseX);
+            ITextComponent itextcomponent = this.getClickedComponentAt(mouseX);
 
-            if (itextcomponent != null && itextcomponent.getChatStyle().getChatHoverEvent() != null)
+            if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null)
             {
                 this.handleComponentHover(itextcomponent, mouseX, mouseY);
             }
@@ -141,24 +138,25 @@ public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    public ITextComponent func_184870_b(int p_184870_1_)
+    @Nullable
+    public ITextComponent getClickedComponentAt(int p_184870_1_)
     {
-        if (this.field_184871_f == null)
+        if (this.causeOfDeath == null)
         {
             return null;
         }
         else
         {
-            int i = this.mc.fontRendererObj.getStringWidth(this.field_184871_f.getFormattedText());
+            int i = this.mc.fontRendererObj.getStringWidth(this.causeOfDeath.getFormattedText());
             int j = this.width / 2 - i / 2;
             int k = this.width / 2 + i / 2;
             int l = j;
 
             if (p_184870_1_ >= j && p_184870_1_ <= k)
             {
-                for (ITextComponent itextcomponent : this.field_184871_f)
+                for (ITextComponent itextcomponent : this.causeOfDeath)
                 {
-                    l += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.func_178909_a(itextcomponent.getUnformattedTextForChat(), false));
+                    l += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(itextcomponent.getUnformattedComponentText(), false));
 
                     if (l > p_184870_1_)
                     {

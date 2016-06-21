@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class GuiMerchant extends GuiContainer
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /** The GUI texture for the villager merchant GUI. */
     private static final ResourceLocation MERCHANT_GUI_TEXTURE = new ResourceLocation("textures/gui/container/villager.png");
     /** The current IMerchant instance in use for this specific merchant. */
@@ -64,9 +64,6 @@ public class GuiMerchant extends GuiContainer
 
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
@@ -126,17 +123,12 @@ public class GuiMerchant extends GuiContainer
             ((ContainerMerchant)this.inventorySlots).setCurrentRecipeIndex(this.selectedMerchantRecipe);
             PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
             packetbuffer.writeInt(this.selectedMerchantRecipe);
-            this.mc.getNetHandler().addToSendQueue(new CPacketCustomPayload("MC|TrSel", packetbuffer));
+            this.mc.getConnection().sendPacket(new CPacketCustomPayload("MC|TrSel", packetbuffer));
         }
     }
 
     /**
      * Draws the background layer of this container (behind the items).
-     *  
-     * @param partialTicks How far into the current tick the game is, with 0.0 being the start of the tick and 1.0 being
-     * the end.
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
@@ -171,10 +163,6 @@ public class GuiMerchant extends GuiContainer
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -243,12 +231,12 @@ public class GuiMerchant extends GuiContainer
     @SideOnly(Side.CLIENT)
     static class MerchantButton extends GuiButton
         {
-            private final boolean field_146157_o;
+            private final boolean forward;
 
             public MerchantButton(int buttonID, int x, int y, boolean p_i1095_4_)
             {
                 super(buttonID, x, y, 12, 19, "");
-                this.field_146157_o = p_i1095_4_;
+                this.forward = p_i1095_4_;
             }
 
             /**
@@ -273,7 +261,7 @@ public class GuiMerchant extends GuiContainer
                         j += this.width;
                     }
 
-                    if (!this.field_146157_o)
+                    if (!this.forward)
                     {
                         i += this.height;
                     }

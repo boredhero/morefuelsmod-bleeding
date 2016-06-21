@@ -12,7 +12,7 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 
 public class BlockMushroom extends BlockBush implements IGrowable
 {
-    protected static final AxisAlignedBB field_185518_a = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 0.4000000059604645D, 0.699999988079071D);
+    protected static final AxisAlignedBB MUSHROOM_AABB = new AxisAlignedBB(0.30000001192092896D, 0.0D, 0.30000001192092896D, 0.699999988079071D, 0.4000000059604645D, 0.699999988079071D);
 
     protected BlockMushroom()
     {
@@ -21,7 +21,7 @@ public class BlockMushroom extends BlockBush implements IGrowable
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
-        return field_185518_a;
+        return MUSHROOM_AABB;
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
@@ -68,7 +68,10 @@ public class BlockMushroom extends BlockBush implements IGrowable
         return super.canPlaceBlockAt(worldIn, pos) && this.canBlockStay(worldIn, pos, this.getDefaultState());
     }
 
-    protected boolean func_185514_i(IBlockState state)
+    /**
+     * Return true if the block can sustain a Bush
+     */
+    protected boolean canSustainBush(IBlockState state)
     {
         return state.isFullBlock();
     }
@@ -78,7 +81,7 @@ public class BlockMushroom extends BlockBush implements IGrowable
         if (pos.getY() >= 0 && pos.getY() < 256)
         {
             IBlockState iblockstate = worldIn.getBlockState(pos.down());
-            return iblockstate.getBlock() == Blocks.mycelium ? true : (iblockstate.getBlock() == Blocks.dirt && iblockstate.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.PODZOL ? true : worldIn.getLight(pos) < 13 && iblockstate.getBlock().canSustainPlant(iblockstate, worldIn, pos.down(), net.minecraft.util.EnumFacing.UP, this));
+            return iblockstate.getBlock() == Blocks.MYCELIUM ? true : (iblockstate.getBlock() == Blocks.DIRT && iblockstate.getValue(BlockDirt.VARIANT) == BlockDirt.DirtType.PODZOL ? true : worldIn.getLight(pos) < 13 && iblockstate.getBlock().canSustainPlant(iblockstate, worldIn, pos.down(), net.minecraft.util.EnumFacing.UP, this));
         }
         else
         {
@@ -91,13 +94,13 @@ public class BlockMushroom extends BlockBush implements IGrowable
         worldIn.setBlockToAir(pos);
         WorldGenerator worldgenerator = null;
 
-        if (this == Blocks.brown_mushroom)
+        if (this == Blocks.BROWN_MUSHROOM)
         {
-            worldgenerator = new WorldGenBigMushroom(Blocks.brown_mushroom_block);
+            worldgenerator = new WorldGenBigMushroom(Blocks.BROWN_MUSHROOM_BLOCK);
         }
-        else if (this == Blocks.red_mushroom)
+        else if (this == Blocks.RED_MUSHROOM)
         {
-            worldgenerator = new WorldGenBigMushroom(Blocks.red_mushroom_block);
+            worldgenerator = new WorldGenBigMushroom(Blocks.RED_MUSHROOM_BLOCK);
         }
 
         if (worldgenerator != null && worldgenerator.generate(worldIn, rand, pos))

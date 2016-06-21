@@ -35,18 +35,18 @@ public class EntityLightningBolt extends EntityWeatherEffect
 
         if (!effectOnlyIn && !worldIn.isRemote && worldIn.getGameRules().getBoolean("doFireTick") && (worldIn.getDifficulty() == EnumDifficulty.NORMAL || worldIn.getDifficulty() == EnumDifficulty.HARD) && worldIn.isAreaLoaded(blockpos, 10))
         {
-            if (worldIn.getBlockState(blockpos).getMaterial() == Material.air && Blocks.fire.canPlaceBlockAt(worldIn, blockpos))
+            if (worldIn.getBlockState(blockpos).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(worldIn, blockpos))
             {
-                worldIn.setBlockState(blockpos, Blocks.fire.getDefaultState());
+                worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
             }
 
             for (int i = 0; i < 4; ++i)
             {
                 BlockPos blockpos1 = blockpos.add(this.rand.nextInt(3) - 1, this.rand.nextInt(3) - 1, this.rand.nextInt(3) - 1);
 
-                if (worldIn.getBlockState(blockpos1).getMaterial() == Material.air && Blocks.fire.canPlaceBlockAt(worldIn, blockpos1))
+                if (worldIn.getBlockState(blockpos1).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(worldIn, blockpos1))
                 {
-                    worldIn.setBlockState(blockpos1, Blocks.fire.getDefaultState());
+                    worldIn.setBlockState(blockpos1, Blocks.FIRE.getDefaultState());
                 }
             }
         }
@@ -66,8 +66,8 @@ public class EntityLightningBolt extends EntityWeatherEffect
 
         if (this.lightningState == 2)
         {
-            this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.entity_lightning_thunder, SoundCategory.WEATHER, 10000.0F, 0.8F + this.rand.nextFloat() * 0.2F);
-            this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.entity_lightning_impact, SoundCategory.WEATHER, 2.0F, 0.5F + this.rand.nextFloat() * 0.2F);
+            this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.WEATHER, 10000.0F, 0.8F + this.rand.nextFloat() * 0.2F);
+            this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_LIGHTNING_IMPACT, SoundCategory.WEATHER, 2.0F, 0.5F + this.rand.nextFloat() * 0.2F);
         }
 
         --this.lightningState;
@@ -88,9 +88,9 @@ public class EntityLightningBolt extends EntityWeatherEffect
                     this.boltVertex = this.rand.nextLong();
                     BlockPos blockpos = new BlockPos(this);
 
-                    if (this.worldObj.getGameRules().getBoolean("doFireTick") && this.worldObj.isAreaLoaded(blockpos, 10) && this.worldObj.getBlockState(blockpos).getMaterial() == Material.air && Blocks.fire.canPlaceBlockAt(this.worldObj, blockpos))
+                    if (this.worldObj.getGameRules().getBoolean("doFireTick") && this.worldObj.isAreaLoaded(blockpos, 10) && this.worldObj.getBlockState(blockpos).getMaterial() == Material.AIR && Blocks.FIRE.canPlaceBlockAt(this.worldObj, blockpos))
                     {
-                        this.worldObj.setBlockState(blockpos, Blocks.fire.getDefaultState());
+                        this.worldObj.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
                     }
                 }
             }
@@ -124,14 +124,14 @@ public class EntityLightningBolt extends EntityWeatherEffect
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
     }
 }

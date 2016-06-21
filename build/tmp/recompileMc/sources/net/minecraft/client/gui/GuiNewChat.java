@@ -5,6 +5,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,9 +20,9 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class GuiNewChat extends Gui
 {
-    private static final Splitter field_184061_a = Splitter.on('\n');
-    private static final Joiner field_184062_f = Joiner.on("\\n");
-    private static final Logger logger = LogManager.getLogger();
+    private static final Splitter NEWLINE_SPLITTER = Splitter.on('\n');
+    private static final Joiner NEWLINE_STRING_JOINER = Joiner.on("\\n");
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Minecraft mc;
     private final List<String> sentMessages = Lists.<String>newArrayList();
     private final List<ChatLine> chatLines = Lists.<ChatLine>newArrayList();
@@ -141,7 +142,7 @@ public class GuiNewChat extends Gui
     public void printChatMessageWithOptionalDeletion(ITextComponent chatComponent, int chatLineId)
     {
         this.setChatLine(chatComponent, chatLineId, this.mc.ingameGUI.getUpdateCounter(), false);
-        logger.info("[CHAT] " + field_184062_f.join(field_184061_a.split(chatComponent.getUnformattedText())));
+        LOGGER.info("[CHAT] " + NEWLINE_STRING_JOINER.join(NEWLINE_SPLITTER.split(chatComponent.getUnformattedText())));
     }
 
     private void setChatLine(ITextComponent chatComponent, int chatLineId, int updateCounter, boolean displayOnly)
@@ -242,6 +243,7 @@ public class GuiNewChat extends Gui
     /**
      * Gets the chat component under the mouse
      */
+    @Nullable
     public ITextComponent getChatComponent(int mouseX, int mouseY)
     {
         if (!this.getChatOpen())
@@ -275,7 +277,7 @@ public class GuiNewChat extends Gui
                         {
                             if (itextcomponent instanceof TextComponentString)
                             {
-                                j1 += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.func_178909_a(((TextComponentString)itextcomponent).getChatComponentText_TextValue(), false));
+                                j1 += this.mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.removeTextColorsIfConfigured(((TextComponentString)itextcomponent).getText(), false));
 
                                 if (j1 > j)
                                 {

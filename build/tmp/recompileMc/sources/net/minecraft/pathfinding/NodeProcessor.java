@@ -8,7 +8,7 @@ import net.minecraft.world.IBlockAccess;
 public abstract class NodeProcessor
 {
     protected IBlockAccess blockaccess;
-    protected EntityLiving field_186326_b;
+    protected EntityLiving entity;
     protected final IntHashMap<PathPoint> pointMap = new IntHashMap();
     protected int entitySizeX;
     protected int entitySizeY;
@@ -17,10 +17,10 @@ public abstract class NodeProcessor
     protected boolean canBreakDoors;
     protected boolean canSwim;
 
-    public void func_186315_a(IBlockAccess sourceIn, EntityLiving mob)
+    public void initProcessor(IBlockAccess sourceIn, EntityLiving mob)
     {
         this.blockaccess = sourceIn;
-        this.field_186326_b = mob;
+        this.entity = mob;
         this.pointMap.clearMap();
         this.entitySizeX = MathHelper.floor_float(mob.width + 1.0F);
         this.entitySizeY = MathHelper.floor_float(mob.height + 1.0F);
@@ -34,6 +34,8 @@ public abstract class NodeProcessor
      */
     public void postProcess()
     {
+        this.blockaccess = null;
+        this.entity = null;
     }
 
     /**
@@ -53,13 +55,18 @@ public abstract class NodeProcessor
         return pathpoint;
     }
 
-    public abstract PathPoint func_186318_b();
+    public abstract PathPoint getStart();
 
-    public abstract PathPoint func_186325_a(double p_186325_1_, double p_186325_3_, double p_186325_5_);
+    /**
+     * Returns PathPoint for given coordinates
+     */
+    public abstract PathPoint getPathPointToCoords(double x, double y, double z);
 
-    public abstract int func_186320_a(PathPoint[] p_186320_1_, PathPoint p_186320_2_, PathPoint p_186320_3_, float p_186320_4_);
+    public abstract int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance);
 
-    public abstract PathNodeType func_186319_a(IBlockAccess p_186319_1_, int p_186319_2_, int p_186319_3_, int p_186319_4_, EntityLiving p_186319_5_, int p_186319_6_, int p_186319_7_, int p_186319_8_, boolean p_186319_9_, boolean p_186319_10_);
+    public abstract PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z, EntityLiving entitylivingIn, int xSize, int ySize, int zSize, boolean canBreakDoorsIn, boolean canEnterDoorsIn);
+
+    public abstract PathNodeType getPathNodeType(IBlockAccess x, int y, int z, int p_186330_4_);
 
     public void setCanEnterDoors(boolean canEnterDoorsIn)
     {

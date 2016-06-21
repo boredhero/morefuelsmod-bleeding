@@ -3,6 +3,7 @@ package net.minecraft.scoreboard;
 import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -51,7 +52,7 @@ public class ScorePlayerTeam extends Team
         else
         {
             this.teamNameSPT = name;
-            this.theScoreboard.sendTeamUpdate(this);
+            this.theScoreboard.broadcastTeamInfoUpdate(this);
         }
     }
 
@@ -77,7 +78,7 @@ public class ScorePlayerTeam extends Team
         else
         {
             this.namePrefixSPT = prefix;
-            this.theScoreboard.sendTeamUpdate(this);
+            this.theScoreboard.broadcastTeamInfoUpdate(this);
         }
     }
 
@@ -92,7 +93,7 @@ public class ScorePlayerTeam extends Team
     public void setNameSuffix(String suffix)
     {
         this.colorSuffix = suffix;
-        this.theScoreboard.sendTeamUpdate(this);
+        this.theScoreboard.broadcastTeamInfoUpdate(this);
     }
 
     public String formatString(String input)
@@ -103,7 +104,7 @@ public class ScorePlayerTeam extends Team
     /**
      * Returns the player name including the color prefixes and suffixes
      */
-    public static String formatPlayerName(Team teamIn, String string)
+    public static String formatPlayerName(@Nullable Team teamIn, String string)
     {
         return teamIn == null ? string : teamIn.formatString(string);
     }
@@ -116,7 +117,7 @@ public class ScorePlayerTeam extends Team
     public void setAllowFriendlyFire(boolean friendlyFire)
     {
         this.allowFriendlyFire = friendlyFire;
-        this.theScoreboard.sendTeamUpdate(this);
+        this.theScoreboard.broadcastTeamInfoUpdate(this);
     }
 
     public boolean getSeeFriendlyInvisiblesEnabled()
@@ -127,7 +128,7 @@ public class ScorePlayerTeam extends Team
     public void setSeeFriendlyInvisiblesEnabled(boolean friendlyInvisibles)
     {
         this.canSeeFriendlyInvisibles = friendlyInvisibles;
-        this.theScoreboard.sendTeamUpdate(this);
+        this.theScoreboard.broadcastTeamInfoUpdate(this);
     }
 
     public Team.EnumVisible getNameTagVisibility()
@@ -143,13 +144,13 @@ public class ScorePlayerTeam extends Team
     public void setNameTagVisibility(Team.EnumVisible visibility)
     {
         this.nameTagVisibility = visibility;
-        this.theScoreboard.sendTeamUpdate(this);
+        this.theScoreboard.broadcastTeamInfoUpdate(this);
     }
 
     public void setDeathMessageVisibility(Team.EnumVisible visibility)
     {
         this.deathMessageVisibility = visibility;
-        this.theScoreboard.sendTeamUpdate(this);
+        this.theScoreboard.broadcastTeamInfoUpdate(this);
     }
 
     public Team.CollisionRule getCollisionRule()
@@ -160,7 +161,7 @@ public class ScorePlayerTeam extends Team
     public void setCollisionRule(Team.CollisionRule rule)
     {
         this.collisionRule = rule;
-        this.theScoreboard.sendTeamUpdate(this);
+        this.theScoreboard.broadcastTeamInfoUpdate(this);
     }
 
     public int getFriendlyFlags()

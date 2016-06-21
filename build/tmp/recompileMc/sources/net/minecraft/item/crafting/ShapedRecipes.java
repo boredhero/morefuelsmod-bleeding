@@ -1,5 +1,6 @@
 package net.minecraft.item.crafting;
 
+import javax.annotation.Nullable;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,6 +26,7 @@ public class ShapedRecipes implements IRecipe
         this.recipeOutput = output;
     }
 
+    @Nullable
     public ItemStack getRecipeOutput()
     {
         return this.recipeOutput;
@@ -120,6 +122,7 @@ public class ShapedRecipes implements IRecipe
     /**
      * Returns an Item that is the result of this recipe
      */
+    @Nullable
     public ItemStack getCraftingResult(InventoryCrafting inv)
     {
         ItemStack itemstack = this.getRecipeOutput().copy();

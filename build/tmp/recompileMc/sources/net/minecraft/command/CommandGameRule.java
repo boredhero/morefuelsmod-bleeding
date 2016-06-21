@@ -2,6 +2,7 @@ package net.minecraft.command;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketEntityStatus;
 import net.minecraft.server.MinecraftServer;
@@ -37,10 +38,6 @@ public class CommandGameRule extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -72,12 +69,12 @@ public class CommandGameRule extends CommandBase
                 }
 
                 gamerules.setOrCreateGameRule(s, s1);
-                func_184898_a(gamerules, s, server);
-                notifyOperators(sender, this, "commands.gamerule.success", new Object[] {s, s1});
+                notifyGameRuleChange(gamerules, s, server);
+                notifyCommandListener(sender, this, "commands.gamerule.success", new Object[] {s, s1});
         }
     }
 
-    public static void func_184898_a(GameRules rules, String p_184898_1_, MinecraftServer server)
+    public static void notifyGameRuleChange(GameRules rules, String p_184898_1_, MinecraftServer server)
     {
         if ("reducedDebugInfo".equals(p_184898_1_))
         {
@@ -85,12 +82,12 @@ public class CommandGameRule extends CommandBase
 
             for (EntityPlayerMP entityplayermp : server.getPlayerList().getPlayerList())
             {
-                entityplayermp.playerNetServerHandler.sendPacket(new SPacketEntityStatus(entityplayermp, b0));
+                entityplayermp.connection.sendPacket(new SPacketEntityStatus(entityplayermp, b0));
             }
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         if (args.length == 1)
         {
@@ -122,8 +119,6 @@ public class CommandGameRule extends CommandBase
 
     /**
      * Get the game rules for the overworld
-     *  
-     * @param server The Minecraft server instance
      */
     private GameRules getOverWorldGameRules(MinecraftServer server)
     {

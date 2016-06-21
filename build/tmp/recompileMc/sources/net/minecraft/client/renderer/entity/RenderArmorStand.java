@@ -18,9 +18,9 @@ public class RenderArmorStand extends RenderLivingBase<EntityArmorStand>
     /** A constant instance of the armor stand texture, wrapped inside a ResourceLocation wrapper. */
     public static final ResourceLocation TEXTURE_ARMOR_STAND = new ResourceLocation("textures/entity/armorstand/wood.png");
 
-    public RenderArmorStand(RenderManager p_i46195_1_)
+    public RenderArmorStand(RenderManager manager)
     {
-        super(p_i46195_1_, new ModelArmorStand(), 0.0F);
+        super(manager, new ModelArmorStand(), 0.0F);
         LayerBipedArmor layerbipedarmor = new LayerBipedArmor(this)
         {
             protected void initArmor()
@@ -48,10 +48,10 @@ public class RenderArmorStand extends RenderLivingBase<EntityArmorStand>
         return (ModelArmorStand)super.getMainModel();
     }
 
-    protected void rotateCorpse(EntityArmorStand bat, float p_77043_2_, float p_77043_3_, float partialTicks)
+    protected void rotateCorpse(EntityArmorStand entityLiving, float p_77043_2_, float p_77043_3_, float partialTicks)
     {
         GlStateManager.rotate(180.0F - p_77043_3_, 0.0F, 1.0F, 0.0F);
-        float f = (float)(bat.worldObj.getTotalWorldTime() - bat.punchCooldown) + partialTicks;
+        float f = (float)(entityLiving.worldObj.getTotalWorldTime() - entityLiving.punchCooldown) + partialTicks;
 
         if (f < 5.0F)
         {

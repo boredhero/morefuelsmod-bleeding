@@ -37,7 +37,7 @@ public class BlockSapling extends BlockBush implements IGrowable
     protected BlockSapling()
     {
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, BlockPlanks.EnumType.OAK).withProperty(STAGE, Integer.valueOf(0)));
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -95,7 +95,7 @@ public class BlockSapling extends BlockBush implements IGrowable
                 {
                     for (j = 0; j >= -1; --j)
                     {
-                        if (this.func_181624_a(worldIn, pos, i, j, BlockPlanks.EnumType.SPRUCE))
+                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.SPRUCE))
                         {
                             worldgenerator = new WorldGenMegaPineTree(false, rand.nextBoolean());
                             flag = true;
@@ -116,15 +116,15 @@ public class BlockSapling extends BlockBush implements IGrowable
                 worldgenerator = new WorldGenBirchTree(true, false);
                 break;
             case JUNGLE:
-                IBlockState iblockstate = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
-                IBlockState iblockstate1 = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
+                IBlockState iblockstate = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.JUNGLE);
+                IBlockState iblockstate1 = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.JUNGLE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
                 label269:
 
                 for (i = 0; i >= -1; --i)
                 {
                     for (j = 0; j >= -1; --j)
                     {
-                        if (this.func_181624_a(worldIn, pos, i, j, BlockPlanks.EnumType.JUNGLE))
+                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.JUNGLE))
                         {
                             worldgenerator = new WorldGenMegaJungle(true, 10, 20, iblockstate, iblockstate1);
                             flag = true;
@@ -151,7 +151,7 @@ public class BlockSapling extends BlockBush implements IGrowable
                 {
                     for (j = 0; j >= -1; --j)
                     {
-                        if (this.func_181624_a(worldIn, pos, i, j, BlockPlanks.EnumType.DARK_OAK))
+                        if (this.isTwoByTwoOfType(worldIn, pos, i, j, BlockPlanks.EnumType.DARK_OAK))
                         {
                             worldgenerator = new WorldGenCanopyTree(true);
                             flag = true;
@@ -168,7 +168,7 @@ public class BlockSapling extends BlockBush implements IGrowable
             case OAK:
         }
 
-        IBlockState iblockstate2 = Blocks.air.getDefaultState();
+        IBlockState iblockstate2 = Blocks.AIR.getDefaultState();
 
         if (flag)
         {
@@ -198,9 +198,9 @@ public class BlockSapling extends BlockBush implements IGrowable
         }
     }
 
-    private boolean func_181624_a(World worldIn, BlockPos pos, int p_181624_3_, int p_181624_4_, BlockPlanks.EnumType p_181624_5_)
+    private boolean isTwoByTwoOfType(World worldIn, BlockPos pos, int p_181624_3_, int p_181624_4_, BlockPlanks.EnumType type)
     {
-        return this.isTypeAt(worldIn, pos.add(p_181624_3_, 0, p_181624_4_), p_181624_5_) && this.isTypeAt(worldIn, pos.add(p_181624_3_ + 1, 0, p_181624_4_), p_181624_5_) && this.isTypeAt(worldIn, pos.add(p_181624_3_, 0, p_181624_4_ + 1), p_181624_5_) && this.isTypeAt(worldIn, pos.add(p_181624_3_ + 1, 0, p_181624_4_ + 1), p_181624_5_);
+        return this.isTypeAt(worldIn, pos.add(p_181624_3_, 0, p_181624_4_), type) && this.isTypeAt(worldIn, pos.add(p_181624_3_ + 1, 0, p_181624_4_), type) && this.isTypeAt(worldIn, pos.add(p_181624_3_, 0, p_181624_4_ + 1), type) && this.isTypeAt(worldIn, pos.add(p_181624_3_ + 1, 0, p_181624_4_ + 1), type);
     }
 
     /**

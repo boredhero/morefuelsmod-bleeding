@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -33,10 +34,10 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
 
     public BlockDoublePlant()
     {
-        super(Material.vine);
+        super(Material.VINE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockDoublePlant.EnumPlantType.SUNFLOWER).withProperty(HALF, BlockDoublePlant.EnumBlockHalf.LOWER).withProperty(FACING, EnumFacing.NORTH));
         this.setHardness(0.0F);
-        this.setStepSound(SoundType.PLANT);
+        this.setSoundType(SoundType.PLANT);
         this.setUnlocalizedName("doublePlant");
     }
 
@@ -45,7 +46,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         return FULL_BLOCK_AABB;
     }
 
-    private BlockDoublePlant.EnumPlantType func_185517_a(IBlockAccess blockAccess, BlockPos pos, IBlockState state)
+    private BlockDoublePlant.EnumPlantType getType(IBlockAccess blockAccess, BlockPos pos, IBlockState state)
     {
         if (state.getBlock() == this)
         {
@@ -95,12 +96,12 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
 
             if (block == this)
             {
-                worldIn.setBlockState(blockpos, Blocks.air.getDefaultState(), 2);
+                worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 2);
             }
 
             if (block1 == this)
             {
-                worldIn.setBlockState(blockpos1, Blocks.air.getDefaultState(), 3);
+                worldIn.setBlockState(blockpos1, Blocks.AIR.getDefaultState(), 3);
             }
         }
     }
@@ -122,6 +123,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         if (state.getValue(HALF) == BlockDoublePlant.EnumBlockHalf.UPPER)
@@ -131,7 +133,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         else
         {
             BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)state.getValue(VARIANT);
-            return blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN ? null : (blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.GRASS ? (rand.nextInt(8) == 0 ? Items.wheat_seeds : null) : Item.getItemFromBlock(this));
+            return blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN ? null : (blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.GRASS ? (rand.nextInt(8) == 0 ? Items.WHEAT_SEEDS : null) : Item.getItemFromBlock(this));
         }
     }
 
@@ -158,7 +160,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         worldIn.setBlockState(pos.up(), this.getDefaultState().withProperty(HALF, BlockDoublePlant.EnumBlockHalf.UPPER), 2);
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
     {
         {
             super.harvestBlock(worldIn, player, pos, state, te, stack);
@@ -182,7 +184,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
                     }
                     else if (!worldIn.isRemote)
                     {
-                        if (player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() == Items.shears)
+                        if (player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() == Items.SHEARS)
                         {
                             this.onHarvest(worldIn, pos, iblockstate, player);
                             worldIn.setBlockToAir(pos.down());
@@ -205,7 +207,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         }
         else if (worldIn.getBlockState(pos.up()).getBlock() == this)
         {
-            worldIn.setBlockState(pos.up(), Blocks.air.getDefaultState(), 2);
+            worldIn.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 2);
         }
 
         super.onBlockHarvested(worldIn, pos, state, player);
@@ -221,7 +223,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         }
         else
         {
-            player.addStat(StatList.func_188055_a(this));
+            player.addStat(StatList.getBlockStats(this));
             return true;
         }
     }
@@ -240,7 +242,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(this, 1, this.func_185517_a(worldIn, pos, state).getMeta());
+        return new ItemStack(this, 1, this.getType(worldIn, pos, state).getMeta());
     }
 
     /**
@@ -248,7 +250,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
      */
     public boolean canGrow(World worldIn, BlockPos pos, IBlockState state, boolean isClient)
     {
-        BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = this.func_185517_a(worldIn, pos, state);
+        BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = this.getType(worldIn, pos, state);
         return blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.GRASS && blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.FERN;
     }
 
@@ -259,7 +261,7 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
 
     public void grow(World worldIn, Random rand, BlockPos pos, IBlockState state)
     {
-        spawnAsEntity(worldIn, pos, new ItemStack(this, 1, this.func_185517_a(worldIn, pos, state).getMeta()));
+        spawnAsEntity(worldIn, pos, new ItemStack(this, 1, this.getType(worldIn, pos, state).getMeta()));
     }
 
     /**
@@ -324,8 +326,8 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
     {
         java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
         EnumPlantType type = (EnumPlantType)world.getBlockState(pos).getValue(VARIANT);
-        if (type == EnumPlantType.FERN) ret.add(new ItemStack(Blocks.tallgrass, 2, BlockTallGrass.EnumType.FERN.getMeta()));
-        if (type == EnumPlantType.GRASS) ret.add(new ItemStack(Blocks.tallgrass, 2, BlockTallGrass.EnumType.GRASS.getMeta()));
+        if (type == EnumPlantType.FERN) ret.add(new ItemStack(Blocks.TALLGRASS, 2, BlockTallGrass.EnumType.FERN.getMeta()));
+        if (type == EnumPlantType.GRASS) ret.add(new ItemStack(Blocks.TALLGRASS, 2, BlockTallGrass.EnumType.GRASS.getMeta()));
         return ret;
     }
 

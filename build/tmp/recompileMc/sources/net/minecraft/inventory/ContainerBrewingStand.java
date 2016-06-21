@@ -1,5 +1,6 @@
 package net.minecraft.inventory;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -17,8 +18,10 @@ public class ContainerBrewingStand extends Container
     private IInventory tileBrewingStand;
     /** Instance of Slot. */
     private final Slot theSlot;
-    private int field_184998_g;
-    private int field_184999_h;
+    /** Used to cache the brewing time to send changes to ICrafting listeners. */
+    private int prevBrewTime;
+    /** Used to cache the fuel remaining in the brewing stand to send changes to ICrafting listeners. */
+    private int prevFuel;
 
     public ContainerBrewingStand(InventoryPlayer playerInventory, IInventory tileBrewingStandIn)
     {
@@ -43,9 +46,9 @@ public class ContainerBrewingStand extends Container
         }
     }
 
-    public void onCraftGuiOpened(ICrafting listener)
+    public void addListener(IContainerListener listener)
     {
-        super.onCraftGuiOpened(listener);
+        super.addListener(listener);
         listener.sendAllWindowProperties(this, this.tileBrewingStand);
     }
 
@@ -56,23 +59,23 @@ public class ContainerBrewingStand extends Container
     {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < this.crafters.size(); ++i)
+        for (int i = 0; i < this.listeners.size(); ++i)
         {
-            ICrafting icrafting = (ICrafting)this.crafters.get(i);
+            IContainerListener icontainerlistener = (IContainerListener)this.listeners.get(i);
 
-            if (this.field_184998_g != this.tileBrewingStand.getField(0))
+            if (this.prevBrewTime != this.tileBrewingStand.getField(0))
             {
-                icrafting.sendProgressBarUpdate(this, 0, this.tileBrewingStand.getField(0));
+                icontainerlistener.sendProgressBarUpdate(this, 0, this.tileBrewingStand.getField(0));
             }
 
-            if (this.field_184999_h != this.tileBrewingStand.getField(1))
+            if (this.prevFuel != this.tileBrewingStand.getField(1))
             {
-                icrafting.sendProgressBarUpdate(this, 1, this.tileBrewingStand.getField(1));
+                icontainerlistener.sendProgressBarUpdate(this, 1, this.tileBrewingStand.getField(1));
             }
         }
 
-        this.field_184998_g = this.tileBrewingStand.getField(0);
-        this.field_184999_h = this.tileBrewingStand.getField(1);
+        this.prevBrewTime = this.tileBrewingStand.getField(0);
+        this.prevFuel = this.tileBrewingStand.getField(1);
     }
 
     @SideOnly(Side.CLIENT)
@@ -89,6 +92,7 @@ public class ContainerBrewingStand extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
+    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
         ItemStack itemstack = null;
@@ -115,7 +119,7 @@ public class ContainerBrewingStand extends Container
                         return null;
                     }
                 }
-                else if (ContainerBrewingStand.Fuel.func_185004_b_(itemstack))
+                else if (ContainerBrewingStand.Fuel.isValidBrewingFuel(itemstack))
                 {
                     if (!this.mergeItemStack(itemstack1, 4, 5, false))
                     {
@@ -173,22 +177,28 @@ public class ContainerBrewingStand extends Container
 
     static class Fuel extends Slot
         {
-            public Fuel(IInventory p_i47070_1_, int p_i47070_2_, int p_i47070_3_, int p_i47070_4_)
+            public Fuel(IInventory iInventoryIn, int index, int xPosition, int yPosition)
             {
-                super(p_i47070_1_, p_i47070_2_, p_i47070_3_, p_i47070_4_);
+                super(iInventoryIn, index, xPosition, yPosition);
             }
 
             /**
              * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
              */
-            public boolean isItemValid(ItemStack stack)
+            public boolean isItemValid(@Nullable ItemStack stack)
             {
-                return func_185004_b_(stack);
+                /**
+                 * Returns true if the given ItemStack is usable as a fuel in the brewing stand.
+                 */
+                return isValidBrewingFuel(stack);
             }
 
-            public static boolean func_185004_b_(ItemStack p_185004_0_)
+            /**
+             * Returns true if the given ItemStack is usable as a fuel in the brewing stand.
+             */
+            public static boolean isValidBrewingFuel(@Nullable ItemStack itemStackIn)
             {
-                return p_185004_0_ != null && p_185004_0_.getItem() == Items.blaze_powder;
+                return itemStackIn != null && itemStackIn.getItem() == Items.BLAZE_POWDER;
             }
 
             /**
@@ -203,15 +213,15 @@ public class ContainerBrewingStand extends Container
 
     static class Ingredient extends Slot
         {
-            public Ingredient(IInventory p_i47069_1_, int p_i47069_2_, int p_i47069_3_, int p_i47069_4_)
+            public Ingredient(IInventory iInventoryIn, int index, int xPosition, int yPosition)
             {
-                super(p_i47069_1_, p_i47069_2_, p_i47069_3_, p_i47069_4_);
+                super(iInventoryIn, index, xPosition, yPosition);
             }
 
             /**
              * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
              */
-            public boolean isItemValid(ItemStack stack)
+            public boolean isItemValid(@Nullable ItemStack stack)
             {
                 return stack != null && net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(stack);
             }
@@ -240,7 +250,7 @@ public class ContainerBrewingStand extends Container
             /**
              * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
              */
-            public boolean isItemValid(ItemStack stack)
+            public boolean isItemValid(@Nullable ItemStack stack)
             {
                 /**
                  * Returns true if this itemstack can be filled with a potion
@@ -259,9 +269,9 @@ public class ContainerBrewingStand extends Container
 
             public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack)
             {
-                if (PotionUtils.getPotionFromItem(stack) != PotionTypes.water)
+                if (PotionUtils.getPotionFromItem(stack) != PotionTypes.WATER)
                 {
-                    this.player.addStat(AchievementList.potion);
+                    this.player.addStat(AchievementList.POTION);
                 }
 
                 super.onPickupFromSlot(playerIn, stack);
@@ -270,7 +280,7 @@ public class ContainerBrewingStand extends Container
             /**
              * Returns true if this itemstack can be filled with a potion
              */
-            public static boolean canHoldPotion(ItemStack stack)
+            public static boolean canHoldPotion(@Nullable ItemStack stack)
             {
                 if (stack == null)
                 {

@@ -25,9 +25,9 @@ public class PlayerMenuObject implements ISpectatorMenuObject
         AbstractClientPlayer.getDownloadImageSkin(this.resourceLocation, profileIn.getName());
     }
 
-    public void func_178661_a(SpectatorMenu menu)
+    public void selectItem(SpectatorMenu menu)
     {
-        Minecraft.getMinecraft().getNetHandler().addToSendQueue(new CPacketSpectate(this.profile.getId()));
+        Minecraft.getMinecraft().getConnection().sendPacket(new CPacketSpectate(this.profile.getId()));
     }
 
     public ITextComponent getSpectatorName()
@@ -35,7 +35,7 @@ public class PlayerMenuObject implements ISpectatorMenuObject
         return new TextComponentString(this.profile.getName());
     }
 
-    public void func_178663_a(float p_178663_1_, int alpha)
+    public void renderIcon(float p_178663_1_, int alpha)
     {
         Minecraft.getMinecraft().getTextureManager().bindTexture(this.resourceLocation);
         GlStateManager.color(1.0F, 1.0F, 1.0F, (float)alpha / 255.0F);
@@ -43,7 +43,7 @@ public class PlayerMenuObject implements ISpectatorMenuObject
         Gui.drawScaledCustomSizeModalRect(2, 2, 40.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
     }
 
-    public boolean func_178662_A_()
+    public boolean isEnabled()
     {
         return true;
     }

@@ -2,6 +2,7 @@ package net.minecraft.client.gui.inventory;
 
 import io.netty.buffer.Unpooled;
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -20,18 +21,18 @@ import org.lwjgl.input.Keyboard;
 @SideOnly(Side.CLIENT)
 public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabCompleter
 {
-    private GuiTextField field_184088_a;
-    private GuiTextField field_184092_f;
-    private final CommandBlockBaseLogic field_184093_g;
-    private GuiButton field_184094_h;
-    private GuiButton field_184095_i;
-    private GuiButton field_184089_r;
-    private boolean field_184090_s;
+    private GuiTextField commandField;
+    private GuiTextField previousEdit;
+    private final CommandBlockBaseLogic commandBlockLogic;
+    private GuiButton doneButton;
+    private GuiButton cancelButton;
+    private GuiButton outputButton;
+    private boolean trackOutput;
     private TabCompleter tabCompleter;
 
     public GuiEditCommandBlockMinecart(CommandBlockBaseLogic p_i46595_1_)
     {
-        this.field_184093_g = p_i46595_1_;
+        this.commandBlockLogic = p_i46595_1_;
     }
 
     /**
@@ -39,7 +40,7 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
      */
     public void updateScreen()
     {
-        this.field_184088_a.updateCursorCounter();
+        this.commandField.updateCursorCounter();
     }
 
     /**
@@ -50,25 +51,26 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
     {
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
-        this.buttonList.add(this.field_184094_h = new GuiButton(0, this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.done", new Object[0])));
-        this.buttonList.add(this.field_184095_i = new GuiButton(1, this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.cancel", new Object[0])));
-        this.buttonList.add(this.field_184089_r = new GuiButton(4, this.width / 2 + 150 - 20, 150, 20, 20, "O"));
-        this.field_184088_a = new GuiTextField(2, this.fontRendererObj, this.width / 2 - 150, 50, 300, 20);
-        this.field_184088_a.setMaxStringLength(32500);
-        this.field_184088_a.setFocused(true);
-        this.field_184088_a.setText(this.field_184093_g.getCommand());
-        this.field_184092_f = new GuiTextField(3, this.fontRendererObj, this.width / 2 - 150, 150, 276, 20);
-        this.field_184092_f.setMaxStringLength(32500);
-        this.field_184092_f.setEnabled(false);
-        this.field_184092_f.setText("-");
-        this.field_184090_s = this.field_184093_g.shouldTrackOutput();
-        this.func_184087_a();
-        this.field_184094_h.enabled = !this.field_184088_a.getText().trim().isEmpty();
-        this.tabCompleter = new TabCompleter(this.field_184088_a, true)
+        this.buttonList.add(this.doneButton = new GuiButton(0, this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.done", new Object[0])));
+        this.buttonList.add(this.cancelButton = new GuiButton(1, this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.cancel", new Object[0])));
+        this.buttonList.add(this.outputButton = new GuiButton(4, this.width / 2 + 150 - 20, 150, 20, 20, "O"));
+        this.commandField = new GuiTextField(2, this.fontRendererObj, this.width / 2 - 150, 50, 300, 20);
+        this.commandField.setMaxStringLength(32500);
+        this.commandField.setFocused(true);
+        this.commandField.setText(this.commandBlockLogic.getCommand());
+        this.previousEdit = new GuiTextField(3, this.fontRendererObj, this.width / 2 - 150, 150, 276, 20);
+        this.previousEdit.setMaxStringLength(32500);
+        this.previousEdit.setEnabled(false);
+        this.previousEdit.setText("-");
+        this.trackOutput = this.commandBlockLogic.shouldTrackOutput();
+        this.updateCommandOutput();
+        this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
+        this.tabCompleter = new TabCompleter(this.commandField, true)
         {
+            @Nullable
             public BlockPos getTargetBlockPos()
             {
-                return GuiEditCommandBlockMinecart.this.field_184093_g.getPosition();
+                return GuiEditCommandBlockMinecart.this.commandBlockLogic.getPosition();
             }
         };
     }
@@ -90,29 +92,29 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
         {
             if (button.id == 1)
             {
-                this.field_184093_g.setTrackOutput(this.field_184090_s);
+                this.commandBlockLogic.setTrackOutput(this.trackOutput);
                 this.mc.displayGuiScreen((GuiScreen)null);
             }
             else if (button.id == 0)
             {
                 PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
-                packetbuffer.writeByte(this.field_184093_g.func_145751_f());
-                this.field_184093_g.func_145757_a(packetbuffer);
-                packetbuffer.writeString(this.field_184088_a.getText());
-                packetbuffer.writeBoolean(this.field_184093_g.shouldTrackOutput());
-                this.mc.getNetHandler().addToSendQueue(new CPacketCustomPayload("MC|AdvCmd", packetbuffer));
+                packetbuffer.writeByte(this.commandBlockLogic.getCommandBlockType());
+                this.commandBlockLogic.fillInInfo(packetbuffer);
+                packetbuffer.writeString(this.commandField.getText());
+                packetbuffer.writeBoolean(this.commandBlockLogic.shouldTrackOutput());
+                this.mc.getConnection().sendPacket(new CPacketCustomPayload("MC|AdvCmd", packetbuffer));
 
-                if (!this.field_184093_g.shouldTrackOutput())
+                if (!this.commandBlockLogic.shouldTrackOutput())
                 {
-                    this.field_184093_g.setLastOutput((ITextComponent)null);
+                    this.commandBlockLogic.setLastOutput((ITextComponent)null);
                 }
 
                 this.mc.displayGuiScreen((GuiScreen)null);
             }
             else if (button.id == 4)
             {
-                this.field_184093_g.setTrackOutput(!this.field_184093_g.shouldTrackOutput());
-                this.func_184087_a();
+                this.commandBlockLogic.setTrackOutput(!this.commandBlockLogic.shouldTrackOutput());
+                this.updateCommandOutput();
             }
         }
     }
@@ -134,20 +136,20 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
             this.tabCompleter.resetDidComplete();
         }
 
-        this.field_184088_a.textboxKeyTyped(typedChar, keyCode);
-        this.field_184092_f.textboxKeyTyped(typedChar, keyCode);
-        this.field_184094_h.enabled = !this.field_184088_a.getText().trim().isEmpty();
+        this.commandField.textboxKeyTyped(typedChar, keyCode);
+        this.previousEdit.textboxKeyTyped(typedChar, keyCode);
+        this.doneButton.enabled = !this.commandField.getText().trim().isEmpty();
 
         if (keyCode != 28 && keyCode != 156)
         {
             if (keyCode == 1)
             {
-                this.actionPerformed(this.field_184095_i);
+                this.actionPerformed(this.cancelButton);
             }
         }
         else
         {
-            this.actionPerformed(this.field_184094_h);
+            this.actionPerformed(this.doneButton);
         }
     }
 
@@ -157,23 +159,19 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        this.field_184088_a.mouseClicked(mouseX, mouseY, mouseButton);
-        this.field_184092_f.mouseClicked(mouseX, mouseY, mouseButton);
+        this.commandField.mouseClicked(mouseX, mouseY, mouseButton);
+        this.previousEdit.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         this.drawDefaultBackground();
         this.drawCenteredString(this.fontRendererObj, I18n.format("advMode.setCommand", new Object[0]), this.width / 2, 20, 16777215);
         this.drawString(this.fontRendererObj, I18n.format("advMode.command", new Object[0]), this.width / 2 - 150, 37, 10526880);
-        this.field_184088_a.drawTextBox();
+        this.commandField.drawTextBox();
         int i = 75;
         int j = 0;
         this.drawString(this.fontRendererObj, I18n.format("advMode.nearestPlayer", new Object[0]), this.width / 2 - 150, i + j++ * this.fontRendererObj.FONT_HEIGHT, 10526880);
@@ -182,31 +180,31 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
         this.drawString(this.fontRendererObj, I18n.format("advMode.allEntities", new Object[0]), this.width / 2 - 150, i + j++ * this.fontRendererObj.FONT_HEIGHT, 10526880);
         this.drawString(this.fontRendererObj, "", this.width / 2 - 150, i + j++ * this.fontRendererObj.FONT_HEIGHT, 10526880);
 
-        if (!this.field_184092_f.getText().isEmpty())
+        if (!this.previousEdit.getText().isEmpty())
         {
             i = i + j * this.fontRendererObj.FONT_HEIGHT + 16;
             this.drawString(this.fontRendererObj, I18n.format("advMode.previousOutput", new Object[0]), this.width / 2 - 150, i, 10526880);
-            this.field_184092_f.drawTextBox();
+            this.previousEdit.drawTextBox();
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    private void func_184087_a()
+    private void updateCommandOutput()
     {
-        if (this.field_184093_g.shouldTrackOutput())
+        if (this.commandBlockLogic.shouldTrackOutput())
         {
-            this.field_184089_r.displayString = "O";
+            this.outputButton.displayString = "O";
 
-            if (this.field_184093_g.getLastOutput() != null)
+            if (this.commandBlockLogic.getLastOutput() != null)
             {
-                this.field_184092_f.setText(this.field_184093_g.getLastOutput().getUnformattedText());
+                this.previousEdit.setText(this.commandBlockLogic.getLastOutput().getUnformattedText());
             }
         }
         else
         {
-            this.field_184089_r.displayString = "X";
-            this.field_184092_f.setText("-");
+            this.outputButton.displayString = "X";
+            this.previousEdit.setText("-");
         }
     }
 

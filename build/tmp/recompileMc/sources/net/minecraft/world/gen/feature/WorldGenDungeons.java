@@ -71,7 +71,7 @@ public class WorldGenDungeons extends WorldGenerator
 
                         if (k3 != k && i4 != -1 && k4 != l1 && k3 != l && i4 != 4 && k4 != i2)
                         {
-                            if (worldIn.getBlockState(blockpos1).getBlock() != Blocks.chest)
+                            if (worldIn.getBlockState(blockpos1).getBlock() != Blocks.CHEST)
                             {
                                 worldIn.setBlockToAir(blockpos1);
                             }
@@ -80,15 +80,15 @@ public class WorldGenDungeons extends WorldGenerator
                         {
                             worldIn.setBlockToAir(blockpos1);
                         }
-                        else if (worldIn.getBlockState(blockpos1).getMaterial().isSolid() && worldIn.getBlockState(blockpos1).getBlock() != Blocks.chest)
+                        else if (worldIn.getBlockState(blockpos1).getMaterial().isSolid() && worldIn.getBlockState(blockpos1).getBlock() != Blocks.CHEST)
                         {
                             if (i4 == -1 && rand.nextInt(4) != 0)
                             {
-                                worldIn.setBlockState(blockpos1, Blocks.mossy_cobblestone.getDefaultState(), 2);
+                                worldIn.setBlockState(blockpos1, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
                             }
                             else
                             {
-                                worldIn.setBlockState(blockpos1, Blocks.cobblestone.getDefaultState(), 2);
+                                worldIn.setBlockState(blockpos1, Blocks.COBBLESTONE.getDefaultState(), 2);
                             }
                         }
                     }
@@ -118,12 +118,12 @@ public class WorldGenDungeons extends WorldGenerator
 
                         if (j3 == 1)
                         {
-                            worldIn.setBlockState(blockpos2, Blocks.chest.correctFacing(worldIn, blockpos2, Blocks.chest.getDefaultState()), 2);
+                            worldIn.setBlockState(blockpos2, Blocks.CHEST.correctFacing(worldIn, blockpos2, Blocks.CHEST.getDefaultState()), 2);
                             TileEntity tileentity1 = worldIn.getTileEntity(blockpos2);
 
                             if (tileentity1 instanceof TileEntityChest)
                             {
-                                ((TileEntityChest)tileentity1).setLoot(LootTableList.CHESTS_SIMPLE_DUNGEON, rand.nextLong());
+                                ((TileEntityChest)tileentity1).setLootTable(LootTableList.CHESTS_SIMPLE_DUNGEON, rand.nextLong());
                             }
 
                             break;
@@ -132,7 +132,7 @@ public class WorldGenDungeons extends WorldGenerator
                 }
             }
 
-            worldIn.setBlockState(position, Blocks.mob_spawner.getDefaultState(), 2);
+            worldIn.setBlockState(position, Blocks.MOB_SPAWNER.getDefaultState(), 2);
             TileEntity tileentity = worldIn.getTileEntity(position);
 
             if (tileentity instanceof TileEntityMobSpawner)

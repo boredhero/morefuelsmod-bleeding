@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiAchievement extends Gui
 {
-    private static final ResourceLocation achievementBg = new ResourceLocation("textures/gui/achievement/achievement_background.png");
+    private static final ResourceLocation ACHIEVEMENT_BG = new ResourceLocation("textures/gui/achievement/achievement_background.png");
     private Minecraft mc;
     private int width;
     private int height;
@@ -114,7 +114,7 @@ public class GuiAchievement extends Gui
             int j = 0 - (int)(d1 * 36.0D);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             GlStateManager.enableTexture2D();
-            this.mc.getTextureManager().bindTexture(achievementBg);
+            this.mc.getTextureManager().bindTexture(ACHIEVEMENT_BG);
             GlStateManager.disableLighting();
             this.drawTexturedModalRect(i, j, 96, 202, 160, 32);
 

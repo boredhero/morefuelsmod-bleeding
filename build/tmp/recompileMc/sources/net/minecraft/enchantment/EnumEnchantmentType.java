@@ -24,8 +24,6 @@ public enum EnumEnchantmentType
 
     /**
      * Return true if the item passed can be enchanted by a enchantment of this type.
-     *  
-     * @param itemIn The Item to check for.
      */
     public boolean canEnchantItem(Item itemIn)
     {

@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.init.PotionTypes;
@@ -25,8 +26,6 @@ public class PotionUtils
     {
         /**
          * Creates a list of PotionEffect from data on a NBTTagCompound.
-         *  
-         * @param tag The NBTTagCompound to read.
          */
         return getEffectsFromTag(stack.getTagCompound());
     }
@@ -39,7 +38,7 @@ public class PotionUtils
         return list;
     }
 
-    public static List<PotionEffect> getEffectsFromTag(NBTTagCompound tag)
+    public static List<PotionEffect> getEffectsFromTag(@Nullable NBTTagCompound tag)
     {
         List<PotionEffect> list = Lists.<PotionEffect>newArrayList();
         list.addAll(getPotionTypeFromNBT(tag).getEffects());
@@ -52,14 +51,14 @@ public class PotionUtils
         return getFullEffectsFromTag(itemIn.getTagCompound());
     }
 
-    public static List<PotionEffect> getFullEffectsFromTag(NBTTagCompound tag)
+    public static List<PotionEffect> getFullEffectsFromTag(@Nullable NBTTagCompound tag)
     {
         List<PotionEffect> list = Lists.<PotionEffect>newArrayList();
         addCustomPotionEffectToList(tag, list);
         return list;
     }
 
-    public static void addCustomPotionEffectToList(NBTTagCompound tag, List<PotionEffect> effectList)
+    public static void addCustomPotionEffectToList(@Nullable NBTTagCompound tag, List<PotionEffect> effectList)
     {
         if (tag != null && tag.hasKey("CustomPotionEffects", 9))
         {
@@ -137,14 +136,14 @@ public class PotionUtils
     /**
      * If no correct potion is found, returns the default one : PotionTypes.water
      */
-    public static PotionType getPotionTypeFromNBT(NBTTagCompound tag)
+    public static PotionType getPotionTypeFromNBT(@Nullable NBTTagCompound tag)
     {
-        return tag == null ? PotionTypes.water : PotionType.getPotionTypeForName(tag.getString("Potion"));
+        return tag == null ? PotionTypes.WATER : PotionType.getPotionTypeForName(tag.getString("Potion"));
     }
 
     public static ItemStack addPotionToItemStack(ItemStack itemIn, PotionType potionIn)
     {
-        ResourceLocation resourcelocation = (ResourceLocation)PotionType.potionTypeRegistry.getNameForObject(potionIn);
+        ResourceLocation resourcelocation = (ResourceLocation)PotionType.REGISTRY.getNameForObject(potionIn);
 
         if (resourcelocation != null)
         {

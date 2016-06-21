@@ -3,9 +3,10 @@ package net.minecraft.entity.ai;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.math.Vec3d;
@@ -20,7 +21,7 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
     protected T closestLivingEntity;
     private float avoidDistance;
     /** The PathEntity of our entity */
-    private PathEntity entityPathEntity;
+    private Path entityPathEntity;
     /** The PathNavigate of our entity */
     private PathNavigate entityPathNavigate;
     private Class<T> classToAvoid;
@@ -35,7 +36,7 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
     {
         this.canBeSeenSelector = new Predicate<Entity>()
         {
-            public boolean apply(Entity p_apply_1_)
+            public boolean apply(@Nullable Entity p_apply_1_)
             {
                 return p_apply_1_.isEntityAlive() && EntityAIAvoidEntity.this.theEntity.getEntitySenses().canSee(p_apply_1_);
             }

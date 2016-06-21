@@ -4,6 +4,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.BlockPistonExtension;
 import net.minecraft.block.state.IBlockState;
@@ -49,19 +50,19 @@ public class EntityShulker extends EntityGolem implements IMob
     protected static final DataParameter<EnumFacing> ATTACHED_FACE = EntityDataManager.<EnumFacing>createKey(EntityShulker.class, DataSerializers.FACING);
     protected static final DataParameter<Optional<BlockPos>> ATTACHED_BLOCK_POS = EntityDataManager.<Optional<BlockPos>>createKey(EntityShulker.class, DataSerializers.OPTIONAL_BLOCK_POS);
     protected static final DataParameter<Byte> PEEK_TICK = EntityDataManager.<Byte>createKey(EntityShulker.class, DataSerializers.BYTE);
-    private float field_184705_bx;
-    private float field_184706_by;
-    private BlockPos field_184707_bz;
-    private int field_184708_bA;
+    private float currentPeekAmount0;
+    private float currentPeekAmount;
+    private BlockPos currentAttachmentPosition;
+    private int clientSideTeleportInterpolation;
 
-    public EntityShulker(World p_i46779_1_)
+    public EntityShulker(World worldIn)
     {
-        super(p_i46779_1_);
+        super(worldIn);
         this.setSize(1.0F, 1.0F);
         this.prevRenderYawOffset = 180.0F;
         this.renderYawOffset = 180.0F;
         this.isImmuneToFire = true;
-        this.field_184707_bz = null;
+        this.currentAttachmentPosition = null;
         this.experienceValue = 5;
     }
 
@@ -69,7 +70,8 @@ public class EntityShulker extends EntityGolem implements IMob
      * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
      * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
      */
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         this.renderYawOffset = 180.0F;
         this.prevRenderYawOffset = 180.0F;
@@ -107,7 +109,7 @@ public class EntityShulker extends EntityGolem implements IMob
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_shulker_ambient;
+        return SoundEvents.ENTITY_SHULKER_AMBIENT;
     }
 
     /**
@@ -115,7 +117,7 @@ public class EntityShulker extends EntityGolem implements IMob
      */
     public void playLivingSound()
     {
-        if (!this.func_184686_df())
+        if (!this.isClosed())
         {
             super.playLivingSound();
         }
@@ -123,20 +125,20 @@ public class EntityShulker extends EntityGolem implements IMob
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_shulker_death;
+        return SoundEvents.ENTITY_SHULKER_DEATH;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return this.func_184686_df() ? SoundEvents.entity_shulker_hurt_closed : SoundEvents.entity_shulker_hurt;
+        return this.isClosed() ? SoundEvents.ENTITY_SHULKER_HURT_CLOSED : SoundEvents.ENTITY_SHULKER_HURT;
     }
 
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(ATTACHED_FACE, EnumFacing.DOWN);
-        this.dataWatcher.register(ATTACHED_BLOCK_POS, Optional.<BlockPos>absent());
-        this.dataWatcher.register(PEEK_TICK, Byte.valueOf((byte)0));
+        this.dataManager.register(ATTACHED_FACE, EnumFacing.DOWN);
+        this.dataManager.register(ATTACHED_BLOCK_POS, Optional.<BlockPos>absent());
+        this.dataManager.register(PEEK_TICK, Byte.valueOf((byte)0));
     }
 
     protected void applyEntityAttributes()
@@ -153,40 +155,40 @@ public class EntityShulker extends EntityGolem implements IMob
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.dataWatcher.set(ATTACHED_FACE, EnumFacing.getFront(tagCompund.getByte("AttachFace")));
-        this.dataWatcher.set(PEEK_TICK, Byte.valueOf(tagCompund.getByte("Peek")));
+        super.readEntityFromNBT(compound);
+        this.dataManager.set(ATTACHED_FACE, EnumFacing.getFront(compound.getByte("AttachFace")));
+        this.dataManager.set(PEEK_TICK, Byte.valueOf(compound.getByte("Peek")));
 
-        if (tagCompund.hasKey("APX"))
+        if (compound.hasKey("APX"))
         {
-            int i = tagCompund.getInteger("APX");
-            int j = tagCompund.getInteger("APY");
-            int k = tagCompund.getInteger("APZ");
-            this.dataWatcher.set(ATTACHED_BLOCK_POS, Optional.of(new BlockPos(i, j, k)));
+            int i = compound.getInteger("APX");
+            int j = compound.getInteger("APY");
+            int k = compound.getInteger("APZ");
+            this.dataManager.set(ATTACHED_BLOCK_POS, Optional.of(new BlockPos(i, j, k)));
         }
         else
         {
-            this.dataWatcher.set(ATTACHED_BLOCK_POS, Optional.<BlockPos>absent());
+            this.dataManager.set(ATTACHED_BLOCK_POS, Optional.<BlockPos>absent());
         }
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setByte("AttachFace", (byte)((EnumFacing)this.dataWatcher.get(ATTACHED_FACE)).getIndex());
-        tagCompound.setByte("Peek", ((Byte)this.dataWatcher.get(PEEK_TICK)).byteValue());
-        BlockPos blockpos = this.func_184699_da();
+        super.writeEntityToNBT(compound);
+        compound.setByte("AttachFace", (byte)((EnumFacing)this.dataManager.get(ATTACHED_FACE)).getIndex());
+        compound.setByte("Peek", ((Byte)this.dataManager.get(PEEK_TICK)).byteValue());
+        BlockPos blockpos = this.getAttachmentPos();
 
         if (blockpos != null)
         {
-            tagCompound.setInteger("APX", blockpos.getX());
-            tagCompound.setInteger("APY", blockpos.getY());
-            tagCompound.setInteger("APZ", blockpos.getZ());
+            compound.setInteger("APX", blockpos.getX());
+            compound.setInteger("APY", blockpos.getY());
+            compound.setInteger("APZ", blockpos.getZ());
         }
     }
 
@@ -196,12 +198,12 @@ public class EntityShulker extends EntityGolem implements IMob
     public void onUpdate()
     {
         super.onUpdate();
-        BlockPos blockpos = (BlockPos)((Optional)this.dataWatcher.get(ATTACHED_BLOCK_POS)).orNull();
+        BlockPos blockpos = (BlockPos)((Optional)this.dataManager.get(ATTACHED_BLOCK_POS)).orNull();
 
         if (blockpos == null && !this.worldObj.isRemote)
         {
             blockpos = new BlockPos(this);
-            this.dataWatcher.set(ATTACHED_BLOCK_POS, Optional.of(blockpos));
+            this.dataManager.set(ATTACHED_BLOCK_POS, Optional.of(blockpos));
         }
 
         if (this.isRiding())
@@ -211,33 +213,33 @@ public class EntityShulker extends EntityGolem implements IMob
             this.rotationYaw = f;
             this.renderYawOffset = f;
             this.prevRenderYawOffset = f;
-            this.field_184708_bA = 0;
+            this.clientSideTeleportInterpolation = 0;
         }
         else if (!this.worldObj.isRemote)
         {
             IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
 
-            if (iblockstate.getBlock() != Blocks.air)
+            if (iblockstate.getBlock() != Blocks.AIR)
             {
-                if (iblockstate.getBlock() == Blocks.piston_extension)
+                if (iblockstate.getBlock() == Blocks.PISTON_EXTENSION)
                 {
                     EnumFacing enumfacing = (EnumFacing)iblockstate.getValue(BlockPistonBase.FACING);
                     blockpos = blockpos.offset(enumfacing);
-                    this.dataWatcher.set(ATTACHED_BLOCK_POS, Optional.of(blockpos));
+                    this.dataManager.set(ATTACHED_BLOCK_POS, Optional.of(blockpos));
                 }
-                else if (iblockstate.getBlock() == Blocks.piston_head)
+                else if (iblockstate.getBlock() == Blocks.PISTON_HEAD)
                 {
                     EnumFacing enumfacing3 = (EnumFacing)iblockstate.getValue(BlockPistonExtension.FACING);
                     blockpos = blockpos.offset(enumfacing3);
-                    this.dataWatcher.set(ATTACHED_BLOCK_POS, Optional.of(blockpos));
+                    this.dataManager.set(ATTACHED_BLOCK_POS, Optional.of(blockpos));
                 }
                 else
                 {
-                    this.func_184689_o();
+                    this.tryTeleportToNewPosition();
                 }
             }
 
-            BlockPos blockpos1 = blockpos.offset(this.func_184696_cZ());
+            BlockPos blockpos1 = blockpos.offset(this.getAttachmentFacing());
 
             if (!this.worldObj.isBlockNormalCube(blockpos1, false))
             {
@@ -249,7 +251,7 @@ public class EntityShulker extends EntityGolem implements IMob
 
                     if (this.worldObj.isBlockNormalCube(blockpos1, false))
                     {
-                        this.dataWatcher.set(ATTACHED_FACE, enumfacing1);
+                        this.dataManager.set(ATTACHED_FACE, enumfacing1);
                         flag = true;
                         break;
                     }
@@ -257,54 +259,54 @@ public class EntityShulker extends EntityGolem implements IMob
 
                 if (!flag)
                 {
-                    this.func_184689_o();
+                    this.tryTeleportToNewPosition();
                 }
             }
 
-            BlockPos blockpos2 = blockpos.offset(this.func_184696_cZ().getOpposite());
+            BlockPos blockpos2 = blockpos.offset(this.getAttachmentFacing().getOpposite());
 
             if (this.worldObj.isBlockNormalCube(blockpos2, false))
             {
-                this.func_184689_o();
+                this.tryTeleportToNewPosition();
             }
         }
 
-        float f1 = (float)this.func_184684_db() * 0.01F;
-        this.field_184705_bx = this.field_184706_by;
+        float f1 = (float)this.getPeekTick() * 0.01F;
+        this.currentPeekAmount0 = this.currentPeekAmount;
 
-        if (this.field_184706_by > f1)
+        if (this.currentPeekAmount > f1)
         {
-            this.field_184706_by = MathHelper.clamp_float(this.field_184706_by - 0.05F, f1, 1.0F);
+            this.currentPeekAmount = MathHelper.clamp_float(this.currentPeekAmount - 0.05F, f1, 1.0F);
         }
-        else if (this.field_184706_by < f1)
+        else if (this.currentPeekAmount < f1)
         {
-            this.field_184706_by = MathHelper.clamp_float(this.field_184706_by + 0.05F, 0.0F, f1);
+            this.currentPeekAmount = MathHelper.clamp_float(this.currentPeekAmount + 0.05F, 0.0F, f1);
         }
 
         if (blockpos != null)
         {
             if (this.worldObj.isRemote)
             {
-                if (this.field_184708_bA > 0 && this.field_184707_bz != null)
+                if (this.clientSideTeleportInterpolation > 0 && this.currentAttachmentPosition != null)
                 {
-                    --this.field_184708_bA;
+                    --this.clientSideTeleportInterpolation;
                 }
                 else
                 {
-                    this.field_184707_bz = blockpos;
+                    this.currentAttachmentPosition = blockpos;
                 }
             }
 
             this.lastTickPosX = this.prevPosX = this.posX = (double)blockpos.getX() + 0.5D;
             this.lastTickPosY = this.prevPosY = this.posY = (double)blockpos.getY();
             this.lastTickPosZ = this.prevPosZ = this.posZ = (double)blockpos.getZ() + 0.5D;
-            double d3 = 0.5D - (double)MathHelper.sin((0.5F + this.field_184706_by) * (float)Math.PI) * 0.5D;
-            double d4 = 0.5D - (double)MathHelper.sin((0.5F + this.field_184705_bx) * (float)Math.PI) * 0.5D;
+            double d3 = 0.5D - (double)MathHelper.sin((0.5F + this.currentPeekAmount) * (float)Math.PI) * 0.5D;
+            double d4 = 0.5D - (double)MathHelper.sin((0.5F + this.currentPeekAmount0) * (float)Math.PI) * 0.5D;
             double d5 = d3 - d4;
             double d0 = 0.0D;
             double d1 = 0.0D;
             double d2 = 0.0D;
-            EnumFacing enumfacing2 = this.func_184696_cZ();
+            EnumFacing enumfacing2 = this.getAttachmentFacing();
 
             switch (enumfacing2)
             {
@@ -359,21 +361,21 @@ public class EntityShulker extends EntityGolem implements IMob
     {
         super.setPosition(x, y, z);
 
-        if (this.dataWatcher != null && this.ticksExisted != 0)
+        if (this.dataManager != null && this.ticksExisted != 0)
         {
-            Optional<BlockPos> optional = (Optional)this.dataWatcher.get(ATTACHED_BLOCK_POS);
+            Optional<BlockPos> optional = (Optional)this.dataManager.get(ATTACHED_BLOCK_POS);
             Optional<BlockPos> optional1 = Optional.<BlockPos>of(new BlockPos(x, y, z));
 
             if (!optional1.equals(optional))
             {
-                this.dataWatcher.set(ATTACHED_BLOCK_POS, optional1);
-                this.dataWatcher.set(PEEK_TICK, Byte.valueOf((byte)0));
+                this.dataManager.set(ATTACHED_BLOCK_POS, optional1);
+                this.dataManager.set(PEEK_TICK, Byte.valueOf((byte)0));
                 this.isAirBorne = true;
             }
         }
     }
 
-    protected boolean func_184689_o()
+    protected boolean tryTeleportToNewPosition()
     {
         if (!this.isAIDisabled() && this.isEntityAlive())
         {
@@ -383,7 +385,7 @@ public class EntityShulker extends EntityGolem implements IMob
             {
                 BlockPos blockpos1 = blockpos.add(8 - this.rand.nextInt(17), 8 - this.rand.nextInt(17), 8 - this.rand.nextInt(17));
 
-                if (blockpos1.getY() > 0 && this.worldObj.isAirBlock(blockpos1) && this.worldObj.isInsideBorder(this.worldObj.getWorldBorder(), this) && this.worldObj.getCubes(this, new AxisAlignedBB(blockpos1)).isEmpty())
+                if (blockpos1.getY() > 0 && this.worldObj.isAirBlock(blockpos1) && this.worldObj.isInsideBorder(this.worldObj.getWorldBorder(), this) && this.worldObj.getCollisionBoxes(this, new AxisAlignedBB(blockpos1)).isEmpty())
                 {
                     boolean flag = false;
 
@@ -391,7 +393,7 @@ public class EntityShulker extends EntityGolem implements IMob
                     {
                         if (this.worldObj.isBlockNormalCube(blockpos1.offset(enumfacing), false))
                         {
-                            this.dataWatcher.set(ATTACHED_FACE, enumfacing);
+                            this.dataManager.set(ATTACHED_FACE, enumfacing);
                             flag = true;
                             break;
                         }
@@ -399,9 +401,9 @@ public class EntityShulker extends EntityGolem implements IMob
 
                     if (flag)
                     {
-                        this.playSound(SoundEvents.entity_shulker_teleport, 1.0F, 1.0F);
-                        this.dataWatcher.set(ATTACHED_BLOCK_POS, Optional.of(blockpos1));
-                        this.dataWatcher.set(PEEK_TICK, Byte.valueOf((byte)0));
+                        this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
+                        this.dataManager.set(ATTACHED_BLOCK_POS, Optional.of(blockpos1));
+                        this.dataManager.set(PEEK_TICK, Byte.valueOf((byte)0));
                         this.setAttackTarget((EntityLivingBase)null);
                         return true;
                     }
@@ -435,17 +437,17 @@ public class EntityShulker extends EntityGolem implements IMob
     {
         if (ATTACHED_BLOCK_POS.equals(key) && this.worldObj.isRemote && !this.isRiding())
         {
-            BlockPos blockpos = this.func_184699_da();
+            BlockPos blockpos = this.getAttachmentPos();
 
             if (blockpos != null)
             {
-                if (this.field_184707_bz == null)
+                if (this.currentAttachmentPosition == null)
                 {
-                    this.field_184707_bz = blockpos;
+                    this.currentAttachmentPosition = blockpos;
                 }
                 else
                 {
-                    this.field_184708_bA = 6;
+                    this.clientSideTeleportInterpolation = 6;
                 }
 
                 this.lastTickPosX = this.prevPosX = this.posX = (double)blockpos.getX() + 0.5D;
@@ -457,8 +459,11 @@ public class EntityShulker extends EntityGolem implements IMob
         super.notifyDataManagerChange(key);
     }
 
+    /**
+     * Set the position and rotation values directly without any clamping.
+     */
     @SideOnly(Side.CLIENT)
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_)
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
         this.newPosRotationIncrements = 0;
     }
@@ -468,7 +473,7 @@ public class EntityShulker extends EntityGolem implements IMob
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        if (this.func_184686_df())
+        if (this.isClosed())
         {
             Entity entity = source.getSourceOfDamage();
 
@@ -482,7 +487,7 @@ public class EntityShulker extends EntityGolem implements IMob
         {
             if ((double)this.getHealth() < (double)this.getMaxHealth() * 0.5D && this.rand.nextInt(4) == 0)
             {
-                this.func_184689_o();
+                this.tryTeleportToNewPosition();
             }
 
             return true;
@@ -493,40 +498,45 @@ public class EntityShulker extends EntityGolem implements IMob
         }
     }
 
-    private boolean func_184686_df()
+    private boolean isClosed()
     {
-        return this.func_184684_db() == 0;
+        return this.getPeekTick() == 0;
     }
 
     /**
      * Returns the collision bounding box for this entity
      */
+    @Nullable
     public AxisAlignedBB getCollisionBoundingBox()
     {
         return this.isEntityAlive() ? this.getEntityBoundingBox() : null;
     }
 
-    public EnumFacing func_184696_cZ()
+    public EnumFacing getAttachmentFacing()
     {
-        return (EnumFacing)this.dataWatcher.get(ATTACHED_FACE);
+        return (EnumFacing)this.dataManager.get(ATTACHED_FACE);
     }
 
-    public BlockPos func_184699_da()
+    @Nullable
+    public BlockPos getAttachmentPos()
     {
-        return (BlockPos)((Optional)this.dataWatcher.get(ATTACHED_BLOCK_POS)).orNull();
+        return (BlockPos)((Optional)this.dataManager.get(ATTACHED_BLOCK_POS)).orNull();
     }
 
-    public void func_184694_g(BlockPos p_184694_1_)
+    public void setAttachmentPos(@Nullable BlockPos pos)
     {
-        this.dataWatcher.set(ATTACHED_BLOCK_POS, Optional.fromNullable(p_184694_1_));
+        this.dataManager.set(ATTACHED_BLOCK_POS, Optional.fromNullable(pos));
     }
 
-    public int func_184684_db()
+    public int getPeekTick()
     {
-        return ((Byte)this.dataWatcher.get(PEEK_TICK)).byteValue();
+        return ((Byte)this.dataManager.get(PEEK_TICK)).byteValue();
     }
 
-    public void func_184691_a(int p_184691_1_)
+    /**
+     * Applies or removes armor modifier
+     */
+    public void updateArmorModifier(int p_184691_1_)
     {
         if (!this.worldObj.isRemote)
         {
@@ -535,33 +545,33 @@ public class EntityShulker extends EntityGolem implements IMob
             if (p_184691_1_ == 0)
             {
                 this.getEntityAttribute(SharedMonsterAttributes.ARMOR).applyModifier(COVERED_ARMOR_BONUS_MODIFIER);
-                this.playSound(SoundEvents.entity_shulker_close, 1.0F, 1.0F);
+                this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
             }
             else
             {
-                this.playSound(SoundEvents.entity_shulker_open, 1.0F, 1.0F);
+                this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0F, 1.0F);
             }
         }
 
-        this.dataWatcher.set(PEEK_TICK, Byte.valueOf((byte)p_184691_1_));
+        this.dataManager.set(PEEK_TICK, Byte.valueOf((byte)p_184691_1_));
     }
 
     @SideOnly(Side.CLIENT)
-    public float func_184688_a(float p_184688_1_)
+    public float getClientPeekAmount(float p_184688_1_)
     {
-        return this.field_184705_bx + (this.field_184706_by - this.field_184705_bx) * p_184688_1_;
+        return this.currentPeekAmount0 + (this.currentPeekAmount - this.currentPeekAmount0) * p_184688_1_;
     }
 
     @SideOnly(Side.CLIENT)
-    public int func_184693_dc()
+    public int getClientTeleportInterp()
     {
-        return this.field_184708_bA;
+        return this.clientSideTeleportInterpolation;
     }
 
     @SideOnly(Side.CLIENT)
-    public BlockPos func_184692_dd()
+    public BlockPos getOldAttachPos()
     {
-        return this.field_184707_bz;
+        return this.currentAttachmentPosition;
     }
 
     public float getEyeHeight()
@@ -578,13 +588,13 @@ public class EntityShulker extends EntityGolem implements IMob
         return 180;
     }
 
-    public int func_184649_cE()
+    public int getHorizontalFaceSpeed()
     {
         return 180;
     }
 
     /**
-     * Applies a velocity to each of the entities pushing them away from each other. Args: entity
+     * Applies a velocity to the entities, to push them away from eachother.
      */
     public void applyEntityCollision(Entity entityIn)
     {
@@ -596,11 +606,12 @@ public class EntityShulker extends EntityGolem implements IMob
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean func_184697_de()
+    public boolean isAttachedToBlock()
     {
-        return this.field_184707_bz != null && this.func_184699_da() != null;
+        return this.currentAttachmentPosition != null && this.getAttachmentPos() != null;
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_SHULKER;
@@ -608,7 +619,7 @@ public class EntityShulker extends EntityGolem implements IMob
 
     class AIAttack extends EntityAIBase
     {
-        private int field_188520_b;
+        private int attackTime;
 
         public AIAttack()
         {
@@ -629,8 +640,8 @@ public class EntityShulker extends EntityGolem implements IMob
          */
         public void startExecuting()
         {
-            this.field_188520_b = 20;
-            EntityShulker.this.func_184691_a(100);
+            this.attackTime = 20;
+            EntityShulker.this.updateArmorModifier(100);
         }
 
         /**
@@ -638,7 +649,7 @@ public class EntityShulker extends EntityGolem implements IMob
          */
         public void resetTask()
         {
-            EntityShulker.this.func_184691_a(0);
+            EntityShulker.this.updateArmorModifier(0);
         }
 
         /**
@@ -648,19 +659,19 @@ public class EntityShulker extends EntityGolem implements IMob
         {
             if (EntityShulker.this.worldObj.getDifficulty() != EnumDifficulty.PEACEFUL)
             {
-                --this.field_188520_b;
+                --this.attackTime;
                 EntityLivingBase entitylivingbase = EntityShulker.this.getAttackTarget();
                 EntityShulker.this.getLookHelper().setLookPositionWithEntity(entitylivingbase, 180.0F, 180.0F);
                 double d0 = EntityShulker.this.getDistanceSqToEntity(entitylivingbase);
 
                 if (d0 < 400.0D)
                 {
-                    if (this.field_188520_b <= 0)
+                    if (this.attackTime <= 0)
                     {
-                        this.field_188520_b = 20 + EntityShulker.this.rand.nextInt(10) * 20 / 2;
-                        EntityShulkerBullet entityshulkerbullet = new EntityShulkerBullet(EntityShulker.this.worldObj, EntityShulker.this, entitylivingbase, EntityShulker.this.func_184696_cZ().getAxis());
+                        this.attackTime = 20 + EntityShulker.this.rand.nextInt(10) * 20 / 2;
+                        EntityShulkerBullet entityshulkerbullet = new EntityShulkerBullet(EntityShulker.this.worldObj, EntityShulker.this, entitylivingbase, EntityShulker.this.getAttachmentFacing().getAxis());
                         EntityShulker.this.worldObj.spawnEntityInWorld(entityshulkerbullet);
-                        EntityShulker.this.playSound(SoundEvents.entity_shulker_shoot, 2.0F, (EntityShulker.this.rand.nextFloat() - EntityShulker.this.rand.nextFloat()) * 0.2F + 1.0F);
+                        EntityShulker.this.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (EntityShulker.this.rand.nextFloat() - EntityShulker.this.rand.nextFloat()) * 0.2F + 1.0F);
                     }
                 }
                 else
@@ -675,9 +686,9 @@ public class EntityShulker extends EntityGolem implements IMob
 
     class AIAttackNearest extends EntityAINearestAttackableTarget<EntityPlayer>
     {
-        public AIAttackNearest(EntityShulker p_i47060_2_)
+        public AIAttackNearest(EntityShulker shulker)
         {
-            super(p_i47060_2_, EntityPlayer.class, true);
+            super(shulker, EntityPlayer.class, true);
         }
 
         /**
@@ -688,20 +699,20 @@ public class EntityShulker extends EntityGolem implements IMob
             return EntityShulker.this.worldObj.getDifficulty() == EnumDifficulty.PEACEFUL ? false : super.shouldExecute();
         }
 
-        protected AxisAlignedBB func_188511_a(double p_188511_1_)
+        protected AxisAlignedBB getTargetableArea(double targetDistance)
         {
-            EnumFacing enumfacing = ((EntityShulker)this.taskOwner).func_184696_cZ();
-            return enumfacing.getAxis() == EnumFacing.Axis.X ? this.taskOwner.getEntityBoundingBox().expand(4.0D, p_188511_1_, p_188511_1_) : (enumfacing.getAxis() == EnumFacing.Axis.Z ? this.taskOwner.getEntityBoundingBox().expand(p_188511_1_, p_188511_1_, 4.0D) : this.taskOwner.getEntityBoundingBox().expand(p_188511_1_, 4.0D, p_188511_1_));
+            EnumFacing enumfacing = ((EntityShulker)this.taskOwner).getAttachmentFacing();
+            return enumfacing.getAxis() == EnumFacing.Axis.X ? this.taskOwner.getEntityBoundingBox().expand(4.0D, targetDistance, targetDistance) : (enumfacing.getAxis() == EnumFacing.Axis.Z ? this.taskOwner.getEntityBoundingBox().expand(targetDistance, targetDistance, 4.0D) : this.taskOwner.getEntityBoundingBox().expand(targetDistance, 4.0D, targetDistance));
         }
     }
 
     static class AIDefenseAttack extends EntityAINearestAttackableTarget<EntityLivingBase>
         {
-            public AIDefenseAttack(EntityShulker p_i47061_1_)
+            public AIDefenseAttack(EntityShulker shulker)
             {
-                super(p_i47061_1_, EntityLivingBase.class, 10, true, false, new Predicate<EntityLivingBase>()
+                super(shulker, EntityLivingBase.class, 10, true, false, new Predicate<EntityLivingBase>()
                 {
-                    public boolean apply(EntityLivingBase p_apply_1_)
+                    public boolean apply(@Nullable EntityLivingBase p_apply_1_)
                     {
                         return p_apply_1_ instanceof IMob;
                     }
@@ -716,16 +727,16 @@ public class EntityShulker extends EntityGolem implements IMob
                 return this.taskOwner.getTeam() == null ? false : super.shouldExecute();
             }
 
-            protected AxisAlignedBB func_188511_a(double p_188511_1_)
+            protected AxisAlignedBB getTargetableArea(double targetDistance)
             {
-                EnumFacing enumfacing = ((EntityShulker)this.taskOwner).func_184696_cZ();
-                return enumfacing.getAxis() == EnumFacing.Axis.X ? this.taskOwner.getEntityBoundingBox().expand(4.0D, p_188511_1_, p_188511_1_) : (enumfacing.getAxis() == EnumFacing.Axis.Z ? this.taskOwner.getEntityBoundingBox().expand(p_188511_1_, p_188511_1_, 4.0D) : this.taskOwner.getEntityBoundingBox().expand(p_188511_1_, 4.0D, p_188511_1_));
+                EnumFacing enumfacing = ((EntityShulker)this.taskOwner).getAttachmentFacing();
+                return enumfacing.getAxis() == EnumFacing.Axis.X ? this.taskOwner.getEntityBoundingBox().expand(4.0D, targetDistance, targetDistance) : (enumfacing.getAxis() == EnumFacing.Axis.Z ? this.taskOwner.getEntityBoundingBox().expand(targetDistance, targetDistance, 4.0D) : this.taskOwner.getEntityBoundingBox().expand(targetDistance, 4.0D, targetDistance));
             }
         }
 
     class AIPeek extends EntityAIBase
     {
-        private int field_188522_b;
+        private int peekTime;
 
         private AIPeek()
         {
@@ -744,7 +755,7 @@ public class EntityShulker extends EntityGolem implements IMob
          */
         public boolean continueExecuting()
         {
-            return EntityShulker.this.getAttackTarget() == null && this.field_188522_b > 0;
+            return EntityShulker.this.getAttackTarget() == null && this.peekTime > 0;
         }
 
         /**
@@ -752,8 +763,8 @@ public class EntityShulker extends EntityGolem implements IMob
          */
         public void startExecuting()
         {
-            this.field_188522_b = 20 * (1 + EntityShulker.this.rand.nextInt(3));
-            EntityShulker.this.func_184691_a(30);
+            this.peekTime = 20 * (1 + EntityShulker.this.rand.nextInt(3));
+            EntityShulker.this.updateArmorModifier(30);
         }
 
         /**
@@ -763,7 +774,7 @@ public class EntityShulker extends EntityGolem implements IMob
         {
             if (EntityShulker.this.getAttackTarget() == null)
             {
-                EntityShulker.this.func_184691_a(0);
+                EntityShulker.this.updateArmorModifier(0);
             }
         }
 
@@ -772,7 +783,7 @@ public class EntityShulker extends EntityGolem implements IMob
          */
         public void updateTask()
         {
-            --this.field_188522_b;
+            --this.peekTime;
         }
     }
 

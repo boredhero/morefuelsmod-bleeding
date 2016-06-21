@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiControls extends GuiScreen
 {
-    private static final GameSettings.Options[] optionsArr = new GameSettings.Options[] {GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN};
+    private static final GameSettings.Options[] OPTIONS_ARR = new GameSettings.Options[] {GameSettings.Options.INVERT_MOUSE, GameSettings.Options.SENSITIVITY, GameSettings.Options.TOUCHSCREEN};
     /** A reference to the screen object that created this. Used for navigating between screens. */
     private GuiScreen parentScreen;
     protected String screenTitle = "Controls";
@@ -41,7 +41,7 @@ public class GuiControls extends GuiScreen
         this.screenTitle = I18n.format("controls.title", new Object[0]);
         int i = 0;
 
-        for (GameSettings.Options gamesettings$options : optionsArr)
+        for (GameSettings.Options gamesettings$options : OPTIONS_ARR)
         {
             if (gamesettings$options.getEnumFloat())
             {
@@ -78,7 +78,7 @@ public class GuiControls extends GuiScreen
         {
             for (KeyBinding keybinding : this.mc.gameSettings.keyBindings)
             {
-                keybinding.setKeyCode(keybinding.getKeyCodeDefault());
+                keybinding.setToDefault();
             }
 
             KeyBinding.resetKeyBindingArrayAndHash();
@@ -97,6 +97,7 @@ public class GuiControls extends GuiScreen
     {
         if (this.buttonId != null)
         {
+            this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), -100 + mouseButton);
             this.options.setOptionKeyBinding(this.buttonId, -100 + mouseButton);
             this.buttonId = null;
             KeyBinding.resetKeyBindingArrayAndHash();
@@ -109,10 +110,6 @@ public class GuiControls extends GuiScreen
 
     /**
      * Called when a mouse button is released.
-     *  
-     * @param mouseX Current mouse x coordinate
-     * @param mouseY Current mouse y coordinate
-     * @param state The mouse button that was released
      */
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
@@ -132,17 +129,21 @@ public class GuiControls extends GuiScreen
         {
             if (keyCode == 1)
             {
+                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.NONE, 0);
                 this.options.setOptionKeyBinding(this.buttonId, 0);
             }
             else if (keyCode != 0)
             {
+                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), keyCode);
                 this.options.setOptionKeyBinding(this.buttonId, keyCode);
             }
             else if (typedChar > 0)
             {
+                this.buttonId.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.getActiveModifier(), typedChar + 256);
                 this.options.setOptionKeyBinding(this.buttonId, typedChar + 256);
             }
 
+            if (!net.minecraftforge.client.settings.KeyModifier.isKeyCodeModifier(keyCode))
             this.buttonId = null;
             this.time = Minecraft.getSystemTime();
             KeyBinding.resetKeyBindingArrayAndHash();
@@ -155,10 +156,6 @@ public class GuiControls extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -169,7 +166,7 @@ public class GuiControls extends GuiScreen
 
         for (KeyBinding keybinding : this.options.keyBindings)
         {
-            if (keybinding.getKeyCode() != keybinding.getKeyCodeDefault())
+            if (!keybinding.isSetToDefaultValue())
             {
                 flag = false;
                 break;

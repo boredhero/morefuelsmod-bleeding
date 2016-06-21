@@ -10,18 +10,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class SPacketWindowProperty implements Packet<INetHandlerPlayClient>
 {
     private int windowId;
-    private int varIndex;
-    private int varValue;
+    private int property;
+    private int value;
 
     public SPacketWindowProperty()
     {
     }
 
-    public SPacketWindowProperty(int windowIdIn, int p_i46952_2_, int p_i46952_3_)
+    public SPacketWindowProperty(int windowIdIn, int propertyIn, int valueIn)
     {
         this.windowId = windowIdIn;
-        this.varIndex = p_i46952_2_;
-        this.varValue = p_i46952_3_;
+        this.property = propertyIn;
+        this.value = valueIn;
     }
 
     /**
@@ -38,8 +38,8 @@ public class SPacketWindowProperty implements Packet<INetHandlerPlayClient>
     public void readPacketData(PacketBuffer buf) throws IOException
     {
         this.windowId = buf.readUnsignedByte();
-        this.varIndex = buf.readShort();
-        this.varValue = buf.readShort();
+        this.property = buf.readShort();
+        this.value = buf.readShort();
     }
 
     /**
@@ -48,8 +48,8 @@ public class SPacketWindowProperty implements Packet<INetHandlerPlayClient>
     public void writePacketData(PacketBuffer buf) throws IOException
     {
         buf.writeByte(this.windowId);
-        buf.writeShort(this.varIndex);
-        buf.writeShort(this.varValue);
+        buf.writeShort(this.property);
+        buf.writeShort(this.value);
     }
 
     @SideOnly(Side.CLIENT)
@@ -59,14 +59,14 @@ public class SPacketWindowProperty implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public int getVarIndex()
+    public int getProperty()
     {
-        return this.varIndex;
+        return this.property;
     }
 
     @SideOnly(Side.CLIENT)
-    public int getVarValue()
+    public int getValue()
     {
-        return this.varValue;
+        return this.value;
     }
 }

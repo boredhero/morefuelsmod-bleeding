@@ -2,6 +2,7 @@ package net.minecraft.entity.ai;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -41,15 +42,15 @@ public class EntityAITempt extends EntityAIBase
         this(temptedEntityIn, speedIn, scaredByPlayerMovementIn, Sets.newHashSet(new Item[] {temptItemIn}));
     }
 
-    public EntityAITempt(EntityCreature p_i46804_1_, double p_i46804_2_, boolean p_i46804_4_, Set<Item> p_i46804_5_)
+    public EntityAITempt(EntityCreature temptedEntityIn, double speedIn, boolean scaredByPlayerMovementIn, Set<Item> temptItemIn)
     {
-        this.temptedEntity = p_i46804_1_;
-        this.speed = p_i46804_2_;
-        this.temptItem = p_i46804_5_;
-        this.scaredByPlayerMovement = p_i46804_4_;
+        this.temptedEntity = temptedEntityIn;
+        this.speed = speedIn;
+        this.temptItem = temptItemIn;
+        this.scaredByPlayerMovement = scaredByPlayerMovementIn;
         this.setMutexBits(3);
 
-        if (!(p_i46804_1_.getNavigator() instanceof PathNavigateGround))
+        if (!(temptedEntityIn.getNavigator() instanceof PathNavigateGround))
         {
             throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
         }
@@ -68,13 +69,13 @@ public class EntityAITempt extends EntityAIBase
         else
         {
             this.temptingPlayer = this.temptedEntity.worldObj.getClosestPlayerToEntity(this.temptedEntity, 10.0D);
-            return this.temptingPlayer == null ? false : this.func_188508_a(this.temptingPlayer.getHeldItemMainhand()) || this.func_188508_a(this.temptingPlayer.getHeldItemOffhand());
+            return this.temptingPlayer == null ? false : this.isTempting(this.temptingPlayer.getHeldItemMainhand()) || this.isTempting(this.temptingPlayer.getHeldItemOffhand());
         }
     }
 
-    protected boolean func_188508_a(ItemStack p_188508_1_)
+    protected boolean isTempting(@Nullable ItemStack stack)
     {
-        return p_188508_1_ == null ? false : this.temptItem.contains(p_188508_1_.getItem());
+        return stack == null ? false : this.temptItem.contains(stack.getItem());
     }
 
     /**
@@ -137,7 +138,7 @@ public class EntityAITempt extends EntityAIBase
      */
     public void updateTask()
     {
-        this.temptedEntity.getLookHelper().setLookPositionWithEntity(this.temptingPlayer, (float)(this.temptedEntity.func_184649_cE() + 20), (float)this.temptedEntity.getVerticalFaceSpeed());
+        this.temptedEntity.getLookHelper().setLookPositionWithEntity(this.temptingPlayer, (float)(this.temptedEntity.getHorizontalFaceSpeed() + 20), (float)this.temptedEntity.getVerticalFaceSpeed());
 
         if (this.temptedEntity.getDistanceSqToEntity(this.temptingPlayer) < 6.25D)
         {

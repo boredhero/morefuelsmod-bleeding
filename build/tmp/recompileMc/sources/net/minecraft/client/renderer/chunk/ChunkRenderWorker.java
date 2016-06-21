@@ -7,11 +7,13 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CancellationException;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RegionRenderCacheBuilder;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -32,7 +34,7 @@ public class ChunkRenderWorker implements Runnable
         this(p_i46201_1_, (RegionRenderCacheBuilder)null);
     }
 
-    public ChunkRenderWorker(ChunkRenderDispatcher chunkRenderDispatcherIn, RegionRenderCacheBuilder regionRenderCacheBuilderIn)
+    public ChunkRenderWorker(ChunkRenderDispatcher chunkRenderDispatcherIn, @Nullable RegionRenderCacheBuilder regionRenderCacheBuilderIn)
     {
         this.shouldRun = true;
         this.chunkRenderDispatcher = chunkRenderDispatcherIn;
@@ -87,12 +89,8 @@ public class ChunkRenderWorker implements Runnable
             {
                 World world = generator.getRenderChunk().getWorld();
                 BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(blockpos1);
-                boolean flag = this.isChunkExisting(blockpos$mutableblockpos.set(blockpos1.getX() - 1, blockpos1.getY(), blockpos1.getZ()), world);
-                boolean flag1 = this.isChunkExisting(blockpos$mutableblockpos.set(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ() - 1), world);
-                boolean flag2 = this.isChunkExisting(blockpos$mutableblockpos.set(blockpos1.getX() + 16, blockpos1.getY(), blockpos1.getZ()), world);
-                boolean flag3 = this.isChunkExisting(blockpos$mutableblockpos.set(blockpos1.getX(), blockpos1.getY(), blockpos1.getZ() + 16), world);
 
-                if (!flag || !flag1 || !flag2 || !flag3)
+                if (!this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.WEST, 16), world) || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.NORTH, 16), world) || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.EAST, 16), world) || !this.isChunkExisting(blockpos$mutableblockpos.setPos(blockpos1).move(EnumFacing.SOUTH, 16), world))
                 {
                     return;
                 }
@@ -178,7 +176,7 @@ public class ChunkRenderWorker implements Runnable
             });
             Futures.addCallback(listenablefuture, new FutureCallback<List<Object>>()
             {
-                public void onSuccess(List<Object> p_onSuccess_1_)
+                public void onSuccess(@Nullable List<Object> p_onSuccess_1_)
                 {
                     ChunkRenderWorker.this.freeRenderBuilder(generator);
                     generator.getLock().lock();

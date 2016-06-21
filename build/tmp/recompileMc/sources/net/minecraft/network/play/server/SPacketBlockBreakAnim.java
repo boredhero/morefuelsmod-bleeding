@@ -18,11 +18,11 @@ public class SPacketBlockBreakAnim implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketBlockBreakAnim(int p_i46968_1_, BlockPos p_i46968_2_, int p_i46968_3_)
+    public SPacketBlockBreakAnim(int breakerIdIn, BlockPos positionIn, int progressIn)
     {
-        this.breakerId = p_i46968_1_;
-        this.position = p_i46968_2_;
-        this.progress = p_i46968_3_;
+        this.breakerId = breakerIdIn;
+        this.position = positionIn;
+        this.progress = progressIn;
     }
 
     /**

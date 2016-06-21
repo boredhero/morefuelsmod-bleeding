@@ -22,7 +22,7 @@ public class TextComponentSelector extends TextComponentBase
      * Gets the text of this component, without any special formatting codes added, for chat.  TODO: why is this two
      * different methods?
      */
-    public String getUnformattedTextForChat()
+    public String getUnformattedComponentText()
     {
         return this.selector;
     }
@@ -33,7 +33,7 @@ public class TextComponentSelector extends TextComponentBase
     public TextComponentSelector createCopy()
     {
         TextComponentSelector textcomponentselector = new TextComponentSelector(this.selector);
-        textcomponentselector.setChatStyle(this.getChatStyle().createShallowCopy());
+        textcomponentselector.setStyle(this.getStyle().createShallowCopy());
 
         for (ITextComponent itextcomponent : this.getSiblings())
         {
@@ -62,6 +62,6 @@ public class TextComponentSelector extends TextComponentBase
 
     public String toString()
     {
-        return "SelectorComponent{pattern=\'" + this.selector + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
+        return "SelectorComponent{pattern=\'" + this.selector + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
     }
 }

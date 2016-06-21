@@ -50,7 +50,7 @@ public class VillageDoorInfo
         return (int)this.insideBlock.distanceSq(pos);
     }
 
-    public boolean func_179850_c(BlockPos pos)
+    public boolean isInsideSide(BlockPos pos)
     {
         int i = pos.getX() - this.doorBlockPos.getX();
         int j = pos.getZ() - this.doorBlockPos.getY();

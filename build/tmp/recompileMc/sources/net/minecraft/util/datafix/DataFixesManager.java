@@ -45,7 +45,7 @@ public class DataFixesManager
 
     public static DataFixer createFixer()
     {
-        DataFixer datafixer = new DataFixer(169);
+        DataFixer datafixer = new DataFixer(184);
         datafixer.registerWalker(FixTypes.LEVEL, new IDataWalker()
         {
             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)

@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
@@ -18,7 +19,7 @@ public class BlockMobSpawner extends BlockContainer
 {
     protected BlockMobSpawner()
     {
-        super(Material.rock);
+        super(Material.ROCK);
     }
 
     /**
@@ -32,6 +33,7 @@ public class BlockMobSpawner extends BlockContainer
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
@@ -75,6 +77,7 @@ public class BlockMobSpawner extends BlockContainer
         return EnumBlockRenderType.MODEL;
     }
 
+    @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         return null;

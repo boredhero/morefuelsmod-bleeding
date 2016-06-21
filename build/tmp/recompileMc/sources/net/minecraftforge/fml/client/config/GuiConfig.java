@@ -308,10 +308,6 @@ public class GuiConfig extends GuiScreen
 
     /**
      * Called when a mouse button is released.
-     *  
-     * @param mouseX Current mouse x coordinate
-     * @param mouseY Current mouse y coordinate
-     * @param state The mouse button that was released
      */
     @Override
     protected void mouseReleased(int x, int y, int mouseEvent)
@@ -347,10 +343,6 @@ public class GuiConfig extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks)

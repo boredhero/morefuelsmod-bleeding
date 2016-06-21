@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.BlockWorldState;
 import net.minecraft.block.state.pattern.BlockMatcher;
 import net.minecraft.block.state.pattern.BlockPattern;
@@ -49,15 +50,15 @@ import org.apache.logging.log4j.Logger;
 public class DragonFightManager
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Predicate<EntityPlayerMP> field_186108_b = Predicates.<EntityPlayerMP>and(EntitySelectors.IS_ALIVE, EntitySelectors.<EntityPlayerMP>func_188443_a(0.0D, 128.0D, 0.0D, 192.0D));
+    private static final Predicate<EntityPlayerMP> VALID_PLAYER = Predicates.<EntityPlayerMP>and(EntitySelectors.IS_ALIVE, EntitySelectors.<EntityPlayerMP>withinRange(0.0D, 128.0D, 0.0D, 192.0D));
     private final BossInfoServer bossInfo = (BossInfoServer)(new BossInfoServer(new TextComponentTranslation("entity.EnderDragon.name", new Object[0]), BossInfo.Color.PINK, BossInfo.Overlay.PROGRESS)).setPlayEndBossMusic(true).setCreateFog(true);
     private final WorldServer world;
     private final List<Integer> gateways = Lists.<Integer>newArrayList();
     private final BlockPattern portalPattern;
-    private int field_186113_g = 0;
+    private int ticksSinceDragonSeen = 0;
     private int aliveCrystals = 0;
-    private int field_186115_i = 0;
-    private int field_186116_j = 0;
+    private int ticksSinceCrystalsScanned = 0;
+    private int ticksSinceLastPlayerScan = 0;
     private boolean dragonKilled = false;
     private boolean previouslyKilled = false;
     private UUID dragonUniqueId = null;
@@ -113,7 +114,7 @@ public class DragonFightManager
             Collections.shuffle(this.gateways, new Random(worldIn.getSeed()));
         }
 
-        this.portalPattern = FactoryBlockPattern.start().aisle(new String[] {"       ", "       ", "       ", "   #   ", "       ", "       ", "       "}).aisle(new String[] {"       ", "       ", "       ", "   #   ", "       ", "       ", "       "}).aisle(new String[] {"       ", "       ", "       ", "   #   ", "       ", "       ", "       "}).aisle(new String[] {"  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  "}).aisle(new String[] {"       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       "}).where('#', BlockWorldState.hasState(BlockMatcher.forBlock(Blocks.bedrock))).build();
+        this.portalPattern = FactoryBlockPattern.start().aisle(new String[] {"       ", "       ", "       ", "   #   ", "       ", "       ", "       "}).aisle(new String[] {"       ", "       ", "       ", "   #   ", "       ", "       ", "       "}).aisle(new String[] {"       ", "       ", "       ", "   #   ", "       ", "       ", "       "}).aisle(new String[] {"  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  "}).aisle(new String[] {"       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       "}).where('#', BlockWorldState.hasState(BlockMatcher.forBlock(Blocks.BEDROCK))).build();
     }
 
     public NBTTagCompound getCompound()
@@ -157,10 +158,10 @@ public class DragonFightManager
     {
         this.bossInfo.setVisible(!this.dragonKilled);
 
-        if (++this.field_186116_j >= 20)
+        if (++this.ticksSinceLastPlayerScan >= 20)
         {
-            this.func_186100_j();
-            this.field_186116_j = 0;
+            this.updateplayers();
+            this.ticksSinceLastPlayerScan = 0;
         }
 
         if (!this.bossInfo.getPlayers().isEmpty())
@@ -215,7 +216,7 @@ public class DragonFightManager
 
             if (!this.dragonKilled)
             {
-                if (this.dragonUniqueId == null || ++this.field_186113_g >= 1200)
+                if (this.dragonUniqueId == null || ++this.ticksSinceDragonSeen >= 1200)
                 {
                     this.loadChunks();
                     List<EntityDragon> list1 = this.world.getEntities(EntityDragon.class, EntitySelectors.IS_ALIVE);
@@ -232,13 +233,13 @@ public class DragonFightManager
                         this.generatePortal(false);
                     }
 
-                    this.field_186113_g = 0;
+                    this.ticksSinceDragonSeen = 0;
                 }
 
-                if (++this.field_186115_i >= 100)
+                if (++this.ticksSinceCrystalsScanned >= 100)
                 {
                     this.findAliveCrystals();
-                    this.field_186115_i = 0;
+                    this.ticksSinceCrystalsScanned = 0;
                 }
             }
         }
@@ -288,7 +289,8 @@ public class DragonFightManager
         return false;
     }
 
-    private BlockPattern.PatternHelper func_186091_h()
+    @Nullable
+    private BlockPattern.PatternHelper findExitPortal()
     {
         for (int i = -8; i <= 8; ++i)
         {
@@ -318,11 +320,11 @@ public class DragonFightManager
             }
         }
 
-        int k = this.world.getHeight(WorldGenEndPodium.field_186139_a).getY();
+        int k = this.world.getHeight(WorldGenEndPodium.END_PODIUM_LOCATION).getY();
 
         for (int l = k; l >= 0; --l)
         {
-            BlockPattern.PatternHelper blockpattern$patternhelper1 = this.portalPattern.match(this.world, new BlockPos(WorldGenEndPodium.field_186139_a.getX(), l, WorldGenEndPodium.field_186139_a.getZ()));
+            BlockPattern.PatternHelper blockpattern$patternhelper1 = this.portalPattern.match(this.world, new BlockPos(WorldGenEndPodium.END_PODIUM_LOCATION.getX(), l, WorldGenEndPodium.END_PODIUM_LOCATION.getZ()));
 
             if (blockpattern$patternhelper1 != null)
             {
@@ -349,11 +351,11 @@ public class DragonFightManager
         }
     }
 
-    private void func_186100_j()
+    private void updateplayers()
     {
         Set<EntityPlayerMP> set = Sets.<EntityPlayerMP>newHashSet();
 
-        for (EntityPlayerMP entityplayermp : this.world.getPlayers(EntityPlayerMP.class, field_186108_b))
+        for (EntityPlayerMP entityplayermp : this.world.getPlayers(EntityPlayerMP.class, VALID_PLAYER))
         {
             this.bossInfo.addPlayer(entityplayermp);
             set.add(entityplayermp);
@@ -370,12 +372,12 @@ public class DragonFightManager
 
     private void findAliveCrystals()
     {
-        this.field_186115_i = 0;
+        this.ticksSinceCrystalsScanned = 0;
         this.aliveCrystals = 0;
 
-        for (WorldGenSpikes.EndSpike worldgenspikes$endspike : BiomeEndDecorator.func_185426_a(this.world))
+        for (WorldGenSpikes.EndSpike worldgenspikes$endspike : BiomeEndDecorator.getSpikesForWorld(this.world))
         {
-            this.aliveCrystals += this.world.getEntitiesWithinAABB(EntityEnderCrystal.class, worldgenspikes$endspike.func_186153_f()).size();
+            this.aliveCrystals += this.world.getEntitiesWithinAABB(EntityEnderCrystal.class, worldgenspikes$endspike.getTopBoundingBox()).size();
         }
 
         LOGGER.debug("Found {} end crystals still alive", new Object[] {Integer.valueOf(this.aliveCrystals)});
@@ -388,11 +390,11 @@ public class DragonFightManager
             this.bossInfo.setPercent(0.0F);
             this.bossInfo.setVisible(false);
             this.generatePortal(true);
-            this.func_186097_l();
+            this.spawnNewGateway();
 
             if (!this.previouslyKilled)
             {
-                this.world.setBlockState(this.world.getHeight(WorldGenEndPodium.field_186139_a), Blocks.dragon_egg.getDefaultState());
+                this.world.setBlockState(this.world.getHeight(WorldGenEndPodium.END_PODIUM_LOCATION), Blocks.DRAGON_EGG.getDefaultState());
             }
 
             this.previouslyKilled = true;
@@ -400,7 +402,7 @@ public class DragonFightManager
         }
     }
 
-    private void func_186097_l()
+    private void spawnNewGateway()
     {
         if (!this.gateways.isEmpty())
         {
@@ -413,7 +415,7 @@ public class DragonFightManager
 
     private void generateGateway(BlockPos pos)
     {
-        this.world.playAuxSFX(3000, pos, 0);
+        this.world.playEvent(3000, pos, 0);
         (new WorldGenEndGateway()).generate(this.world, new Random(), pos);
     }
 
@@ -423,7 +425,7 @@ public class DragonFightManager
 
         if (this.exitPortalLocation == null)
         {
-            for (this.exitPortalLocation = this.world.getTopSolidOrLiquidBlock(WorldGenEndPodium.field_186139_a).down(); this.world.getBlockState(this.exitPortalLocation).getBlock() == Blocks.bedrock && this.exitPortalLocation.getY() > this.world.getSeaLevel(); this.exitPortalLocation = this.exitPortalLocation.down())
+            for (this.exitPortalLocation = this.world.getTopSolidOrLiquidBlock(WorldGenEndPodium.END_PODIUM_LOCATION).down(); this.world.getBlockState(this.exitPortalLocation).getBlock() == Blocks.BEDROCK && this.exitPortalLocation.getY() > this.world.getSeaLevel(); this.exitPortalLocation = this.exitPortalLocation.down())
             {
                 ;
             }
@@ -447,7 +449,7 @@ public class DragonFightManager
         if (dragonIn.getUniqueID().equals(this.dragonUniqueId))
         {
             this.bossInfo.setPercent(dragonIn.getHealth() / dragonIn.getMaxHealth());
-            this.field_186113_g = 0;
+            this.ticksSinceDragonSeen = 0;
         }
     }
 
@@ -463,7 +465,7 @@ public class DragonFightManager
             LOGGER.debug("Aborting respawn sequence");
             this.respawnState = null;
             this.respawnStateTicks = 0;
-            this.func_186087_f();
+            this.resetSpikeCrystals();
             this.generatePortal(true);
         }
         else
@@ -478,7 +480,7 @@ public class DragonFightManager
         }
     }
 
-    public boolean func_186102_d()
+    public boolean hasPreviouslyKilledDragon()
     {
         return this.previouslyKilled;
     }
@@ -492,7 +494,7 @@ public class DragonFightManager
             if (blockpos == null)
             {
                 LOGGER.debug("Tried to respawn, but need to find the portal first.");
-                BlockPattern.PatternHelper blockpattern$patternhelper = this.func_186091_h();
+                BlockPattern.PatternHelper blockpattern$patternhelper = this.findExitPortal();
 
                 if (blockpattern$patternhelper == null)
                 {
@@ -523,27 +525,27 @@ public class DragonFightManager
             }
 
             LOGGER.debug("Found all crystals, respawning dragon.");
-            this.func_186093_a(list1);
+            this.respawnDragon(list1);
         }
     }
 
-    private void func_186093_a(List<EntityEnderCrystal> crystalsIn)
+    private void respawnDragon(List<EntityEnderCrystal> crystalsIn)
     {
         if (this.dragonKilled && this.respawnState == null)
         {
-            for (BlockPattern.PatternHelper blockpattern$patternhelper = this.func_186091_h(); blockpattern$patternhelper != null; blockpattern$patternhelper = this.func_186091_h())
+            for (BlockPattern.PatternHelper blockpattern$patternhelper = this.findExitPortal(); blockpattern$patternhelper != null; blockpattern$patternhelper = this.findExitPortal())
             {
                 for (int i = 0; i < this.portalPattern.getPalmLength(); ++i)
                 {
                     for (int j = 0; j < this.portalPattern.getThumbLength(); ++j)
                     {
-                        for (int k = 0; k < this.portalPattern.func_185922_a(); ++k)
+                        for (int k = 0; k < this.portalPattern.getFingerLength(); ++k)
                         {
                             BlockWorldState blockworldstate = blockpattern$patternhelper.translateOffset(i, j, k);
 
-                            if (blockworldstate.getBlockState().getBlock() == Blocks.bedrock || blockworldstate.getBlockState().getBlock() == Blocks.end_portal)
+                            if (blockworldstate.getBlockState().getBlock() == Blocks.BEDROCK || blockworldstate.getBlockState().getBlock() == Blocks.END_PORTAL)
                             {
-                                this.world.setBlockState(blockworldstate.getPos(), Blocks.end_stone.getDefaultState());
+                                this.world.setBlockState(blockworldstate.getPos(), Blocks.END_STONE.getDefaultState());
                             }
                         }
                     }
@@ -557,11 +559,11 @@ public class DragonFightManager
         }
     }
 
-    public void func_186087_f()
+    public void resetSpikeCrystals()
     {
-        for (WorldGenSpikes.EndSpike worldgenspikes$endspike : BiomeEndDecorator.func_185426_a(this.world))
+        for (WorldGenSpikes.EndSpike worldgenspikes$endspike : BiomeEndDecorator.getSpikesForWorld(this.world))
         {
-            for (EntityEnderCrystal entityendercrystal : this.world.getEntitiesWithinAABB(EntityEnderCrystal.class, worldgenspikes$endspike.func_186153_f()))
+            for (EntityEnderCrystal entityendercrystal : this.world.getEntitiesWithinAABB(EntityEnderCrystal.class, worldgenspikes$endspike.getTopBoundingBox()))
             {
                 entityendercrystal.setEntityInvulnerable(false);
                 entityendercrystal.setBeamTarget((BlockPos)null);

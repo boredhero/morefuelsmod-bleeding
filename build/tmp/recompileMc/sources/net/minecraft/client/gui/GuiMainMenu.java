@@ -40,8 +40,8 @@ import org.lwjgl.util.glu.Project;
 @SideOnly(Side.CLIENT)
 public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 {
-    private static final AtomicInteger field_175373_f = new AtomicInteger(0);
-    private static final Logger logger = LogManager.getLogger();
+    private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final Random RANDOM = new Random();
     /** Counts the number of screen updates. */
     private float updateCounter;
@@ -52,7 +52,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private int panoramaTimer;
     /** Texture allocated for the current viewport of the main menu's panorama background. */
     private DynamicTexture viewportTexture;
-    private boolean field_175375_v = true;
+    private boolean mcoEnabled = true;
     /** The Object object utilized as a thread lock when performing non thread-safe operations */
     private final Object threadLock = new Object();
     /** OpenGL graphics card warning. */
@@ -61,10 +61,10 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private String openGLWarning2;
     /** Link to the Mojang Support about minimum requirements */
     private String openGLWarningLink;
-    private static final ResourceLocation splashTexts = new ResourceLocation("texts/splashes.txt");
-    private static final ResourceLocation minecraftTitleTextures = new ResourceLocation("textures/gui/title/minecraft.png");
+    private static final ResourceLocation SPLASH_TEXTS = new ResourceLocation("texts/splashes.txt");
+    private static final ResourceLocation MINECRAFT_TITLE_TEXTURES = new ResourceLocation("textures/gui/title/minecraft.png");
     /** An array of all the paths to the panorama pictures. */
-    private static final ResourceLocation[] titlePanoramaPaths = new ResourceLocation[] {new ResourceLocation("textures/gui/title/background/panorama_0.png"), new ResourceLocation("textures/gui/title/background/panorama_1.png"), new ResourceLocation("textures/gui/title/background/panorama_2.png"), new ResourceLocation("textures/gui/title/background/panorama_3.png"), new ResourceLocation("textures/gui/title/background/panorama_4.png"), new ResourceLocation("textures/gui/title/background/panorama_5.png")};
+    private static final ResourceLocation[] TITLE_PANORAMA_PATHS = new ResourceLocation[] {new ResourceLocation("textures/gui/title/background/panorama_0.png"), new ResourceLocation("textures/gui/title/background/panorama_1.png"), new ResourceLocation("textures/gui/title/background/panorama_2.png"), new ResourceLocation("textures/gui/title/background/panorama_3.png"), new ResourceLocation("textures/gui/title/background/panorama_4.png"), new ResourceLocation("textures/gui/title/background/panorama_5.png")};
     public static final String MORE_INFO_TEXT = "Please click " + TextFormatting.UNDERLINE + "here" + TextFormatting.RESET + " for more information.";
     /** Width of openGLWarning2 */
     private int openGLWarning2Width;
@@ -88,6 +88,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
      * drawn at the same time). May be null.
      */
     private GuiScreen realmsNotification;
+    private GuiButton modButton;
+    private net.minecraftforge.client.gui.NotificationModUpdateScreen modUpdateNotification;
 
     public GuiMainMenu()
     {
@@ -99,7 +101,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         try
         {
             List<String> list = Lists.<String>newArrayList();
-            iresource = Minecraft.getMinecraft().getResourceManager().getResource(splashTexts);
+            iresource = Minecraft.getMinecraft().getResourceManager().getResource(SPLASH_TEXTS);
             BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(iresource.getInputStream(), Charsets.UTF_8));
             String s;
 
@@ -248,6 +250,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
             this.realmsNotification.setGuiSize(this.width, this.height);
             this.realmsNotification.initGui();
         }
+        modUpdateNotification = net.minecraftforge.client.gui.NotificationModUpdateScreen.init(this, modButton);
     }
 
     /**
@@ -258,7 +261,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, p_73969_1_, I18n.format("menu.singleplayer", new Object[0])));
         this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.format("menu.multiplayer", new Object[0])));
         this.buttonList.add(this.realmsButton = new GuiButton(14, this.width / 2 + 2, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("menu.online", new Object[0]).replace("Minecraft", "").trim()));
-        this.buttonList.add(new GuiButton(6, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("fml.menu.mods")));
+        this.buttonList.add(modButton = new GuiButton(6, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("fml.menu.mods")));
     }
 
     /**
@@ -319,7 +322,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
         if (button.id == 11)
         {
-            this.mc.launchIntegratedServer("Demo_World", "Demo_World", DemoWorldServer.demoWorldSettings);
+            this.mc.launchIntegratedServer("Demo_World", "Demo_World", DemoWorldServer.DEMO_WORLD_SETTINGS);
         }
 
         if (button.id == 12)
@@ -361,7 +364,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
                 }
                 catch (Throwable throwable)
                 {
-                    logger.error("Couldn\'t open link", throwable);
+                    LOGGER.error("Couldn\'t open link", throwable);
                 }
             }
 
@@ -371,9 +374,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
     /**
      * Draws the main menu panorama
-     *  
-     * @param mouseX Mouse X coordinate (unused)
-     * @param mouseY Mouse Y coordinate (unused)
      */
     private void drawPanorama(int mouseX, int mouseY, float partialTicks)
     {
@@ -435,7 +435,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
                     GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
                 }
 
-                this.mc.getTextureManager().bindTexture(titlePanoramaPaths[k]);
+                this.mc.getTextureManager().bindTexture(TITLE_PANORAMA_PATHS[k]);
                 vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
                 int l = 255 / (j + 1);
                 float f3 = 0.0F;
@@ -499,9 +499,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
     /**
      * Renders the skybox in the main menu
-     *  
-     * @param mouseX Mouse x coordinate (unused)
-     * @param mouseY Mouse y coordinate (unused)
      */
     private void renderSkybox(int mouseX, int mouseY, float partialTicks)
     {
@@ -534,10 +531,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -551,7 +544,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         int k = 30;
         this.drawGradientRect(0, 0, this.width, this.height, -2130706433, 16777215);
         this.drawGradientRect(0, 0, this.width, this.height, 0, Integer.MIN_VALUE);
-        this.mc.getTextureManager().bindTexture(minecraftTitleTextures);
+        this.mc.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURES);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         if ((double)this.updateCounter < 1.0E-4D)
@@ -568,6 +561,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
             this.drawTexturedModalRect(j + 155, k + 0, 0, 45, 155, 44);
         }
 
+        this.splashText = net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, this.fontRendererObj, this.width, this.height, this.splashText);
+
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)(this.width / 2 + 90), 70.0F, 0.0F);
         GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
@@ -576,7 +571,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         GlStateManager.scale(f, f, f);
         this.drawCenteredString(this.fontRendererObj, this.splashText, 0, -8, -256);
         GlStateManager.popMatrix();
-        String s = "Minecraft 1.9";
+        String s = "Minecraft 1.9.4";
 
         if (this.mc.isDemo())
         {
@@ -596,7 +591,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
                 this.drawString(this.fontRendererObj, brd, 2, this.height - ( 10 + brdline * (this.fontRendererObj.FONT_HEIGHT + 1)), 16777215);
             }
         }
-        net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, this.fontRendererObj, this.width, this.height);
         String s1 = "Copyright Mojang AB. Do not distribute!";
         this.drawString(this.fontRendererObj, s1, this.width - this.fontRendererObj.getStringWidth(s1) - 2, this.height - 10, -1);
 
@@ -613,6 +607,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         {
             this.realmsNotification.drawScreen(mouseX, mouseY, partialTicks);
         }
+        modUpdateNotification.drawScreen(mouseX, mouseY, partialTicks);
     }
 
     /**
@@ -636,6 +631,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         {
             this.realmsNotification.mouseClicked(mouseX, mouseY, mouseButton);
         }
+
+        net.minecraftforge.client.ForgeHooksClient.mainMenuMouseClick(mouseX, mouseY, mouseButton, this.fontRendererObj, this.width);
     }
 
     /**

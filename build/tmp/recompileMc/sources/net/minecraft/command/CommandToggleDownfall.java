@@ -31,15 +31,11 @@ public class CommandToggleDownfall extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         this.toggleRainfall(server);
-        notifyOperators(sender, this, "commands.downfall.success", new Object[0]);
+        notifyCommandListener(sender, this, "commands.downfall.success", new Object[0]);
     }
 
     protected void toggleRainfall(MinecraftServer server)

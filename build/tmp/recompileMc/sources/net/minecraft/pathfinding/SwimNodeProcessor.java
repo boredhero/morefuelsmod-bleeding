@@ -1,5 +1,6 @@
 package net.minecraft.pathfinding;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
@@ -10,60 +11,54 @@ import net.minecraft.world.IBlockAccess;
 
 public class SwimNodeProcessor extends NodeProcessor
 {
-    public void func_186315_a(IBlockAccess sourceIn, EntityLiving mob)
+    public PathPoint getStart()
     {
-        super.func_186315_a(sourceIn, mob);
+        return this.openPoint(MathHelper.floor_double(this.entity.getEntityBoundingBox().minX), MathHelper.floor_double(this.entity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor_double(this.entity.getEntityBoundingBox().minZ));
     }
 
     /**
-     * This method is called when all nodes have been processed and PathEntity is created.
-     * {@link net.minecraft.world.pathfinder.WalkNodeProcessor WalkNodeProcessor} uses this to change its field {@link
-     * net.minecraft.world.pathfinder.WalkNodeProcessor#avoidsWater avoidsWater}
+     * Returns PathPoint for given coordinates
      */
-    public void postProcess()
+    public PathPoint getPathPointToCoords(double x, double y, double z)
     {
-        super.postProcess();
+        return this.openPoint(MathHelper.floor_double(x - (double)(this.entity.width / 2.0F)), MathHelper.floor_double(y + 0.5D), MathHelper.floor_double(z - (double)(this.entity.width / 2.0F)));
     }
 
-    public PathPoint func_186318_b()
-    {
-        return this.openPoint(MathHelper.floor_double(this.field_186326_b.getEntityBoundingBox().minX), MathHelper.floor_double(this.field_186326_b.getEntityBoundingBox().minY + 0.5D), MathHelper.floor_double(this.field_186326_b.getEntityBoundingBox().minZ));
-    }
-
-    public PathPoint func_186325_a(double p_186325_1_, double p_186325_3_, double p_186325_5_)
-    {
-        return this.openPoint(MathHelper.floor_double(p_186325_1_ - (double)(this.field_186326_b.width / 2.0F)), MathHelper.floor_double(p_186325_3_ + 0.5D), MathHelper.floor_double(p_186325_5_ - (double)(this.field_186326_b.width / 2.0F)));
-    }
-
-    public int func_186320_a(PathPoint[] p_186320_1_, PathPoint p_186320_2_, PathPoint p_186320_3_, float p_186320_4_)
+    public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance)
     {
         int i = 0;
 
         for (EnumFacing enumfacing : EnumFacing.values())
         {
-            PathPoint pathpoint = this.func_186328_b(p_186320_2_.xCoord + enumfacing.getFrontOffsetX(), p_186320_2_.yCoord + enumfacing.getFrontOffsetY(), p_186320_2_.zCoord + enumfacing.getFrontOffsetZ());
+            PathPoint pathpoint = this.getWaterNode(currentPoint.xCoord + enumfacing.getFrontOffsetX(), currentPoint.yCoord + enumfacing.getFrontOffsetY(), currentPoint.zCoord + enumfacing.getFrontOffsetZ());
 
-            if (pathpoint != null && !pathpoint.visited && pathpoint.distanceTo(p_186320_3_) < p_186320_4_)
+            if (pathpoint != null && !pathpoint.visited && pathpoint.distanceTo(targetPoint) < maxDistance)
             {
-                p_186320_1_[i++] = pathpoint;
+                pathOptions[i++] = pathpoint;
             }
         }
 
         return i;
     }
 
-    public PathNodeType func_186319_a(IBlockAccess p_186319_1_, int p_186319_2_, int p_186319_3_, int p_186319_4_, EntityLiving p_186319_5_, int p_186319_6_, int p_186319_7_, int p_186319_8_, boolean p_186319_9_, boolean p_186319_10_)
+    public PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z, EntityLiving entitylivingIn, int xSize, int ySize, int zSize, boolean canBreakDoorsIn, boolean canEnterDoorsIn)
     {
         return PathNodeType.WATER;
     }
 
-    private PathPoint func_186328_b(int p_186328_1_, int p_186328_2_, int p_186328_3_)
+    public PathNodeType getPathNodeType(IBlockAccess x, int y, int z, int p_186330_4_)
     {
-        PathNodeType pathnodetype = this.func_186327_c(p_186328_1_, p_186328_2_, p_186328_3_);
+        return PathNodeType.WATER;
+    }
+
+    @Nullable
+    private PathPoint getWaterNode(int p_186328_1_, int p_186328_2_, int p_186328_3_)
+    {
+        PathNodeType pathnodetype = this.isFree(p_186328_1_, p_186328_2_, p_186328_3_);
         return pathnodetype == PathNodeType.WATER ? this.openPoint(p_186328_1_, p_186328_2_, p_186328_3_) : null;
     }
 
-    private PathNodeType func_186327_c(int p_186327_1_, int p_186327_2_, int p_186327_3_)
+    private PathNodeType isFree(int p_186327_1_, int p_186327_2_, int p_186327_3_)
     {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
@@ -73,9 +68,9 @@ public class SwimNodeProcessor extends NodeProcessor
             {
                 for (int k = p_186327_3_; k < p_186327_3_ + this.entitySizeZ; ++k)
                 {
-                    IBlockState iblockstate = this.blockaccess.getBlockState(blockpos$mutableblockpos.set(i, j, k));
+                    IBlockState iblockstate = this.blockaccess.getBlockState(blockpos$mutableblockpos.setPos(i, j, k));
 
-                    if (iblockstate.getMaterial() != Material.water)
+                    if (iblockstate.getMaterial() != Material.WATER)
                     {
                         return PathNodeType.BLOCKED;
                     }

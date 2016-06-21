@@ -20,6 +20,9 @@ import net.minecraftforge.fml.client.config.DummyConfigElement.DummyCategoryElem
 import net.minecraftforge.fml.client.config.DummyConfigElement.DummyListElement;
 import net.minecraftforge.fml.client.config.GuiConfigEntries.NumberSliderEntry;
 
+import net.minecraftforge.fml.client.IModGuiFactory.RuntimeOptionCategoryElement;
+import net.minecraftforge.fml.client.IModGuiFactory.RuntimeOptionGuiHandler;
+
 public class FMLConfigGuiFactory implements IModGuiFactory 
 {
     public static class FMLConfigGuiScreen extends GuiConfig 

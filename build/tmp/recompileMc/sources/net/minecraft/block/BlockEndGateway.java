@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -38,10 +39,11 @@ public class BlockEndGateway extends BlockContainer
     {
         IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
         Block block = iblockstate.getBlock();
-        return !iblockstate.isOpaqueCube() && block != Blocks.end_gateway;
+        return !iblockstate.isOpaqueCube() && block != Blocks.END_GATEWAY;
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -68,19 +70,19 @@ public class BlockEndGateway extends BlockContainer
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState worldIn, World pos, BlockPos state, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-        TileEntity tileentity = pos.getTileEntity(state);
+        TileEntity tileentity = worldIn.getTileEntity(pos);
 
         if (tileentity instanceof TileEntityEndGateway)
         {
-            int i = ((TileEntityEndGateway)tileentity).func_184304_i();
+            int i = ((TileEntityEndGateway)tileentity).getParticleAmount();
 
             for (int j = 0; j < i; ++j)
             {
-                double d0 = (double)((float)state.getX() + rand.nextFloat());
-                double d1 = (double)((float)state.getY() + rand.nextFloat());
-                double d2 = (double)((float)state.getZ() + rand.nextFloat());
+                double d0 = (double)((float)pos.getX() + rand.nextFloat());
+                double d1 = (double)((float)pos.getY() + rand.nextFloat());
+                double d2 = (double)((float)pos.getZ() + rand.nextFloat());
                 double d3 = ((double)rand.nextFloat() - 0.5D) * 0.5D;
                 double d4 = ((double)rand.nextFloat() - 0.5D) * 0.5D;
                 double d5 = ((double)rand.nextFloat() - 0.5D) * 0.5D;
@@ -88,20 +90,21 @@ public class BlockEndGateway extends BlockContainer
 
                 if (rand.nextBoolean())
                 {
-                    d2 = (double)state.getZ() + 0.5D + 0.25D * (double)k;
+                    d2 = (double)pos.getZ() + 0.5D + 0.25D * (double)k;
                     d5 = (double)(rand.nextFloat() * 2.0F * (float)k);
                 }
                 else
                 {
-                    d0 = (double)state.getX() + 0.5D + 0.25D * (double)k;
+                    d0 = (double)pos.getX() + 0.5D + 0.25D * (double)k;
                     d3 = (double)(rand.nextFloat() * 2.0F * (float)k);
                 }
 
-                pos.spawnParticle(EnumParticleTypes.PORTAL, d0, d1, d2, d3, d4, d5, new int[0]);
+                worldIn.spawnParticle(EnumParticleTypes.PORTAL, d0, d1, d2, d3, d4, d5, new int[0]);
             }
         }
     }
 
+    @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         return null;
@@ -112,6 +115,6 @@ public class BlockEndGateway extends BlockContainer
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return MapColor.blackColor;
+        return MapColor.BLACK;
     }
 }

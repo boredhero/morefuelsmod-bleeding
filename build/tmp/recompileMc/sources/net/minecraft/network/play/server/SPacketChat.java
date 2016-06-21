@@ -33,7 +33,7 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
      */
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.chatComponent = buf.readChatComponent();
+        this.chatComponent = buf.readTextComponent();
         this.type = buf.readByte();
     }
 
@@ -42,7 +42,7 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
      */
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeChatComponent(this.chatComponent);
+        buf.writeTextComponent(this.chatComponent);
         buf.writeByte(this.type);
     }
 

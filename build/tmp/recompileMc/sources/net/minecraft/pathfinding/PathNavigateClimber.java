@@ -19,7 +19,7 @@ public class PathNavigateClimber extends PathNavigateGround
     /**
      * Returns path to given BlockPos
      */
-    public PathEntity getPathToPos(BlockPos pos)
+    public Path getPathToPos(BlockPos pos)
     {
         this.targetPosition = pos;
         return super.getPathToPos(pos);
@@ -28,7 +28,7 @@ public class PathNavigateClimber extends PathNavigateGround
     /**
      * Returns the path to the given EntityLiving. Args : entity
      */
-    public PathEntity getPathToEntityLiving(Entity entityIn)
+    public Path getPathToEntityLiving(Entity entityIn)
     {
         this.targetPosition = new BlockPos(entityIn);
         return super.getPathToEntityLiving(entityIn);
@@ -39,11 +39,11 @@ public class PathNavigateClimber extends PathNavigateGround
      */
     public boolean tryMoveToEntityLiving(Entity entityIn, double speedIn)
     {
-        PathEntity pathentity = this.getPathToEntityLiving(entityIn);
+        Path path = this.getPathToEntityLiving(entityIn);
 
-        if (pathentity != null)
+        if (path != null)
         {
-            return this.setPath(pathentity, speedIn);
+            return this.setPath(path, speedIn);
         }
         else
         {

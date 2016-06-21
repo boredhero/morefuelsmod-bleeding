@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 
 public class WorldGenSwamp extends WorldGenAbstractTree
 {
-    private static final IBlockState field_181648_a = Blocks.log.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK);
-    private static final IBlockState field_181649_b = Blocks.leaves.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockOldLeaf.CHECK_DECAY, Boolean.valueOf(false));
+    private static final IBlockState TRUNK = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.OAK);
+    private static final IBlockState LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.OAK).withProperty(BlockOldLeaf.CHECK_DECAY, Boolean.valueOf(false));
 
     public WorldGenSwamp()
     {
@@ -27,7 +27,7 @@ public class WorldGenSwamp extends WorldGenAbstractTree
     {
         int i;
 
-        for (i = rand.nextInt(4) + 5; worldIn.getBlockState(position.down()).getMaterial() == Material.water; position = position.down())
+        for (i = rand.nextInt(4) + 5; worldIn.getBlockState(position.down()).getMaterial() == Material.WATER; position = position.down())
         {
             ;
         }
@@ -58,12 +58,12 @@ public class WorldGenSwamp extends WorldGenAbstractTree
                     {
                         if (j >= 0 && j < 256)
                         {
-                            IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos.set(l, j, i1));
+                            IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, j, i1));
                             Block block = iblockstate.getBlock();
 
-                            if (!iblockstate.getBlock().isAir(iblockstate, worldIn, blockpos$mutableblockpos.set(l, j, i1)) && !iblockstate.getBlock().isLeaves(iblockstate, worldIn, blockpos$mutableblockpos.set(l, j, i1)))
+                            if (!iblockstate.getBlock().isAir(iblockstate, worldIn, blockpos$mutableblockpos.setPos(l, j, i1)) && !iblockstate.getBlock().isLeaves(iblockstate, worldIn, blockpos$mutableblockpos.setPos(l, j, i1)))
                             {
-                                if (block != Blocks.water && block != Blocks.flowing_water)
+                                if (block != Blocks.WATER && block != Blocks.FLOWING_WATER)
                                 {
                                     flag = false;
                                 }
@@ -89,7 +89,7 @@ public class WorldGenSwamp extends WorldGenAbstractTree
             {
                 BlockPos down = position.down();
                 IBlockState state = worldIn.getBlockState(down);
-                boolean isSoil = state.getBlock().canSustainPlant(state, worldIn, down, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.sapling));
+                boolean isSoil = state.getBlock().canSustainPlant(state, worldIn, down, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.SAPLING));
 
                 if (isSoil && position.getY() < worldIn.getHeight() - i - 1)
                 {
@@ -115,7 +115,7 @@ public class WorldGenSwamp extends WorldGenAbstractTree
 
                                     if (state.getBlock().canBeReplacedByLeaves(state, worldIn, blockpos))
                                     {
-                                        this.setBlockAndNotifyAdequately(worldIn, blockpos, field_181649_b);
+                                        this.setBlockAndNotifyAdequately(worldIn, blockpos, LEAF);
                                     }
                                 }
                             }
@@ -128,9 +128,9 @@ public class WorldGenSwamp extends WorldGenAbstractTree
                         IBlockState iblockstate1 = worldIn.getBlockState(upN);
                         Block block2 = iblockstate1.getBlock();
 
-                        if (block2.isAir(iblockstate1, worldIn, upN) || block2.isLeaves(iblockstate1, worldIn, upN) || block2 == Blocks.flowing_water || block2 == Blocks.water)
+                        if (block2.isAir(iblockstate1, worldIn, upN) || block2.isLeaves(iblockstate1, worldIn, upN) || block2 == Blocks.FLOWING_WATER || block2 == Blocks.WATER)
                         {
-                            this.setBlockAndNotifyAdequately(worldIn, position.up(l1), field_181648_a);
+                            this.setBlockAndNotifyAdequately(worldIn, position.up(l1), TRUNK);
                         }
                     }
 
@@ -144,9 +144,9 @@ public class WorldGenSwamp extends WorldGenAbstractTree
                         {
                             for (int j4 = position.getZ() - i3; j4 <= position.getZ() + i3; ++j4)
                             {
-                                blockpos$mutableblockpos1.set(l3, i2, j4);
+                                blockpos$mutableblockpos1.setPos(l3, i2, j4);
 
-                                if (worldIn.getBlockState(blockpos$mutableblockpos1).getMaterial() == Material.leaves)
+                                if (worldIn.getBlockState(blockpos$mutableblockpos1).getMaterial() == Material.LEAVES)
                                 {
                                     BlockPos blockpos3 = blockpos$mutableblockpos1.west();
                                     BlockPos blockpos4 = blockpos$mutableblockpos1.east();
@@ -155,22 +155,22 @@ public class WorldGenSwamp extends WorldGenAbstractTree
 
                                     if (rand.nextInt(4) == 0 && isAir(worldIn, blockpos3))
                                     {
-                                        this.func_181647_a(worldIn, blockpos3, BlockVine.EAST);
+                                        this.addVine(worldIn, blockpos3, BlockVine.EAST);
                                     }
 
                                     if (rand.nextInt(4) == 0 && isAir(worldIn, blockpos4))
                                     {
-                                        this.func_181647_a(worldIn, blockpos4, BlockVine.WEST);
+                                        this.addVine(worldIn, blockpos4, BlockVine.WEST);
                                     }
 
                                     if (rand.nextInt(4) == 0 && isAir(worldIn, blockpos1))
                                     {
-                                        this.func_181647_a(worldIn, blockpos1, BlockVine.SOUTH);
+                                        this.addVine(worldIn, blockpos1, BlockVine.SOUTH);
                                     }
 
                                     if (rand.nextInt(4) == 0 && isAir(worldIn, blockpos2))
                                     {
-                                        this.func_181647_a(worldIn, blockpos2, BlockVine.NORTH);
+                                        this.addVine(worldIn, blockpos2, BlockVine.NORTH);
                                     }
                                 }
                             }
@@ -191,16 +191,16 @@ public class WorldGenSwamp extends WorldGenAbstractTree
         }
     }
 
-    private void func_181647_a(World p_181647_1_, BlockPos p_181647_2_, PropertyBool p_181647_3_)
+    private void addVine(World worldIn, BlockPos pos, PropertyBool prop)
     {
-        IBlockState iblockstate = Blocks.vine.getDefaultState().withProperty(p_181647_3_, Boolean.valueOf(true));
-        this.setBlockAndNotifyAdequately(p_181647_1_, p_181647_2_, iblockstate);
+        IBlockState iblockstate = Blocks.VINE.getDefaultState().withProperty(prop, Boolean.valueOf(true));
+        this.setBlockAndNotifyAdequately(worldIn, pos, iblockstate);
         int i = 4;
 
-        for (p_181647_2_ = p_181647_2_.down(); isAir(p_181647_1_, p_181647_2_) && i > 0; --i)
+        for (pos = pos.down(); isAir(worldIn, pos) && i > 0; --i)
         {
-            this.setBlockAndNotifyAdequately(p_181647_1_, p_181647_2_, iblockstate);
-            p_181647_2_ = p_181647_2_.down();
+            this.setBlockAndNotifyAdequately(worldIn, pos, iblockstate);
+            pos = pos.down();
         }
     }
 

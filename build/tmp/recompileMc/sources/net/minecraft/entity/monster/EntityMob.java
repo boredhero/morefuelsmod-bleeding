@@ -64,12 +64,12 @@ public abstract class EntityMob extends EntityCreature implements IMob
 
     protected SoundEvent getSwimSound()
     {
-        return SoundEvents.entity_hostile_swim;
+        return SoundEvents.ENTITY_HOSTILE_SWIM;
     }
 
     protected SoundEvent getSplashSound()
     {
-        return SoundEvents.entity_hostile_splash;
+        return SoundEvents.ENTITY_HOSTILE_SPLASH;
     }
 
     /**
@@ -82,17 +82,17 @@ public abstract class EntityMob extends EntityCreature implements IMob
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_hostile_hurt;
+        return SoundEvents.ENTITY_HOSTILE_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_hostile_death;
+        return SoundEvents.ENTITY_HOSTILE_DEATH;
     }
 
     protected SoundEvent getFallSound(int heightIn)
     {
-        return heightIn > 4 ? SoundEvents.entity_hostile_big_fall : SoundEvents.entity_hostile_small_fall;
+        return heightIn > 4 ? SoundEvents.ENTITY_HOSTILE_BIG_FALL : SoundEvents.ENTITY_HOSTILE_SMALL_FALL;
     }
 
     public boolean attackEntityAsMob(Entity entityIn)
@@ -130,13 +130,13 @@ public abstract class EntityMob extends EntityCreature implements IMob
                 ItemStack itemstack = this.getHeldItemMainhand();
                 ItemStack itemstack1 = entityplayer.isHandActive() ? entityplayer.getActiveItemStack() : null;
 
-                if (itemstack != null && itemstack1 != null && itemstack.getItem() instanceof ItemAxe && itemstack1.getItem() == Items.shield)
+                if (itemstack != null && itemstack1 != null && itemstack.getItem() instanceof ItemAxe && itemstack1.getItem() == Items.SHIELD)
                 {
                     float f1 = 0.25F + (float)EnchantmentHelper.getEfficiencyModifier(this) * 0.05F;
 
                     if (this.rand.nextFloat() < f1)
                     {
-                        entityplayer.getCooldownTracker().setCooldown(Items.shield, 100);
+                        entityplayer.getCooldownTracker().setCooldown(Items.SHIELD, 100);
                         this.worldObj.setEntityState(entityplayer, (byte)30);
                     }
                 }

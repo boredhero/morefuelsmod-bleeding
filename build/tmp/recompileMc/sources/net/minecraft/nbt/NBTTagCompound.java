@@ -8,9 +8,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.util.ReportedException;
 
 public class NBTTagCompound extends NBTBase
@@ -122,6 +123,7 @@ public class NBTTagCompound extends NBTBase
         this.setLong(key + "Least", value.getLeastSignificantBits());
     }
 
+    @Nullable
     public UUID getUniqueId(String key)
     {
         return new UUID(this.getLong(key + "Most"), this.getLong(key + "Least"));
@@ -419,9 +421,6 @@ public class NBTTagCompound extends NBTBase
 
     /**
      * Gets the NBTTagList object with the given name.
-     *  
-     * @param key The name of the TagList to get
-     * @param type The NBTBase type of the list
      */
     public NBTTagList getTagList(String key, int type)
     {
@@ -496,14 +495,14 @@ public class NBTTagCompound extends NBTBase
     {
         CrashReport crashreport = CrashReport.makeCrashReport(ex, "Reading NBT data");
         CrashReportCategory crashreportcategory = crashreport.makeCategoryDepth("Corrupt NBT tag", 1);
-        crashreportcategory.addCrashSectionCallable("Tag type found", new Callable<String>()
+        crashreportcategory.setDetail("Tag type found", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return NBTBase.NBT_TYPES[((NBTBase)NBTTagCompound.this.tagMap.get(key)).getId()];
             }
         });
-        crashreportcategory.addCrashSectionCallable("Tag type expected", new Callable<String>()
+        crashreportcategory.setDetail("Tag type expected", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {

@@ -15,7 +15,7 @@ public class MovingSoundMinecart extends MovingSound
 
     public MovingSoundMinecart(EntityMinecart minecartIn)
     {
-        super(SoundEvents.entity_minecart_riding, SoundCategory.NEUTRAL);
+        super(SoundEvents.ENTITY_MINECART_RIDING, SoundCategory.NEUTRAL);
         this.minecart = minecartIn;
         this.repeat = true;
         this.repeatDelay = 0;

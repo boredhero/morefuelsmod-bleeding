@@ -18,14 +18,14 @@ public class SPacketWindowItems implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketWindowItems(int windowIdIn, List<ItemStack> p_i46953_2_)
+    public SPacketWindowItems(int windowIdIn, List<ItemStack> stacks)
     {
         this.windowId = windowIdIn;
-        this.itemStacks = new ItemStack[p_i46953_2_.size()];
+        this.itemStacks = new ItemStack[stacks.size()];
 
         for (int i = 0; i < this.itemStacks.length; ++i)
         {
-            ItemStack itemstack = (ItemStack)p_i46953_2_.get(i);
+            ItemStack itemstack = (ItemStack)stacks.get(i);
             this.itemStacks[i] = itemstack == null ? null : itemstack.copy();
         }
     }

@@ -17,10 +17,10 @@ public class CPacketEnchantItem implements Packet<INetHandlerPlayServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketEnchantItem(int p_i46883_1_, int p_i46883_2_)
+    public CPacketEnchantItem(int windowIdIn, int buttonIn)
     {
-        this.windowId = p_i46883_1_;
-        this.button = p_i46883_2_;
+        this.windowId = windowIdIn;
+        this.button = buttonIn;
     }
 
     /**

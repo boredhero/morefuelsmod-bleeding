@@ -10,8 +10,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.resources.data.IMetadataSection;
-import net.minecraft.client.resources.data.IMetadataSerializer;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -25,11 +26,11 @@ public class SimpleResource implements IResource, Closeable
     private final ResourceLocation srResourceLocation;
     private final InputStream resourceInputStream;
     private final InputStream mcmetaInputStream;
-    private final IMetadataSerializer srMetadataSerializer;
+    private final MetadataSerializer srMetadataSerializer;
     private boolean mcmetaJsonChecked;
     private JsonObject mcmetaJson;
 
-    public SimpleResource(String resourcePackNameIn, ResourceLocation srResourceLocationIn, InputStream resourceInputStreamIn, InputStream mcmetaInputStreamIn, IMetadataSerializer srMetadataSerializerIn)
+    public SimpleResource(String resourcePackNameIn, ResourceLocation srResourceLocationIn, InputStream resourceInputStreamIn, InputStream mcmetaInputStreamIn, MetadataSerializer srMetadataSerializerIn)
     {
         this.resourcePackName = resourcePackNameIn;
         this.srResourceLocation = srResourceLocationIn;
@@ -53,6 +54,7 @@ public class SimpleResource implements IResource, Closeable
         return this.mcmetaInputStream != null;
     }
 
+    @Nullable
     public <T extends IMetadataSection> T getMetadata(String sectionName)
     {
         if (!this.hasMetadata())

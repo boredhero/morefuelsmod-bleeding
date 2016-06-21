@@ -38,9 +38,9 @@ import org.lwjgl.opengl.Display;
 @SideOnly(Side.CLIENT)
 public class GameSettings
 {
-    private static final Logger logger = LogManager.getLogger();
-    private static final Gson gson = new Gson();
-    private static final ParameterizedType typeListString = new ParameterizedType()
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Gson GSON = new Gson();
+    private static final ParameterizedType TYPE_LIST_STRING = new ParameterizedType()
     {
         public Type[] getActualTypeArguments()
         {
@@ -105,7 +105,8 @@ public class GameSettings
     private Map<SoundCategory, Float> soundLevels = Maps.newEnumMap(SoundCategory.class);
     public boolean useNativeTransport = true;
     public boolean entityShadows = true;
-    public int attackIndicator = 0;
+    public int attackIndicator = 1;
+    public boolean enableWeakAttacks = false;
     public boolean showSubtitles = false;
     public boolean realmsNotifications = true;
     public KeyBinding keyBindForward = new KeyBinding("key.forward", 17, "key.categories.movement");
@@ -158,6 +159,7 @@ public class GameSettings
 
     public GameSettings(Minecraft mcIn, File optionsFileIn)
     {
+        setForgeKeybindProperties();
         this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands}, this.keyBindsHotbar);
         this.difficulty = EnumDifficulty.NORMAL;
         this.lastServer = "";
@@ -182,6 +184,7 @@ public class GameSettings
 
     public GameSettings()
     {
+        setForgeKeybindProperties();
         this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands}, this.keyBindsHotbar);
         this.difficulty = EnumDifficulty.NORMAL;
         this.lastServer = "";
@@ -191,7 +194,7 @@ public class GameSettings
     }
 
     /**
-     * Represents a key or mouse button as a string. Args: key
+     * Gets the display name for a key.
      */
     public static String getKeyDisplayString(int key)
     {
@@ -278,7 +281,7 @@ public class GameSettings
             if ((float)i != value)
             {
                 this.mc.getTextureMapBlocks().setMipmapLevels(this.mipmapLevels);
-                this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+                this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                 this.mc.getTextureMapBlocks().setBlurMipmapDirect(false, this.mipmapLevels > 0);
                 this.mc.scheduleResourcesRefresh();
             }
@@ -483,6 +486,8 @@ public class GameSettings
                 return this.showSubtitles;
             case REALMS_NOTIFICATIONS:
                 return this.realmsNotifications;
+            case ENABLE_WEAK_ATTACKS:
+                return this.enableWeakAttacks;
             default:
                 return false;
         }
@@ -704,7 +709,7 @@ public class GameSettings
 
                     if (astring[0].equals("resourcePacks"))
                     {
-                        this.resourcePacks = (List)gson.fromJson((String)s.substring(s.indexOf(58) + 1), typeListString);
+                        this.resourcePacks = (List)GSON.fromJson((String)s.substring(s.indexOf(58) + 1), TYPE_LIST_STRING);
 
                         if (this.resourcePacks == null)
                         {
@@ -714,7 +719,7 @@ public class GameSettings
 
                     if (astring[0].equals("incompatibleResourcePacks"))
                     {
-                        this.incompatibleResourcePacks = (List)gson.fromJson((String)s.substring(s.indexOf(58) + 1), typeListString);
+                        this.incompatibleResourcePacks = (List)GSON.fromJson((String)s.substring(s.indexOf(58) + 1), TYPE_LIST_STRING);
 
                         if (this.incompatibleResourcePacks == null)
                         {
@@ -877,11 +882,17 @@ public class GameSettings
                         this.realmsNotifications = astring[1].equals("true");
                     }
 
+                    if (astring[0].equals("enableWeakAttacks"))
+                    {
+                        this.enableWeakAttacks = astring[1].equals("true");
+                    }
+
                     for (KeyBinding keybinding : this.keyBindings)
                     {
                         if (astring[0].equals("key_" + keybinding.getKeyDescription()))
                         {
                             keybinding.setKeyCode(Integer.parseInt(astring[1]));
+                            if (astring.length == 3) keybinding.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.valueFromString(astring[2]), Integer.parseInt(astring[1]));
                         }
                     }
 
@@ -903,7 +914,7 @@ public class GameSettings
                 }
                 catch (Exception var8)
                 {
-                    logger.warn("Skipping bad option: " + s);
+                    LOGGER.warn("Skipping bad option: " + s);
                 }
             }
 
@@ -912,7 +923,7 @@ public class GameSettings
         }
         catch (Exception exception)
         {
-            logger.error((String)"Failed to load options", (Throwable)exception);
+            LOGGER.error((String)"Failed to load options", (Throwable)exception);
         }
     }
 
@@ -961,8 +972,8 @@ public class GameSettings
                     printwriter.println("renderClouds:true");
             }
 
-            printwriter.println("resourcePacks:" + gson.toJson((Object)this.resourcePacks));
-            printwriter.println("incompatibleResourcePacks:" + gson.toJson((Object)this.incompatibleResourcePacks));
+            printwriter.println("resourcePacks:" + GSON.toJson((Object)this.resourcePacks));
+            printwriter.println("incompatibleResourcePacks:" + GSON.toJson((Object)this.incompatibleResourcePacks));
             printwriter.println("lastServer:" + this.lastServer);
             printwriter.println("lang:" + this.language);
             printwriter.println("chatVisibility:" + this.chatVisibility.getChatVisibility());
@@ -995,10 +1006,12 @@ public class GameSettings
             printwriter.println("attackIndicator:" + this.attackIndicator);
             printwriter.println("showSubtitles:" + this.showSubtitles);
             printwriter.println("realmsNotifications:" + this.realmsNotifications);
+            printwriter.println("enableWeakAttacks:" + this.enableWeakAttacks);
 
             for (KeyBinding keybinding : this.keyBindings)
             {
-                printwriter.println("key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode());
+                String keyString = "key_" + keybinding.getKeyDescription() + ":" + keybinding.getKeyCode();
+                printwriter.println(keybinding.getKeyModifier() != net.minecraftforge.client.settings.KeyModifier.NONE ? keyString + ":" + keybinding.getKeyModifier() : keyString);
             }
 
             for (SoundCategory soundcategory : SoundCategory.values())
@@ -1015,21 +1028,21 @@ public class GameSettings
         }
         catch (Exception exception)
         {
-            logger.error((String)"Failed to save options", (Throwable)exception);
+            LOGGER.error((String)"Failed to save options", (Throwable)exception);
         }
 
         this.sendSettingsToServer();
     }
 
-    public float getSoundLevel(SoundCategory p_186711_1_)
+    public float getSoundLevel(SoundCategory category)
     {
-        return this.soundLevels.containsKey(p_186711_1_) ? ((Float)this.soundLevels.get(p_186711_1_)).floatValue() : 1.0F;
+        return this.soundLevels.containsKey(category) ? ((Float)this.soundLevels.get(category)).floatValue() : 1.0F;
     }
 
-    public void setSoundLevel(SoundCategory p_186712_1_, float p_186712_2_)
+    public void setSoundLevel(SoundCategory category, float volume)
     {
-        this.mc.getSoundHandler().setSoundLevel(p_186712_1_, p_186712_2_);
-        this.soundLevels.put(p_186712_1_, Float.valueOf(p_186712_2_));
+        this.mc.getSoundHandler().setSoundLevel(category, volume);
+        this.soundLevels.put(category, Float.valueOf(volume));
     }
 
     /**
@@ -1046,7 +1059,7 @@ public class GameSettings
                 i |= enumplayermodelparts.getPartMask();
             }
 
-            this.mc.thePlayer.sendQueue.addToSendQueue(new CPacketClientSettings(this.language, this.renderDistanceChunks, this.chatVisibility, this.chatColours, i, this.mainHand));
+            this.mc.thePlayer.connection.sendPacket(new CPacketClientSettings(this.language, this.renderDistanceChunks, this.chatVisibility, this.chatColours, i, this.mainHand));
         }
     }
 
@@ -1137,6 +1150,7 @@ public class GameSettings
         ENTITY_SHADOWS("options.entityShadows", false, true),
         MAIN_HAND("options.mainHand", false, false),
         ATTACK_INDICATOR("options.attackIndicator", false, false),
+        ENABLE_WEAK_ATTACKS("options.enableWeakAttacks", false, true),
         SHOW_SUBTITLES("options.showSubtitles", false, true),
         REALMS_NOTIFICATIONS("options.realmsNotifications", false, true);
 
@@ -1236,4 +1250,24 @@ public class GameSettings
             return value;
         }
     }
+
+    /******* Forge Start ***********/
+    private void setForgeKeybindProperties() {
+        net.minecraftforge.client.settings.KeyConflictContext inGame = net.minecraftforge.client.settings.KeyConflictContext.IN_GAME;
+        keyBindForward.setKeyConflictContext(inGame);
+        keyBindLeft.setKeyConflictContext(inGame);
+        keyBindBack.setKeyConflictContext(inGame);
+        keyBindRight.setKeyConflictContext(inGame);
+        keyBindJump.setKeyConflictContext(inGame);
+        keyBindSneak.setKeyConflictContext(inGame);
+        keyBindSprint.setKeyConflictContext(inGame);
+        keyBindAttack.setKeyConflictContext(inGame);
+        keyBindChat.setKeyConflictContext(inGame);
+        keyBindPlayerList.setKeyConflictContext(inGame);
+        keyBindCommand.setKeyConflictContext(inGame);
+        keyBindTogglePerspective.setKeyConflictContext(inGame);
+        keyBindSmoothCamera.setKeyConflictContext(inGame);
+        keyBindSwapHands.setKeyConflictContext(inGame);
+    }
+    /******* Forge End ***********/
 }

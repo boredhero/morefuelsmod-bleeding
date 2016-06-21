@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderEnderCrystal extends Render<EntityEnderCrystal>
 {
-    private static final ResourceLocation enderCrystalTextures = new ResourceLocation("textures/entity/endercrystal/endercrystal.png");
+    private static final ResourceLocation ENDER_CRYSTAL_TEXTURES = new ResourceLocation("textures/entity/endercrystal/endercrystal.png");
     private final ModelBase modelEnderCrystal = new ModelEnderCrystal(0.0F, true);
     private final ModelBase modelEnderCrystalNoBase = new ModelEnderCrystal(0.0F, false);
 
@@ -35,7 +35,7 @@ public class RenderEnderCrystal extends Render<EntityEnderCrystal>
         float f = (float)entity.innerRotation + partialTicks;
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)x, (float)y, (float)z);
-        this.bindTexture(enderCrystalTextures);
+        this.bindTexture(ENDER_CRYSTAL_TEXTURES);
         float f1 = MathHelper.sin(f * 0.2F) / 2.0F + 0.5F;
         f1 = f1 * f1 + f1;
 
@@ -65,11 +65,11 @@ public class RenderEnderCrystal extends Render<EntityEnderCrystal>
 
         if (blockpos != null)
         {
-            this.bindTexture(RenderDragon.enderDragonCrystalBeamTextures);
+            this.bindTexture(RenderDragon.ENDERCRYSTAL_BEAM_TEXTURES);
             float f2 = (float)blockpos.getX() + 0.5F;
             float f3 = (float)blockpos.getY() + 0.5F;
             float f4 = (float)blockpos.getZ() + 0.5F;
-            RenderDragon.func_188325_a(x, y - 1.2999999523162842D + (double)(f1 * 0.4F), z, partialTicks, entity.posX, entity.posY, entity.posZ, entity.innerRotation, (double)f2, (double)f3, (double)f4);
+            RenderDragon.renderCrystalBeams(x, y - 1.2999999523162842D + (double)(f1 * 0.4F), z, partialTicks, entity.posX, entity.posY, entity.posZ, entity.innerRotation, (double)f2, (double)f3, (double)f4);
         }
 
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
@@ -80,7 +80,7 @@ public class RenderEnderCrystal extends Render<EntityEnderCrystal>
      */
     protected ResourceLocation getEntityTexture(EntityEnderCrystal entity)
     {
-        return enderCrystalTextures;
+        return ENDER_CRYSTAL_TEXTURES;
     }
 
     public boolean shouldRender(EntityEnderCrystal livingEntity, ICamera camera, double camX, double camY, double camZ)

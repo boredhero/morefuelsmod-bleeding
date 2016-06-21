@@ -2,6 +2,7 @@ package net.minecraft.command;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
@@ -39,10 +40,6 @@ public class CommandBlockData extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -71,8 +68,7 @@ public class CommandBlockData extends CommandBase
                 }
                 else
                 {
-                    NBTTagCompound nbttagcompound = new NBTTagCompound();
-                    tileentity.writeToNBT(nbttagcompound);
+                    NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
                     NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttagcompound.copy();
                     NBTTagCompound nbttagcompound2;
 
@@ -100,14 +96,14 @@ public class CommandBlockData extends CommandBase
                         tileentity.markDirty();
                         world.notifyBlockUpdate(blockpos, iblockstate, iblockstate, 3);
                         sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, 1);
-                        notifyOperators(sender, this, "commands.blockdata.success", new Object[] {nbttagcompound.toString()});
+                        notifyCommandListener(sender, this, "commands.blockdata.success", new Object[] {nbttagcompound.toString()});
                     }
                 }
             }
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length > 0 && args.length <= 3 ? getTabCompletionCoordinate(args, 0, pos) : Collections.<String>emptyList();
     }

@@ -15,7 +15,7 @@ public class ColorizerGrass
     }
 
     /**
-     * Gets grass color from temperature and humidity. Args: temperature, humidity
+     * Gets the color modifier to use for grass.
      */
     public static int getGrassColor(double temperature, double humidity)
     {

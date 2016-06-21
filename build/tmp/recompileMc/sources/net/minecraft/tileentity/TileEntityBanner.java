@@ -2,6 +2,7 @@ package net.minecraft.tileentity;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockFlower;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -9,7 +10,6 @@ import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -58,13 +58,14 @@ public class TileEntityBanner extends TileEntity
         this.patternDataSet = true;
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         setBaseColorAndPatterns(compound, this.baseColor, this.patterns);
+        return compound;
     }
 
-    public static void setBaseColorAndPatterns(NBTTagCompound compound, int baseColorIn, NBTTagList patternsIn)
+    public static void setBaseColorAndPatterns(NBTTagCompound compound, int baseColorIn, @Nullable NBTTagList patternsIn)
     {
         compound.setInteger("Base", baseColorIn);
 
@@ -85,11 +86,15 @@ public class TileEntityBanner extends TileEntity
         this.patternDataSet = true;
     }
 
-    public Packet<?> getDescriptionPacket()
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket()
     {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        this.writeToNBT(nbttagcompound);
-        return new SPacketUpdateTileEntity(this.pos, 6, nbttagcompound);
+        return new SPacketUpdateTileEntity(this.pos, 6, this.getUpdateTag());
+    }
+
+    public NBTTagCompound getUpdateTag()
+    {
+        return this.writeToNBT(new NBTTagCompound());
     }
 
     public int getBaseColor()
@@ -179,7 +184,7 @@ public class TileEntityBanner extends TileEntity
         }
     }
 
-    public static void func_184248_a(ItemStack p_184248_0_, EnumDyeColor p_184248_1_)
+    public static void addBaseColorTag(ItemStack p_184248_0_, EnumDyeColor p_184248_1_)
     {
         NBTTagCompound nbttagcompound = p_184248_0_.getSubCompound("BlockEntityTag", true);
         nbttagcompound.setInteger("Base", p_184248_1_.getDyeDamage());
@@ -246,14 +251,14 @@ public class TileEntityBanner extends TileEntity
         HALF_VERTICAL_MIRROR("half_vertical_right", "vhr", " ##", " ##", " ##"),
         HALF_HORIZONTAL_MIRROR("half_horizontal_bottom", "hhb", "   ", "###", "###"),
         BORDER("border", "bo", "###", "# #", "###"),
-        CURLY_BORDER("curly_border", "cbo", new ItemStack(Blocks.vine)),
-        CREEPER("creeper", "cre", new ItemStack(Items.skull, 1, 4)),
+        CURLY_BORDER("curly_border", "cbo", new ItemStack(Blocks.VINE)),
+        CREEPER("creeper", "cre", new ItemStack(Items.SKULL, 1, 4)),
         GRADIENT("gradient", "gra", "# #", " # ", " # "),
         GRADIENT_UP("gradient_up", "gru", " # ", " # ", "# #"),
-        BRICKS("bricks", "bri", new ItemStack(Blocks.brick_block)),
-        SKULL("skull", "sku", new ItemStack(Items.skull, 1, 1)),
-        FLOWER("flower", "flo", new ItemStack(Blocks.red_flower, 1, BlockFlower.EnumFlowerType.OXEYE_DAISY.getMeta())),
-        MOJANG("mojang", "moj", new ItemStack(Items.golden_apple, 1, 1));
+        BRICKS("bricks", "bri", new ItemStack(Blocks.BRICK_BLOCK)),
+        SKULL("skull", "sku", new ItemStack(Items.SKULL, 1, 1)),
+        FLOWER("flower", "flo", new ItemStack(Blocks.RED_FLOWER, 1, BlockFlower.EnumFlowerType.OXEYE_DAISY.getMeta())),
+        MOJANG("mojang", "moj", new ItemStack(Items.GOLDEN_APPLE, 1, 1));
 
         /** The name used to represent this pattern. */
         private String patternName;
@@ -338,6 +343,7 @@ public class TileEntityBanner extends TileEntity
         /**
          * Retrieves an instance of a banner pattern by its short string id.
          */
+        @Nullable
         @SideOnly(Side.CLIENT)
         public static TileEntityBanner.EnumBannerPattern getPatternByID(String id)
         {

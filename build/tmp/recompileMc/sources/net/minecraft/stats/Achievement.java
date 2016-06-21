@@ -117,13 +117,13 @@ public class Achievement extends StatBase
     public ITextComponent getStatName()
     {
         ITextComponent itextcomponent = super.getStatName();
-        itextcomponent.getChatStyle().setColor(this.getSpecial() ? TextFormatting.DARK_PURPLE : TextFormatting.GREEN);
+        itextcomponent.getStyle().setColor(this.getSpecial() ? TextFormatting.DARK_PURPLE : TextFormatting.GREEN);
         return itextcomponent;
     }
 
-    public Achievement func_150953_b(Class <? extends IJsonSerializable > p_150953_1_)
+    public Achievement setSerializableClazz(Class <? extends IJsonSerializable > clazz)
     {
-        return (Achievement)super.func_150953_b(p_150953_1_);
+        return (Achievement)super.setSerializableClazz(clazz);
     }
 
     /**

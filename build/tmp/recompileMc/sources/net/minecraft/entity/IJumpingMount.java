@@ -10,7 +10,7 @@ public interface IJumpingMount
 
     boolean canJump();
 
-    void func_184775_b(int p_184775_1_);
+    void handleStartJump(int p_184775_1_);
 
-    void func_184777_r_();
+    void handleStopJump();
 }

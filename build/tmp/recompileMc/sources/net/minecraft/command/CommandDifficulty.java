@@ -2,6 +2,7 @@ package net.minecraft.command;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -35,10 +36,6 @@ public class CommandDifficulty extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -50,7 +47,7 @@ public class CommandDifficulty extends CommandBase
         {
             EnumDifficulty enumdifficulty = this.getDifficultyFromCommand(args[0]);
             server.setDifficultyForAllWorlds(enumdifficulty);
-            notifyOperators(sender, this, "commands.difficulty.success", new Object[] {new TextComponentTranslation(enumdifficulty.getDifficultyResourceKey(), new Object[0])});
+            notifyCommandListener(sender, this, "commands.difficulty.success", new Object[] {new TextComponentTranslation(enumdifficulty.getDifficultyResourceKey(), new Object[0])});
         }
     }
 
@@ -59,7 +56,7 @@ public class CommandDifficulty extends CommandBase
         return !difficultyString.equalsIgnoreCase("peaceful") && !difficultyString.equalsIgnoreCase("p") ? (!difficultyString.equalsIgnoreCase("easy") && !difficultyString.equalsIgnoreCase("e") ? (!difficultyString.equalsIgnoreCase("normal") && !difficultyString.equalsIgnoreCase("n") ? (!difficultyString.equalsIgnoreCase("hard") && !difficultyString.equalsIgnoreCase("h") ? EnumDifficulty.getDifficultyEnum(parseInt(difficultyString, 0, 3)) : EnumDifficulty.HARD) : EnumDifficulty.NORMAL) : EnumDifficulty.EASY) : EnumDifficulty.PEACEFUL;
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"peaceful", "easy", "normal", "hard"}): Collections.<String>emptyList();
     }

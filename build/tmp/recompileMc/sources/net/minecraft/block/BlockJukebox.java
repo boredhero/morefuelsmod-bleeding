@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -27,12 +28,12 @@ public class BlockJukebox extends BlockContainer
 
     protected BlockJukebox()
     {
-        super(Material.wood, MapColor.dirtColor);
+        super(Material.WOOD, MapColor.DIRT);
         this.setDefaultState(this.blockState.getBaseState().withProperty(HAS_RECORD, Boolean.valueOf(false)));
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (((Boolean)state.getValue(HAS_RECORD)).booleanValue())
         {
@@ -74,7 +75,7 @@ public class BlockJukebox extends BlockContainer
 
                 if (itemstack != null)
                 {
-                    worldIn.playAuxSFX(1010, pos, 0);
+                    worldIn.playEvent(1010, pos, 0);
                     worldIn.playRecord(pos, (SoundEvent)null);
                     blockjukebox$tileentityjukebox.setRecord((ItemStack)null);
                     float f = 0.7F;
@@ -130,7 +131,7 @@ public class BlockJukebox extends BlockContainer
 
             if (itemstack != null)
             {
-                return Item.getIdFromItem(itemstack.getItem()) + 1 - Item.getIdFromItem(Items.record_13);
+                return Item.getIdFromItem(itemstack.getItem()) + 1 - Item.getIdFromItem(Items.RECORD_13);
             }
         }
 
@@ -184,7 +185,7 @@ public class BlockJukebox extends BlockContainer
                 }
             }
 
-            public void writeToNBT(NBTTagCompound compound)
+            public NBTTagCompound writeToNBT(NBTTagCompound compound)
             {
                 super.writeToNBT(compound);
 
@@ -192,14 +193,17 @@ public class BlockJukebox extends BlockContainer
                 {
                     compound.setTag("RecordItem", this.getRecord().writeToNBT(new NBTTagCompound()));
                 }
+
+                return compound;
             }
 
+            @Nullable
             public ItemStack getRecord()
             {
                 return this.record;
             }
 
-            public void setRecord(ItemStack recordStack)
+            public void setRecord(@Nullable ItemStack recordStack)
             {
                 this.record = recordStack;
                 this.markDirty();

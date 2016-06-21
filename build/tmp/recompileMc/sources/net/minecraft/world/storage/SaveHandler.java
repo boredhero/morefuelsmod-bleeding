@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -21,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 public class SaveHandler implements ISaveHandler, IPlayerFileData
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /** The directory in which to save world data. */
     private final File worldDirectory;
     /** The directory in which to save player data. */
@@ -152,7 +153,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
     /**
      * Saves the given World Info with the given NBTTagCompound as the Player.
      */
-    public void saveWorldInfoWithPlayer(WorldInfo worldInformation, NBTTagCompound tagCompound)
+    public void saveWorldInfoWithPlayer(WorldInfo worldInformation, @Nullable NBTTagCompound tagCompound)
     {
         NBTTagCompound nbttagcompound = worldInformation.cloneNBTCompound(tagCompound);
         NBTTagCompound nbttagcompound1 = new NBTTagCompound();
@@ -207,10 +208,9 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
     {
         try
         {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            player.writeToNBT(nbttagcompound);
-            File file1 = new File(this.playersDirectory, player.getUniqueID().toString() + ".dat.tmp");
-            File file2 = new File(this.playersDirectory, player.getUniqueID().toString() + ".dat");
+            NBTTagCompound nbttagcompound = player.writeToNBT(new NBTTagCompound());
+            File file1 = new File(this.playersDirectory, player.getCachedUniqueIdString() + ".dat.tmp");
+            File file2 = new File(this.playersDirectory, player.getCachedUniqueIdString() + ".dat");
             CompressedStreamTools.writeCompressed(nbttagcompound, new FileOutputStream(file1));
 
             if (file2.exists())
@@ -223,7 +223,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         }
         catch (Exception var5)
         {
-            logger.warn("Failed to save player data for " + player.getName());
+            LOGGER.warn("Failed to save player data for " + player.getName());
         }
     }
 
@@ -236,7 +236,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
 
         try
         {
-            File file1 = new File(this.playersDirectory, player.getUniqueID().toString() + ".dat");
+            File file1 = new File(this.playersDirectory, player.getCachedUniqueIdString() + ".dat");
 
             if (file1.exists() && file1.isFile())
             {
@@ -245,7 +245,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         }
         catch (Exception var4)
         {
-            logger.warn("Failed to load player data for " + player.getName());
+            LOGGER.warn("Failed to load player data for " + player.getName());
         }
 
         if (nbttagcompound != null)
@@ -318,7 +318,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         }
         catch (Exception exception)
         {
-            logger.warn("Failed to load player data for " + player.getName());
+            LOGGER.warn("Failed to load player data for " + player.getName());
         }
         return null;
     }

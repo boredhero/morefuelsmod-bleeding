@@ -10,7 +10,7 @@ public class ItemNameTag extends Item
 {
     public ItemNameTag()
     {
-        this.setCreativeTab(CreativeTabs.tabTools);
+        this.setCreativeTab(CreativeTabs.TOOLS);
     }
 
     /**

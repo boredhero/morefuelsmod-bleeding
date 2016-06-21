@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
@@ -41,7 +42,7 @@ public class EntityPigZombie extends EntityZombie
         this.isImmuneToFire = true;
     }
 
-    public void setRevengeTarget(EntityLivingBase livingBase)
+    public void setRevengeTarget(@Nullable EntityLivingBase livingBase)
     {
         super.setRevengeTarget(livingBase);
 
@@ -60,7 +61,7 @@ public class EntityPigZombie extends EntityZombie
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
-        this.getEntityAttribute(reinforcementChance).setBaseValue(0.0D);
+        this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(0.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(5.0D);
     }
@@ -93,7 +94,7 @@ public class EntityPigZombie extends EntityZombie
 
         if (this.randomSoundDelay > 0 && --this.randomSoundDelay == 0)
         {
-            this.playSound(SoundEvents.entity_zombie_pig_angry, this.getSoundVolume() * 2.0F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
+            this.playSound(SoundEvents.ENTITY_ZOMBIE_PIG_ANGRY, this.getSoundVolume() * 2.0F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F) * 1.8F);
         }
 
         if (this.angerLevel > 0 && this.angerTargetUUID != null && this.getAITarget() == null)
@@ -120,35 +121,35 @@ public class EntityPigZombie extends EntityZombie
      */
     public boolean isNotColliding()
     {
-        return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCubes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.isAnyLiquid(this.getEntityBoundingBox());
+        return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.containsAnyLiquid(this.getEntityBoundingBox());
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setShort("Anger", (short)this.angerLevel);
+        super.writeEntityToNBT(compound);
+        compound.setShort("Anger", (short)this.angerLevel);
 
         if (this.angerTargetUUID != null)
         {
-            tagCompound.setString("HurtBy", this.angerTargetUUID.toString());
+            compound.setString("HurtBy", this.angerTargetUUID.toString());
         }
         else
         {
-            tagCompound.setString("HurtBy", "");
+            compound.setString("HurtBy", "");
         }
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.angerLevel = tagCompund.getShort("Anger");
-        String s = tagCompund.getString("HurtBy");
+        super.readEntityFromNBT(compound);
+        this.angerLevel = compound.getShort("Anger");
+        String s = compound.getString("HurtBy");
 
         if (!s.isEmpty())
         {
@@ -207,25 +208,26 @@ public class EntityPigZombie extends EntityZombie
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_zombie_pig_ambient;
+        return SoundEvents.ENTITY_ZOMBIE_PIG_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_zombie_pig_hurt;
+        return SoundEvents.ENTITY_ZOMBIE_PIG_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_zombie_pig_death;
+        return SoundEvents.ENTITY_ZOMBIE_PIG_DEATH;
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_ZOMBIE_PIGMAN;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand p_184645_2_, ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
         return false;
     }
@@ -235,14 +237,15 @@ public class EntityPigZombie extends EntityZombie
      */
     protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty)
     {
-        this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.golden_sword));
+        this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
     }
 
     /**
      * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
      * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
      */
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         super.onInitialSpawn(difficulty, livingdata);
         this.setToNotVillager();

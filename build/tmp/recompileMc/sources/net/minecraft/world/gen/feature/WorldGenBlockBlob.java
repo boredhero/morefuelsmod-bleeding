@@ -8,14 +8,14 @@ import net.minecraft.world.World;
 
 public class WorldGenBlockBlob extends WorldGenerator
 {
-    private final Block field_150545_a;
-    private final int field_150544_b;
+    private final Block block;
+    private final int startRadius;
 
-    public WorldGenBlockBlob(Block p_i45450_1_, int p_i45450_2_)
+    public WorldGenBlockBlob(Block blockIn, int startRadiusIn)
     {
         super(false);
-        this.field_150545_a = p_i45450_1_;
-        this.field_150544_b = p_i45450_2_;
+        this.block = blockIn;
+        this.startRadius = startRadiusIn;
     }
 
     public boolean generate(World worldIn, Random rand, BlockPos position)
@@ -33,7 +33,7 @@ public class WorldGenBlockBlob extends WorldGenerator
 
                     Block block = worldIn.getBlockState(position.down()).getBlock();
 
-                    if (block != Blocks.grass && block != Blocks.dirt && block != Blocks.stone)
+                    if (block != Blocks.GRASS && block != Blocks.DIRT && block != Blocks.STONE)
                     {
                         break label0;
                     }
@@ -44,7 +44,7 @@ public class WorldGenBlockBlob extends WorldGenerator
                     return false;
                 }
 
-                int i1 = this.field_150544_b;
+                int i1 = this.startRadius;
 
                 for (int i = 0; i1 >= 0 && i < 3; ++i)
                 {
@@ -57,7 +57,7 @@ public class WorldGenBlockBlob extends WorldGenerator
                     {
                         if (blockpos.distanceSq(position) <= (double)(f * f))
                         {
-                            worldIn.setBlockState(blockpos, this.field_150545_a.getDefaultState(), 4);
+                            worldIn.setBlockState(blockpos, this.block.getDefaultState(), 4);
                         }
                     }
 

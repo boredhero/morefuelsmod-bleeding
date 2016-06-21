@@ -504,12 +504,6 @@ public class GuiEditArrayEntries extends GuiListExtended
         /**
          * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
          * clicked and the list should not be dragged.
-         *  
-         * @param mouseX Scaled X coordinate of the mouse on the entire screen
-         * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-         * @param mouseEvent The button on the mouse that was pressed
-         * @param relativeX Relative X coordinate of the mouse within this entry.
-         * @param relativeY Relative Y coordinate of the mouse within this entry.
          */
         @Override
         public boolean mousePressed(int index, int x, int y, int mouseEvent, int relativeX, int relativeY)
@@ -619,12 +613,6 @@ public class GuiEditArrayEntries extends GuiListExtended
         /**
          * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
          * clicked and the list should not be dragged.
-         *  
-         * @param mouseX Scaled X coordinate of the mouse on the entire screen
-         * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-         * @param mouseEvent The button on the mouse that was pressed
-         * @param relativeX Relative X coordinate of the mouse within this entry.
-         * @param relativeY Relative Y coordinate of the mouse within this entry.
          */
         @Override
         public boolean mousePressed(int index, int x, int y, int mouseEvent, int relativeX, int relativeY)

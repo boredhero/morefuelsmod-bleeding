@@ -24,7 +24,7 @@ public class DataFixer implements IDataFixer
     public NBTTagCompound process(IFixType type, NBTTagCompound compound)
     {
         int i = compound.hasKey("DataVersion", 99) ? compound.getInteger("DataVersion") : -1;
-        return i >= 169 ? compound : this.process(type, compound, i);
+        return i >= 184 ? compound : this.process(type, compound, i);
     }
 
     public NBTTagCompound process(IFixType type, NBTTagCompound compound, int versionIn)

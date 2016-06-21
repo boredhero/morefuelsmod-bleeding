@@ -16,41 +16,41 @@ import net.minecraft.util.text.ITextComponent;
 
 public class ServerStatusResponse
 {
-    private ITextComponent serverMotd;
-    private ServerStatusResponse.Players playerCount;
-    private ServerStatusResponse.Version protocolVersion;
+    private ITextComponent description;
+    private ServerStatusResponse.Players players;
+    private ServerStatusResponse.Version version;
     private String favicon;
 
     public ITextComponent getServerDescription()
     {
-        return this.serverMotd;
+        return this.description;
     }
 
-    public void setServerDescription(ITextComponent motd)
+    public void setServerDescription(ITextComponent descriptionIn)
     {
-        this.serverMotd = motd;
+        this.description = descriptionIn;
         invalidateJson();
     }
 
-    public ServerStatusResponse.Players getPlayerCountData()
+    public ServerStatusResponse.Players getPlayers()
     {
-        return this.playerCount;
+        return this.players;
     }
 
-    public void setPlayerCountData(ServerStatusResponse.Players countData)
+    public void setPlayers(ServerStatusResponse.Players playersIn)
     {
-        this.playerCount = countData;
+        this.players = playersIn;
         invalidateJson();
     }
 
-    public ServerStatusResponse.Version getProtocolVersionInfo()
+    public ServerStatusResponse.Version getVersion()
     {
-        return this.protocolVersion;
+        return this.version;
     }
 
-    public void setProtocolVersionInfo(ServerStatusResponse.Version protocolVersionData)
+    public void setVersion(ServerStatusResponse.Version versionIn)
     {
-        this.protocolVersion = protocolVersionData;
+        this.version = versionIn;
         invalidateJson();
     }
 
@@ -167,12 +167,12 @@ public class ServerStatusResponse
 
                 if (jsonobject.has("players"))
                 {
-                    serverstatusresponse.setPlayerCountData((ServerStatusResponse.Players)p_deserialize_3_.deserialize(jsonobject.get("players"), ServerStatusResponse.Players.class));
+                    serverstatusresponse.setPlayers((ServerStatusResponse.Players)p_deserialize_3_.deserialize(jsonobject.get("players"), ServerStatusResponse.Players.class));
                 }
 
                 if (jsonobject.has("version"))
                 {
-                    serverstatusresponse.setProtocolVersionInfo((ServerStatusResponse.Version)p_deserialize_3_.deserialize(jsonobject.get("version"), ServerStatusResponse.Version.class));
+                    serverstatusresponse.setVersion((ServerStatusResponse.Version)p_deserialize_3_.deserialize(jsonobject.get("version"), ServerStatusResponse.Version.class));
                 }
 
                 if (jsonobject.has("favicon"))
@@ -193,14 +193,14 @@ public class ServerStatusResponse
                     jsonobject.add("description", p_serialize_3_.serialize(p_serialize_1_.getServerDescription()));
                 }
 
-                if (p_serialize_1_.getPlayerCountData() != null)
+                if (p_serialize_1_.getPlayers() != null)
                 {
-                    jsonobject.add("players", p_serialize_3_.serialize(p_serialize_1_.getPlayerCountData()));
+                    jsonobject.add("players", p_serialize_3_.serialize(p_serialize_1_.getPlayers()));
                 }
 
-                if (p_serialize_1_.getProtocolVersionInfo() != null)
+                if (p_serialize_1_.getVersion() != null)
                 {
-                    jsonobject.add("version", p_serialize_3_.serialize(p_serialize_1_.getProtocolVersionInfo()));
+                    jsonobject.add("version", p_serialize_3_.serialize(p_serialize_1_.getVersion()));
                 }
 
                 if (p_serialize_1_.getFavicon() != null)

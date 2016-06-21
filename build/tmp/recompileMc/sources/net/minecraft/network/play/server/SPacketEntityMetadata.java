@@ -18,11 +18,11 @@ public class SPacketEntityMetadata implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketEntityMetadata(int entityIdIn, EntityDataManager dataManagerIn, boolean p_i46917_3_)
+    public SPacketEntityMetadata(int entityIdIn, EntityDataManager dataManagerIn, boolean sendAll)
     {
         this.entityId = entityIdIn;
 
-        if (p_i46917_3_)
+        if (sendAll)
         {
             this.dataManagerEntries = dataManagerIn.getAll();
         }

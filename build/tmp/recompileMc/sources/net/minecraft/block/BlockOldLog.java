@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.base.Predicate;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -17,7 +18,7 @@ public class BlockOldLog extends BlockLog
 {
     public static final PropertyEnum<BlockPlanks.EnumType> VARIANT = PropertyEnum.<BlockPlanks.EnumType>create("variant", BlockPlanks.EnumType.class, new Predicate<BlockPlanks.EnumType>()
     {
-        public boolean apply(BlockPlanks.EnumType p_apply_1_)
+        public boolean apply(@Nullable BlockPlanks.EnumType p_apply_1_)
         {
             return p_apply_1_.getMetadata() < 4;
         }
@@ -50,7 +51,7 @@ public class BlockOldLog extends BlockLog
                     case SPRUCE:
                         return BlockPlanks.EnumType.DARK_OAK.getMapColor();
                     case BIRCH:
-                        return MapColor.quartzColor;
+                        return MapColor.QUARTZ;
                     case JUNGLE:
                         return BlockPlanks.EnumType.SPRUCE.getMapColor();
                 }

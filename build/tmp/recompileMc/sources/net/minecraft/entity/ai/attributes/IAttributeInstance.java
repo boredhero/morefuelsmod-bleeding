@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.attributes;
 
 import java.util.Collection;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -25,6 +26,7 @@ public interface IAttributeInstance
     /**
      * Returns attribute modifier, if any, by the given UUID
      */
+    @Nullable
     AttributeModifier getModifier(UUID uuid);
 
     void applyModifier(AttributeModifier modifier);

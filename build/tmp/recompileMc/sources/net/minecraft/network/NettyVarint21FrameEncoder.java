@@ -2,8 +2,10 @@ package net.minecraft.network;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.handler.codec.MessageToByteEncoder;
 
+@Sharable
 public class NettyVarint21FrameEncoder extends MessageToByteEncoder<ByteBuf>
 {
     protected void encode(ChannelHandlerContext p_encode_1_, ByteBuf p_encode_2_, ByteBuf p_encode_3_) throws Exception

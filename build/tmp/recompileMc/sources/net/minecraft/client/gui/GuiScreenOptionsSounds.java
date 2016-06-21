@@ -16,16 +16,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiScreenOptionsSounds extends GuiScreen
 {
-    private final GuiScreen field_146505_f;
+    private final GuiScreen parent;
     /** Reference to the GameSettings object. */
     private final GameSettings game_settings_4;
-    protected String field_146507_a = "Options";
-    private String field_146508_h;
+    protected String title = "Options";
+    private String offDisplayString;
 
-    public GuiScreenOptionsSounds(GuiScreen p_i45025_1_, GameSettings p_i45025_2_)
+    public GuiScreenOptionsSounds(GuiScreen parentIn, GameSettings settingsIn)
     {
-        this.field_146505_f = p_i45025_1_;
-        this.game_settings_4 = p_i45025_2_;
+        this.parent = parentIn;
+        this.game_settings_4 = settingsIn;
     }
 
     /**
@@ -35,8 +35,8 @@ public class GuiScreenOptionsSounds extends GuiScreen
     public void initGui()
     {
         int i = 0;
-        this.field_146507_a = I18n.format("options.sounds.title", new Object[0]);
-        this.field_146508_h = I18n.format("options.off", new Object[0]);
+        this.title = I18n.format("options.sounds.title", new Object[0]);
+        this.offDisplayString = I18n.format("options.off", new Object[0]);
         this.buttonList.add(new GuiScreenOptionsSounds.Button(SoundCategory.MASTER.ordinal(), this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), SoundCategory.MASTER, true));
         i = i + 2;
 
@@ -66,7 +66,7 @@ public class GuiScreenOptionsSounds extends GuiScreen
             if (button.id == 200)
             {
                 this.mc.gameSettings.saveOptions();
-                this.mc.displayGuiScreen(this.field_146505_f);
+                this.mc.displayGuiScreen(this.parent);
             }
             else if (button.id == 201)
             {
@@ -79,39 +79,35 @@ public class GuiScreenOptionsSounds extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
         this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRendererObj, this.field_146507_a, this.width / 2, 15, 16777215);
+        this.drawCenteredString(this.fontRendererObj, this.title, this.width / 2, 15, 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    protected String func_184097_a(SoundCategory p_184097_1_)
+    protected String getDisplayString(SoundCategory category)
     {
-        float f = this.game_settings_4.getSoundLevel(p_184097_1_);
-        return f == 0.0F ? this.field_146508_h : (int)(f * 100.0F) + "%";
+        float f = this.game_settings_4.getSoundLevel(category);
+        return f == 0.0F ? this.offDisplayString : (int)(f * 100.0F) + "%";
     }
 
     @SideOnly(Side.CLIENT)
     class Button extends GuiButton
     {
-        private final SoundCategory field_184063_r;
-        private final String field_146152_s;
-        public float field_146156_o = 1.0F;
-        public boolean field_146155_p;
+        private final SoundCategory category;
+        private final String categoryName;
+        public float volume = 1.0F;
+        public boolean pressed;
 
-        public Button(int p_i46744_2_, int p_i46744_3_, int p_i46744_4_, SoundCategory p_i46744_5_, boolean p_i46744_6_)
+        public Button(int p_i46744_2_, int x, int y, SoundCategory categoryIn, boolean master)
         {
-            super(p_i46744_2_, p_i46744_3_, p_i46744_4_, p_i46744_6_ ? 310 : 150, 20, "");
-            this.field_184063_r = p_i46744_5_;
-            this.field_146152_s = I18n.format("soundCategory." + p_i46744_5_.getName(), new Object[0]);
-            this.displayString = this.field_146152_s + ": " + GuiScreenOptionsSounds.this.func_184097_a(p_i46744_5_);
-            this.field_146156_o = GuiScreenOptionsSounds.this.game_settings_4.getSoundLevel(p_i46744_5_);
+            super(p_i46744_2_, x, y, master ? 310 : 150, 20, "");
+            this.category = categoryIn;
+            this.categoryName = I18n.format("soundCategory." + categoryIn.getName(), new Object[0]);
+            this.displayString = this.categoryName + ": " + GuiScreenOptionsSounds.this.getDisplayString(categoryIn);
+            this.volume = GuiScreenOptionsSounds.this.game_settings_4.getSoundLevel(categoryIn);
         }
 
         /**
@@ -130,18 +126,18 @@ public class GuiScreenOptionsSounds extends GuiScreen
         {
             if (this.visible)
             {
-                if (this.field_146155_p)
+                if (this.pressed)
                 {
-                    this.field_146156_o = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
-                    this.field_146156_o = MathHelper.clamp_float(this.field_146156_o, 0.0F, 1.0F);
-                    mc.gameSettings.setSoundLevel(this.field_184063_r, this.field_146156_o);
+                    this.volume = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+                    this.volume = MathHelper.clamp_float(this.volume, 0.0F, 1.0F);
+                    mc.gameSettings.setSoundLevel(this.category, this.volume);
                     mc.gameSettings.saveOptions();
-                    this.displayString = this.field_146152_s + ": " + GuiScreenOptionsSounds.this.func_184097_a(this.field_184063_r);
+                    this.displayString = this.categoryName + ": " + GuiScreenOptionsSounds.this.getDisplayString(this.category);
                 }
 
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                this.drawTexturedModalRect(this.xPosition + (int)(this.field_146156_o * (float)(this.width - 8)), this.yPosition, 0, 66, 4, 20);
-                this.drawTexturedModalRect(this.xPosition + (int)(this.field_146156_o * (float)(this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
+                this.drawTexturedModalRect(this.xPosition + (int)(this.volume * (float)(this.width - 8)), this.yPosition, 0, 66, 4, 20);
+                this.drawTexturedModalRect(this.xPosition + (int)(this.volume * (float)(this.width - 8)) + 4, this.yPosition, 196, 66, 4, 20);
             }
         }
 
@@ -153,12 +149,12 @@ public class GuiScreenOptionsSounds extends GuiScreen
         {
             if (super.mousePressed(mc, mouseX, mouseY))
             {
-                this.field_146156_o = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
-                this.field_146156_o = MathHelper.clamp_float(this.field_146156_o, 0.0F, 1.0F);
-                mc.gameSettings.setSoundLevel(this.field_184063_r, this.field_146156_o);
+                this.volume = (float)(mouseX - (this.xPosition + 4)) / (float)(this.width - 8);
+                this.volume = MathHelper.clamp_float(this.volume, 0.0F, 1.0F);
+                mc.gameSettings.setSoundLevel(this.category, this.volume);
                 mc.gameSettings.saveOptions();
-                this.displayString = this.field_146152_s + ": " + GuiScreenOptionsSounds.this.func_184097_a(this.field_184063_r);
-                this.field_146155_p = true;
+                this.displayString = this.categoryName + ": " + GuiScreenOptionsSounds.this.getDisplayString(this.category);
+                this.pressed = true;
                 return true;
             }
             else
@@ -176,12 +172,12 @@ public class GuiScreenOptionsSounds extends GuiScreen
          */
         public void mouseReleased(int mouseX, int mouseY)
         {
-            if (this.field_146155_p)
+            if (this.pressed)
             {
-                GuiScreenOptionsSounds.this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.ui_button_click, 1.0F));
+                GuiScreenOptionsSounds.this.mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
             }
 
-            this.field_146155_p = false;
+            this.pressed = false;
         }
     }
 }

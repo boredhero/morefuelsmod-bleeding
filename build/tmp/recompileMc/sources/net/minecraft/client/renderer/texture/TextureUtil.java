@@ -21,16 +21,16 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class TextureUtil
 {
-    private static final Logger logger = LogManager.getLogger();
-    private static final IntBuffer dataBuffer = GLAllocation.createDirectIntBuffer(4194304);
-    public static final DynamicTexture missingTexture = new DynamicTexture(16, 16);
-    public static final int[] missingTextureData = missingTexture.getTextureData();
-    private static final float[] colorGammas;
-    private static final int[] mipmapBuffer;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final IntBuffer DATA_BUFFER = GLAllocation.createDirectIntBuffer(4194304);
+    public static final DynamicTexture MISSING_TEXTURE = new DynamicTexture(16, 16);
+    public static final int[] MISSING_TEXTURE_DATA = MISSING_TEXTURE.getTextureData();
+    private static final float[] COLOR_GAMMAS;
+    private static final int[] MIPMAP_BUFFER;
 
     private static float getColorGamma(int p_188543_0_)
     {
-        return colorGammas[p_188543_0_ & 255];
+        return COLOR_GAMMAS[p_188543_0_ & 255];
     }
 
     public static int glGenTextures()
@@ -115,10 +115,10 @@ public class TextureUtil
         }
         else
         {
-            mipmapBuffer[0] = p_147943_0_;
-            mipmapBuffer[1] = p_147943_1_;
-            mipmapBuffer[2] = p_147943_2_;
-            mipmapBuffer[3] = p_147943_3_;
+            MIPMAP_BUFFER[0] = p_147943_0_;
+            MIPMAP_BUFFER[1] = p_147943_1_;
+            MIPMAP_BUFFER[2] = p_147943_2_;
+            MIPMAP_BUFFER[3] = p_147943_3_;
             float f = 0.0F;
             float f1 = 0.0F;
             float f2 = 0.0F;
@@ -126,12 +126,12 @@ public class TextureUtil
 
             for (int i = 0; i < 4; ++i)
             {
-                if (mipmapBuffer[i] >> 24 != 0)
+                if (MIPMAP_BUFFER[i] >> 24 != 0)
                 {
-                    f += getColorGamma(mipmapBuffer[i] >> 24);
-                    f1 += getColorGamma(mipmapBuffer[i] >> 16);
-                    f2 += getColorGamma(mipmapBuffer[i] >> 8);
-                    f3 += getColorGamma(mipmapBuffer[i] >> 0);
+                    f += getColorGamma(MIPMAP_BUFFER[i] >> 24);
+                    f1 += getColorGamma(MIPMAP_BUFFER[i] >> 16);
+                    f2 += getColorGamma(MIPMAP_BUFFER[i] >> 8);
+                    f3 += getColorGamma(MIPMAP_BUFFER[i] >> 0);
                 }
             }
 
@@ -185,14 +185,14 @@ public class TextureUtil
             l = Math.min(i, p_147947_3_ - k);
             int i1 = p_147947_2_ * l;
             copyToBufferPos(p_147947_1_, j, i1);
-            GlStateManager.glTexSubImage2D(3553, p_147947_0_, p_147947_4_, p_147947_5_ + k, p_147947_2_, l, 32993, 33639, dataBuffer);
+            GlStateManager.glTexSubImage2D(3553, p_147947_0_, p_147947_4_, p_147947_5_ + k, p_147947_2_, l, 32993, 33639, DATA_BUFFER);
         }
     }
 
-    public static int uploadTextureImageAllocate(int p_110989_0_, BufferedImage p_110989_1_, boolean p_110989_2_, boolean p_110989_3_)
+    public static int uploadTextureImageAllocate(int p_110989_0_, BufferedImage p_110989_1_, boolean blur, boolean clamp)
     {
         allocateTexture(p_110989_0_, p_110989_1_.getWidth(), p_110989_1_.getHeight());
-        return uploadTextureImageSub(p_110989_0_, p_110989_1_, 0, 0, p_110989_2_, p_110989_3_);
+        return uploadTextureImageSub(p_110989_0_, p_110989_1_, 0, 0, blur, clamp);
     }
 
     public static void allocateTexture(int p_110991_0_, int p_110991_1_, int p_110991_2_)
@@ -244,7 +244,7 @@ public class TextureUtil
             int k1 = i * j1;
             p_110993_0_.getRGB(0, i1, i, j1, aint, 0, i);
             copyToBuffer(aint, k1);
-            GlStateManager.glTexSubImage2D(3553, 0, p_110993_1_, p_110993_2_ + i1, i, j1, 32993, 33639, dataBuffer);
+            GlStateManager.glTexSubImage2D(3553, 0, p_110993_1_, p_110993_2_ + i1, i, j1, 32993, 33639, DATA_BUFFER);
         }
     }
 
@@ -295,9 +295,9 @@ public class TextureUtil
             aint = updateAnaglyph(p_110994_0_);
         }
 
-        dataBuffer.clear();
-        dataBuffer.put(aint, p_110994_1_, p_110994_2_);
-        dataBuffer.position(0).limit(p_110994_2_);
+        DATA_BUFFER.clear();
+        DATA_BUFFER.put(aint, p_110994_1_, p_110994_2_);
+        DATA_BUFFER.position(0).limit(p_110994_2_);
     }
 
     static void bindTexture(int p_94277_0_)
@@ -391,18 +391,18 @@ public class TextureUtil
 
         for (int l = 0; l < 16; ++l)
         {
-            System.arraycopy(l < k ? aint : aint1, 0, missingTextureData, 16 * l, k);
-            System.arraycopy(l < k ? aint1 : aint, 0, missingTextureData, 16 * l + k, k);
+            System.arraycopy(l < k ? aint : aint1, 0, MISSING_TEXTURE_DATA, 16 * l, k);
+            System.arraycopy(l < k ? aint1 : aint, 0, MISSING_TEXTURE_DATA, 16 * l + k, k);
         }
 
-        missingTexture.updateDynamicTexture();
-        colorGammas = new float[256];
+        MISSING_TEXTURE.updateDynamicTexture();
+        COLOR_GAMMAS = new float[256];
 
-        for (i = 0; i < colorGammas.length; ++i)
+        for (i = 0; i < COLOR_GAMMAS.length; ++i)
         {
-            colorGammas[i] = (float)Math.pow((double)((float)i / 255.0F), 2.2D);
+            COLOR_GAMMAS[i] = (float)Math.pow((double)((float)i / 255.0F), 2.2D);
         }
 
-        mipmapBuffer = new int[4];
+        MIPMAP_BUFFER = new int[4];
     }
 }

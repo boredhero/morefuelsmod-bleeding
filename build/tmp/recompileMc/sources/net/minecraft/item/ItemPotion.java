@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,13 +23,14 @@ public class ItemPotion extends Item
     public ItemPotion()
     {
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabs.tabBrewing);
+        this.setCreativeTab(CreativeTabs.BREWING);
     }
 
     /**
      * Called when the player finishes using this Item (E.g. finishes eating.). Not called when the player stops using
      * the Item before the action is complete.
      */
+    @Nullable
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
     {
         EntityPlayer entityplayer = entityLiving instanceof EntityPlayer ? (EntityPlayer)entityLiving : null;
@@ -48,19 +50,19 @@ public class ItemPotion extends Item
 
         if (entityplayer != null)
         {
-            entityplayer.addStat(StatList.func_188057_b(this));
+            entityplayer.addStat(StatList.getObjectUseStats(this));
         }
 
         if (entityplayer == null || !entityplayer.capabilities.isCreativeMode)
         {
             if (stack.stackSize <= 0)
             {
-                return new ItemStack(Items.glass_bottle);
+                return new ItemStack(Items.GLASS_BOTTLE);
             }
 
             if (entityplayer != null)
             {
-                entityplayer.inventory.addItemStackToInventory(new ItemStack(Items.glass_bottle));
+                entityplayer.inventory.addItemStackToInventory(new ItemStack(Items.GLASS_BOTTLE));
             }
         }
 
@@ -115,7 +117,7 @@ public class ItemPotion extends Item
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
     {
-        for (PotionType potiontype : PotionType.potionTypeRegistry)
+        for (PotionType potiontype : PotionType.REGISTRY)
         {
             subItems.add(PotionUtils.addPotionToItemStack(new ItemStack(itemIn), potiontype));
         }

@@ -9,8 +9,8 @@ import net.minecraft.world.World;
 
 public class WorldGenEndPodium extends WorldGenerator
 {
-    public static final BlockPos field_186139_a = BlockPos.ORIGIN;
-    public static final BlockPos field_186140_b = new BlockPos(field_186139_a.getX() - 4 & -16, 0, field_186139_a.getZ() - 4 & -16);
+    public static final BlockPos END_PODIUM_LOCATION = BlockPos.ORIGIN;
+    public static final BlockPos END_PODIUM_CHUNK_POS = new BlockPos(END_PODIUM_LOCATION.getX() - 4 & -16, 0, END_PODIUM_LOCATION.getZ() - 4 & -16);
     private final boolean activePortal;
 
     public WorldGenEndPodium(boolean activePortalIn)
@@ -30,42 +30,42 @@ public class WorldGenEndPodium extends WorldGenerator
                 {
                     if (d0 <= 2.5D)
                     {
-                        this.setBlockAndNotifyAdequately(worldIn, blockpos$mutableblockpos, Blocks.bedrock.getDefaultState());
+                        this.setBlockAndNotifyAdequately(worldIn, blockpos$mutableblockpos, Blocks.BEDROCK.getDefaultState());
                     }
                     else if (blockpos$mutableblockpos.getY() < position.getY())
                     {
-                        this.setBlockAndNotifyAdequately(worldIn, blockpos$mutableblockpos, Blocks.end_stone.getDefaultState());
+                        this.setBlockAndNotifyAdequately(worldIn, blockpos$mutableblockpos, Blocks.END_STONE.getDefaultState());
                     }
                 }
                 else if (blockpos$mutableblockpos.getY() > position.getY())
                 {
-                    this.setBlockAndNotifyAdequately(worldIn, blockpos$mutableblockpos, Blocks.air.getDefaultState());
+                    this.setBlockAndNotifyAdequately(worldIn, blockpos$mutableblockpos, Blocks.AIR.getDefaultState());
                 }
                 else if (d0 > 2.5D)
                 {
-                    this.setBlockAndNotifyAdequately(worldIn, blockpos$mutableblockpos, Blocks.bedrock.getDefaultState());
+                    this.setBlockAndNotifyAdequately(worldIn, blockpos$mutableblockpos, Blocks.BEDROCK.getDefaultState());
                 }
                 else if (this.activePortal)
                 {
-                    this.setBlockAndNotifyAdequately(worldIn, new BlockPos(blockpos$mutableblockpos), Blocks.end_portal.getDefaultState());
+                    this.setBlockAndNotifyAdequately(worldIn, new BlockPos(blockpos$mutableblockpos), Blocks.END_PORTAL.getDefaultState());
                 }
                 else
                 {
-                    this.setBlockAndNotifyAdequately(worldIn, new BlockPos(blockpos$mutableblockpos), Blocks.air.getDefaultState());
+                    this.setBlockAndNotifyAdequately(worldIn, new BlockPos(blockpos$mutableblockpos), Blocks.AIR.getDefaultState());
                 }
             }
         }
 
         for (int i = 0; i < 4; ++i)
         {
-            this.setBlockAndNotifyAdequately(worldIn, position.up(i), Blocks.bedrock.getDefaultState());
+            this.setBlockAndNotifyAdequately(worldIn, position.up(i), Blocks.BEDROCK.getDefaultState());
         }
 
         BlockPos blockpos = position.up(2);
 
         for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
         {
-            this.setBlockAndNotifyAdequately(worldIn, blockpos.offset(enumfacing), Blocks.torch.getDefaultState().withProperty(BlockTorch.FACING, enumfacing));
+            this.setBlockAndNotifyAdequately(worldIn, blockpos.offset(enumfacing), Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, enumfacing));
         }
 
         return true;

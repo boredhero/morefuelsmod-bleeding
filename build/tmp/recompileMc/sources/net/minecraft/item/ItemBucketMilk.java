@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,13 +16,14 @@ public class ItemBucketMilk extends Item
     public ItemBucketMilk()
     {
         this.setMaxStackSize(1);
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
     }
 
     /**
      * Called when the player finishes using this Item (E.g. finishes eating.). Not called when the player stops using
      * the Item before the action is complete.
      */
+    @Nullable
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
     {
         if (entityLiving instanceof EntityPlayer && !((EntityPlayer)entityLiving).capabilities.isCreativeMode)
@@ -36,10 +38,10 @@ public class ItemBucketMilk extends Item
 
         if (entityLiving instanceof EntityPlayer)
         {
-            ((EntityPlayer)entityLiving).addStat(StatList.func_188057_b(this));
+            ((EntityPlayer)entityLiving).addStat(StatList.getObjectUseStats(this));
         }
 
-        return stack.stackSize <= 0 ? new ItemStack(Items.bucket) : stack;
+        return stack.stackSize <= 0 ? new ItemStack(Items.BUCKET) : stack;
     }
 
     /**
@@ -62,5 +64,10 @@ public class ItemBucketMilk extends Item
     {
         playerIn.setActiveHand(hand);
         return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+    }
+
+    @Override
+    public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, net.minecraft.nbt.NBTTagCompound nbt) {
+        return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
     }
 }

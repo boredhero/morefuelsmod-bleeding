@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -24,18 +25,18 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockEnchantmentTable extends BlockContainer
 {
-    protected static final AxisAlignedBB field_185567_a = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
+    protected static final AxisAlignedBB AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
 
     protected BlockEnchantmentTable()
     {
-        super(Material.rock, MapColor.redColor);
+        super(Material.ROCK, MapColor.RED);
         this.setLightOpacity(0);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
-        return field_185567_a;
+        return AABB;
     }
 
     public boolean isFullCube(IBlockState state)
@@ -44,9 +45,9 @@ public class BlockEnchantmentTable extends BlockContainer
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState worldIn, World pos, BlockPos state, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-        super.randomDisplayTick(worldIn, pos, state, rand);
+        super.randomDisplayTick(stateIn, worldIn, pos, rand);
 
         for (int i = -2; i <= 2; ++i)
         {
@@ -61,16 +62,16 @@ public class BlockEnchantmentTable extends BlockContainer
                 {
                     for (int k = 0; k <= 1; ++k)
                     {
-                        BlockPos blockpos = state.add(i, k, j);
+                        BlockPos blockpos = pos.add(i, k, j);
 
-                        if (pos.getBlockState(blockpos).getBlock() == Blocks.bookshelf)
+                        if (worldIn.getBlockState(blockpos).getBlock() == Blocks.BOOKSHELF)
                         {
-                            if (!pos.isAirBlock(state.add(i / 2, 0, j / 2)))
+                            if (!worldIn.isAirBlock(pos.add(i / 2, 0, j / 2)))
                             {
                                 break;
                             }
 
-                            pos.spawnParticle(EnumParticleTypes.ENCHANTMENT_TABLE, (double)state.getX() + 0.5D, (double)state.getY() + 2.0D, (double)state.getZ() + 0.5D, (double)((float)i + rand.nextFloat()) - 0.5D, (double)((float)k - rand.nextFloat() - 1.0F), (double)((float)j + rand.nextFloat()) - 0.5D, new int[0]);
+                            worldIn.spawnParticle(EnumParticleTypes.ENCHANTMENT_TABLE, (double)pos.getX() + 0.5D, (double)pos.getY() + 2.0D, (double)pos.getZ() + 0.5D, (double)((float)i + rand.nextFloat()) - 0.5D, (double)((float)k - rand.nextFloat() - 1.0F), (double)((float)j + rand.nextFloat()) - 0.5D, new int[0]);
                         }
                     }
                 }
@@ -102,7 +103,7 @@ public class BlockEnchantmentTable extends BlockContainer
         return new TileEntityEnchantmentTable();
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {

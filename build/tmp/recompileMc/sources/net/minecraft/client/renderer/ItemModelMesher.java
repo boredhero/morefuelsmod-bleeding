@@ -3,6 +3,7 @@ package net.minecraft.client.renderer;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -65,6 +66,7 @@ public class ItemModelMesher
         return stack.getMaxDamage() > 0 ? 0 : stack.getMetadata();
     }
 
+    @Nullable
     protected IBakedModel getItemModel(Item item, int meta)
     {
         return (IBakedModel)this.simpleShapesCache.get(Integer.valueOf(this.getIndex(item, meta)));

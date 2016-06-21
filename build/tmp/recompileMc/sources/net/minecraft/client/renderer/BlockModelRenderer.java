@@ -2,6 +2,7 @@ package net.minecraft.client.renderer;
 
 import java.util.BitSet;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -38,7 +39,7 @@ public class BlockModelRenderer
 
     public boolean renderModel(IBlockAccess worldIn, IBakedModel modelIn, IBlockState stateIn, BlockPos posIn, VertexBuffer buffer, boolean checkSides, long rand)
     {
-        boolean flag = Minecraft.isAmbientOcclusionEnabled() && stateIn.getlightValue() == 0 && modelIn.isAmbientOcclusion();
+        boolean flag = Minecraft.isAmbientOcclusionEnabled() && stateIn.getLightValue() == 0 && modelIn.isAmbientOcclusion();
 
         try
         {
@@ -111,17 +112,17 @@ public class BlockModelRenderer
         return flag;
     }
 
-    private void renderQuadsSmooth(IBlockAccess p_187492_1_, IBlockState p_187492_2_, BlockPos p_187492_3_, VertexBuffer p_187492_4_, List<BakedQuad> p_187492_5_, float[] p_187492_6_, BitSet p_187492_7_, BlockModelRenderer.AmbientOcclusionFace p_187492_8_)
+    private void renderQuadsSmooth(IBlockAccess worldIn, IBlockState state, BlockPos pos, VertexBuffer p_187492_4_, List<BakedQuad> p_187492_5_, float[] p_187492_6_, BitSet p_187492_7_, BlockModelRenderer.AmbientOcclusionFace p_187492_8_)
     {
-        double d0 = (double)p_187492_3_.getX();
-        double d1 = (double)p_187492_3_.getY();
-        double d2 = (double)p_187492_3_.getZ();
-        Block block = p_187492_2_.getBlock();
+        double d0 = (double)pos.getX();
+        double d1 = (double)pos.getY();
+        double d2 = (double)pos.getZ();
+        Block block = state.getBlock();
         Block.EnumOffsetType block$enumoffsettype = block.getOffsetType();
 
         if (block$enumoffsettype != Block.EnumOffsetType.NONE)
         {
-            long i = MathHelper.getPositionRandom(p_187492_3_);
+            long i = MathHelper.getPositionRandom(pos);
             d0 += ((double)((float)(i >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
             d2 += ((double)((float)(i >> 24 & 15L) / 15.0F) - 0.5D) * 0.5D;
 
@@ -136,14 +137,21 @@ public class BlockModelRenderer
         for (int j = p_187492_5_.size(); l < j; ++l)
         {
             BakedQuad bakedquad = (BakedQuad)p_187492_5_.get(l);
-            this.fillQuadBounds(p_187492_2_, bakedquad.getVertexData(), bakedquad.getFace(), p_187492_6_, p_187492_7_);
-            p_187492_8_.updateVertexBrightness(p_187492_1_, p_187492_2_, p_187492_3_, bakedquad.getFace(), p_187492_6_, p_187492_7_);
+            this.fillQuadBounds(state, bakedquad.getVertexData(), bakedquad.getFace(), p_187492_6_, p_187492_7_);
+            p_187492_8_.updateVertexBrightness(worldIn, state, pos, bakedquad.getFace(), p_187492_6_, p_187492_7_);
             p_187492_4_.addVertexData(bakedquad.getVertexData());
             p_187492_4_.putBrightness4(p_187492_8_.vertexBrightness[0], p_187492_8_.vertexBrightness[1], p_187492_8_.vertexBrightness[2], p_187492_8_.vertexBrightness[3]);
-
+            if(bakedquad.shouldApplyDiffuseLighting())
+            {
+                float diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(bakedquad.getFace());
+                p_187492_8_.vertexColorMultiplier[0] *= diffuse;
+                p_187492_8_.vertexColorMultiplier[1] *= diffuse;
+                p_187492_8_.vertexColorMultiplier[2] *= diffuse;
+                p_187492_8_.vertexColorMultiplier[3] *= diffuse;
+            }
             if (bakedquad.hasTintIndex())
             {
-                int k = this.blockColors.colorMultiplier(p_187492_2_, p_187492_1_, p_187492_3_, bakedquad.getTintIndex());
+                int k = this.blockColors.colorMultiplier(state, worldIn, pos, bakedquad.getTintIndex());
 
                 if (EntityRenderer.anaglyphEnable)
                 {
@@ -170,7 +178,7 @@ public class BlockModelRenderer
         }
     }
 
-    private void fillQuadBounds(IBlockState p_187494_1_, int[] p_187494_2_, EnumFacing p_187494_3_, float[] p_187494_4_, BitSet p_187494_5_)
+    private void fillQuadBounds(IBlockState state, int[] p_187494_2_, EnumFacing p_187494_3_, @Nullable float[] p_187494_4_, BitSet p_187494_5_)
     {
         float f = 32.0F;
         float f1 = 32.0F;
@@ -215,42 +223,42 @@ public class BlockModelRenderer
         {
             case DOWN:
                 p_187494_5_.set(1, f >= 1.0E-4F || f2 >= 1.0E-4F || f3 <= 0.9999F || f5 <= 0.9999F);
-                p_187494_5_.set(0, (f1 < 1.0E-4F || p_187494_1_.isFullCube()) && f1 == f4);
+                p_187494_5_.set(0, (f1 < 1.0E-4F || state.isFullCube()) && f1 == f4);
                 break;
             case UP:
                 p_187494_5_.set(1, f >= 1.0E-4F || f2 >= 1.0E-4F || f3 <= 0.9999F || f5 <= 0.9999F);
-                p_187494_5_.set(0, (f4 > 0.9999F || p_187494_1_.isFullCube()) && f1 == f4);
+                p_187494_5_.set(0, (f4 > 0.9999F || state.isFullCube()) && f1 == f4);
                 break;
             case NORTH:
                 p_187494_5_.set(1, f >= 1.0E-4F || f1 >= 1.0E-4F || f3 <= 0.9999F || f4 <= 0.9999F);
-                p_187494_5_.set(0, (f2 < 1.0E-4F || p_187494_1_.isFullCube()) && f2 == f5);
+                p_187494_5_.set(0, (f2 < 1.0E-4F || state.isFullCube()) && f2 == f5);
                 break;
             case SOUTH:
                 p_187494_5_.set(1, f >= 1.0E-4F || f1 >= 1.0E-4F || f3 <= 0.9999F || f4 <= 0.9999F);
-                p_187494_5_.set(0, (f5 > 0.9999F || p_187494_1_.isFullCube()) && f2 == f5);
+                p_187494_5_.set(0, (f5 > 0.9999F || state.isFullCube()) && f2 == f5);
                 break;
             case WEST:
                 p_187494_5_.set(1, f1 >= 1.0E-4F || f2 >= 1.0E-4F || f4 <= 0.9999F || f5 <= 0.9999F);
-                p_187494_5_.set(0, (f < 1.0E-4F || p_187494_1_.isFullCube()) && f == f3);
+                p_187494_5_.set(0, (f < 1.0E-4F || state.isFullCube()) && f == f3);
                 break;
             case EAST:
                 p_187494_5_.set(1, f1 >= 1.0E-4F || f2 >= 1.0E-4F || f4 <= 0.9999F || f5 <= 0.9999F);
-                p_187494_5_.set(0, (f3 > 0.9999F || p_187494_1_.isFullCube()) && f == f3);
+                p_187494_5_.set(0, (f3 > 0.9999F || state.isFullCube()) && f == f3);
         }
     }
 
-    private void renderQuadsFlat(IBlockAccess p_187496_1_, IBlockState p_187496_2_, BlockPos p_187496_3_, int p_187496_4_, boolean p_187496_5_, VertexBuffer p_187496_6_, List<BakedQuad> p_187496_7_, BitSet p_187496_8_)
+    private void renderQuadsFlat(IBlockAccess worldIn, IBlockState state, BlockPos pos, int p_187496_4_, boolean p_187496_5_, VertexBuffer p_187496_6_, List<BakedQuad> p_187496_7_, BitSet p_187496_8_)
     {
-        double d0 = (double)p_187496_3_.getX();
-        double d1 = (double)p_187496_3_.getY();
-        double d2 = (double)p_187496_3_.getZ();
-        Block block = p_187496_2_.getBlock();
+        double d0 = (double)pos.getX();
+        double d1 = (double)pos.getY();
+        double d2 = (double)pos.getZ();
+        Block block = state.getBlock();
         Block.EnumOffsetType block$enumoffsettype = block.getOffsetType();
 
         if (block$enumoffsettype != Block.EnumOffsetType.NONE)
         {
-            int i = p_187496_3_.getX();
-            int j = p_187496_3_.getZ();
+            int i = pos.getX();
+            int j = pos.getZ();
             long k = (long)(i * 3129871) ^ (long)j * 116129781L;
             k = k * k * 42317861L + k * 11L;
             d0 += ((double)((float)(k >> 16 & 15L) / 15.0F) - 0.5D) * 0.5D;
@@ -270,8 +278,8 @@ public class BlockModelRenderer
 
             if (p_187496_5_)
             {
-                this.fillQuadBounds(p_187496_2_, bakedquad.getVertexData(), bakedquad.getFace(), (float[])null, p_187496_8_);
-                p_187496_4_ = p_187496_8_.get(0) ? p_187496_2_.getPackedLightmapCoords(p_187496_1_, p_187496_3_.offset(bakedquad.getFace())) : p_187496_2_.getPackedLightmapCoords(p_187496_1_, p_187496_3_);
+                this.fillQuadBounds(state, bakedquad.getVertexData(), bakedquad.getFace(), (float[])null, p_187496_8_);
+                p_187496_4_ = p_187496_8_.get(0) ? state.getPackedLightmapCoords(worldIn, pos.offset(bakedquad.getFace())) : state.getPackedLightmapCoords(worldIn, pos);
             }
 
             p_187496_6_.addVertexData(bakedquad.getVertexData());
@@ -279,7 +287,7 @@ public class BlockModelRenderer
 
             if (bakedquad.hasTintIndex())
             {
-                int l = this.blockColors.colorMultiplier(p_187496_2_, p_187496_1_, p_187496_3_, bakedquad.getTintIndex());
+                int l = this.blockColors.colorMultiplier(state, worldIn, pos, bakedquad.getTintIndex());
 
                 if (EntityRenderer.anaglyphEnable)
                 {
@@ -289,10 +297,25 @@ public class BlockModelRenderer
                 float f = (float)(l >> 16 & 255) / 255.0F;
                 float f1 = (float)(l >> 8 & 255) / 255.0F;
                 float f2 = (float)(l & 255) / 255.0F;
+                if(bakedquad.shouldApplyDiffuseLighting())
+                {
+                    float diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(bakedquad.getFace());
+                    f *= diffuse;
+                    f1 *= diffuse;
+                    f2 *= diffuse;
+                }
                 p_187496_6_.putColorMultiplier(f, f1, f2, 4);
                 p_187496_6_.putColorMultiplier(f, f1, f2, 3);
                 p_187496_6_.putColorMultiplier(f, f1, f2, 2);
                 p_187496_6_.putColorMultiplier(f, f1, f2, 1);
+            }
+            else if(bakedquad.shouldApplyDiffuseLighting())
+            {
+                float diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(bakedquad.getFace());
+                p_187496_6_.putColorMultiplier(diffuse, diffuse, diffuse, 4);
+                p_187496_6_.putColorMultiplier(diffuse, diffuse, diffuse, 3);
+                p_187496_6_.putColorMultiplier(diffuse, diffuse, diffuse, 2);
+                p_187496_6_.putColorMultiplier(diffuse, diffuse, diffuse, 1);
             }
 
             p_187496_6_.putPosition(d0, d1, d2);
@@ -304,21 +327,21 @@ public class BlockModelRenderer
         this.renderModelBrightnessColor((IBlockState)null, bakedModel, p_178262_2_, red, green, blue);
     }
 
-    public void renderModelBrightnessColor(IBlockState p_187495_1_, IBakedModel p_187495_2_, float p_187495_3_, float p_187495_4_, float p_187495_5_, float p_187495_6_)
+    public void renderModelBrightnessColor(IBlockState state, IBakedModel p_187495_2_, float p_187495_3_, float p_187495_4_, float p_187495_5_, float p_187495_6_)
     {
         for (EnumFacing enumfacing : EnumFacing.values())
         {
-            this.renderModelBrightnessColorQuads(p_187495_3_, p_187495_4_, p_187495_5_, p_187495_6_, p_187495_2_.getQuads(p_187495_1_, enumfacing, 0L));
+            this.renderModelBrightnessColorQuads(p_187495_3_, p_187495_4_, p_187495_5_, p_187495_6_, p_187495_2_.getQuads(state, enumfacing, 0L));
         }
 
-        this.renderModelBrightnessColorQuads(p_187495_3_, p_187495_4_, p_187495_5_, p_187495_6_, p_187495_2_.getQuads(p_187495_1_, (EnumFacing)null, 0L));
+        this.renderModelBrightnessColorQuads(p_187495_3_, p_187495_4_, p_187495_5_, p_187495_6_, p_187495_2_.getQuads(state, (EnumFacing)null, 0L));
     }
 
-    public void renderModelBrightness(IBakedModel model, IBlockState p_178266_2_, float brightness, boolean p_178266_4_)
+    public void renderModelBrightness(IBakedModel model, IBlockState state, float brightness, boolean p_178266_4_)
     {
-        Block block = p_178266_2_.getBlock();
+        Block block = state.getBlock();
         GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
-        int i = this.blockColors.colorMultiplier(p_178266_2_, (IBlockAccess)null, (BlockPos)null, 0);
+        int i = this.blockColors.colorMultiplier(state, (IBlockAccess)null, (BlockPos)null, 0);
 
         if (EntityRenderer.anaglyphEnable)
         {
@@ -334,7 +357,7 @@ public class BlockModelRenderer
             GlStateManager.color(brightness, brightness, brightness, 1.0F);
         }
 
-        this.renderModelBrightnessColor(p_178266_2_, model, brightness, f, f1, f2);
+        this.renderModelBrightnessColor(state, model, brightness, f, f1, f2);
     }
 
     private void renderModelBrightnessColorQuads(float brightness, float red, float green, float blue, List<BakedQuad> listQuads)
@@ -560,7 +583,7 @@ public class BlockModelRenderer
         EAST(new EnumFacing[]{EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.6F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.SOUTH});
 
         protected final EnumFacing[] corners;
-        protected final float field_178288_h;
+        protected final float shadeWeight;
         protected final boolean doNonCubicWeight;
         protected final BlockModelRenderer.Orientation[] vert0Weights;
         protected final BlockModelRenderer.Orientation[] vert1Weights;
@@ -571,7 +594,7 @@ public class BlockModelRenderer
         private EnumNeighborInfo(EnumFacing[] p_i46236_3_, float p_i46236_4_, boolean p_i46236_5_, BlockModelRenderer.Orientation[] p_i46236_6_, BlockModelRenderer.Orientation[] p_i46236_7_, BlockModelRenderer.Orientation[] p_i46236_8_, BlockModelRenderer.Orientation[] p_i46236_9_)
         {
             this.corners = p_i46236_3_;
-            this.field_178288_h = p_i46236_4_;
+            this.shadeWeight = p_i46236_4_;
             this.doNonCubicWeight = p_i46236_5_;
             this.vert0Weights = p_i46236_6_;
             this.vert1Weights = p_i46236_7_;

@@ -11,7 +11,7 @@ public class TileEntityStructureRenderer extends TileEntitySpecialRenderer<TileE
     {
     }
 
-    public boolean isGlobalRenderer(TileEntityStructure p_188185_1_)
+    public boolean isGlobalRenderer(TileEntityStructure te)
     {
         return true;
     }

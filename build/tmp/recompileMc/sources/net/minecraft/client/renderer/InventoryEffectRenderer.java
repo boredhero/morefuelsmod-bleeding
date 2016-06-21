@@ -40,6 +40,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer
         }
         if (!this.mc.thePlayer.getActivePotionEffects().isEmpty() && hasVisibleEffect)
         {
+            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent(this))) this.guiLeft = (this.width - this.xSize) / 2; else
             this.guiLeft = 160 + (this.width - this.xSize - 200) / 2;
             this.hasActivePotionEffects = true;
         }
@@ -52,10 +53,6 @@ public abstract class InventoryEffectRenderer extends GuiContainer
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -93,7 +90,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer
                 Potion potion = potioneffect.getPotion();
                 if(!potion.shouldRender(potioneffect)) continue;
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                this.mc.getTextureManager().bindTexture(inventoryBackground);
+                this.mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
                 this.drawTexturedModalRect(i, j, 0, 166, 140, 32);
 
                 if (potion.hasStatusIcon())

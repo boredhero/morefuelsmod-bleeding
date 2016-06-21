@@ -26,10 +26,10 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
 
     protected BlockCactus()
     {
-        super(Material.cactus);
+        super(Material.CACTUS);
         this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
         this.setTickRandomly(true);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
@@ -54,7 +54,7 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
                     worldIn.setBlockState(blockpos, this.getDefaultState());
                     IBlockState iblockstate = state.withProperty(AGE, Integer.valueOf(0));
                     worldIn.setBlockState(pos, iblockstate, 4);
-                    this.onNeighborBlockChange(worldIn, blockpos, iblockstate, this);
+                    iblockstate.neighborChanged(worldIn, blockpos, this);
                 }
                 else
                 {
@@ -64,15 +64,15 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
         }
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return CACTUS_AABB;
     }
 
     @SideOnly(Side.CLIENT)
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState worldIn, World pos, BlockPos state)
+    public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos)
     {
-        return CACTUS_COLLISION_AABB.offset(state);
+        return CACTUS_COLLISION_AABB.offset(pos);
     }
 
     public boolean isFullCube(IBlockState state)
@@ -94,9 +94,11 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!this.canBlockStay(worldIn, pos))
         {
@@ -110,14 +112,14 @@ public class BlockCactus extends Block implements net.minecraftforge.common.IPla
         {
             Material material = worldIn.getBlockState(pos.offset(enumfacing)).getMaterial();
 
-            if (material.isSolid() || material == Material.lava)
+            if (material.isSolid() || material == Material.LAVA)
             {
                 return false;
             }
         }
 
         IBlockState state = worldIn.getBlockState(pos.down());
-        return state.getBlock().canSustainPlant(state, worldIn, pos, EnumFacing.UP, this) && !worldIn.getBlockState(pos.up()).getMaterial().isLiquid();
+        return state.getBlock().canSustainPlant(state, worldIn, pos.down(), EnumFacing.UP, this) && !worldIn.getBlockState(pos.up()).getMaterial().isLiquid();
     }
 
     /**

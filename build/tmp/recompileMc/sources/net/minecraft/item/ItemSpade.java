@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 public class ItemSpade extends ItemTool
 {
-    private static final Set<Block> EFFECTIVE_ON = Sets.newHashSet(new Block[] {Blocks.clay, Blocks.dirt, Blocks.farmland, Blocks.grass, Blocks.gravel, Blocks.mycelium, Blocks.sand, Blocks.snow, Blocks.snow_layer, Blocks.soul_sand, Blocks.grass_path});
+    private static final Set<Block> EFFECTIVE_ON = Sets.newHashSet(new Block[] {Blocks.CLAY, Blocks.DIRT, Blocks.FARMLAND, Blocks.GRASS, Blocks.GRAVEL, Blocks.MYCELIUM, Blocks.SAND, Blocks.SNOW, Blocks.SNOW_LAYER, Blocks.SOUL_SAND, Blocks.GRASS_PATH});
 
     public ItemSpade(Item.ToolMaterial material)
     {
@@ -30,7 +30,7 @@ public class ItemSpade extends ItemTool
     public boolean canHarvestBlock(IBlockState blockIn)
     {
         Block block = blockIn.getBlock();
-        return block == Blocks.snow_layer ? true : block == Blocks.snow;
+        return block == Blocks.SNOW_LAYER ? true : block == Blocks.SNOW;
     }
 
     /**
@@ -47,10 +47,10 @@ public class ItemSpade extends ItemTool
             IBlockState iblockstate = worldIn.getBlockState(pos);
             Block block = iblockstate.getBlock();
 
-            if (facing != EnumFacing.DOWN && worldIn.getBlockState(pos.up()).getMaterial() == Material.air && block == Blocks.grass)
+            if (facing != EnumFacing.DOWN && worldIn.getBlockState(pos.up()).getMaterial() == Material.AIR && block == Blocks.GRASS)
             {
-                IBlockState iblockstate1 = Blocks.grass_path.getDefaultState();
-                worldIn.playSound(playerIn, pos, SoundEvents.item_shovel_flatten, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                IBlockState iblockstate1 = Blocks.GRASS_PATH.getDefaultState();
+                worldIn.playSound(playerIn, pos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
                 if (!worldIn.isRemote)
                 {

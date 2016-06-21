@@ -3,6 +3,7 @@ package net.minecraft.network.play.server;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
 {
     private int entityId;
-    private UUID playerId;
+    private UUID uniqueId;
     private double x;
     private double y;
     private double z;
@@ -27,16 +28,16 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketSpawnPlayer(EntityPlayer p_i46971_1_)
+    public SPacketSpawnPlayer(EntityPlayer player)
     {
-        this.entityId = p_i46971_1_.getEntityId();
-        this.playerId = p_i46971_1_.getGameProfile().getId();
-        this.x = p_i46971_1_.posX;
-        this.y = p_i46971_1_.posY;
-        this.z = p_i46971_1_.posZ;
-        this.yaw = (byte)((int)(p_i46971_1_.rotationYaw * 256.0F / 360.0F));
-        this.pitch = (byte)((int)(p_i46971_1_.rotationPitch * 256.0F / 360.0F));
-        this.watcher = p_i46971_1_.getDataManager();
+        this.entityId = player.getEntityId();
+        this.uniqueId = player.getGameProfile().getId();
+        this.x = player.posX;
+        this.y = player.posY;
+        this.z = player.posZ;
+        this.yaw = (byte)((int)(player.rotationYaw * 256.0F / 360.0F));
+        this.pitch = (byte)((int)(player.rotationPitch * 256.0F / 360.0F));
+        this.watcher = player.getDataManager();
     }
 
     /**
@@ -45,7 +46,7 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
     public void readPacketData(PacketBuffer buf) throws IOException
     {
         this.entityId = buf.readVarIntFromBuffer();
-        this.playerId = buf.readUuid();
+        this.uniqueId = buf.readUuid();
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -60,7 +61,7 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
     public void writePacketData(PacketBuffer buf) throws IOException
     {
         buf.writeVarIntToBuffer(this.entityId);
-        buf.writeUuid(this.playerId);
+        buf.writeUuid(this.uniqueId);
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
@@ -77,6 +78,7 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
         handler.handleSpawnPlayer(this);
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public List < EntityDataManager.DataEntry<? >> getDataManagerEntries()
     {
@@ -95,9 +97,9 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public UUID getPlayer()
+    public UUID getUniqueId()
     {
-        return this.playerId;
+        return this.uniqueId;
     }
 
     @SideOnly(Side.CLIENT)

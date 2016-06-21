@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderGiantZombie extends RenderLiving<EntityGiantZombie>
 {
-    private static final ResourceLocation zombieTextures = new ResourceLocation("textures/entity/zombie/zombie.png");
+    private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("textures/entity/zombie/zombie.png");
     /** Scale of the model to use */
     private float scale;
 
@@ -38,8 +38,7 @@ public class RenderGiantZombie extends RenderLiving<EntityGiantZombie>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntityGiantZombie entitylivingbaseIn, float partialTickTime)
     {
@@ -51,6 +50,6 @@ public class RenderGiantZombie extends RenderLiving<EntityGiantZombie>
      */
     protected ResourceLocation getEntityTexture(EntityGiantZombie entity)
     {
-        return zombieTextures;
+        return ZOMBIE_TEXTURES;
     }
 }

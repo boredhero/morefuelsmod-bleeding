@@ -1,6 +1,7 @@
 package net.minecraft.entity.item;
 
 import com.google.common.base.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.init.Blocks;
@@ -67,9 +68,9 @@ public class EntityEnderCrystal extends Entity
         {
             BlockPos blockpos = new BlockPos(this);
 
-            if (this.worldObj.provider instanceof WorldProviderEnd && this.worldObj.getBlockState(blockpos).getBlock() != Blocks.fire)
+            if (this.worldObj.provider instanceof WorldProviderEnd && this.worldObj.getBlockState(blockpos).getBlock() != Blocks.FIRE)
             {
-                this.worldObj.setBlockState(blockpos, Blocks.fire.getDefaultState());
+                this.worldObj.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
             }
         }
     }
@@ -77,29 +78,29 @@ public class EntityEnderCrystal extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
         if (this.getBeamTarget() != null)
         {
-            tagCompound.setTag("BeamTarget", NBTUtil.createPosTag(this.getBeamTarget()));
+            compound.setTag("BeamTarget", NBTUtil.createPosTag(this.getBeamTarget()));
         }
 
-        tagCompound.setBoolean("ShowBottom", this.shouldShowBottom());
+        compound.setBoolean("ShowBottom", this.shouldShowBottom());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        if (tagCompund.hasKey("BeamTarget", 10))
+        if (compound.hasKey("BeamTarget", 10))
         {
-            this.setBeamTarget(NBTUtil.getPosFromTag(tagCompund.getCompoundTag("BeamTarget")));
+            this.setBeamTarget(NBTUtil.getPosFromTag(compound.getCompoundTag("BeamTarget")));
         }
 
-        if (tagCompund.hasKey("ShowBottom", 1))
+        if (compound.hasKey("ShowBottom", 1))
         {
-            this.setShowBottom(tagCompund.getBoolean("ShowBottom"));
+            this.setShowBottom(compound.getBoolean("ShowBottom"));
         }
     }
 
@@ -164,11 +165,12 @@ public class EntityEnderCrystal extends Entity
         }
     }
 
-    public void setBeamTarget(BlockPos beamTarget)
+    public void setBeamTarget(@Nullable BlockPos beamTarget)
     {
         this.getDataManager().set(BEAM_TARGET, Optional.fromNullable(beamTarget));
     }
 
+    @Nullable
     public BlockPos getBeamTarget()
     {
         return (BlockPos)((Optional)this.getDataManager().get(BEAM_TARGET)).orNull();
@@ -185,8 +187,7 @@ public class EntityEnderCrystal extends Entity
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)

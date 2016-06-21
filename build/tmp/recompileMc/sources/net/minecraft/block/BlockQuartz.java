@@ -25,9 +25,9 @@ public class BlockQuartz extends Block
 
     public BlockQuartz()
     {
-        super(Material.rock);
+        super(Material.ROCK);
         this.setDefaultState(this.blockState.getBaseState().withProperty(VARIANT, BlockQuartz.EnumType.DEFAULT));
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -87,7 +87,7 @@ public class BlockQuartz extends Block
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return MapColor.quartzColor;
+        return MapColor.QUARTZ;
     }
 
     /**
@@ -167,13 +167,13 @@ public class BlockQuartz extends Block
 
         private static final BlockQuartz.EnumType[] META_LOOKUP = new BlockQuartz.EnumType[values().length];
         private final int meta;
-        private final String field_176805_h;
+        private final String serializedName;
         private final String unlocalizedName;
 
         private EnumType(int meta, String name, String unlocalizedName)
         {
             this.meta = meta;
-            this.field_176805_h = name;
+            this.serializedName = name;
             this.unlocalizedName = unlocalizedName;
         }
 
@@ -199,7 +199,7 @@ public class BlockQuartz extends Block
 
         public String getName()
         {
-            return this.field_176805_h;
+            return this.serializedName;
         }
 
         static

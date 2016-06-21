@@ -1,5 +1,6 @@
 package net.minecraft.client.renderer.tileentity;
 
+import javax.annotation.Nullable;
 import net.minecraft.client.model.ModelBanner;
 import net.minecraft.client.renderer.BannerTextures;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,7 +20,7 @@ public class TileEntityBannerRenderer extends TileEntitySpecialRenderer<TileEnti
     public void renderTileEntityAt(TileEntityBanner te, double x, double y, double z, float partialTicks, int destroyStage)
     {
         boolean flag = te.getWorld() != null;
-        boolean flag1 = !flag || te.getBlockType() == Blocks.standing_banner;
+        boolean flag1 = !flag || te.getBlockType() == Blocks.STANDING_BANNER;
         int i = flag ? te.getBlockMetadata() : 0;
         long j = flag ? te.getWorld().getTotalWorldTime() : 0L;
         GlStateManager.pushMatrix();
@@ -76,6 +77,7 @@ public class TileEntityBannerRenderer extends TileEntitySpecialRenderer<TileEnti
         GlStateManager.popMatrix();
     }
 
+    @Nullable
     private ResourceLocation getBannerResourceLocation(TileEntityBanner bannerObj)
     {
         return BannerTextures.BANNER_DESIGNS.getResourceLocation(bannerObj.getPatternResourceLocation(), bannerObj.getPatternList(), bannerObj.getColorList());

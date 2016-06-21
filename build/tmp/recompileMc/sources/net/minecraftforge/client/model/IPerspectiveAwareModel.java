@@ -20,7 +20,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 /*
  * Model that changes based on the rendering perspective
  * (first-person, GUI, e.t.c - see TransformType)

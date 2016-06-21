@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -30,7 +31,7 @@ public class SPacketTitle implements Packet<INetHandlerPlayClient>
         this(SPacketTitle.Type.TIMES, (ITextComponent)null, fadeInTimeIn, displayTimeIn, fadeOutTimeIn);
     }
 
-    public SPacketTitle(SPacketTitle.Type typeIn, ITextComponent messageIn, int fadeInTimeIn, int displayTimeIn, int fadeOutTimeIn)
+    public SPacketTitle(SPacketTitle.Type typeIn, @Nullable ITextComponent messageIn, int fadeInTimeIn, int displayTimeIn, int fadeOutTimeIn)
     {
         this.type = typeIn;
         this.message = messageIn;
@@ -48,7 +49,7 @@ public class SPacketTitle implements Packet<INetHandlerPlayClient>
 
         if (this.type == SPacketTitle.Type.TITLE || this.type == SPacketTitle.Type.SUBTITLE)
         {
-            this.message = buf.readChatComponent();
+            this.message = buf.readTextComponent();
         }
 
         if (this.type == SPacketTitle.Type.TIMES)
@@ -68,7 +69,7 @@ public class SPacketTitle implements Packet<INetHandlerPlayClient>
 
         if (this.type == SPacketTitle.Type.TITLE || this.type == SPacketTitle.Type.SUBTITLE)
         {
-            buf.writeChatComponent(this.message);
+            buf.writeTextComponent(this.message);
         }
 
         if (this.type == SPacketTitle.Type.TIMES)

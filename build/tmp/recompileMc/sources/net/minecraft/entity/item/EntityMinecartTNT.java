@@ -39,7 +39,7 @@ public class EntityMinecartTNT extends EntityMinecart
 
     public IBlockState getDefaultDisplayTile()
     {
-        return Blocks.tnt.getDefaultState();
+        return Blocks.TNT.getDefaultState();
     }
 
     /**
@@ -97,7 +97,7 @@ public class EntityMinecartTNT extends EntityMinecart
 
         if (!source.isExplosion() && this.worldObj.getGameRules().getBoolean("doEntityDrops"))
         {
-            this.entityDropItem(new ItemStack(Blocks.tnt, 1), 0.0F);
+            this.entityDropItem(new ItemStack(Blocks.TNT, 1), 0.0F);
         }
 
         if (source.isFireDamage() || source.isExplosion() || d0 >= 0.009999999776482582D)
@@ -137,7 +137,7 @@ public class EntityMinecartTNT extends EntityMinecart
     }
 
     /**
-     * Called every tick the minecart is on an activator rail. Args: x, y, z, is the rail receiving power
+     * Called every tick the minecart is on an activator rail.
      */
     public void onActivatorRailPass(int x, int y, int z, boolean receivingPower)
     {
@@ -173,7 +173,7 @@ public class EntityMinecartTNT extends EntityMinecart
 
             if (!this.isSilent())
             {
-                this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.entity_tnt_primed, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         }
     }
@@ -211,22 +211,22 @@ public class EntityMinecartTNT extends EntityMinecart
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
 
-        if (tagCompund.hasKey("TNTFuse", 99))
+        if (compound.hasKey("TNTFuse", 99))
         {
-            this.minecartTNTFuse = tagCompund.getInteger("TNTFuse");
+            this.minecartTNTFuse = compound.getInteger("TNTFuse");
         }
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setInteger("TNTFuse", this.minecartTNTFuse);
+        super.writeEntityToNBT(compound);
+        compound.setInteger("TNTFuse", this.minecartTNTFuse);
     }
 }

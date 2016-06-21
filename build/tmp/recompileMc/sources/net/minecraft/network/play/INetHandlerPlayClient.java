@@ -66,10 +66,9 @@ import net.minecraft.network.play.server.SPacketTeams;
 import net.minecraft.network.play.server.SPacketTimeUpdate;
 import net.minecraft.network.play.server.SPacketTitle;
 import net.minecraft.network.play.server.SPacketUnloadChunk;
-import net.minecraft.network.play.server.SPacketUpdateEntityNBT;
+import net.minecraft.network.play.server.SPacketUpdateBossInfo;
 import net.minecraft.network.play.server.SPacketUpdateHealth;
 import net.minecraft.network.play.server.SPacketUpdateScore;
-import net.minecraft.network.play.server.SPacketUpdateSign;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.network.play.server.SPacketUseBed;
 import net.minecraft.network.play.server.SPacketWindowItems;
@@ -308,7 +307,7 @@ public interface INetHandlerPlayClient extends INetHandler
      * Removes or sets the ScoreObjective to be displayed at a particular scoreboard position (list, sidebar, below
      * name)
      */
-    void handleDisplayScoreboard(SPacketDisplayObjective packetIn);
+    void handleDisplayObjective(SPacketDisplayObjective packetIn);
 
     /**
      * Invoked when the server registers new proximate objects in your watchlist or when objects in your watchlist have
@@ -341,11 +340,6 @@ public interface INetHandlerPlayClient extends INetHandler
     void handleSpawnPosition(SPacketSpawnPosition packetIn);
 
     void handleTimeUpdate(SPacketTimeUpdate packetIn);
-
-    /**
-     * Updates a specified sign with the specified text lines
-     */
-    void handleUpdateSign(SPacketUpdateSign packetIn);
 
     void handleSoundEffect(SPacketSoundEffect packetIn);
 
@@ -381,7 +375,7 @@ public interface INetHandlerPlayClient extends INetHandler
 
     void handleResourcePack(SPacketResourcePackSend packetIn);
 
-    void handleUpdateEntityNBT(SPacketUpdateEntityNBT packetIn);
+    void handleUpdateEntityNBT(SPacketUpdateBossInfo packetIn);
 
     void handleCooldown(SPacketCooldown packetIn);
 

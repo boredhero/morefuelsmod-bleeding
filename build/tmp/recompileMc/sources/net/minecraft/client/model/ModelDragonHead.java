@@ -8,8 +8,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelDragonHead extends ModelBase
 {
-    private ModelRenderer field_187070_a;
-    private ModelRenderer field_187071_b;
+    private ModelRenderer head;
+    private ModelRenderer jaw;
 
     public ModelDragonHead(float p_i46588_1_)
     {
@@ -35,31 +35,31 @@ public class ModelDragonHead extends ModelBase
         this.setTextureOffset("neck.scale", 48, 0);
         this.setTextureOffset("head.nostril", 112, 0);
         float f = -16.0F;
-        this.field_187070_a = new ModelRenderer(this, "head");
-        this.field_187070_a.addBox("upperlip", -6.0F, -1.0F, -8.0F + f, 12, 5, 16);
-        this.field_187070_a.addBox("upperhead", -8.0F, -8.0F, 6.0F + f, 16, 16, 16);
-        this.field_187070_a.mirror = true;
-        this.field_187070_a.addBox("scale", -5.0F, -12.0F, 12.0F + f, 2, 4, 6);
-        this.field_187070_a.addBox("nostril", -5.0F, -3.0F, -6.0F + f, 2, 2, 4);
-        this.field_187070_a.mirror = false;
-        this.field_187070_a.addBox("scale", 3.0F, -12.0F, 12.0F + f, 2, 4, 6);
-        this.field_187070_a.addBox("nostril", 3.0F, -3.0F, -6.0F + f, 2, 2, 4);
-        this.field_187071_b = new ModelRenderer(this, "jaw");
-        this.field_187071_b.setRotationPoint(0.0F, 4.0F, 8.0F + f);
-        this.field_187071_b.addBox("jaw", -6.0F, 0.0F, -16.0F, 12, 4, 16);
-        this.field_187070_a.addChild(this.field_187071_b);
+        this.head = new ModelRenderer(this, "head");
+        this.head.addBox("upperlip", -6.0F, -1.0F, -8.0F + f, 12, 5, 16);
+        this.head.addBox("upperhead", -8.0F, -8.0F, 6.0F + f, 16, 16, 16);
+        this.head.mirror = true;
+        this.head.addBox("scale", -5.0F, -12.0F, 12.0F + f, 2, 4, 6);
+        this.head.addBox("nostril", -5.0F, -3.0F, -6.0F + f, 2, 2, 4);
+        this.head.mirror = false;
+        this.head.addBox("scale", 3.0F, -12.0F, 12.0F + f, 2, 4, 6);
+        this.head.addBox("nostril", 3.0F, -3.0F, -6.0F + f, 2, 2, 4);
+        this.jaw = new ModelRenderer(this, "jaw");
+        this.jaw.setRotationPoint(0.0F, 4.0F, 8.0F + f);
+        this.jaw.addBox("jaw", -6.0F, 0.0F, -16.0F, 12, 4, 16);
+        this.head.addChild(this.jaw);
     }
 
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float p_78088_2_, float limbSwing, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
-        this.field_187071_b.rotateAngleX = (float)(Math.sin((double)(p_78088_2_ * (float)Math.PI * 0.2F)) + 1.0D) * 0.2F;
-        this.field_187070_a.rotateAngleY = netHeadYaw * 0.017453292F;
-        this.field_187070_a.rotateAngleX = headPitch * 0.017453292F;
+        this.jaw.rotateAngleX = (float)(Math.sin((double)(limbSwing * (float)Math.PI * 0.2F)) + 1.0D) * 0.2F;
+        this.head.rotateAngleY = netHeadYaw * 0.017453292F;
+        this.head.rotateAngleX = headPitch * 0.017453292F;
         GlStateManager.translate(0.0F, -0.374375F, 0.0F);
         GlStateManager.scale(0.75F, 0.75F, 0.75F);
-        this.field_187070_a.render(scale);
+        this.head.render(scale);
     }
 }

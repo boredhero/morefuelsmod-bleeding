@@ -31,6 +31,7 @@ import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.Queue;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
 import net.minecraft.util.CryptManager;
 import net.minecraft.util.ITickable;
@@ -49,10 +50,10 @@ import org.apache.logging.log4j.MarkerManager;
 
 public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
 {
-    private static final Logger logger = LogManager.getLogger();
-    public static final Marker logMarkerNetwork = MarkerManager.getMarker("NETWORK");
-    public static final Marker logMarkerPackets = MarkerManager.getMarker("NETWORK_PACKETS", logMarkerNetwork);
-    public static final AttributeKey<EnumConnectionState> attrKeyConnectionState = AttributeKey.<EnumConnectionState>valueOf("protocol");
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Marker NETWORK_MARKER = MarkerManager.getMarker("NETWORK");
+    public static final Marker NETWORK_PACKETS_MARKER = MarkerManager.getMarker("NETWORK_PACKETS", NETWORK_MARKER);
+    public static final AttributeKey<EnumConnectionState> PROTOCOL_ATTRIBUTE_KEY = AttributeKey.<EnumConnectionState>valueOf("protocol");
     public static final LazyLoadBase<NioEventLoopGroup> CLIENT_NIO_EVENTLOOP = new LazyLoadBase<NioEventLoopGroup>()
     {
         protected NioEventLoopGroup load()
@@ -110,7 +111,7 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
         }
         catch (Throwable throwable)
         {
-            logger.fatal((Object)throwable);
+            LOGGER.fatal((Object)throwable);
         }
     }
 
@@ -119,9 +120,9 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
      */
     public void setConnectionState(EnumConnectionState newState)
     {
-        this.channel.attr(attrKeyConnectionState).set(newState);
+        this.channel.attr(PROTOCOL_ATTRIBUTE_KEY).set(newState);
         this.channel.config().setAutoRead(true);
-        logger.debug("Enabled auto read");
+        LOGGER.debug("Enabled auto read");
     }
 
     public void channelInactive(ChannelHandlerContext p_channelInactive_1_) throws Exception
@@ -142,7 +143,7 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
             textcomponenttranslation = new TextComponentTranslation("disconnect.genericReason", new Object[] {"Internal Exception: " + p_exceptionCaught_2_});
         }
 
-        logger.debug((Object)p_exceptionCaught_2_);
+        LOGGER.debug((Object)p_exceptionCaught_2_);
         this.closeChannel(textcomponenttranslation);
     }
 
@@ -168,7 +169,7 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
     public void setNetHandler(INetHandler handler)
     {
         Validate.notNull(handler, "packetListener", new Object[0]);
-        logger.debug("Set listener of {} to {}", new Object[] {this, handler});
+        LOGGER.debug("Set listener of {} to {}", new Object[] {this, handler});
         this.packetListener = handler;
     }
 
@@ -220,14 +221,14 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
      * Will commit the packet to the channel. If the current thread 'owns' the channel it will write and flush the
      * packet, otherwise it will add a task for the channel eventloop thread to do that.
      */
-    private void dispatchPacket(final Packet<?> inPacket, final GenericFutureListener <? extends Future <? super Void >> [] futureListeners)
+    private void dispatchPacket(final Packet<?> inPacket, @Nullable final GenericFutureListener <? extends Future <? super Void >> [] futureListeners)
     {
         final EnumConnectionState enumconnectionstate = EnumConnectionState.getFromPacket(inPacket);
-        final EnumConnectionState enumconnectionstate1 = (EnumConnectionState)this.channel.attr(attrKeyConnectionState).get();
+        final EnumConnectionState enumconnectionstate1 = (EnumConnectionState)this.channel.attr(PROTOCOL_ATTRIBUTE_KEY).get();
 
         if (enumconnectionstate1 != enumconnectionstate && !( inPacket instanceof net.minecraftforge.fml.common.network.internal.FMLProxyPacket))
         {
-            logger.debug("Disabled auto read");
+            LOGGER.debug("Disabled auto read");
             this.channel.config().setAutoRead(false);
         }
 
@@ -408,7 +409,7 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean getIsencrypted()
+    public boolean isEncrypted()
     {
         return this.isEncrypted;
     }
@@ -492,7 +493,7 @@ public class NetworkManager extends SimpleChannelInboundHandler < Packet<? >>
         {
             if (this.disconnected)
             {
-                logger.warn("handleDisconnection() called twice");
+                LOGGER.warn("handleDisconnection() called twice");
             }
             else
             {

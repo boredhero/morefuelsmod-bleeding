@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -11,8 +12,8 @@ public class BlockBookshelf extends Block
 {
     public BlockBookshelf()
     {
-        super(Material.wood);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        super(Material.WOOD);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -26,8 +27,9 @@ public class BlockBookshelf extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.book;
+        return Items.BOOK;
     }
 }

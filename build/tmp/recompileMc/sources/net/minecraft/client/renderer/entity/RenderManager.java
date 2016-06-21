@@ -2,6 +2,7 @@ package net.minecraft.client.renderer.entity;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
@@ -124,8 +125,8 @@ public class RenderManager
     public TextureManager renderEngine;
     /** Reference to the World object. */
     public World worldObj;
-    /** Rendermanager's variable for the player */
-    public Entity livingPlayer;
+    /** RenderManager's field for the renderViewEntity */
+    public Entity renderViewEntity;
     public Entity pointedEntity;
     public float playerViewY;
     public float playerViewX;
@@ -181,13 +182,13 @@ public class RenderManager
         this.entityRenderMap.put(EntityLeashKnot.class, new RenderLeashKnot(this));
         this.entityRenderMap.put(EntityTippedArrow.class, new RenderTippedArrow(this));
         this.entityRenderMap.put(EntitySpectralArrow.class, new RenderSpectralArrow(this));
-        this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball(this, Items.snowball, itemRendererIn));
-        this.entityRenderMap.put(EntityEnderPearl.class, new RenderSnowball(this, Items.ender_pearl, itemRendererIn));
-        this.entityRenderMap.put(EntityEnderEye.class, new RenderSnowball(this, Items.ender_eye, itemRendererIn));
-        this.entityRenderMap.put(EntityEgg.class, new RenderSnowball(this, Items.egg, itemRendererIn));
+        this.entityRenderMap.put(EntitySnowball.class, new RenderSnowball(this, Items.SNOWBALL, itemRendererIn));
+        this.entityRenderMap.put(EntityEnderPearl.class, new RenderSnowball(this, Items.ENDER_PEARL, itemRendererIn));
+        this.entityRenderMap.put(EntityEnderEye.class, new RenderSnowball(this, Items.ENDER_EYE, itemRendererIn));
+        this.entityRenderMap.put(EntityEgg.class, new RenderSnowball(this, Items.EGG, itemRendererIn));
         this.entityRenderMap.put(EntityPotion.class, new RenderPotion(this, itemRendererIn));
-        this.entityRenderMap.put(EntityExpBottle.class, new RenderSnowball(this, Items.experience_bottle, itemRendererIn));
-        this.entityRenderMap.put(EntityFireworkRocket.class, new RenderSnowball(this, Items.fireworks, itemRendererIn));
+        this.entityRenderMap.put(EntityExpBottle.class, new RenderSnowball(this, Items.EXPERIENCE_BOTTLE, itemRendererIn));
+        this.entityRenderMap.put(EntityFireworkRocket.class, new RenderSnowball(this, Items.FIREWORKS, itemRendererIn));
         this.entityRenderMap.put(EntityLargeFireball.class, new RenderFireball(this, 2.0F));
         this.entityRenderMap.put(EntitySmallFireball.class, new RenderFireball(this, 0.5F));
         this.entityRenderMap.put(EntityDragonFireball.class, new RenderDragonFireball(this));
@@ -236,6 +237,7 @@ public class RenderManager
         return (Render<T>)render;
     }
 
+    @Nullable
     public <T extends Entity> Render<T> getEntityRenderObject(T entityIn)
     {
         if (entityIn instanceof AbstractClientPlayer)
@@ -254,7 +256,7 @@ public class RenderManager
     {
         this.worldObj = worldIn;
         this.options = optionsIn;
-        this.livingPlayer = livingPlayerIn;
+        this.renderViewEntity = livingPlayerIn;
         this.pointedEntity = pointedEntityIn;
         this.textRenderer = textRendererIn;
 
@@ -478,13 +480,13 @@ public class RenderManager
     /**
      * World sets this RenderManager's worldObj to the world provided
      */
-    public void set(World worldIn)
+    public void set(@Nullable World worldIn)
     {
         this.worldObj = worldIn;
 
         if (worldIn == null)
         {
-            this.livingPlayer = null;
+            this.renderViewEntity = null;
         }
     }
 

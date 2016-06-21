@@ -45,8 +45,8 @@ public class SoundManager
 {
     /** The marker used for logging */
     private static final Marker LOG_MARKER = MarkerManager.getMarker("SOUNDS");
-    private static final Logger logger = LogManager.getLogger();
-    private static final Set<ResourceLocation> field_188775_c = Sets.<ResourceLocation>newHashSet();
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Set<ResourceLocation> UNABLE_TO_PLAY = Sets.<ResourceLocation>newHashSet();
     /** A reference to the sound handler. */
     public final SoundHandler sndHandler;
     /** Reference to the GameSettings object. */
@@ -59,22 +59,22 @@ public class SoundManager
     private int playTime = 0;
     private final Map<String, ISound> playingSounds = HashBiMap.<String, ISound>create();
     private final Map<ISound, String> invPlayingSounds;
-    private final Multimap<SoundCategory, String> field_188776_k;
+    private final Multimap<SoundCategory, String> categorySounds;
     private final List<ITickableSound> tickableSounds;
     private final Map<ISound, Integer> delayedSounds;
     private final Map<String, Integer> playingSoundsStopTime;
-    private final List<ISoundEventListener> field_188777_o;
-    private final List<String> field_189000_p;
+    private final List<ISoundEventListener> listeners;
+    private final List<String> pausedChannels;
 
     public SoundManager(SoundHandler p_i45119_1_, GameSettings p_i45119_2_)
     {
         this.invPlayingSounds = ((BiMap)this.playingSounds).inverse();
-        this.field_188776_k = HashMultimap.<SoundCategory, String>create();
+        this.categorySounds = HashMultimap.<SoundCategory, String>create();
         this.tickableSounds = Lists.<ITickableSound>newArrayList();
         this.delayedSounds = Maps.<ISound, Integer>newHashMap();
         this.playingSoundsStopTime = Maps.<String, Integer>newHashMap();
-        this.field_188777_o = Lists.<ISoundEventListener>newArrayList();
-        this.field_189000_p = Lists.<String>newArrayList();
+        this.listeners = Lists.<ISoundEventListener>newArrayList();
+        this.pausedChannels = Lists.<String>newArrayList();
         this.sndHandler = p_i45119_1_;
         this.options = p_i45119_2_;
 
@@ -86,22 +86,22 @@ public class SoundManager
         }
         catch (SoundSystemException soundsystemexception)
         {
-            logger.error(LOG_MARKER, (String)"Error linking with the LibraryJavaSound plug-in", (Throwable)soundsystemexception);
+            LOGGER.error(LOG_MARKER, (String)"Error linking with the LibraryJavaSound plug-in", (Throwable)soundsystemexception);
         }
     }
 
     public void reloadSoundSystem()
     {
-        field_188775_c.clear();
+        UNABLE_TO_PLAY.clear();
 
-        for (SoundEvent soundevent : SoundEvent.soundEventRegistry)
+        for (SoundEvent soundevent : SoundEvent.REGISTRY)
         {
             ResourceLocation resourcelocation = soundevent.getSoundName();
 
-            if (this.sndHandler.func_184398_a(resourcelocation) == null)
+            if (this.sndHandler.getAccessor(resourcelocation) == null)
             {
-                logger.warn("Missing sound for event: " + SoundEvent.soundEventRegistry.getNameForObject(soundevent));
-                field_188775_c.add(resourcelocation);
+                LOGGER.warn("Missing sound for event: " + SoundEvent.REGISTRY.getNameForObject(soundevent));
+                UNABLE_TO_PLAY.add(resourcelocation);
             }
         }
 
@@ -129,60 +129,60 @@ public class SoundManager
                             {
                                 if (!p_message_1_.isEmpty())
                                 {
-                                    SoundManager.logger.info(p_message_1_);
+                                    SoundManager.LOGGER.info(p_message_1_);
                                 }
                             }
                             public void importantMessage(String p_importantMessage_1_, int p_importantMessage_2_)
                             {
                                 if (!p_importantMessage_1_.isEmpty())
                                 {
-                                    SoundManager.logger.warn(p_importantMessage_1_);
+                                    SoundManager.LOGGER.warn(p_importantMessage_1_);
                                 }
                             }
                             public void errorMessage(String p_errorMessage_1_, String p_errorMessage_2_, int p_errorMessage_3_)
                             {
                                 if (!p_errorMessage_2_.isEmpty())
                                 {
-                                    SoundManager.logger.error("Error in class \'" + p_errorMessage_1_ + "\'");
-                                    SoundManager.logger.error(p_errorMessage_2_);
+                                    SoundManager.LOGGER.error("Error in class \'" + p_errorMessage_1_ + "\'");
+                                    SoundManager.LOGGER.error(p_errorMessage_2_);
                                 }
                             }
                         });
                         SoundManager.this.sndSystem = SoundManager.this.new SoundSystemStarterThread();
                         SoundManager.this.loaded = true;
                         SoundManager.this.sndSystem.setMasterVolume(SoundManager.this.options.getSoundLevel(SoundCategory.MASTER));
-                        SoundManager.logger.info(SoundManager.LOG_MARKER, "Sound engine started");
+                        SoundManager.LOGGER.info(SoundManager.LOG_MARKER, "Sound engine started");
                     }
                 }, "Sound Library Loader")).start();
             }
             catch (RuntimeException runtimeexception)
             {
-                logger.error(LOG_MARKER, (String)"Error starting SoundSystem. Turning off sounds & music", (Throwable)runtimeexception);
+                LOGGER.error(LOG_MARKER, (String)"Error starting SoundSystem. Turning off sounds & music", (Throwable)runtimeexception);
                 this.options.setSoundLevel(SoundCategory.MASTER, 0.0F);
                 this.options.saveOptions();
             }
         }
     }
 
-    private float func_188769_a(SoundCategory p_188769_1_)
+    private float getVolume(SoundCategory category)
     {
-        return p_188769_1_ != null && p_188769_1_ != SoundCategory.MASTER ? this.options.getSoundLevel(p_188769_1_) : 1.0F;
+        return category != null && category != SoundCategory.MASTER ? this.options.getSoundLevel(category) : 1.0F;
     }
 
-    public void func_188771_a(SoundCategory p_188771_1_, float p_188771_2_)
+    public void setVolume(SoundCategory category, float volume)
     {
         if (this.loaded)
         {
-            if (p_188771_1_ == SoundCategory.MASTER)
+            if (category == SoundCategory.MASTER)
             {
-                this.sndSystem.setMasterVolume(p_188771_2_);
+                this.sndSystem.setMasterVolume(volume);
             }
             else
             {
-                for (String s : this.field_188776_k.get(p_188771_1_))
+                for (String s : this.categorySounds.get(category))
                 {
                     ISound isound = (ISound)this.playingSounds.get(s);
-                    float f = this.func_188770_e(isound);
+                    float f = this.getClampedVolume(isound);
 
                     if (f <= 0.0F)
                     {
@@ -225,19 +225,19 @@ public class SoundManager
             this.playingSounds.clear();
             this.delayedSounds.clear();
             this.tickableSounds.clear();
-            this.field_188776_k.clear();
+            this.categorySounds.clear();
             this.playingSoundsStopTime.clear();
         }
     }
 
-    public void func_188774_a(ISoundEventListener p_188774_1_)
+    public void addListener(ISoundEventListener listener)
     {
-        this.field_188777_o.add(p_188774_1_);
+        this.listeners.add(listener);
     }
 
-    public void func_188773_b(ISoundEventListener p_188773_1_)
+    public void removeListener(ISoundEventListener listener)
     {
-        this.field_188777_o.remove(p_188773_1_);
+        this.listeners.remove(listener);
     }
 
     public void updateAllSounds()
@@ -255,8 +255,8 @@ public class SoundManager
             else
             {
                 String s = (String)this.invPlayingSounds.get(itickablesound);
-                this.sndSystem.setVolume(s, this.func_188770_e(itickablesound));
-                this.sndSystem.setPitch(s, this.func_188772_d(itickablesound));
+                this.sndSystem.setVolume(s, this.getClampedVolume(itickablesound));
+                this.sndSystem.setPitch(s, this.getClampedPitch(itickablesound));
                 this.sndSystem.setPosition(s, itickablesound.getXPosF(), itickablesound.getYPosF(), itickablesound.getZPosF());
             }
         }
@@ -283,13 +283,13 @@ public class SoundManager
                     }
 
                     iterator.remove();
-                    logger.debug(LOG_MARKER, "Removed channel {} because it\'s not playing anymore", new Object[] {s1});
+                    LOGGER.debug(LOG_MARKER, "Removed channel {} because it\'s not playing anymore", new Object[] {s1});
                     this.sndSystem.removeSource(s1);
                     this.playingSoundsStopTime.remove(s1);
 
                     try
                     {
-                        this.field_188776_k.remove(isound.getCategory(), s1);
+                        this.categorySounds.remove(isound.getCategory(), s1);
                     }
                     catch (RuntimeException var8)
                     {
@@ -358,42 +358,42 @@ public class SoundManager
     {
         if (this.loaded)
         {
-            SoundEventAccessor soundeventaccessor = p_sound.func_184366_a(this.sndHandler);
+            p_sound = net.minecraftforge.client.ForgeHooksClient.playSound(this, p_sound);
+            if (p_sound == null) return;
+
+            SoundEventAccessor soundeventaccessor = p_sound.createAccessor(this.sndHandler);
             ResourceLocation resourcelocation = p_sound.getSoundLocation();
 
             if (soundeventaccessor == null)
             {
-                if (field_188775_c.add(resourcelocation))
+                if (UNABLE_TO_PLAY.add(resourcelocation))
                 {
-                    logger.warn(LOG_MARKER, "Unable to play unknown soundEvent: {}", new Object[] {resourcelocation});
+                    LOGGER.warn(LOG_MARKER, "Unable to play unknown soundEvent: {}", new Object[] {resourcelocation});
                 }
             }
             else
             {
-                p_sound = net.minecraftforge.client.ForgeHooksClient.playSound(this, p_sound);
-                if (p_sound == null) return;
-
-                if (!this.field_188777_o.isEmpty())
+                if (!this.listeners.isEmpty())
                 {
-                    for (ISoundEventListener isoundeventlistener : this.field_188777_o)
+                    for (ISoundEventListener isoundeventlistener : this.listeners)
                     {
-                        isoundeventlistener.func_184067_a(p_sound, soundeventaccessor);
+                        isoundeventlistener.soundPlay(p_sound, soundeventaccessor);
                     }
                 }
 
                 if (this.sndSystem.getMasterVolume() <= 0.0F)
                 {
-                    logger.debug(LOG_MARKER, "Skipped playing soundEvent: {}, master volume was zero", new Object[] {resourcelocation});
+                    LOGGER.debug(LOG_MARKER, "Skipped playing soundEvent: {}, master volume was zero", new Object[] {resourcelocation});
                 }
                 else
                 {
                     Sound sound = p_sound.getSound();
 
-                    if (sound == SoundHandler.missing_sound)
+                    if (sound == SoundHandler.MISSING_SOUND)
                     {
-                        if (field_188775_c.add(resourcelocation))
+                        if (UNABLE_TO_PLAY.add(resourcelocation))
                         {
-                            logger.warn(LOG_MARKER, "Unable to play empty soundEvent: {}", new Object[] {resourcelocation});
+                            LOGGER.warn(LOG_MARKER, "Unable to play empty soundEvent: {}", new Object[] {resourcelocation});
                         }
                     }
                     else
@@ -407,12 +407,12 @@ public class SoundManager
                         }
 
                         SoundCategory soundcategory = p_sound.getCategory();
-                        float f1 = this.func_188770_e(p_sound);
-                        float f2 = this.func_188772_d(p_sound);
+                        float f1 = this.getClampedVolume(p_sound);
+                        float f2 = this.getClampedPitch(p_sound);
 
                         if (f1 == 0.0F)
                         {
-                            logger.debug(LOG_MARKER, "Skipped playing sound {}, volume was zero.", new Object[] {sound.getSoundLocation()});
+                            LOGGER.debug(LOG_MARKER, "Skipped playing sound {}, volume was zero.", new Object[] {sound.getSoundLocation()});
                         }
                         else
                         {
@@ -431,7 +431,7 @@ public class SoundManager
                                 net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.PlaySoundSourceEvent(this, p_sound, s));
                             }
 
-                            logger.debug(LOG_MARKER, "Playing sound {} for event {} as channel {}", new Object[] {sound.getSoundLocation(), resourcelocation1, s});
+                            LOGGER.debug(LOG_MARKER, "Playing sound {} for event {} as channel {}", new Object[] {sound.getSoundLocation(), resourcelocation1, s});
                             this.sndSystem.setPitch(s, f2);
                             this.sndSystem.setVolume(s, f1);
                             this.sndSystem.play(s);
@@ -440,7 +440,7 @@ public class SoundManager
 
                             if (soundcategory != SoundCategory.MASTER)
                             {
-                                this.field_188776_k.put(soundcategory, s);
+                                this.categorySounds.put(soundcategory, s);
                             }
 
                             if (p_sound instanceof ITickableSound)
@@ -454,14 +454,14 @@ public class SoundManager
         }
     }
 
-    private float func_188772_d(ISound p_188772_1_)
+    private float getClampedPitch(ISound soundIn)
     {
-        return MathHelper.clamp_float(p_188772_1_.getPitch(), 0.5F, 2.0F);
+        return MathHelper.clamp_float(soundIn.getPitch(), 0.5F, 2.0F);
     }
 
-    private float func_188770_e(ISound p_188770_1_)
+    private float getClampedVolume(ISound soundIn)
     {
-        return MathHelper.clamp_float(p_188770_1_.getVolume() * this.func_188769_a(p_188770_1_.getCategory()), 0.0F, 1.0F);
+        return MathHelper.clamp_float(soundIn.getVolume() * this.getVolume(soundIn.getCategory()), 0.0F, 1.0F);
     }
 
     /**
@@ -476,9 +476,9 @@ public class SoundManager
 
             if (flag)
             {
-                logger.debug(LOG_MARKER, "Pausing channel {}", new Object[] {s});
+                LOGGER.debug(LOG_MARKER, "Pausing channel {}", new Object[] {s});
                 this.sndSystem.pause(s);
-                this.field_189000_p.add(s);
+                this.pausedChannels.add(s);
             }
         }
     }
@@ -488,13 +488,13 @@ public class SoundManager
      */
     public void resumeAllSounds()
     {
-        for (String s : this.field_189000_p)
+        for (String s : this.pausedChannels)
         {
-            logger.debug(LOG_MARKER, "Resuming channel {}", new Object[] {s});
+            LOGGER.debug(LOG_MARKER, "Resuming channel {}", new Object[] {s});
             this.sndSystem.play(s);
         }
 
-        this.field_189000_p.clear();
+        this.pausedChannels.clear();
     }
 
     /**
@@ -559,6 +559,43 @@ public class SoundManager
             float f11 = f3 * f6;
             this.sndSystem.setListenerPosition((float)d0, (float)d1, (float)d2);
             this.sndSystem.setListenerOrientation(f8, f5, f9, f10, f7, f11);
+        }
+    }
+
+    public void stop(String p_189567_1_, SoundCategory p_189567_2_)
+    {
+        if (p_189567_2_ != null)
+        {
+            for (String s : this.categorySounds.get(p_189567_2_))
+            {
+                ISound isound = (ISound)this.playingSounds.get(s);
+
+                if (!p_189567_1_.isEmpty())
+                {
+                    if (isound.getSoundLocation().equals(new ResourceLocation(p_189567_1_)))
+                    {
+                        this.stopSound(isound);
+                    }
+                }
+                else
+                {
+                    this.stopSound(isound);
+                }
+            }
+        }
+        else if (!p_189567_1_.isEmpty())
+        {
+            for (ISound isound1 : this.playingSounds.values())
+            {
+                if (isound1.getSoundLocation().equals(new ResourceLocation(p_189567_1_)))
+                {
+                    this.stopSound(isound1);
+                }
+            }
+        }
+        else
+        {
+            this.stopAllSounds();
         }
     }
 

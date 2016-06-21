@@ -2,6 +2,7 @@ package net.minecraft.client.renderer.tileentity;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -83,7 +84,8 @@ public class TileEntityRendererDispatcher
         return (TileEntitySpecialRenderer<T>)tileentityspecialrenderer;
     }
 
-    public <T extends TileEntity> TileEntitySpecialRenderer<T> getSpecialRenderer(TileEntity tileEntityIn)
+    @Nullable
+    public <T extends TileEntity> TileEntitySpecialRenderer<T> getSpecialRenderer(@Nullable TileEntity tileEntityIn)
     {
         return (TileEntitySpecialRenderer<T>)(tileEntityIn == null ? null : this.getSpecialRendererByClass(tileEntityIn.getClass()));
     }
@@ -155,7 +157,7 @@ public class TileEntityRendererDispatcher
         }
     }
 
-    public void setWorld(World worldIn)
+    public void setWorld(@Nullable World worldIn)
     {
         this.worldObj = worldIn;
 
@@ -193,7 +195,7 @@ public class TileEntityRendererDispatcher
      */
     public void drawBatch(int pass)
     {
-        renderEngine.bindTexture(net.minecraft.client.renderer.texture.TextureMap.locationBlocksTexture);
+        renderEngine.bindTexture(net.minecraft.client.renderer.texture.TextureMap.LOCATION_BLOCKS_TEXTURE);
         net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting();
         GlStateManager.blendFunc(org.lwjgl.opengl.GL11.GL_SRC_ALPHA, org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA);
         GlStateManager.enableBlend();

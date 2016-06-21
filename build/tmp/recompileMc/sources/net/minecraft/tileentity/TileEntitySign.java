@@ -1,13 +1,13 @@
 package net.minecraft.tileentity;
 
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandResultStats;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.SPacketUpdateSign;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -32,7 +32,7 @@ public class TileEntitySign extends TileEntity
     private EntityPlayer player;
     private final CommandResultStats stats = new CommandResultStats();
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
 
@@ -43,6 +43,7 @@ public class TileEntitySign extends TileEntity
         }
 
         this.stats.writeStatsToNBT(compound);
+        return compound;
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -146,14 +147,18 @@ public class TileEntitySign extends TileEntity
         this.stats.readStatsFromNBT(compound);
     }
 
-    public Packet<?> getDescriptionPacket()
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket()
     {
-        ITextComponent[] aitextcomponent = new ITextComponent[4];
-        System.arraycopy(this.signText, 0, aitextcomponent, 0, 4);
-        return new SPacketUpdateSign(this.worldObj, this.pos, aitextcomponent);
+        return new SPacketUpdateTileEntity(this.pos, 9, this.getUpdateTag());
     }
 
-    public boolean func_183000_F()
+    public NBTTagCompound getUpdateTag()
+    {
+        return this.writeToNBT(new NBTTagCompound());
+    }
+
+    public boolean onlyOpsCanSetNbt()
     {
         return true;
     }
@@ -274,11 +279,11 @@ public class TileEntitySign extends TileEntity
 
         for (int i = 0; i < this.signText.length; ++i)
         {
-            Style style = this.signText[i] == null ? null : this.signText[i].getChatStyle();
+            Style style = this.signText[i] == null ? null : this.signText[i].getStyle();
 
-            if (style != null && style.getChatClickEvent() != null)
+            if (style != null && style.getClickEvent() != null)
             {
-                ClickEvent clickevent = style.getChatClickEvent();
+                ClickEvent clickevent = style.getClickEvent();
 
                 if (clickevent.getAction() == ClickEvent.Action.RUN_COMMAND)
                 {

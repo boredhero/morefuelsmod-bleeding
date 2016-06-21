@@ -32,7 +32,7 @@ public class BlockCocoa extends BlockHorizontal implements IGrowable
 
     public BlockCocoa()
     {
-        super(Material.plants);
+        super(Material.PLANTS);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(AGE, Integer.valueOf(0)));
         this.setTickRandomly(true);
     }
@@ -58,7 +58,7 @@ public class BlockCocoa extends BlockHorizontal implements IGrowable
     {
         pos = pos.offset((EnumFacing)state.getValue(FACING));
         IBlockState iblockstate = worldIn.getBlockState(pos);
-        return iblockstate.getBlock() == Blocks.log && iblockstate.getValue(BlockOldLog.VARIANT) == BlockPlanks.EnumType.JUNGLE;
+        return iblockstate.getBlock() == Blocks.LOG && iblockstate.getValue(BlockOldLog.VARIANT) == BlockPlanks.EnumType.JUNGLE;
     }
 
     public boolean isFullCube(IBlockState state)
@@ -134,9 +134,11 @@ public class BlockCocoa extends BlockHorizontal implements IGrowable
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!this.canBlockStay(worldIn, pos, state))
         {
@@ -146,7 +148,7 @@ public class BlockCocoa extends BlockHorizontal implements IGrowable
 
     private void dropBlock(World worldIn, BlockPos pos, IBlockState state)
     {
-        worldIn.setBlockState(pos, Blocks.air.getDefaultState(), 3);
+        worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
         this.dropBlockAsItem(worldIn, pos, state, 0);
     }
 
@@ -172,14 +174,14 @@ public class BlockCocoa extends BlockHorizontal implements IGrowable
 
         for (int k = 0; k < j; ++k)
         {
-            dropped.add(new ItemStack(Items.dye, 1, EnumDyeColor.BROWN.getDyeDamage()));
+            dropped.add(new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage()));
         }
         return dropped;
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Items.dye, 1, EnumDyeColor.BROWN.getDyeDamage());
+        return new ItemStack(Items.DYE, 1, EnumDyeColor.BROWN.getDyeDamage());
     }
 
     /**

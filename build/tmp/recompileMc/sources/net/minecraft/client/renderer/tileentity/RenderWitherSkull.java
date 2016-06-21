@@ -12,8 +12,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderWitherSkull extends Render<EntityWitherSkull>
 {
-    private static final ResourceLocation invulnerableWitherTextures = new ResourceLocation("textures/entity/wither/wither_invulnerable.png");
-    private static final ResourceLocation witherTextures = new ResourceLocation("textures/entity/wither/wither.png");
+    private static final ResourceLocation INVULNERABLE_WITHER_TEXTURES = new ResourceLocation("textures/entity/wither/wither_invulnerable.png");
+    private static final ResourceLocation WITHER_TEXTURES = new ResourceLocation("textures/entity/wither/wither.png");
     /** The Skeleton's head model. */
     private final ModelSkeletonHead skeletonHeadModel = new ModelSkeletonHead();
 
@@ -78,6 +78,6 @@ public class RenderWitherSkull extends Render<EntityWitherSkull>
      */
     protected ResourceLocation getEntityTexture(EntityWitherSkull entity)
     {
-        return entity.isInvulnerable() ? invulnerableWitherTextures : witherTextures;
+        return entity.isInvulnerable() ? INVULNERABLE_WITHER_TEXTURES : WITHER_TEXTURES;
     }
 }

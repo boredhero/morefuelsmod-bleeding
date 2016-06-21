@@ -49,7 +49,7 @@ public class EntityAIPanic extends EntityAIBase
 
                 if (this.theEntityCreature.isBurning())
                 {
-                    BlockPos blockpos = this.func_188497_a(this.theEntityCreature.worldObj, this.theEntityCreature, 5, 4);
+                    BlockPos blockpos = this.getRandPos(this.theEntityCreature.worldObj, this.theEntityCreature, 5, 4);
 
                     if (blockpos != null)
                     {
@@ -80,27 +80,27 @@ public class EntityAIPanic extends EntityAIBase
         return !this.theEntityCreature.getNavigator().noPath();
     }
 
-    private BlockPos func_188497_a(World p_188497_1_, Entity p_188497_2_, int p_188497_3_, int p_188497_4_)
+    private BlockPos getRandPos(World worldIn, Entity entityIn, int horizontalRange, int verticalRange)
     {
-        BlockPos blockpos = new BlockPos(p_188497_2_);
+        BlockPos blockpos = new BlockPos(entityIn);
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
         int i = blockpos.getX();
         int j = blockpos.getY();
         int k = blockpos.getZ();
-        float f = (float)(p_188497_3_ * p_188497_3_ * p_188497_4_ * 2);
+        float f = (float)(horizontalRange * horizontalRange * verticalRange * 2);
         BlockPos blockpos1 = null;
 
-        for (int l = i - p_188497_3_; l <= i + p_188497_3_; ++l)
+        for (int l = i - horizontalRange; l <= i + horizontalRange; ++l)
         {
-            for (int i1 = j - p_188497_4_; i1 <= j + p_188497_4_; ++i1)
+            for (int i1 = j - verticalRange; i1 <= j + verticalRange; ++i1)
             {
-                for (int j1 = k - p_188497_3_; j1 <= k + p_188497_3_; ++j1)
+                for (int j1 = k - horizontalRange; j1 <= k + horizontalRange; ++j1)
                 {
-                    blockpos$mutableblockpos.set(l, i1, j1);
-                    IBlockState iblockstate = p_188497_1_.getBlockState(blockpos$mutableblockpos);
+                    blockpos$mutableblockpos.setPos(l, i1, j1);
+                    IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
                     Block block = iblockstate.getBlock();
 
-                    if (block == Blocks.water || block == Blocks.flowing_water)
+                    if (block == Blocks.WATER || block == Blocks.FLOWING_WATER)
                     {
                         float f1 = (float)((l - i) * (l - i) + (i1 - j) * (i1 - j) + (j1 - k) * (j1 - k));
 

@@ -9,6 +9,7 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.IItemPropertyGetter;
 import net.minecraft.item.Item;
@@ -25,9 +26,9 @@ public class ItemOverride
     private final ResourceLocation location;
     private final Map<ResourceLocation, Float> mapResourceValues;
 
-    public ItemOverride(ResourceLocation p_i46571_1_, Map<ResourceLocation, Float> p_i46571_2_)
+    public ItemOverride(ResourceLocation locationIn, Map<ResourceLocation, Float> p_i46571_2_)
     {
-        this.location = p_i46571_1_;
+        this.location = locationIn;
         this.mapResourceValues = p_i46571_2_;
     }
 
@@ -36,15 +37,15 @@ public class ItemOverride
         return this.location;
     }
 
-    boolean matchesItemStack(ItemStack p_188027_1_, World p_188027_2_, EntityLivingBase p_188027_3_)
+    boolean matchesItemStack(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase livingEntity)
     {
-        Item item = p_188027_1_.getItem();
+        Item item = stack.getItem();
 
         for (Entry<ResourceLocation, Float> entry : this.mapResourceValues.entrySet())
         {
             IItemPropertyGetter iitempropertygetter = item.getPropertyGetter((ResourceLocation)entry.getKey());
 
-            if (iitempropertygetter == null || iitempropertygetter.apply(p_188027_1_, p_188027_2_, p_188027_3_) < ((Float)entry.getValue()).floatValue())
+            if (iitempropertygetter == null || iitempropertygetter.apply(stack, worldIn, livingEntity) < ((Float)entry.getValue()).floatValue())
             {
                 return false;
             }

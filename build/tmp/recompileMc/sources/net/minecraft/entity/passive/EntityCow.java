@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -35,7 +36,7 @@ public class EntityCow extends EntityAnimal
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 2.0D));
         this.tasks.addTask(2, new EntityAIMate(this, 1.0D));
-        this.tasks.addTask(3, new EntityAITempt(this, 1.25D, Items.wheat, false));
+        this.tasks.addTask(3, new EntityAITempt(this, 1.25D, Items.WHEAT, false));
         this.tasks.addTask(4, new EntityAIFollowParent(this, 1.25D));
         this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
@@ -51,22 +52,22 @@ public class EntityCow extends EntityAnimal
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_cow_ambient;
+        return SoundEvents.ENTITY_COW_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_cow_hurt;
+        return SoundEvents.ENTITY_COW_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_cow_death;
+        return SoundEvents.ENTITY_COW_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        this.playSound(SoundEvents.entity_cow_step, 0.15F, 1.0F);
+        this.playSound(SoundEvents.ENTITY_COW_STEP, 0.15F, 1.0F);
     }
 
     /**
@@ -77,31 +78,32 @@ public class EntityCow extends EntityAnimal
         return 0.4F;
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_COW;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand p_184645_2_, ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
-        if (stack != null && stack.getItem() == Items.bucket && !player.capabilities.isCreativeMode && !this.isChild())
+        if (stack != null && stack.getItem() == Items.BUCKET && !player.capabilities.isCreativeMode && !this.isChild())
         {
-            player.playSound(SoundEvents.entity_cow_milk, 1.0F, 1.0F);
+            player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
 
             if (--stack.stackSize == 0)
             {
-                player.setHeldItem(p_184645_2_, new ItemStack(Items.milk_bucket));
+                player.setHeldItem(hand, new ItemStack(Items.MILK_BUCKET));
             }
-            else if (!player.inventory.addItemStackToInventory(new ItemStack(Items.milk_bucket)))
+            else if (!player.inventory.addItemStackToInventory(new ItemStack(Items.MILK_BUCKET)))
             {
-                player.dropPlayerItemWithRandomChoice(new ItemStack(Items.milk_bucket), false);
+                player.dropItem(new ItemStack(Items.MILK_BUCKET), false);
             }
 
             return true;
         }
         else
         {
-            return super.processInteract(player, p_184645_2_, stack);
+            return super.processInteract(player, hand, stack);
         }
     }
 

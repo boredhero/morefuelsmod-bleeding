@@ -10,12 +10,12 @@ import net.minecraft.world.storage.WorldInfo;
 
 public class DemoWorldServer extends WorldServer
 {
-    private static final long demoWorldSeed = (long)"North Carolina".hashCode();
-    public static final WorldSettings demoWorldSettings = (new WorldSettings(demoWorldSeed, WorldSettings.GameType.SURVIVAL, true, false, WorldType.DEFAULT)).enableBonusChest();
+    private static final long DEMO_WORLD_SEED = (long)"North Carolina".hashCode();
+    public static final WorldSettings DEMO_WORLD_SETTINGS = (new WorldSettings(DEMO_WORLD_SEED, WorldSettings.GameType.SURVIVAL, true, false, WorldType.DEFAULT)).enableBonusChest();
 
     public DemoWorldServer(MinecraftServer server, ISaveHandler saveHandlerIn, WorldInfo worldInfoIn, int dimensionId, Profiler profilerIn)
     {
         super(server, saveHandlerIn, worldInfoIn, dimensionId, profilerIn);
-        this.worldInfo.populateFromWorldSettings(demoWorldSettings);
+        this.worldInfo.populateFromWorldSettings(DEMO_WORLD_SETTINGS);
     }
 }

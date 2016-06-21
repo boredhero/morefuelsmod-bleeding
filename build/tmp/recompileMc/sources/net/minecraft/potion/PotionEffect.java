@@ -27,28 +27,28 @@ public class PotionEffect implements Comparable<PotionEffect>
     /** List of ItemStack that can cure the potion effect **/
     private java.util.List<net.minecraft.item.ItemStack> curativeItems;
 
-    public PotionEffect(Potion p_i46811_1_)
+    public PotionEffect(Potion potionIn)
     {
-        this(p_i46811_1_, 0, 0);
+        this(potionIn, 0, 0);
     }
 
-    public PotionEffect(Potion p_i46812_1_, int p_i46812_2_)
+    public PotionEffect(Potion potionIn, int durationIn)
     {
-        this(p_i46812_1_, p_i46812_2_, 0);
+        this(potionIn, durationIn, 0);
     }
 
-    public PotionEffect(Potion p_i46813_1_, int p_i46813_2_, int p_i46813_3_)
+    public PotionEffect(Potion potionIn, int durationIn, int amplifierIn)
     {
-        this(p_i46813_1_, p_i46813_2_, p_i46813_3_, false, true);
+        this(potionIn, durationIn, amplifierIn, false, true);
     }
 
-    public PotionEffect(Potion p_i46814_1_, int p_i46814_2_, int p_i46814_3_, boolean p_i46814_4_, boolean p_i46814_5_)
+    public PotionEffect(Potion potionIn, int durationIn, int amplifierIn, boolean ambientIn, boolean showParticlesIn)
     {
-        this.potion = p_i46814_1_;
-        this.duration = p_i46814_2_;
-        this.amplifier = p_i46814_3_;
-        this.isAmbient = p_i46814_4_;
-        this.showParticles = p_i46814_5_;
+        this.potion = potionIn;
+        this.duration = durationIn;
+        this.amplifier = amplifierIn;
+        this.isAmbient = ambientIn;
+        this.showParticles = showParticlesIn;
     }
 
     public PotionEffect(PotionEffect other)
@@ -278,7 +278,7 @@ public class PotionEffect implements Comparable<PotionEffect>
         if (this.curativeItems == null) //Lazy load this so that we don't create a circular dep on Items.
         {
             this.curativeItems = new java.util.ArrayList<net.minecraft.item.ItemStack>();
-            this.curativeItems.add(new net.minecraft.item.ItemStack(net.minecraft.init.Items.milk_bucket));
+            this.curativeItems.add(new net.minecraft.item.ItemStack(net.minecraft.init.Items.MILK_BUCKET));
         }
         return this.curativeItems;
     }

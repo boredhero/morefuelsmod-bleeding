@@ -41,7 +41,7 @@ public abstract class TileEntitySpecialRenderer<T extends TileEntity>
         return this.rendererDispatcher.getFontRenderer();
     }
 
-    public boolean isGlobalRenderer(T p_188185_1_)
+    public boolean isGlobalRenderer(T te)
     {
         return false;
     }

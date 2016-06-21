@@ -29,8 +29,7 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     public boolean isInRangeToRenderDist(double distance)
     {
@@ -53,7 +52,10 @@ public class EntityOtherPlayerMP extends AbstractClientPlayer
         return true;
     }
 
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_)
+    /**
+     * Set the position and rotation values directly without any clamping.
+     */
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
         this.otherPlayerMPX = x;
         this.otherPlayerMPY = y;

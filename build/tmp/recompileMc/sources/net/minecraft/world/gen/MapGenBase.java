@@ -13,7 +13,7 @@ public class MapGenBase
     /** This world object. */
     protected World worldObj;
 
-    public void generate(World worldIn, int p_186125_2_, int p_186125_3_, ChunkPrimer primer)
+    public void generate(World worldIn, int x, int z, ChunkPrimer primer)
     {
         int i = this.range;
         this.worldObj = worldIn;
@@ -21,14 +21,14 @@ public class MapGenBase
         long j = this.rand.nextLong();
         long k = this.rand.nextLong();
 
-        for (int l = p_186125_2_ - i; l <= p_186125_2_ + i; ++l)
+        for (int l = x - i; l <= x + i; ++l)
         {
-            for (int i1 = p_186125_3_ - i; i1 <= p_186125_3_ + i; ++i1)
+            for (int i1 = z - i; i1 <= z + i; ++i1)
             {
                 long j1 = (long)l * j;
                 long k1 = (long)i1 * k;
                 this.rand.setSeed(j1 ^ k1 ^ worldIn.getSeed());
-                this.recursiveGenerate(worldIn, l, i1, p_186125_2_, p_186125_3_, primer);
+                this.recursiveGenerate(worldIn, l, i1, x, z, primer);
             }
         }
     }

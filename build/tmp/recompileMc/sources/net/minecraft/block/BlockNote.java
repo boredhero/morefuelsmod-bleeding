@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,18 +23,20 @@ import net.minecraft.world.World;
 
 public class BlockNote extends BlockContainer
 {
-    private static final List<SoundEvent> INSTRUMENTS = Lists.newArrayList(new SoundEvent[] {SoundEvents.block_note_harp, SoundEvents.block_note_basedrum, SoundEvents.block_note_snare, SoundEvents.block_note_hat, SoundEvents.block_note_bass});
+    private static final List<SoundEvent> INSTRUMENTS = Lists.newArrayList(new SoundEvent[] {SoundEvents.BLOCK_NOTE_HARP, SoundEvents.BLOCK_NOTE_BASEDRUM, SoundEvents.BLOCK_NOTE_SNARE, SoundEvents.BLOCK_NOTE_HAT, SoundEvents.BLOCK_NOTE_BASS});
 
     public BlockNote()
     {
-        super(Material.wood);
-        this.setCreativeTab(CreativeTabs.tabRedstone);
+        super(Material.WOOD);
+        this.setCreativeTab(CreativeTabs.REDSTONE);
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         boolean flag = worldIn.isBlockPowered(pos);
         TileEntity tileentity = worldIn.getTileEntity(pos);
@@ -54,7 +57,7 @@ public class BlockNote extends BlockContainer
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -71,7 +74,7 @@ public class BlockNote extends BlockContainer
                 tileentitynote.changePitch();
                 if (old == tileentitynote.note) return false;
                 tileentitynote.triggerNote(worldIn, pos);
-                playerIn.addStat(StatList.noteblockTuned);
+                playerIn.addStat(StatList.NOTEBLOCK_TUNED);
             }
 
             return true;
@@ -87,7 +90,7 @@ public class BlockNote extends BlockContainer
             if (tileentity instanceof TileEntityNote)
             {
                 ((TileEntityNote)tileentity).triggerNote(worldIn, pos);
-                playerIn.addStat(StatList.noteblockPlayed);
+                playerIn.addStat(StatList.NOTEBLOCK_PLAYED);
             }
         }
     }
@@ -100,7 +103,7 @@ public class BlockNote extends BlockContainer
         return new TileEntityNote();
     }
 
-    private SoundEvent func_185576_e(int p_185576_1_)
+    private SoundEvent getInstrument(int p_185576_1_)
     {
         if (p_185576_1_ < 0 || p_185576_1_ >= INSTRUMENTS.size())
         {
@@ -111,17 +114,23 @@ public class BlockNote extends BlockContainer
     }
 
     /**
-     * Called on both Client and Server when World#addBlockEvent is called
+     * Called on both Client and Server when World#addBlockEvent is called. On the Server, this may perform additional
+     * changes to the world, like pistons replacing the block with an extended base. On the client, the update may
+     * involve replacing tile entities, playing sounds, or performing other visual actions to reflect the server side
+     * changes.
+     *  
+     * @param state The block state retrieved from the block position prior to this method being invoked
+     * @param pos The position of the block event. Can be used to retrieve tile entities.
      */
-    public boolean onBlockEventReceived(World worldIn, BlockPos pos, IBlockState state, int eventID, int eventParam)
+    public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param)
     {
-        net.minecraftforge.event.world.NoteBlockEvent.Play e = new net.minecraftforge.event.world.NoteBlockEvent.Play(worldIn, pos, state, eventParam, eventID);
+        net.minecraftforge.event.world.NoteBlockEvent.Play e = new net.minecraftforge.event.world.NoteBlockEvent.Play(worldIn, pos, state, param, id);
         if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(e)) return false;
-        eventID = e.getInstrument().ordinal();
-        eventParam = e.getVanillaNoteId();
-        float f = (float)Math.pow(2.0D, (double)(eventParam - 12) / 12.0D);
-        worldIn.playSound((EntityPlayer)null, pos, this.func_185576_e(eventID), SoundCategory.BLOCKS, 3.0F, f);
-        worldIn.spawnParticle(EnumParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double)pos.getY() + 1.2D, (double)pos.getZ() + 0.5D, (double)eventParam / 24.0D, 0.0D, 0.0D, new int[0]);
+        id = e.getInstrument().ordinal();
+        param = e.getVanillaNoteId();
+        float f = (float)Math.pow(2.0D, (double)(param - 12) / 12.0D);
+        worldIn.playSound((EntityPlayer)null, pos, this.getInstrument(id), SoundCategory.BLOCKS, 3.0F, f);
+        worldIn.spawnParticle(EnumParticleTypes.NOTE, (double)pos.getX() + 0.5D, (double)pos.getY() + 1.2D, (double)pos.getZ() + 0.5D, (double)param / 24.0D, 0.0D, 0.0D, new int[0]);
         return true;
     }
 

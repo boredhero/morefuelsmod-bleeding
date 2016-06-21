@@ -82,7 +82,7 @@ public class Village
 
         if (this.numIronGolems < i && this.villageDoorInfoList.size() > 20 && this.worldObj.rand.nextInt(7000) == 0)
         {
-            Vec3d vec3d = this.func_179862_a(this.center, 2, 4, 2);
+            Vec3d vec3d = this.findRandomSpawnPos(this.center, 2, 4, 2);
 
             if (vec3d != null)
             {
@@ -94,13 +94,13 @@ public class Village
         }
     }
 
-    private Vec3d func_179862_a(BlockPos pos, int x, int y, int z)
+    private Vec3d findRandomSpawnPos(BlockPos pos, int x, int y, int z)
     {
         for (int i = 0; i < 10; ++i)
         {
             BlockPos blockpos = pos.add(this.worldObj.rand.nextInt(16) - 8, this.worldObj.rand.nextInt(6) - 3, this.worldObj.rand.nextInt(16) - 8);
 
-            if (this.func_179866_a(blockpos) && this.func_179861_a(new BlockPos(x, y, z), blockpos))
+            if (this.isBlockPosWithinSqVillageRadius(blockpos) && this.isAreaClearAround(new BlockPos(x, y, z), blockpos))
             {
                 return new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
             }
@@ -109,22 +109,25 @@ public class Village
         return null;
     }
 
-    private boolean func_179861_a(BlockPos p_179861_1_, BlockPos p_179861_2_)
+    /**
+     * Checks to see if the volume around blockLocation is clear and able to fit blockSize
+     */
+    private boolean isAreaClearAround(BlockPos blockSize, BlockPos blockLocation)
     {
-        if (!this.worldObj.getBlockState(p_179861_2_.down()).isFullyOpaque())
+        if (!this.worldObj.getBlockState(blockLocation.down()).isFullyOpaque())
         {
             return false;
         }
         else
         {
-            int i = p_179861_2_.getX() - p_179861_1_.getX() / 2;
-            int j = p_179861_2_.getZ() - p_179861_1_.getZ() / 2;
+            int i = blockLocation.getX() - blockSize.getX() / 2;
+            int j = blockLocation.getZ() - blockSize.getZ() / 2;
 
-            for (int k = i; k < i + p_179861_1_.getX(); ++k)
+            for (int k = i; k < i + blockSize.getX(); ++k)
             {
-                for (int l = p_179861_2_.getY(); l < p_179861_2_.getY() + p_179861_1_.getY(); ++l)
+                for (int l = blockLocation.getY(); l < blockLocation.getY() + blockSize.getY(); ++l)
                 {
-                    for (int i1 = j; i1 < j + p_179861_1_.getZ(); ++i1)
+                    for (int i1 = j; i1 < j + blockSize.getZ(); ++i1)
                     {
                         if (this.worldObj.getBlockState(new BlockPos(k, l, i1)).isNormalCube())
                         {
@@ -184,7 +187,11 @@ public class Village
         return this.numVillagers;
     }
 
-    public boolean func_179866_a(BlockPos pos)
+    /**
+     * Checks to see if the distance squared between this BlockPos and the center of this Village is less than this
+     * Village's villageRadius squared
+     */
+    public boolean isBlockPosWithinSqVillageRadius(BlockPos pos)
     {
         return this.center.distanceSq(pos) < (double)(this.villageRadius * this.villageRadius);
     }
@@ -399,7 +406,7 @@ public class Village
     {
         IBlockState iblockstate = this.worldObj.getBlockState(pos);
         Block block = iblockstate.getBlock();
-        return block instanceof BlockDoor ? iblockstate.getMaterial() == Material.wood : false;
+        return block instanceof BlockDoor ? iblockstate.getMaterial() == Material.WOOD : false;
     }
 
     private void updateVillageRadiusAndCenter()
@@ -428,20 +435,19 @@ public class Village
     /**
      * Return the village reputation for a player
      */
-    public int getReputationForPlayer(String playerName)
+    public int getPlayerReputation(String playerName)
     {
         Integer integer = (Integer)this.playerReputation.get(playerName);
         return integer != null ? integer.intValue() : 0;
     }
 
     /**
-     * Set the village reputation for a player.
-     *  
-     * @param reputation The reputation to add the existing reputation amount
+     * Modify a players reputation in the village. Use positive values to increase reputation and negative values to
+     * decrease. <br>Note that a players reputation is clamped between -30 and 10
      */
-    public int setReputationForPlayer(String playerName, int reputation)
+    public int modifyPlayerReputation(String playerName, int reputation)
     {
-        int i = this.getReputationForPlayer(playerName);
+        int i = this.getPlayerReputation(playerName);
         int j = MathHelper.clamp_int(i + reputation, -30, 10);
         this.playerReputation.put(playerName, Integer.valueOf(j));
         return j;
@@ -452,7 +458,7 @@ public class Village
      */
     public boolean isPlayerReputationTooLow(String playerName)
     {
-        return this.getReputationForPlayer(playerName) <= -15;
+        return this.getPlayerReputation(playerName) <= -15;
     }
 
     /**
@@ -571,7 +577,7 @@ public class Village
     {
         for (String s : this.playerReputation.keySet())
         {
-            this.setReputationForPlayer(s, defaultReputation);
+            this.modifyPlayerReputation(s, defaultReputation);
         }
     }
 

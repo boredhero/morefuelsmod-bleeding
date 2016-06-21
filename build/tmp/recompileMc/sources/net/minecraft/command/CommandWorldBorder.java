@@ -2,6 +2,7 @@ package net.minecraft.command;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -36,10 +37,6 @@ public class CommandWorldBorder extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -68,17 +65,17 @@ public class CommandWorldBorder extends CommandBase
 
                     if (d0 > d2)
                     {
-                        notifyOperators(sender, this, "commands.worldborder.setSlowly.shrink.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d2)}), String.format("%.1f", new Object[]{Double.valueOf(d0)}), Long.toString(i / 1000L)});
+                        notifyCommandListener(sender, this, "commands.worldborder.setSlowly.shrink.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d2)}), String.format("%.1f", new Object[]{Double.valueOf(d0)}), Long.toString(i / 1000L)});
                     }
                     else
                     {
-                        notifyOperators(sender, this, "commands.worldborder.setSlowly.grow.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d2)}), String.format("%.1f", new Object[]{Double.valueOf(d0)}), Long.toString(i / 1000L)});
+                        notifyCommandListener(sender, this, "commands.worldborder.setSlowly.grow.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d2)}), String.format("%.1f", new Object[]{Double.valueOf(d0)}), Long.toString(i / 1000L)});
                     }
                 }
                 else
                 {
                     worldborder.setTransition(d2);
-                    notifyOperators(sender, this, "commands.worldborder.set.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d2)}), String.format("%.1f", new Object[]{Double.valueOf(d0)})});
+                    notifyCommandListener(sender, this, "commands.worldborder.set.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d2)}), String.format("%.1f", new Object[]{Double.valueOf(d0)})});
                 }
             }
             else if (args[0].equals("add"))
@@ -98,17 +95,17 @@ public class CommandWorldBorder extends CommandBase
 
                     if (d4 > d8)
                     {
-                        notifyOperators(sender, this, "commands.worldborder.setSlowly.shrink.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d8)}), String.format("%.1f", new Object[]{Double.valueOf(d4)}), Long.toString(j1 / 1000L)});
+                        notifyCommandListener(sender, this, "commands.worldborder.setSlowly.shrink.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d8)}), String.format("%.1f", new Object[]{Double.valueOf(d4)}), Long.toString(j1 / 1000L)});
                     }
                     else
                     {
-                        notifyOperators(sender, this, "commands.worldborder.setSlowly.grow.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d8)}), String.format("%.1f", new Object[]{Double.valueOf(d4)}), Long.toString(j1 / 1000L)});
+                        notifyCommandListener(sender, this, "commands.worldborder.setSlowly.grow.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d8)}), String.format("%.1f", new Object[]{Double.valueOf(d4)}), Long.toString(j1 / 1000L)});
                     }
                 }
                 else
                 {
                     worldborder.setTransition(d8);
-                    notifyOperators(sender, this, "commands.worldborder.set.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d8)}), String.format("%.1f", new Object[]{Double.valueOf(d4)})});
+                    notifyCommandListener(sender, this, "commands.worldborder.set.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d8)}), String.format("%.1f", new Object[]{Double.valueOf(d4)})});
                 }
             }
             else if (args[0].equals("center"))
@@ -122,7 +119,7 @@ public class CommandWorldBorder extends CommandBase
                 double d1 = parseDouble((double)blockpos.getX() + 0.5D, args[1], true);
                 double d3 = parseDouble((double)blockpos.getZ() + 0.5D, args[2], true);
                 worldborder.setCenter(d1, d3);
-                notifyOperators(sender, this, "commands.worldborder.center.success", new Object[] {Double.valueOf(d1), Double.valueOf(d3)});
+                notifyCommandListener(sender, this, "commands.worldborder.center.success", new Object[] {Double.valueOf(d1), Double.valueOf(d3)});
             }
             else if (args[0].equals("damage"))
             {
@@ -141,7 +138,7 @@ public class CommandWorldBorder extends CommandBase
                     double d5 = parseDouble(args[2], 0.0D);
                     double d9 = worldborder.getDamageBuffer();
                     worldborder.setDamageBuffer(d5);
-                    notifyOperators(sender, this, "commands.worldborder.damage.buffer.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d5)}), String.format("%.1f", new Object[]{Double.valueOf(d9)})});
+                    notifyCommandListener(sender, this, "commands.worldborder.damage.buffer.success", new Object[] {String.format("%.1f", new Object[]{Double.valueOf(d5)}), String.format("%.1f", new Object[]{Double.valueOf(d9)})});
                 }
                 else if (args[1].equals("amount"))
                 {
@@ -153,7 +150,7 @@ public class CommandWorldBorder extends CommandBase
                     double d6 = parseDouble(args[2], 0.0D);
                     double d10 = worldborder.getDamageAmount();
                     worldborder.setDamageAmount(d6);
-                    notifyOperators(sender, this, "commands.worldborder.damage.amount.success", new Object[] {String.format("%.2f", new Object[]{Double.valueOf(d6)}), String.format("%.2f", new Object[]{Double.valueOf(d10)})});
+                    notifyCommandListener(sender, this, "commands.worldborder.damage.amount.success", new Object[] {String.format("%.2f", new Object[]{Double.valueOf(d6)}), String.format("%.2f", new Object[]{Double.valueOf(d10)})});
                 }
             }
             else if (args[0].equals("warning"))
@@ -173,7 +170,7 @@ public class CommandWorldBorder extends CommandBase
                     int j = parseInt(args[2], 0);
                     int l = worldborder.getWarningTime();
                     worldborder.setWarningTime(j);
-                    notifyOperators(sender, this, "commands.worldborder.warning.time.success", new Object[] {Integer.valueOf(j), Integer.valueOf(l)});
+                    notifyCommandListener(sender, this, "commands.worldborder.warning.time.success", new Object[] {Integer.valueOf(j), Integer.valueOf(l)});
                 }
                 else if (args[1].equals("distance"))
                 {
@@ -185,7 +182,7 @@ public class CommandWorldBorder extends CommandBase
                     int k = parseInt(args[2], 0);
                     int i1 = worldborder.getWarningDistance();
                     worldborder.setWarningDistance(k);
-                    notifyOperators(sender, this, "commands.worldborder.warning.distance.success", new Object[] {Integer.valueOf(k), Integer.valueOf(i1)});
+                    notifyCommandListener(sender, this, "commands.worldborder.warning.distance.success", new Object[] {Integer.valueOf(k), Integer.valueOf(i1)});
                 }
             }
             else
@@ -207,7 +204,7 @@ public class CommandWorldBorder extends CommandBase
         return server.worldServers[0].getWorldBorder();
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, new String[] {"set", "center", "damage", "warning", "add", "get"}): (args.length == 2 && args[0].equals("damage") ? getListOfStringsMatchingLastWord(args, new String[] {"buffer", "amount"}): (args.length >= 2 && args.length <= 3 && args[0].equals("center") ? getTabCompletionCoordinateXZ(args, 1, pos) : (args.length == 2 && args[0].equals("warning") ? getListOfStringsMatchingLastWord(args, new String[] {"time", "distance"}): Collections.<String>emptyList())));
     }

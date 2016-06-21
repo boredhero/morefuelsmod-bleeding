@@ -1,10 +1,11 @@
 package net.minecraft.entity.player;
 
 import java.util.Arrays;
-import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
@@ -48,6 +49,7 @@ public class InventoryPlayer implements IInventory
     /**
      * Returns the item stack currently held by the player.
      */
+    @Nullable
     public ItemStack getCurrentItem()
     {
         return isHotbar(this.currentItem) ? this.mainInventory[this.currentItem] : null;
@@ -61,9 +63,9 @@ public class InventoryPlayer implements IInventory
         return 9;
     }
 
-    private boolean func_184436_a(ItemStack p_184436_1_, ItemStack p_184436_2_)
+    private boolean canMergeStacks(@Nullable ItemStack stack1, ItemStack stack2)
     {
-        return p_184436_1_ != null && this.stackEqualExact(p_184436_1_, p_184436_2_) && p_184436_1_.isStackable() && p_184436_1_.stackSize < p_184436_1_.getMaxStackSize() && p_184436_1_.stackSize < this.getInventoryStackLimit();
+        return stack1 != null && this.stackEqualExact(stack1, stack2) && stack1.isStackable() && stack1.stackSize < stack1.getMaxStackSize() && stack1.stackSize < this.getInventoryStackLimit();
     }
 
     /**
@@ -91,7 +93,7 @@ public class InventoryPlayer implements IInventory
     }
 
     @SideOnly(Side.CLIENT)
-    public void func_184434_a(ItemStack stack)
+    public void setPickedItemStack(ItemStack stack)
     {
         int i = this.getSlotFor(stack);
 
@@ -103,7 +105,7 @@ public class InventoryPlayer implements IInventory
         {
             if (i == -1)
             {
-                this.currentItem = this.func_184433_k();
+                this.currentItem = this.getBestHotbarSlot();
 
                 if (this.mainInventory[this.currentItem] != null)
                 {
@@ -126,15 +128,15 @@ public class InventoryPlayer implements IInventory
 
     public void pickItem(int index)
     {
-        this.currentItem = this.func_184433_k();
+        this.currentItem = this.getBestHotbarSlot();
         ItemStack itemstack = this.mainInventory[this.currentItem];
         this.mainInventory[this.currentItem] = this.mainInventory[index];
         this.mainInventory[index] = itemstack;
     }
 
-    public static boolean isHotbar(int p_184435_0_)
+    public static boolean isHotbar(int index)
     {
-        return p_184435_0_ >= 0 && p_184435_0_ < 9;
+        return index >= 0 && index < 9;
     }
 
     /**
@@ -154,7 +156,7 @@ public class InventoryPlayer implements IInventory
         return -1;
     }
 
-    public int func_184433_k()
+    public int getBestHotbarSlot()
     {
         for (int i = 0; i < 9; ++i)
         {
@@ -214,7 +216,7 @@ public class InventoryPlayer implements IInventory
      * @param itemNBT The NBT data to match, null ignores.
      * @return The number of items removed from the inventory.
      */
-    public int clearMatchingItems(Item itemIn, int metadataIn, int removeCount, NBTTagCompound itemNBT)
+    public int clearMatchingItems(@Nullable Item itemIn, int metadataIn, int removeCount, @Nullable NBTTagCompound itemNBT)
     {
         int i = 0;
 
@@ -344,11 +346,11 @@ public class InventoryPlayer implements IInventory
      */
     private int storeItemStack(ItemStack itemStackIn)
     {
-        if (this.func_184436_a(this.getStackInSlot(this.currentItem), itemStackIn))
+        if (this.canMergeStacks(this.getStackInSlot(this.currentItem), itemStackIn))
         {
             return this.currentItem;
         }
-        else if (this.func_184436_a(this.getStackInSlot(40), itemStackIn))
+        else if (this.canMergeStacks(this.getStackInSlot(40), itemStackIn))
         {
             return 40;
         }
@@ -356,7 +358,7 @@ public class InventoryPlayer implements IInventory
         {
             for (int i = 0; i < this.mainInventory.length; ++i)
             {
-                if (this.func_184436_a(this.mainInventory[i], itemStackIn))
+                if (this.canMergeStacks(this.mainInventory[i], itemStackIn))
                 {
                     return i;
                 }
@@ -397,7 +399,7 @@ public class InventoryPlayer implements IInventory
     /**
      * Adds the item stack to the inventory, returns false if it is impossible.
      */
-    public boolean addItemStackToInventory(final ItemStack itemStackIn)
+    public boolean addItemStackToInventory(@Nullable final ItemStack itemStackIn)
     {
         if (itemStackIn != null && itemStackIn.stackSize != 0 && itemStackIn.getItem() != null)
         {
@@ -456,7 +458,7 @@ public class InventoryPlayer implements IInventory
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being added");
                 crashreportcategory.addCrashSection("Item ID", Integer.valueOf(Item.getIdFromItem(itemStackIn.getItem())));
                 crashreportcategory.addCrashSection("Item data", Integer.valueOf(itemStackIn.getMetadata()));
-                crashreportcategory.addCrashSectionCallable("Item name", new Callable<String>()
+                crashreportcategory.setDetail("Item name", new ICrashReportDetail<String>()
                 {
                     public String call() throws Exception
                     {
@@ -475,6 +477,7 @@ public class InventoryPlayer implements IInventory
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
+    @Nullable
     public ItemStack decrStackSize(int index, int count)
     {
         ItemStack[] aitemstack = null;
@@ -490,16 +493,16 @@ public class InventoryPlayer implements IInventory
             index -= aitemstack1.length;
         }
 
-        return aitemstack != null && aitemstack[index] != null ? ItemStackHelper.func_188382_a(aitemstack, index, count) : null;
+        return aitemstack != null && aitemstack[index] != null ? ItemStackHelper.getAndSplit(aitemstack, index, count) : null;
     }
 
-    public void deleteStack(ItemStack p_184437_1_)
+    public void deleteStack(ItemStack stack)
     {
         for (ItemStack[] aitemstack : this.allInventories)
         {
             for (int i = 0; i < aitemstack.length; ++i)
             {
-                if (aitemstack[i] == p_184437_1_)
+                if (aitemstack[i] == stack)
                 {
                     aitemstack[i] = null;
                     break;
@@ -511,6 +514,7 @@ public class InventoryPlayer implements IInventory
     /**
      * Removes a stack from the given slot and returns it.
      */
+    @Nullable
     public ItemStack removeStackFromSlot(int index)
     {
         ItemStack[] aitemstack = null;
@@ -541,7 +545,7 @@ public class InventoryPlayer implements IInventory
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, ItemStack stack)
+    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
     {
         ItemStack[] aitemstack = null;
 
@@ -562,13 +566,13 @@ public class InventoryPlayer implements IInventory
         }
     }
 
-    public float getStrVsBlock(IBlockState p_184438_1_)
+    public float getStrVsBlock(IBlockState state)
     {
         float f = 1.0F;
 
         if (this.mainInventory[this.currentItem] != null)
         {
-            f *= this.mainInventory[this.currentItem].getStrVsBlock(p_184438_1_);
+            f *= this.mainInventory[this.currentItem].getStrVsBlock(state);
         }
 
         return f;
@@ -660,6 +664,7 @@ public class InventoryPlayer implements IInventory
     /**
      * Returns the stack in the given slot.
      */
+    @Nullable
     public ItemStack getStackInSlot(int index)
     {
         ItemStack[] aitemstack = null;
@@ -710,16 +715,16 @@ public class InventoryPlayer implements IInventory
         return 64;
     }
 
-    public boolean canHarvestBlock(IBlockState p_184432_1_)
+    public boolean canHarvestBlock(IBlockState state)
     {
-        if (p_184432_1_.getMaterial().isToolNotRequired())
+        if (state.getMaterial().isToolNotRequired())
         {
             return true;
         }
         else
         {
             ItemStack itemstack = this.getStackInSlot(this.currentItem);
-            return itemstack != null ? itemstack.canHarvestBlock(p_184432_1_) : false;
+            return itemstack != null ? itemstack.canHarvestBlock(state) : false;
         }
     }
 
@@ -788,7 +793,7 @@ public class InventoryPlayer implements IInventory
     /**
      * Set the stack helds by mouse, used in GUI/Container
      */
-    public void setItemStack(ItemStack itemStackIn)
+    public void setItemStack(@Nullable ItemStack itemStackIn)
     {
         this.itemStack = itemStackIn;
     }
@@ -796,6 +801,7 @@ public class InventoryPlayer implements IInventory
     /**
      * Stack helds by mouse, used in GUI and Containers
      */
+    @Nullable
     public ItemStack getItemStack()
     {
         return this.itemStack;

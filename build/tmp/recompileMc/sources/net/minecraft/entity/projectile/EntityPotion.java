@@ -2,6 +2,7 @@ package net.minecraft.entity.projectile;
 
 import com.google.common.base.Optional;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
@@ -41,7 +42,7 @@ public class EntityPotion extends EntityThrowable
         this.setItem(potionDamageIn);
     }
 
-    public EntityPotion(World worldIn, double x, double y, double z, ItemStack potionDamageIn)
+    public EntityPotion(World worldIn, double x, double y, double z, @Nullable ItemStack potionDamageIn)
     {
         super(worldIn, x, y, z);
 
@@ -60,14 +61,14 @@ public class EntityPotion extends EntityThrowable
     {
         ItemStack itemstack = (ItemStack)((Optional)this.getDataManager().get(ITEM)).orNull();
 
-        if (itemstack == null || itemstack.getItem() != Items.splash_potion && itemstack.getItem() != Items.lingering_potion)
+        if (itemstack == null || itemstack.getItem() != Items.SPLASH_POTION && itemstack.getItem() != Items.LINGERING_POTION)
         {
             if (this.worldObj != null)
             {
                 LOGGER.error("ThrownPotion entity " + this.getEntityId() + " has no item?!");
             }
 
-            return new ItemStack(Items.splash_potion);
+            return new ItemStack(Items.SPLASH_POTION);
         }
         else
         {
@@ -75,7 +76,7 @@ public class EntityPotion extends EntityThrowable
         }
     }
 
-    public void setItem(ItemStack stack)
+    public void setItem(@Nullable ItemStack stack)
     {
         this.getDataManager().set(ITEM, Optional.fromNullable(stack));
         this.getDataManager().setDirty(ITEM);
@@ -100,7 +101,7 @@ public class EntityPotion extends EntityThrowable
             PotionType potiontype = PotionUtils.getPotionFromItem(itemstack);
             List<PotionEffect> list = PotionUtils.getEffectsFromStack(itemstack);
 
-            if (result.typeOfHit == RayTraceResult.Type.BLOCK && potiontype == PotionTypes.water && list.isEmpty())
+            if (result.typeOfHit == RayTraceResult.Type.BLOCK && potiontype == PotionTypes.WATER && list.isEmpty())
             {
                 BlockPos blockpos = result.getBlockPos().offset(result.sideHit);
                 this.extinguishFires(blockpos);
@@ -110,7 +111,7 @@ public class EntityPotion extends EntityThrowable
                     this.extinguishFires(blockpos.offset(enumfacing));
                 }
 
-                this.worldObj.playAuxSFX(2002, new BlockPos(this), PotionType.getID(potiontype));
+                this.worldObj.playEvent(2002, new BlockPos(this), PotionType.getID(potiontype));
                 this.setDead();
             }
             else
@@ -181,7 +182,7 @@ public class EntityPotion extends EntityThrowable
                     }
                 }
 
-                this.worldObj.playAuxSFX(2002, new BlockPos(this), PotionType.getID(potiontype));
+                this.worldObj.playEvent(2002, new BlockPos(this), PotionType.getID(potiontype));
                 this.setDead();
             }
         }
@@ -189,24 +190,24 @@ public class EntityPotion extends EntityThrowable
 
     private boolean isLingering()
     {
-        return this.getPotion().getItem() == Items.lingering_potion;
+        return this.getPotion().getItem() == Items.LINGERING_POTION;
     }
 
     private void extinguishFires(BlockPos pos)
     {
-        if (this.worldObj.getBlockState(pos).getBlock() == Blocks.fire)
+        if (this.worldObj.getBlockState(pos).getBlock() == Blocks.FIRE)
         {
-            this.worldObj.setBlockState(pos, Blocks.air.getDefaultState(), 2);
+            this.worldObj.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
         }
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        ItemStack itemstack = ItemStack.loadItemStackFromNBT(tagCompund.getCompoundTag("Potion"));
+        super.readEntityFromNBT(compound);
+        ItemStack itemstack = ItemStack.loadItemStackFromNBT(compound.getCompoundTag("Potion"));
 
         if (itemstack == null)
         {
@@ -221,14 +222,14 @@ public class EntityPotion extends EntityThrowable
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
+        super.writeEntityToNBT(compound);
         ItemStack itemstack = this.getPotion();
 
         if (itemstack != null)
         {
-            tagCompound.setTag("Potion", itemstack.writeToNBT(new NBTTagCompound()));
+            compound.setTag("Potion", itemstack.writeToNBT(new NBTTagCompound()));
         }
     }
 }

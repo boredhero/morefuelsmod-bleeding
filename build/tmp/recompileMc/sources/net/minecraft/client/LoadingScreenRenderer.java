@@ -111,7 +111,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
     }
 
     /**
-     * Updates the progress bar on the loading screen to the specified amount. Args: loadProgress
+     * Updates the progress bar on the loading screen to the specified amount.
      */
     public void setLoadingProgress(int progress)
     {
@@ -162,7 +162,7 @@ public class LoadingScreenRenderer implements IProgressUpdate
                 {
                 Tessellator tessellator = Tessellator.getInstance();
                 VertexBuffer vertexbuffer = tessellator.getBuffer();
-                this.mc.getTextureManager().bindTexture(Gui.optionsBackground);
+                this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
                 float f = 32.0F;
                 vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
                 vertexbuffer.pos(0.0D, (double)l, 0.0D).tex(0.0D, (double)((float)l / f)).color(64, 64, 64, 255).endVertex();

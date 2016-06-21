@@ -16,14 +16,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderShulker extends RenderLiving<EntityShulker>
 {
-    private static final ResourceLocation field_188342_a = new ResourceLocation("textures/entity/shulker/endergolem.png");
-    private int field_188343_b;
+    private static final ResourceLocation SHULKER_ENDERGOLEM_TEXTURE = new ResourceLocation("textures/entity/shulker/endergolem.png");
+    private int modelVersion;
 
-    public RenderShulker(RenderManager p_i46550_1_, ModelShulker p_i46550_2_)
+    public RenderShulker(RenderManager manager, ModelShulker p_i46550_2_)
     {
-        super(p_i46550_1_, p_i46550_2_, 0.0F);
+        super(manager, p_i46550_2_, 0.0F);
         this.addLayer(new RenderShulker.HeadLayer());
-        this.field_188343_b = p_i46550_2_.func_187065_a();
+        this.modelVersion = p_i46550_2_.getModelVersion();
         this.shadowSize = 0.0F;
     }
 
@@ -32,18 +32,18 @@ public class RenderShulker extends RenderLiving<EntityShulker>
      */
     public void doRender(EntityShulker entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        if (this.field_188343_b != ((ModelShulker)this.mainModel).func_187065_a())
+        if (this.modelVersion != ((ModelShulker)this.mainModel).getModelVersion())
         {
             this.mainModel = new ModelShulker();
-            this.field_188343_b = ((ModelShulker)this.mainModel).func_187065_a();
+            this.modelVersion = ((ModelShulker)this.mainModel).getModelVersion();
         }
 
-        int i = entity.func_184693_dc();
+        int i = entity.getClientTeleportInterp();
 
-        if (i > 0 && entity.func_184697_de())
+        if (i > 0 && entity.isAttachedToBlock())
         {
-            BlockPos blockpos = entity.func_184699_da();
-            BlockPos blockpos1 = entity.func_184692_dd();
+            BlockPos blockpos = entity.getAttachmentPos();
+            BlockPos blockpos1 = entity.getOldAttachPos();
             double d0 = (double)((float)i - partialTicks) / 6.0D;
             d0 = d0 * d0;
             double d1 = (double)(blockpos.getX() - blockpos1.getX()) * d0;
@@ -65,10 +65,10 @@ public class RenderShulker extends RenderLiving<EntityShulker>
         }
         else
         {
-            if (livingEntity.func_184693_dc() > 0 && livingEntity.func_184697_de())
+            if (livingEntity.getClientTeleportInterp() > 0 && livingEntity.isAttachedToBlock())
             {
-                BlockPos blockpos = livingEntity.func_184692_dd();
-                BlockPos blockpos1 = livingEntity.func_184699_da();
+                BlockPos blockpos = livingEntity.getOldAttachPos();
+                BlockPos blockpos1 = livingEntity.getAttachmentPos();
                 Vec3d vec3d = new Vec3d((double)blockpos1.getX(), (double)blockpos1.getY(), (double)blockpos1.getZ());
                 Vec3d vec3d1 = new Vec3d((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
 
@@ -87,14 +87,14 @@ public class RenderShulker extends RenderLiving<EntityShulker>
      */
     protected ResourceLocation getEntityTexture(EntityShulker entity)
     {
-        return field_188342_a;
+        return SHULKER_ENDERGOLEM_TEXTURE;
     }
 
-    protected void rotateCorpse(EntityShulker bat, float p_77043_2_, float p_77043_3_, float partialTicks)
+    protected void rotateCorpse(EntityShulker entityLiving, float p_77043_2_, float p_77043_3_, float partialTicks)
     {
-        super.rotateCorpse(bat, p_77043_2_, p_77043_3_, partialTicks);
+        super.rotateCorpse(entityLiving, p_77043_2_, p_77043_3_, partialTicks);
 
-        switch (bat.func_184696_cZ())
+        switch (entityLiving.getAttachmentFacing())
         {
             case DOWN:
             default:
@@ -125,8 +125,7 @@ public class RenderShulker extends RenderLiving<EntityShulker>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntityShulker entitylivingbaseIn, float partialTickTime)
     {
@@ -145,7 +144,7 @@ public class RenderShulker extends RenderLiving<EntityShulker>
         {
             GlStateManager.pushMatrix();
 
-            switch (entitylivingbaseIn.func_184696_cZ())
+            switch (entitylivingbaseIn.getAttachmentFacing())
             {
                 case DOWN:
                 default:
@@ -176,10 +175,10 @@ public class RenderShulker extends RenderLiving<EntityShulker>
                     GlStateManager.translate(0.0F, -2.0F, 0.0F);
             }
 
-            ModelRenderer modelrenderer = ((ModelShulker)RenderShulker.this.getMainModel()).field_187066_a;
+            ModelRenderer modelrenderer = ((ModelShulker)RenderShulker.this.getMainModel()).head;
             modelrenderer.rotateAngleY = netHeadYaw * 0.017453292F;
             modelrenderer.rotateAngleX = headPitch * 0.017453292F;
-            RenderShulker.this.bindTexture(RenderShulker.field_188342_a);
+            RenderShulker.this.bindTexture(RenderShulker.SHULKER_ENDERGOLEM_TEXTURE);
             modelrenderer.render(scale);
             GlStateManager.popMatrix();
         }

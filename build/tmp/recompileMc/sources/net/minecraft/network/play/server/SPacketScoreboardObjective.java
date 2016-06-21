@@ -39,7 +39,7 @@ public class SPacketScoreboardObjective implements Packet<INetHandlerPlayClient>
         if (this.action == 0 || this.action == 2)
         {
             this.objectiveValue = buf.readStringFromBuffer(32);
-            this.type = IScoreCriteria.EnumRenderType.func_178795_a(buf.readStringFromBuffer(16));
+            this.type = IScoreCriteria.EnumRenderType.getByName(buf.readStringFromBuffer(16));
         }
     }
 

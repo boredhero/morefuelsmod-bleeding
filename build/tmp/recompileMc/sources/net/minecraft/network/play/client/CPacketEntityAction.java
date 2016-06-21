@@ -19,17 +19,17 @@ public class CPacketEntityAction implements Packet<INetHandlerPlayServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketEntityAction(Entity p_i46869_1_, CPacketEntityAction.Action p_i46869_2_)
+    public CPacketEntityAction(Entity entityIn, CPacketEntityAction.Action actionIn)
     {
-        this(p_i46869_1_, p_i46869_2_, 0);
+        this(entityIn, actionIn, 0);
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketEntityAction(Entity p_i46870_1_, CPacketEntityAction.Action p_i46870_2_, int p_i46870_3_)
+    public CPacketEntityAction(Entity entityIn, CPacketEntityAction.Action actionIn, int auxDataIn)
     {
-        this.entityID = p_i46870_1_.getEntityId();
-        this.action = p_i46870_2_;
-        this.auxData = p_i46870_3_;
+        this.entityID = entityIn.getEntityId();
+        this.action = actionIn;
+        this.auxData = auxDataIn;
     }
 
     /**

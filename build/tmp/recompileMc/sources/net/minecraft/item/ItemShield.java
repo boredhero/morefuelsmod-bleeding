@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,12 +22,12 @@ public class ItemShield extends Item
     public ItemShield()
     {
         this.maxStackSize = 1;
-        this.setCreativeTab(CreativeTabs.tabCombat);
+        this.setCreativeTab(CreativeTabs.COMBAT);
         this.setMaxDamage(336);
         this.addPropertyOverride(new ResourceLocation("blocking"), new IItemPropertyGetter()
         {
             @SideOnly(Side.CLIENT)
-            public float apply(ItemStack stack, World worldIn, EntityLivingBase entityIn)
+            public float apply(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
             {
                 return entityIn != null && entityIn.isHandActive() && entityIn.getActiveItemStack() == stack ? 1.0F : 0.0F;
             }
@@ -62,7 +63,7 @@ public class ItemShield extends Item
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
     {
-        ItemBanner.func_185054_a(stack, tooltip);
+        ItemBanner.appendHoverTextFromTileEntityTag(stack, tooltip);
     }
 
     /**
@@ -81,7 +82,7 @@ public class ItemShield extends Item
     @SideOnly(Side.CLIENT)
     public CreativeTabs getCreativeTab()
     {
-        return CreativeTabs.tabCombat;
+        return CreativeTabs.COMBAT;
     }
 
     /**
@@ -111,6 +112,6 @@ public class ItemShield extends Item
      */
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
     {
-        return repair.getItem() == Item.getItemFromBlock(Blocks.planks) ? true : super.getIsRepairable(toRepair, repair);
+        return repair.getItem() == Item.getItemFromBlock(Blocks.PLANKS) ? true : super.getIsRepairable(toRepair, repair);
     }
 }

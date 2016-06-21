@@ -27,19 +27,19 @@ public class SPacketParticles implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketParticles(EnumParticleTypes p_i46939_1_, boolean p_i46939_2_, float p_i46939_3_, float p_i46939_4_, float p_i46939_5_, float p_i46939_6_, float p_i46939_7_, float p_i46939_8_, float p_i46939_9_, int p_i46939_10_, int... p_i46939_11_)
+    public SPacketParticles(EnumParticleTypes particleIn, boolean longDistanceIn, float xIn, float yIn, float zIn, float xOffsetIn, float yOffsetIn, float zOffsetIn, float speedIn, int countIn, int... argumentsIn)
     {
-        this.particleType = p_i46939_1_;
-        this.longDistance = p_i46939_2_;
-        this.xCoord = p_i46939_3_;
-        this.yCoord = p_i46939_4_;
-        this.zCoord = p_i46939_5_;
-        this.xOffset = p_i46939_6_;
-        this.yOffset = p_i46939_7_;
-        this.zOffset = p_i46939_8_;
-        this.particleSpeed = p_i46939_9_;
-        this.particleCount = p_i46939_10_;
-        this.particleArguments = p_i46939_11_;
+        this.particleType = particleIn;
+        this.longDistance = longDistanceIn;
+        this.xCoord = xIn;
+        this.yCoord = yIn;
+        this.zCoord = zIn;
+        this.xOffset = xOffsetIn;
+        this.yOffset = yOffsetIn;
+        this.zOffset = zOffsetIn;
+        this.particleSpeed = speedIn;
+        this.particleCount = countIn;
+        this.particleArguments = argumentsIn;
     }
 
     /**

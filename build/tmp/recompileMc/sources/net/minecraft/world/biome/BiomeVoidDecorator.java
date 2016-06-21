@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 public class BiomeVoidDecorator extends BiomeDecorator
 {
-    public void decorate(World worldIn, Random random, BiomeGenBase biome, BlockPos pos)
+    public void decorate(World worldIn, Random random, Biome biome, BlockPos pos)
     {
         BlockPos blockpos = worldIn.getSpawnPoint();
         int i = 16;
@@ -25,15 +25,15 @@ public class BiomeVoidDecorator extends BiomeDecorator
                 {
                     if (j >= blockpos1.getZ() && j <= blockpos2.getZ() && k >= blockpos1.getX() && k <= blockpos2.getX())
                     {
-                        blockpos$mutableblockpos.set(k, blockpos$mutableblockpos.getY(), j);
+                        blockpos$mutableblockpos.setPos(k, blockpos$mutableblockpos.getY(), j);
 
                         if (blockpos.getX() == k && blockpos.getZ() == j)
                         {
-                            worldIn.setBlockState(blockpos$mutableblockpos, Blocks.cobblestone.getDefaultState(), 2);
+                            worldIn.setBlockState(blockpos$mutableblockpos, Blocks.COBBLESTONE.getDefaultState(), 2);
                         }
                         else
                         {
-                            worldIn.setBlockState(blockpos$mutableblockpos, Blocks.stone.getDefaultState(), 2);
+                            worldIn.setBlockState(blockpos$mutableblockpos, Blocks.STONE.getDefaultState(), 2);
                         }
                     }
                 }

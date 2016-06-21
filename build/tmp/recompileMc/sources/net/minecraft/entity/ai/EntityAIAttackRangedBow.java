@@ -10,21 +10,26 @@ public class EntityAIAttackRangedBow extends EntityAIBase
 {
     private final EntitySkeleton entity;
     private final double moveSpeedAmp;
-    private final int field_188501_c;
+    private int attackCooldown;
     private final float maxAttackDistance;
-    private int field_188503_e = -1;
-    private int field_188504_f;
-    private boolean field_188505_g;
-    private boolean field_188506_h;
-    private int field_188507_i = -1;
+    private int attackTime = -1;
+    private int seeTime;
+    private boolean strafingClockwise;
+    private boolean strafingBackwards;
+    private int strafingTime = -1;
 
-    public EntityAIAttackRangedBow(EntitySkeleton p_i46805_1_, double p_i46805_2_, int p_i46805_4_, float p_i46805_5_)
+    public EntityAIAttackRangedBow(EntitySkeleton skeleton, double speedAmplifier, int delay, float maxDistance)
     {
-        this.entity = p_i46805_1_;
-        this.moveSpeedAmp = p_i46805_2_;
-        this.field_188501_c = p_i46805_4_;
-        this.maxAttackDistance = p_i46805_5_ * p_i46805_5_;
+        this.entity = skeleton;
+        this.moveSpeedAmp = speedAmplifier;
+        this.attackCooldown = delay;
+        this.maxAttackDistance = maxDistance * maxDistance;
         this.setMutexBits(3);
+    }
+
+    public void setAttackCooldown(int p_189428_1_)
+    {
+        this.attackCooldown = p_189428_1_;
     }
 
     /**
@@ -32,12 +37,12 @@ public class EntityAIAttackRangedBow extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-        return this.entity.getAttackTarget() == null ? false : this.func_188498_f();
+        return this.entity.getAttackTarget() == null ? false : this.isBowInMainhand();
     }
 
-    protected boolean func_188498_f()
+    protected boolean isBowInMainhand()
     {
-        return this.entity.getHeldItemMainhand() != null && this.entity.getHeldItemMainhand().getItem() == Items.bow;
+        return this.entity.getHeldItemMainhand() != null && this.entity.getHeldItemMainhand().getItem() == Items.BOW;
     }
 
     /**
@@ -45,7 +50,7 @@ public class EntityAIAttackRangedBow extends EntityAIBase
      */
     public boolean continueExecuting()
     {
-        return (this.shouldExecute() || !this.entity.getNavigator().noPath()) && this.func_188498_f();
+        return (this.shouldExecute() || !this.entity.getNavigator().noPath()) && this.isBowInMainhand();
     }
 
     /**
@@ -54,7 +59,7 @@ public class EntityAIAttackRangedBow extends EntityAIBase
     public void startExecuting()
     {
         super.startExecuting();
-        this.entity.func_184724_a(true);
+        this.entity.setSwingingArms(true);
     }
 
     /**
@@ -63,9 +68,9 @@ public class EntityAIAttackRangedBow extends EntityAIBase
     public void resetTask()
     {
         super.startExecuting();
-        this.entity.func_184724_a(false);
-        this.field_188504_f = 0;
-        this.field_188503_e = -1;
+        this.entity.setSwingingArms(false);
+        this.seeTime = 0;
+        this.attackTime = -1;
         this.entity.resetActiveHand();
     }
 
@@ -80,60 +85,60 @@ public class EntityAIAttackRangedBow extends EntityAIBase
         {
             double d0 = this.entity.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
             boolean flag = this.entity.getEntitySenses().canSee(entitylivingbase);
-            boolean flag1 = this.field_188504_f > 0;
+            boolean flag1 = this.seeTime > 0;
 
             if (flag != flag1)
             {
-                this.field_188504_f = 0;
+                this.seeTime = 0;
             }
 
             if (flag)
             {
-                ++this.field_188504_f;
+                ++this.seeTime;
             }
             else
             {
-                --this.field_188504_f;
+                --this.seeTime;
             }
 
-            if (d0 <= (double)this.maxAttackDistance && this.field_188504_f >= 20)
+            if (d0 <= (double)this.maxAttackDistance && this.seeTime >= 20)
             {
                 this.entity.getNavigator().clearPathEntity();
-                ++this.field_188507_i;
+                ++this.strafingTime;
             }
             else
             {
                 this.entity.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.moveSpeedAmp);
-                this.field_188507_i = -1;
+                this.strafingTime = -1;
             }
 
-            if (this.field_188507_i >= 20)
+            if (this.strafingTime >= 20)
             {
                 if ((double)this.entity.getRNG().nextFloat() < 0.3D)
                 {
-                    this.field_188505_g = !this.field_188505_g;
+                    this.strafingClockwise = !this.strafingClockwise;
                 }
 
                 if ((double)this.entity.getRNG().nextFloat() < 0.3D)
                 {
-                    this.field_188506_h = !this.field_188506_h;
+                    this.strafingBackwards = !this.strafingBackwards;
                 }
 
-                this.field_188507_i = 0;
+                this.strafingTime = 0;
             }
 
-            if (this.field_188507_i > -1)
+            if (this.strafingTime > -1)
             {
                 if (d0 > (double)(this.maxAttackDistance * 0.75F))
                 {
-                    this.field_188506_h = false;
+                    this.strafingBackwards = false;
                 }
                 else if (d0 < (double)(this.maxAttackDistance * 0.25F))
                 {
-                    this.field_188506_h = true;
+                    this.strafingBackwards = true;
                 }
 
-                this.entity.getMoveHelper().func_188488_a(this.field_188506_h ? -0.5F : 0.5F, this.field_188505_g ? 0.5F : -0.5F);
+                this.entity.getMoveHelper().strafe(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
                 this.entity.faceEntity(entitylivingbase, 30.0F, 30.0F);
             }
             else
@@ -143,7 +148,7 @@ public class EntityAIAttackRangedBow extends EntityAIBase
 
             if (this.entity.isHandActive())
             {
-                if (!flag && this.field_188504_f < -60)
+                if (!flag && this.seeTime < -60)
                 {
                     this.entity.resetActiveHand();
                 }
@@ -154,12 +159,12 @@ public class EntityAIAttackRangedBow extends EntityAIBase
                     if (i >= 20)
                     {
                         this.entity.resetActiveHand();
-                        this.entity.attackEntityWithRangedAttack(entitylivingbase, ItemBow.func_185059_b(i));
-                        this.field_188503_e = this.field_188501_c;
+                        this.entity.attackEntityWithRangedAttack(entitylivingbase, ItemBow.getArrowVelocity(i));
+                        this.attackTime = this.attackCooldown;
                     }
                 }
             }
-            else if (--this.field_188503_e <= 0 && this.field_188504_f >= -60)
+            else if (--this.attackTime <= 0 && this.seeTime >= -60)
             {
                 this.entity.setActiveHand(EnumHand.MAIN_HAND);
             }

@@ -127,7 +127,7 @@ public class ModelDragon extends ModelBase
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float p_78088_2_, float limbSwing, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
         GlStateManager.pushMatrix();
         EntityDragon entitydragon = (EntityDragon)entityIn;
@@ -153,7 +153,7 @@ public class ModelDragon extends ModelBase
             double[] adouble1 = entitydragon.getMovementOffsets(5 - i, this.partialTicks);
             float f9 = (float)Math.cos((double)((float)i * 0.45F + f8)) * 0.15F;
             this.spine.rotateAngleY = this.updateRotations(adouble1[0] - adouble[0]) * 0.017453292F * f5;
-            this.spine.rotateAngleX = f9 + entitydragon.func_184667_a(i, adouble, adouble1) * 0.017453292F * f5 * 5.0F;
+            this.spine.rotateAngleX = f9 + entitydragon.getHeadPartYOffset(i, adouble, adouble1) * 0.017453292F * f5 * 5.0F;
             this.spine.rotateAngleZ = -this.updateRotations(adouble1[0] - (double)f7) * 0.017453292F * f5;
             this.spine.rotationPointY = f2;
             this.spine.rotationPointZ = f3;
@@ -169,7 +169,7 @@ public class ModelDragon extends ModelBase
         this.head.rotationPointX = f4;
         double[] adouble2 = entitydragon.getMovementOffsets(0, this.partialTicks);
         this.head.rotateAngleY = this.updateRotations(adouble2[0] - adouble[0]) * 0.017453292F;
-        this.head.rotateAngleX = this.updateRotations((double)entitydragon.func_184667_a(6, adouble, adouble2)) * 0.017453292F * f5 * 5.0F;
+        this.head.rotateAngleX = this.updateRotations((double)entitydragon.getHeadPartYOffset(6, adouble, adouble2)) * 0.017453292F * f5 * 5.0F;
         this.head.rotateAngleZ = -this.updateRotations(adouble2[0] - (double)f7) * 0.017453292F;
         this.head.render(scale);
         GlStateManager.pushMatrix();

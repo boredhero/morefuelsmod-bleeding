@@ -53,8 +53,6 @@ public class GuiCreateFlatWorld extends GuiScreen
 
     /**
      * Sets the superflat preset. Invalid or null values will result in the default superflat preset being used.
-     *  
-     * @param preset The new preset to use in the format described on the Superflat article on the Minecraft Wiki
      */
     public void setPreset(String preset)
     {
@@ -79,7 +77,7 @@ public class GuiCreateFlatWorld extends GuiScreen
         this.buttonList.add(new GuiButton(5, this.width / 2 + 5, this.height - 52, 150, 20, I18n.format("createWorld.customize.presets", new Object[0])));
         this.buttonList.add(new GuiButton(1, this.width / 2 + 5, this.height - 28, 150, 20, I18n.format("gui.cancel", new Object[0])));
         this.addLayerButton.visible = this.editLayerButton.visible = false;
-        this.theFlatGeneratorInfo.func_82645_d();
+        this.theFlatGeneratorInfo.updateLayers();
         this.onLayersChanged();
     }
 
@@ -118,7 +116,7 @@ public class GuiCreateFlatWorld extends GuiScreen
             this.createFlatWorldListSlotGui.selectedLayer = Math.min(this.createFlatWorldListSlotGui.selectedLayer, this.theFlatGeneratorInfo.getFlatLayers().size() - 1);
         }
 
-        this.theFlatGeneratorInfo.func_82645_d();
+        this.theFlatGeneratorInfo.updateLayers();
         this.onLayersChanged();
     }
 
@@ -145,10 +143,6 @@ public class GuiCreateFlatWorld extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -178,12 +172,6 @@ public class GuiCreateFlatWorld extends GuiScreen
         /**
          * Draws an item with a background at the given coordinates. The item and its background are 20 pixels tall/wide
          * (though only the inner 18x18 is actually drawn on)
-         *  
-         * @param x Display x coordinate; the background is drawn 1 pixel further than this and the itemstack is drawn 2
-         * pixels further
-         * @param z Display z coordinate; the background is drawn 1 pixel further than this and the itemstack is drawn 2
-         * pixels further
-         * @param itemToDraw The item to draw
          */
         private void drawItem(int x, int z, ItemStack itemToDraw)
         {
@@ -202,9 +190,6 @@ public class GuiCreateFlatWorld extends GuiScreen
 
         /**
          * Draws the background icon for an item, with the indented texture from stats.png
-         *  
-         * @param x Display x coordinate
-         * @param y Display y coordinate
          */
         private void drawItemBackground(int x, int y)
         {
@@ -213,16 +198,11 @@ public class GuiCreateFlatWorld extends GuiScreen
 
         /**
          * Draws the background icon for an item, using a texture from stats.png with the given coords
-         *  
-         * @param x Display x coordinate
-         * @param z Display z coordinate
-         * @param textureX Leftmost coordinate of the icon in stats.png to use; only ever set to 0
-         * @param textureY Topmost coordinate of the icon in stats.png to use; only ever set to 0
          */
         private void drawItemBackground(int x, int z, int textureX, int textureY)
         {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            this.mc.getTextureManager().bindTexture(Gui.statIcons);
+            this.mc.getTextureManager().bindTexture(Gui.STAT_ICONS);
             float f = 0.0078125F;
             float f1 = 0.0078125F;
             int i = 18;
@@ -263,27 +243,27 @@ public class GuiCreateFlatWorld extends GuiScreen
         {
         }
 
-        protected void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn)
+        protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn)
         {
             FlatLayerInfo flatlayerinfo = (FlatLayerInfo)GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().get(GuiCreateFlatWorld.this.theFlatGeneratorInfo.getFlatLayers().size() - entryID - 1);
             IBlockState iblockstate = flatlayerinfo.getLayerMaterial();
             Block block = iblockstate.getBlock();
             Item item = Item.getItemFromBlock(block);
-            ItemStack itemstack = block != Blocks.air && item != null ? new ItemStack(item, 1, block.getMetaFromState(iblockstate)) : null;
+            ItemStack itemstack = block != Blocks.AIR && item != null ? new ItemStack(item, 1, block.getMetaFromState(iblockstate)) : null;
             String s = itemstack == null ? I18n.format("createWorld.customize.flat.air", new Object[0]) : item.getItemStackDisplayName(itemstack);
 
             if (item == null)
             {
-                if (block != Blocks.water && block != Blocks.flowing_water)
+                if (block != Blocks.WATER && block != Blocks.FLOWING_WATER)
                 {
-                    if (block == Blocks.lava || block == Blocks.flowing_lava)
+                    if (block == Blocks.LAVA || block == Blocks.FLOWING_LAVA)
                     {
-                        item = Items.lava_bucket;
+                        item = Items.LAVA_BUCKET;
                     }
                 }
                 else
                 {
-                    item = Items.water_bucket;
+                    item = Items.WATER_BUCKET;
                 }
 
                 if (item != null)
@@ -293,8 +273,8 @@ public class GuiCreateFlatWorld extends GuiScreen
                 }
             }
 
-            this.drawItem(p_180791_2_, p_180791_3_, itemstack);
-            GuiCreateFlatWorld.this.fontRendererObj.drawString(s, p_180791_2_ + 18 + 5, p_180791_3_ + 3, 16777215);
+            this.drawItem(insideLeft, yPos, itemstack);
+            GuiCreateFlatWorld.this.fontRendererObj.drawString(s, insideLeft + 18 + 5, yPos + 3, 16777215);
             String s1;
 
             if (entryID == 0)
@@ -310,7 +290,7 @@ public class GuiCreateFlatWorld extends GuiScreen
                 s1 = I18n.format("createWorld.customize.flat.layer", new Object[] {Integer.valueOf(flatlayerinfo.getLayerCount())});
             }
 
-            GuiCreateFlatWorld.this.fontRendererObj.drawString(s1, p_180791_2_ + 2 + 213 - GuiCreateFlatWorld.this.fontRendererObj.getStringWidth(s1), p_180791_3_ + 3, 16777215);
+            GuiCreateFlatWorld.this.fontRendererObj.drawString(s1, insideLeft + 2 + 213 - GuiCreateFlatWorld.this.fontRendererObj.getStringWidth(s1), yPos + 3, 16777215);
         }
 
         protected int getScrollBarX()

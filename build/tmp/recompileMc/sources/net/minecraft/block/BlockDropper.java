@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBehaviorDispenseItem;
 import net.minecraft.inventory.IInventory;
@@ -16,7 +17,7 @@ public class BlockDropper extends BlockDispenser
 {
     private final IBehaviorDispenseItem dropBehavior = new BehaviorDefaultDispenseItem();
 
-    protected IBehaviorDispenseItem getBehavior(ItemStack stack)
+    protected IBehaviorDispenseItem getBehavior(@Nullable ItemStack stack)
     {
         return this.dropBehavior;
     }
@@ -40,7 +41,7 @@ public class BlockDropper extends BlockDispenser
 
             if (i < 0)
             {
-                worldIn.playAuxSFX(1001, pos, 0);
+                worldIn.playEvent(1001, pos, 0);
             }
             else
             {

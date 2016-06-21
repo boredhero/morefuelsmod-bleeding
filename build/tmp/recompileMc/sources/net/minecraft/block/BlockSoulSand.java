@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -15,11 +16,12 @@ public class BlockSoulSand extends Block
 
     public BlockSoulSand()
     {
-        super(Material.sand, MapColor.brownColor);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        super(Material.SAND, MapColor.BROWN);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return SOUL_SAND_AABB;
     }

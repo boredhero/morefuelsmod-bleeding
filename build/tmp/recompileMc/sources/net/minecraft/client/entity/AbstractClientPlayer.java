@@ -2,6 +2,7 @@ package net.minecraft.client.entity;
 
 import com.mojang.authlib.GameProfile;
 import java.io.File;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.ImageBufferDownload;
@@ -38,13 +39,13 @@ public abstract class AbstractClientPlayer extends EntityPlayer
      */
     public boolean isSpectator()
     {
-        NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getNetHandler().getPlayerInfo(this.getGameProfile().getId());
+        NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(this.getGameProfile().getId());
         return networkplayerinfo != null && networkplayerinfo.getGameType() == WorldSettings.GameType.SPECTATOR;
     }
 
     public boolean isCreative()
     {
-        NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getNetHandler().getPlayerInfo(this.getGameProfile().getId());
+        NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(this.getGameProfile().getId());
         return networkplayerinfo != null && networkplayerinfo.getGameType() == WorldSettings.GameType.CREATIVE;
     }
 
@@ -56,11 +57,12 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         return this.getPlayerInfo() != null;
     }
 
+    @Nullable
     protected NetworkPlayerInfo getPlayerInfo()
     {
         if (this.playerInfo == null)
         {
-            this.playerInfo = Minecraft.getMinecraft().getNetHandler().getPlayerInfo(this.getUniqueID());
+            this.playerInfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(this.getUniqueID());
         }
 
         return this.playerInfo;
@@ -84,6 +86,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
         return networkplayerinfo == null ? DefaultPlayerSkin.getDefaultSkin(this.getUniqueID()) : networkplayerinfo.getLocationSkin();
     }
 
+    @Nullable
     public ResourceLocation getLocationCape()
     {
         NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
@@ -98,6 +101,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     /**
      * Gets the special Elytra texture for the player.
      */
+    @Nullable
     public ResourceLocation getLocationElytra()
     {
         NetworkPlayerInfo networkplayerinfo = this.getPlayerInfo();
@@ -149,7 +153,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
             f = 1.0F;
         }
 
-        if (this.isHandActive() && this.getActiveItemStack() != null && this.getActiveItemStack().getItem() == Items.bow)
+        if (this.isHandActive() && this.getActiveItemStack() != null && this.getActiveItemStack().getItem() == Items.BOW)
         {
             int i = this.getItemInUseMaxCount();
             float f1 = (float)i / 20.0F;

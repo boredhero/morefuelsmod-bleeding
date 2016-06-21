@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -22,7 +23,7 @@ public class BlockDeadBush extends BlockBush implements net.minecraftforge.commo
 
     protected BlockDeadBush()
     {
-        super(Material.vine);
+        super(Material.VINE);
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -35,12 +36,15 @@ public class BlockDeadBush extends BlockBush implements net.minecraftforge.commo
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return MapColor.woodColor;
+        return MapColor.WOOD;
     }
 
-    protected boolean func_185514_i(IBlockState state)
+    /**
+     * Return true if the block can sustain a Bush
+     */
+    protected boolean canSustainBush(IBlockState state)
     {
-        return state.getBlock() == Blocks.sand || state.getBlock() == Blocks.hardened_clay || state.getBlock() == Blocks.stained_hardened_clay || state.getBlock() == Blocks.dirt;
+        return state.getBlock() == Blocks.SAND || state.getBlock() == Blocks.HARDENED_CLAY || state.getBlock() == Blocks.STAINED_HARDENED_CLAY || state.getBlock() == Blocks.DIRT;
     }
 
     /**
@@ -62,17 +66,18 @@ public class BlockDeadBush extends BlockBush implements net.minecraftforge.commo
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.stick;
+        return Items.STICK;
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
     {
-        if (false && !worldIn.isRemote && stack != null && stack.getItem() == Items.shears) // Forge: Noop
+        if (false && !worldIn.isRemote && stack != null && stack.getItem() == Items.SHEARS) // Forge: Noop
         {
-            player.addStat(StatList.func_188055_a(this));
-            spawnAsEntity(worldIn, pos, new ItemStack(Blocks.deadbush, 1, 0));
+            player.addStat(StatList.getBlockStats(this));
+            spawnAsEntity(worldIn, pos, new ItemStack(Blocks.DEADBUSH, 1, 0));
         }
         else
         {
@@ -84,6 +89,6 @@ public class BlockDeadBush extends BlockBush implements net.minecraftforge.commo
     @Override
     public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
     {
-        return java.util.Arrays.asList(new ItemStack(Blocks.deadbush));
+        return java.util.Arrays.asList(new ItemStack(Blocks.DEADBUSH));
     }
 }

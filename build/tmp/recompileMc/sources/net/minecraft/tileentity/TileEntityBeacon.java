@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStainedGlass;
 import net.minecraft.block.BlockStainedGlassPane;
@@ -22,7 +23,6 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -37,19 +37,21 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileEntityBeacon extends TileEntityLockable implements ITickable, ISidedInventory
 {
     /** List of effects that Beacon can apply */
-    public static final Potion[][] effectsList = new Potion[][] {{MobEffects.moveSpeed, MobEffects.digSpeed}, {MobEffects.resistance, MobEffects.jump}, {MobEffects.damageBoost}, {MobEffects.regeneration}};
-    private static final Set<Potion> field_184280_f = Sets.<Potion>newHashSet();
+    public static final Potion[][] EFFECTS_LIST = new Potion[][] {{MobEffects.SPEED, MobEffects.HASTE}, {MobEffects.RESISTANCE, MobEffects.JUMP_BOOST}, {MobEffects.STRENGTH}, {MobEffects.REGENERATION}};
+    private static final Set<Potion> VALID_EFFECTS = Sets.<Potion>newHashSet();
     private final List<TileEntityBeacon.BeamSegment> beamSegments = Lists.<TileEntityBeacon.BeamSegment>newArrayList();
     @SideOnly(Side.CLIENT)
     private long beamRenderCounter;
     @SideOnly(Side.CLIENT)
-    private float field_146014_j;
+    private float beamRenderScale;
     private boolean isComplete;
     /** Level of this beacon's pyramid. */
     private int levels = -1;
     /** Primary potion effect given by this beacon. */
+    @Nullable
     private Potion primaryEffect;
     /** Secondary potion effect given by this beacon. */
+    @Nullable
     private Potion secondaryEffect;
     /** Item given to this beacon as payment. */
     private ItemStack payment;
@@ -125,18 +127,18 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
 
         for (int i1 = k + 1; i1 < 256; ++i1)
         {
-            IBlockState iblockstate = this.worldObj.getBlockState(blockpos$mutableblockpos.set(j, i1, l));
+            IBlockState iblockstate = this.worldObj.getBlockState(blockpos$mutableblockpos.setPos(j, i1, l));
             float[] afloat;
 
-            if (iblockstate.getBlock() == Blocks.stained_glass)
+            if (iblockstate.getBlock() == Blocks.STAINED_GLASS)
             {
                 afloat = EntitySheep.getDyeRgb((EnumDyeColor)iblockstate.getValue(BlockStainedGlass.COLOR));
             }
             else
             {
-                if (iblockstate.getBlock() != Blocks.stained_glass_pane)
+                if (iblockstate.getBlock() != Blocks.STAINED_GLASS_PANE)
                 {
-                    if (iblockstate.getLightOpacity() >= 15 && iblockstate.getBlock() != Blocks.bedrock)
+                    if (iblockstate.getLightOpacity(this.worldObj, blockpos$mutableblockpos) >= 15 && iblockstate.getBlock() != Blocks.BEDROCK)
                     {
                         this.isComplete = false;
                         this.beamSegments.clear();
@@ -211,7 +213,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         {
             for (EntityPlayer entityplayer : this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, (new AxisAlignedBB((double)j, (double)k, (double)l, (double)j, (double)(k - 4), (double)l)).expand(10.0D, 5.0D, 10.0D)))
             {
-                entityplayer.addStat(AchievementList.fullBeacon);
+                entityplayer.addStat(AchievementList.FULL_BEACON);
             }
         }
     }
@@ -236,30 +238,34 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
 
             if (i > 1)
             {
-                this.field_146014_j -= (float)i / 40.0F;
+                this.beamRenderScale -= (float)i / 40.0F;
 
-                if (this.field_146014_j < 0.0F)
+                if (this.beamRenderScale < 0.0F)
                 {
-                    this.field_146014_j = 0.0F;
+                    this.beamRenderScale = 0.0F;
                 }
             }
 
-            this.field_146014_j += 0.025F;
+            this.beamRenderScale += 0.025F;
 
-            if (this.field_146014_j > 1.0F)
+            if (this.beamRenderScale > 1.0F)
             {
-                this.field_146014_j = 1.0F;
+                this.beamRenderScale = 1.0F;
             }
 
-            return this.field_146014_j;
+            return this.beamRenderScale;
         }
     }
 
-    public Packet<?> getDescriptionPacket()
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket()
     {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        this.writeToNBT(nbttagcompound);
-        return new SPacketUpdateTileEntity(this.pos, 3, nbttagcompound);
+        return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
+    }
+
+    public NBTTagCompound getUpdateTag()
+    {
+        return this.writeToNBT(new NBTTagCompound());
     }
 
     @SideOnly(Side.CLIENT)
@@ -268,10 +274,11 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         return 65536.0D;
     }
 
+    @Nullable
     private static Potion isBeaconEffect(int p_184279_0_)
     {
         Potion potion = Potion.getPotionById(p_184279_0_);
-        return field_184280_f.contains(potion) ? potion : null;
+        return VALID_EFFECTS.contains(potion) ? potion : null;
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -282,12 +289,13 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         this.levels = compound.getInteger("Levels");
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         compound.setInteger("Primary", Potion.getIdFromPotion(this.primaryEffect));
         compound.setInteger("Secondary", Potion.getIdFromPotion(this.secondaryEffect));
         compound.setInteger("Levels", this.levels);
+        return compound;
     }
 
     /**
@@ -301,6 +309,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     /**
      * Returns the stack in the given slot.
      */
+    @Nullable
     public ItemStack getStackInSlot(int index)
     {
         return index == 0 ? this.payment : null;
@@ -309,6 +318,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
+    @Nullable
     public ItemStack decrStackSize(int index, int count)
     {
         if (index == 0 && this.payment != null)
@@ -334,6 +344,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     /**
      * Removes a stack from the given slot and returns it.
      */
+    @Nullable
     public ItemStack removeStackFromSlot(int index)
     {
         if (index == 0)
@@ -351,7 +362,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, ItemStack stack)
+    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
     {
         if (index == 0)
         {
@@ -482,10 +493,6 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
 
     /**
      * Returns true if automation can insert the given item in the given slot from the given side.
-     *  
-     * @param index The slot index to test insertion into
-     * @param itemStackIn The item to test insertion of
-     * @param direction The direction to test insertion from
      */
     public boolean canInsertItem(int index, ItemStack itemStackIn, EnumFacing direction)
     {
@@ -494,10 +501,6 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
 
     /**
      * Returns true if automation can extract the given item in the given slot from the given side.
-     *  
-     * @param index The slot index to test extraction from
-     * @param stack The item to try to extract
-     * @param direction The direction to extract from
      */
     public boolean canExtractItem(int index, ItemStack stack, EnumFacing direction)
     {
@@ -506,9 +509,9 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
 
     static
     {
-        for (Potion[] apotion : effectsList)
+        for (Potion[] apotion : EFFECTS_LIST)
         {
-            Collections.addAll(field_184280_f, apotion);
+            Collections.addAll(VALID_EFFECTS, apotion);
         }
     }
 
@@ -518,9 +521,9 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
             private final float[] colors;
             private int height;
 
-            public BeamSegment(float[] p_i45669_1_)
+            public BeamSegment(float[] colorsIn)
             {
-                this.colors = p_i45669_1_;
+                this.colors = colorsIn;
                 this.height = 1;
             }
 

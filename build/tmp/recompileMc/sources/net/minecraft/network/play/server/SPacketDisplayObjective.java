@@ -54,7 +54,7 @@ public class SPacketDisplayObjective implements Packet<INetHandlerPlayClient>
      */
     public void processPacket(INetHandlerPlayClient handler)
     {
-        handler.handleDisplayScoreboard(this);
+        handler.handleDisplayObjective(this);
     }
 
     @SideOnly(Side.CLIENT)

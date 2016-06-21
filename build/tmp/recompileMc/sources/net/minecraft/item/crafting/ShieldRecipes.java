@@ -1,5 +1,6 @@
 package net.minecraft.item.crafting;
 
+import javax.annotation.Nullable;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -13,7 +14,7 @@ public class ShieldRecipes
 {
     public void addRecipes(CraftingManager manager)
     {
-        manager.addRecipe(new ItemStack(Items.shield), new Object[] {"WoW", "WWW", " W ", 'W', Blocks.planks, 'o', Items.iron_ingot});
+        manager.addRecipe(new ItemStack(Items.SHIELD), new Object[] {"WoW", "WWW", " W ", 'W', Blocks.PLANKS, 'o', Items.IRON_INGOT});
         manager.addRecipe(new ShieldRecipes.Decoration());
     }
 
@@ -37,7 +38,7 @@ public class ShieldRecipes
 
                     if (itemstack2 != null)
                     {
-                        if (itemstack2.getItem() == Items.banner)
+                        if (itemstack2.getItem() == Items.BANNER)
                         {
                             if (itemstack1 != null)
                             {
@@ -48,7 +49,7 @@ public class ShieldRecipes
                         }
                         else
                         {
-                            if (itemstack2.getItem() != Items.shield)
+                            if (itemstack2.getItem() != Items.SHIELD)
                             {
                                 return false;
                             }
@@ -81,6 +82,7 @@ public class ShieldRecipes
             /**
              * Returns an Item that is the result of this recipe
              */
+            @Nullable
             public ItemStack getCraftingResult(InventoryCrafting inv)
             {
                 ItemStack itemstack = null;
@@ -89,13 +91,13 @@ public class ShieldRecipes
                 {
                     ItemStack itemstack1 = inv.getStackInSlot(i);
 
-                    if (itemstack1 != null && itemstack1.getItem() == Items.banner)
+                    if (itemstack1 != null && itemstack1.getItem() == Items.BANNER)
                     {
                         itemstack = itemstack1;
                     }
                 }
 
-                ItemStack itemstack2 = new ItemStack(Items.shield, 1, 0);
+                ItemStack itemstack2 = new ItemStack(Items.SHIELD, 1, 0);
                 EnumDyeColor enumdyecolor;
                 NBTTagCompound nbttagcompound;
 
@@ -111,7 +113,7 @@ public class ShieldRecipes
                 }
 
                 itemstack2.setTagCompound(nbttagcompound);
-                TileEntityBanner.func_184248_a(itemstack2, enumdyecolor);
+                TileEntityBanner.addBaseColorTag(itemstack2, enumdyecolor);
                 return itemstack2;
             }
 
@@ -123,6 +125,7 @@ public class ShieldRecipes
                 return 2;
             }
 
+            @Nullable
             public ItemStack getRecipeOutput()
             {
                 return null;

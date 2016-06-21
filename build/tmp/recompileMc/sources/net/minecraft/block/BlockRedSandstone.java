@@ -19,9 +19,9 @@ public class BlockRedSandstone extends Block
 
     public BlockRedSandstone()
     {
-        super(Material.rock, BlockSand.EnumType.RED_SAND.getMapColor());
+        super(Material.ROCK, BlockSand.EnumType.RED_SAND.getMapColor());
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, BlockRedSandstone.EnumType.DEFAULT));
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**

@@ -25,16 +25,12 @@ public class CommandStop extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
         if (server.worldServers != null)
         {
-            notifyOperators(sender, this, "commands.stop.start", new Object[0]);
+            notifyCommandListener(sender, this, "commands.stop.start", new Object[0]);
         }
 
         server.initiateShutdown();

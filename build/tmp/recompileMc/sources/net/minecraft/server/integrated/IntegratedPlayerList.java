@@ -27,8 +27,7 @@ public class IntegratedPlayerList extends PlayerList
     {
         if (playerIn.getName().equals(this.getServerInstance().getServerOwner()))
         {
-            this.hostPlayerData = new NBTTagCompound();
-            playerIn.writeToNBT(this.hostPlayerData);
+            this.hostPlayerData = playerIn.writeToNBT(new NBTTagCompound());
         }
 
         super.writePlayerData(playerIn);

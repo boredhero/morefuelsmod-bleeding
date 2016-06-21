@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderWitch extends RenderLiving<EntityWitch>
 {
-    private static final ResourceLocation witchTextures = new ResourceLocation("textures/entity/witch.png");
+    private static final ResourceLocation WITCH_TEXTURES = new ResourceLocation("textures/entity/witch.png");
 
     public RenderWitch(RenderManager renderManagerIn)
     {
@@ -24,7 +24,7 @@ public class RenderWitch extends RenderLiving<EntityWitch>
      */
     public void doRender(EntityWitch entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        ((ModelWitch)this.mainModel).field_82900_g = entity.getHeldItemMainhand() != null;
+        ((ModelWitch)this.mainModel).holdingItem = entity.getHeldItemMainhand() != null;
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
 
@@ -33,7 +33,7 @@ public class RenderWitch extends RenderLiving<EntityWitch>
      */
     protected ResourceLocation getEntityTexture(EntityWitch entity)
     {
-        return witchTextures;
+        return WITCH_TEXTURES;
     }
 
     public void transformHeldFull3DItemLayer()
@@ -42,8 +42,7 @@ public class RenderWitch extends RenderLiving<EntityWitch>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntityWitch entitylivingbaseIn, float partialTickTime)
     {

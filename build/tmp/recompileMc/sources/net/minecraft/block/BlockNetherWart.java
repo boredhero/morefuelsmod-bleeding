@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -24,7 +25,7 @@ public class BlockNetherWart extends BlockBush
 
     protected BlockNetherWart()
     {
-        super(Material.plants, MapColor.redColor);
+        super(Material.PLANTS, MapColor.RED);
         this.setDefaultState(this.blockState.getBaseState().withProperty(AGE, Integer.valueOf(0)));
         this.setTickRandomly(true);
         this.setCreativeTab((CreativeTabs)null);
@@ -35,9 +36,12 @@ public class BlockNetherWart extends BlockBush
         return NETHER_WART_AABB[((Integer)state.getValue(AGE)).intValue()];
     }
 
-    protected boolean func_185514_i(IBlockState state)
+    /**
+     * Return true if the block can sustain a Bush
+     */
+    protected boolean canSustainBush(IBlockState state)
     {
-        return state.getBlock() == Blocks.soul_sand;
+        return state.getBlock() == Blocks.SOUL_SAND;
     }
 
     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state)
@@ -81,7 +85,7 @@ public class BlockNetherWart extends BlockBush
 
             for (int j = 0; j < i; ++j)
             {
-                spawnAsEntity(worldIn, pos, new ItemStack(Items.nether_wart));
+                spawnAsEntity(worldIn, pos, new ItemStack(Items.NETHER_WART));
             }
         }
     }
@@ -89,6 +93,7 @@ public class BlockNetherWart extends BlockBush
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
@@ -104,7 +109,7 @@ public class BlockNetherWart extends BlockBush
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Items.nether_wart);
+        return new ItemStack(Items.NETHER_WART);
     }
 
     /**
@@ -137,7 +142,7 @@ public class BlockNetherWart extends BlockBush
 
         for (int i = 0; i < count; i++)
         {
-            ret.add(new ItemStack(Items.nether_wart));
+            ret.add(new ItemStack(Items.NETHER_WART));
         }
 
         return ret;

@@ -74,9 +74,9 @@ public class ItemFireworkCharge extends Item
                 flag = false;
                 boolean flag1 = false;
 
-                for (int j = 0; j < ItemDye.dyeColors.length; ++j)
+                for (int j = 0; j < ItemDye.DYE_COLORS.length; ++j)
                 {
-                    if (i == ItemDye.dyeColors[j])
+                    if (i == ItemDye.DYE_COLORS[j])
                     {
                         flag1 = true;
                         s = s + I18n.translateToLocal("item.fireworksCharge." + EnumDyeColor.byDyeDamage(j).getUnlocalizedName());
@@ -112,7 +112,7 @@ public class ItemFireworkCharge extends Item
 
                 for (int k = 0; k < 16; ++k)
                 {
-                    if (l == ItemDye.dyeColors[k])
+                    if (l == ItemDye.DYE_COLORS[k])
                     {
                         flag5 = true;
                         s1 = s1 + I18n.translateToLocal("item.fireworksCharge." + EnumDyeColor.byDyeDamage(k).getUnlocalizedName());

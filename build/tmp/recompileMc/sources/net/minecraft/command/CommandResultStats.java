@@ -1,5 +1,6 @@
 package net.minecraft.command;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.scoreboard.Score;
@@ -117,7 +118,7 @@ public class CommandResultStats
 
             try
             {
-                s1 = CommandBase.func_184891_e(server, icommandsender, s);
+                s1 = CommandBase.getEntityName(server, icommandsender, s);
             }
             catch (EntityNotFoundException var12)
             {
@@ -189,7 +190,7 @@ public class CommandResultStats
     /**
      * Set a stat in the scoreboard
      */
-    public static void setScoreBoardStat(CommandResultStats stats, CommandResultStats.Type resultType, String entityID, String objectiveName)
+    public static void setScoreBoardStat(CommandResultStats stats, CommandResultStats.Type resultType, @Nullable String entityID, @Nullable String objectiveName)
     {
         if (entityID != null && !entityID.isEmpty() && objectiveName != null && !objectiveName.isEmpty())
         {
@@ -301,6 +302,7 @@ public class CommandResultStats
         /**
          * Retrieves the Type indicated by the supplied name string.
          */
+        @Nullable
         public static CommandResultStats.Type getTypeByName(String name)
         {
             for (CommandResultStats.Type commandresultstats$type : values())

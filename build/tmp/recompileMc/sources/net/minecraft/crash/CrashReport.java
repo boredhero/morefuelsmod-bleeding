@@ -11,7 +11,6 @@ import java.lang.management.RuntimeMXBean;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Callable;
 import net.minecraft.util.ReportedException;
 import net.minecraft.world.gen.layer.IntCache;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 public class CrashReport
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /** Description of the crash report. */
     private final String description;
     /** The Throwable that is the "cause" for this crash and Crash Report. */
@@ -50,35 +49,35 @@ public class CrashReport
      */
     private void populateEnvironment()
     {
-        this.theReportCategory.addCrashSectionCallable("Minecraft Version", new Callable<String>()
+        this.theReportCategory.setDetail("Minecraft Version", new ICrashReportDetail<String>()
         {
             public String call()
             {
-                return "1.9";
+                return "1.9.4";
             }
         });
-        this.theReportCategory.addCrashSectionCallable("Operating System", new Callable<String>()
+        this.theReportCategory.setDetail("Operating System", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version");
             }
         });
-        this.theReportCategory.addCrashSectionCallable("Java Version", new Callable<String>()
+        this.theReportCategory.setDetail("Java Version", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return System.getProperty("java.version") + ", " + System.getProperty("java.vendor");
             }
         });
-        this.theReportCategory.addCrashSectionCallable("Java VM Version", new Callable<String>()
+        this.theReportCategory.setDetail("Java VM Version", new ICrashReportDetail<String>()
         {
             public String call()
             {
                 return System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor");
             }
         });
-        this.theReportCategory.addCrashSectionCallable("Memory", new Callable<String>()
+        this.theReportCategory.setDetail("Memory", new ICrashReportDetail<String>()
         {
             public String call()
             {
@@ -92,7 +91,7 @@ public class CrashReport
                 return k + " bytes (" + j1 + " MB) / " + j + " bytes (" + i1 + " MB) up to " + i + " bytes (" + l + " MB)";
             }
         });
-        this.theReportCategory.addCrashSectionCallable("JVM Flags", new Callable<String>()
+        this.theReportCategory.setDetail("JVM Flags", new ICrashReportDetail<String>()
         {
             public String call()
             {
@@ -117,7 +116,7 @@ public class CrashReport
                 return String.format("%d total; %s", new Object[] {Integer.valueOf(i), stringbuilder.toString()});
             }
         });
-        this.theReportCategory.addCrashSectionCallable("IntCache", new Callable<String>()
+        this.theReportCategory.setDetail("IntCache", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -156,6 +155,7 @@ public class CrashReport
         if (this.stacktrace != null && this.stacktrace.length > 0)
         {
             builder.append("-- Head --\n");
+            builder.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
             builder.append("Stacktrace:\n");
 
             for (StackTraceElement stacktraceelement : this.stacktrace)
@@ -287,7 +287,7 @@ public class CrashReport
             }
             catch (Throwable throwable)
             {
-                logger.error("Could not save crash report to " + toFile, throwable);
+                LOGGER.error("Could not save crash report to " + toFile, throwable);
                 return false;
             }
         }

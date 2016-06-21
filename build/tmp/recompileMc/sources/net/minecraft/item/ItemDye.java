@@ -23,13 +23,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemDye extends Item
 {
-    public static final int[] dyeColors = new int[] {1973019, 11743532, 3887386, 5320730, 2437522, 8073150, 2651799, 11250603, 4408131, 14188952, 4312372, 14602026, 6719955, 12801229, 15435844, 15790320};
+    public static final int[] DYE_COLORS = new int[] {1973019, 11743532, 3887386, 5320730, 2437522, 8073150, 2651799, 11250603, 4408131, 14188952, 4312372, 14602026, 6719955, 12801229, 15435844, 15790320};
 
     public ItemDye()
     {
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
-        this.setCreativeTab(CreativeTabs.tabMaterials);
+        this.setCreativeTab(CreativeTabs.MATERIALS);
     }
 
     /**
@@ -61,7 +61,7 @@ public class ItemDye extends Item
                 {
                     if (!worldIn.isRemote)
                     {
-                        worldIn.playAuxSFX(2005, pos, 0);
+                        worldIn.playEvent(2005, pos, 0);
                     }
 
                     return EnumActionResult.SUCCESS;
@@ -72,7 +72,7 @@ public class ItemDye extends Item
                 IBlockState iblockstate = worldIn.getBlockState(pos);
                 Block block = iblockstate.getBlock();
 
-                if (block == Blocks.log && iblockstate.getValue(BlockOldLog.VARIANT) == BlockPlanks.EnumType.JUNGLE)
+                if (block == Blocks.LOG && iblockstate.getValue(BlockOldLog.VARIANT) == BlockPlanks.EnumType.JUNGLE)
                 {
                     if (facing != EnumFacing.DOWN && facing != EnumFacing.UP)
                     {
@@ -80,7 +80,7 @@ public class ItemDye extends Item
 
                         if (worldIn.isAirBlock(pos))
                         {
-                            IBlockState iblockstate1 = Blocks.cocoa.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, 0, playerIn);
+                            IBlockState iblockstate1 = Blocks.COCOA.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, 0, playerIn);
                             worldIn.setBlockState(pos, iblockstate1, 10);
 
                             if (!playerIn.capabilities.isCreativeMode)
@@ -149,7 +149,7 @@ public class ItemDye extends Item
 
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (iblockstate.getMaterial() != Material.air)
+        if (iblockstate.getMaterial() != Material.AIR)
         {
             for (int i = 0; i < amount; ++i)
             {

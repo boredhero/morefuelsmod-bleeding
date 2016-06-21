@@ -32,7 +32,7 @@ public class WorldGenBigMushroom extends WorldGenerator
 
         if (block == null)
         {
-            block = rand.nextBoolean() ? Blocks.brown_mushroom_block : Blocks.red_mushroom_block;
+            block = rand.nextBoolean() ? Blocks.BROWN_MUSHROOM_BLOCK : Blocks.RED_MUSHROOM_BLOCK;
         }
 
         int i = rand.nextInt(3) + 4;
@@ -57,7 +57,7 @@ public class WorldGenBigMushroom extends WorldGenerator
                     {
                         if (j >= 0 && j < 256)
                         {
-                            IBlockState state = worldIn.getBlockState(blockpos$mutableblockpos.set(l, j, i1));
+                            IBlockState state = worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, j, i1));
 
                             if (!state.getBlock().isAir(state, worldIn, blockpos$mutableblockpos) && !state.getBlock().isLeaves(state, worldIn, blockpos$mutableblockpos))
                             {
@@ -80,7 +80,7 @@ public class WorldGenBigMushroom extends WorldGenerator
             {
                 Block block1 = worldIn.getBlockState(position.down()).getBlock();
 
-                if (block1 != Blocks.dirt && block1 != Blocks.grass && block1 != Blocks.mycelium)
+                if (block1 != Blocks.DIRT && block1 != Blocks.GRASS && block1 != Blocks.MYCELIUM)
                 {
                     return false;
                 }
@@ -88,7 +88,7 @@ public class WorldGenBigMushroom extends WorldGenerator
                 {
                     int k2 = position.getY() + i;
 
-                    if (block == Blocks.red_mushroom_block)
+                    if (block == Blocks.RED_MUSHROOM_BLOCK)
                     {
                         k2 = position.getY() + i - 3;
                     }
@@ -102,7 +102,7 @@ public class WorldGenBigMushroom extends WorldGenerator
                             ++j3;
                         }
 
-                        if (block == Blocks.brown_mushroom_block)
+                        if (block == Blocks.BROWN_MUSHROOM_BLOCK)
                         {
                             j3 = 3;
                         }
@@ -138,7 +138,7 @@ public class WorldGenBigMushroom extends WorldGenerator
 
                                 BlockHugeMushroom.EnumType blockhugemushroom$enumtype = BlockHugeMushroom.EnumType.byMetadata(j2);
 
-                                if (block == Blocks.brown_mushroom_block || l2 < position.getY() + i)
+                                if (block == Blocks.BROWN_MUSHROOM_BLOCK || l2 < position.getY() + i)
                                 {
                                     if ((l1 == k3 || l1 == l3) && (i2 == j1 || i2 == k1))
                                     {

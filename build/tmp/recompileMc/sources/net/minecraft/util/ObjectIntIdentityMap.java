@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 
 public class ObjectIntIdentityMap<T> implements IObjectIntIterable<T>
 {
@@ -41,6 +42,7 @@ public class ObjectIntIdentityMap<T> implements IObjectIntIterable<T>
         return integer == null ? -1 : integer.intValue();
     }
 
+    @Nullable
     public final T getByValue(int value)
     {
         return (T)(value >= 0 && value < this.objectList.size() ? this.objectList.get(value) : null);

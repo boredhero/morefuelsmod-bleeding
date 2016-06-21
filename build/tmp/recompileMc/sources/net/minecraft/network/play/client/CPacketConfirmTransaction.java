@@ -18,11 +18,11 @@ public class CPacketConfirmTransaction implements Packet<INetHandlerPlayServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketConfirmTransaction(int p_i46884_1_, short p_i46884_2_, boolean p_i46884_3_)
+    public CPacketConfirmTransaction(int windowIdIn, short uidIn, boolean acceptedIn)
     {
-        this.windowId = p_i46884_1_;
-        this.uid = p_i46884_2_;
-        this.accepted = p_i46884_3_;
+        this.windowId = windowIdIn;
+        this.uid = uidIn;
+        this.accepted = acceptedIn;
     }
 
     /**

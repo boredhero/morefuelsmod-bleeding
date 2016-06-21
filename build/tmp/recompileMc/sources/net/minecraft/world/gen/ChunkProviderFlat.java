@@ -4,14 +4,15 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.chunk.IChunkGenerator;
@@ -81,12 +82,12 @@ public class ChunkProviderFlat implements IChunkGenerator
 
         if (this.flatWorldGenInfo.getWorldFeatures().containsKey("lake"))
         {
-            this.waterLakeGenerator = new WorldGenLakes(Blocks.water);
+            this.waterLakeGenerator = new WorldGenLakes(Blocks.WATER);
         }
 
         if (this.flatWorldGenInfo.getWorldFeatures().containsKey("lava_lake"))
         {
-            this.lavaLakeGenerator = new WorldGenLakes(Blocks.lava);
+            this.lavaLakeGenerator = new WorldGenLakes(Blocks.LAVA);
         }
 
         this.hasDungeons = this.flatWorldGenInfo.getWorldFeatures().containsKey("dungeon");
@@ -100,14 +101,14 @@ public class ChunkProviderFlat implements IChunkGenerator
             {
                 IBlockState iblockstate = flatlayerinfo.getLayerMaterial();
 
-                if (iblockstate.getBlock() != Blocks.air)
+                if (iblockstate.getBlock() != Blocks.AIR)
                 {
                     flag = false;
                     this.cachedBlockIDs[i] = iblockstate;
                 }
             }
 
-            if (flatlayerinfo.getLayerMaterial().getBlock() == Blocks.air)
+            if (flatlayerinfo.getLayerMaterial().getBlock() == Blocks.AIR)
             {
                 k += flatlayerinfo.getLayerCount();
             }
@@ -119,7 +120,7 @@ public class ChunkProviderFlat implements IChunkGenerator
         }
 
         worldIn.setSeaLevel(j);
-        this.hasDecoration = flag && this.flatWorldGenInfo.getBiome() != BiomeGenBase.getIdForBiome(Biomes.voidBiome) ? false : this.flatWorldGenInfo.getWorldFeatures().containsKey("decoration");
+        this.hasDecoration = flag && this.flatWorldGenInfo.getBiome() != Biome.getIdForBiome(Biomes.VOID) ? false : this.flatWorldGenInfo.getWorldFeatures().containsKey("decoration");
     }
 
     public Chunk provideChunk(int x, int z)
@@ -148,12 +149,12 @@ public class ChunkProviderFlat implements IChunkGenerator
         }
 
         Chunk chunk = new Chunk(this.worldObj, chunkprimer, x, z);
-        BiomeGenBase[] abiomegenbase = this.worldObj.getBiomeProvider().loadBlockGeneratorData((BiomeGenBase[])null, x * 16, z * 16, 16, 16);
+        Biome[] abiome = this.worldObj.getBiomeProvider().loadBlockGeneratorData((Biome[])null, x * 16, z * 16, 16, 16);
         byte[] abyte = chunk.getBiomeArray();
 
         for (int l = 0; l < abyte.length; ++l)
         {
-            abyte[l] = (byte)BiomeGenBase.getIdForBiome(abiomegenbase[l]);
+            abyte[l] = (byte)Biome.getIdForBiome(abiome[l]);
         }
 
         chunk.generateSkylightMap();
@@ -162,20 +163,23 @@ public class ChunkProviderFlat implements IChunkGenerator
 
     public void populate(int x, int z)
     {
+        net.minecraft.block.BlockFalling.fallInstantly = true;
         int i = x * 16;
         int j = z * 16;
         BlockPos blockpos = new BlockPos(i, 0, j);
-        BiomeGenBase biomegenbase = this.worldObj.getBiomeGenForCoords(new BlockPos(i + 16, 0, j + 16));
+        Biome biome = this.worldObj.getBiomeGenForCoords(new BlockPos(i + 16, 0, j + 16));
         boolean flag = false;
         this.random.setSeed(this.worldObj.getSeed());
         long k = this.random.nextLong() / 2L * 2L + 1L;
         long l = this.random.nextLong() / 2L * 2L + 1L;
         this.random.setSeed((long)x * k + (long)z * l ^ this.worldObj.getSeed());
-        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(x, z);
+        ChunkPos chunkpos = new ChunkPos(x, z);
+
+        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.worldObj, this.random, x, z, flag);
 
         for (MapGenStructure mapgenstructure : this.structureGenerators)
         {
-            boolean flag1 = mapgenstructure.generateStructure(this.worldObj, this.random, chunkcoordintpair);
+            boolean flag1 = mapgenstructure.generateStructure(this.worldObj, this.random, chunkpos);
 
             if (mapgenstructure instanceof MapGenVillage)
             {
@@ -208,8 +212,11 @@ public class ChunkProviderFlat implements IChunkGenerator
 
         if (this.hasDecoration)
         {
-            biomegenbase.decorate(this.worldObj, this.random, blockpos);
+            biome.decorate(this.worldObj, this.random, blockpos);
         }
+
+        net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(false, this, this.worldObj, this.random, x, z, flag);
+        net.minecraft.block.BlockFalling.fallInstantly = false;
     }
 
     public boolean generateStructures(Chunk chunkIn, int x, int z)
@@ -217,12 +224,13 @@ public class ChunkProviderFlat implements IChunkGenerator
         return false;
     }
 
-    public List<BiomeGenBase.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
+    public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
     {
-        BiomeGenBase biomegenbase = this.worldObj.getBiomeGenForCoords(pos);
-        return biomegenbase.getSpawnableList(creatureType);
+        Biome biome = this.worldObj.getBiomeGenForCoords(pos);
+        return biome.getSpawnableList(creatureType);
     }
 
+    @Nullable
     public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position)
     {
         if ("Stronghold".equals(structureName))

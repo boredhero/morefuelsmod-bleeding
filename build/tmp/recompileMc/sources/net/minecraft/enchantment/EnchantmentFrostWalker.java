@@ -51,28 +51,28 @@ public class EnchantmentFrostWalker extends Enchantment
         return 2;
     }
 
-    public static void freezeNearby(EntityLivingBase p_185266_0_, World p_185266_1_, BlockPos p_185266_2_, int p_185266_3_)
+    public static void freezeNearby(EntityLivingBase living, World worldIn, BlockPos pos, int level)
     {
-        if (p_185266_0_.onGround)
+        if (living.onGround)
         {
-            float f = (float)Math.min(16, 2 + p_185266_3_);
+            float f = (float)Math.min(16, 2 + level);
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(0, 0, 0);
 
-            for (BlockPos.MutableBlockPos blockpos$mutableblockpos1 : BlockPos.getAllInBoxMutable(p_185266_2_.add((double)(-f), -1.0D, (double)(-f)), p_185266_2_.add((double)f, -1.0D, (double)f)))
+            for (BlockPos.MutableBlockPos blockpos$mutableblockpos1 : BlockPos.getAllInBoxMutable(pos.add((double)(-f), -1.0D, (double)(-f)), pos.add((double)f, -1.0D, (double)f)))
             {
-                if (blockpos$mutableblockpos1.distanceSqToCenter(p_185266_0_.posX, p_185266_0_.posY, p_185266_0_.posZ) <= (double)(f * f))
+                if (blockpos$mutableblockpos1.distanceSqToCenter(living.posX, living.posY, living.posZ) <= (double)(f * f))
                 {
-                    blockpos$mutableblockpos.set(blockpos$mutableblockpos1.getX(), blockpos$mutableblockpos1.getY() + 1, blockpos$mutableblockpos1.getZ());
-                    IBlockState iblockstate = p_185266_1_.getBlockState(blockpos$mutableblockpos);
+                    blockpos$mutableblockpos.setPos(blockpos$mutableblockpos1.getX(), blockpos$mutableblockpos1.getY() + 1, blockpos$mutableblockpos1.getZ());
+                    IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
 
-                    if (iblockstate.getBlock() == Blocks.air)
+                    if (iblockstate.getBlock() == Blocks.AIR)
                     {
-                        IBlockState iblockstate1 = p_185266_1_.getBlockState(blockpos$mutableblockpos1);
+                        IBlockState iblockstate1 = worldIn.getBlockState(blockpos$mutableblockpos1);
 
-                        if (iblockstate1.getMaterial() == Material.water && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0 && p_185266_1_.canBlockBePlaced(Blocks.frosted_ice, blockpos$mutableblockpos1, false, EnumFacing.DOWN, (Entity)null, (ItemStack)null))
+                        if (iblockstate1.getMaterial() == Material.WATER && ((Integer)iblockstate1.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.canBlockBePlaced(Blocks.FROSTED_ICE, blockpos$mutableblockpos1, false, EnumFacing.DOWN, (Entity)null, (ItemStack)null))
                         {
-                            p_185266_1_.setBlockState(blockpos$mutableblockpos1, Blocks.frosted_ice.getDefaultState());
-                            p_185266_1_.scheduleUpdate(blockpos$mutableblockpos1.toImmutable(), Blocks.frosted_ice, MathHelper.getRandomIntegerInRange(p_185266_0_.getRNG(), 60, 120));
+                            worldIn.setBlockState(blockpos$mutableblockpos1, Blocks.FROSTED_ICE.getDefaultState());
+                            worldIn.scheduleUpdate(blockpos$mutableblockpos1.toImmutable(), Blocks.FROSTED_ICE, MathHelper.getRandomIntegerInRange(living.getRNG(), 60, 120));
                         }
                     }
                 }
@@ -85,6 +85,6 @@ public class EnchantmentFrostWalker extends Enchantment
      */
     public boolean canApplyTogether(Enchantment ench)
     {
-        return super.canApplyTogether(ench) && ench != Enchantments.depthStrider;
+        return super.canApplyTogether(ench) && ench != Enchantments.DEPTH_STRIDER;
     }
 }

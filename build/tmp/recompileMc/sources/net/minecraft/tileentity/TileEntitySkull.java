@@ -5,9 +5,9 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.util.ITickable;
@@ -35,7 +35,7 @@ public class TileEntitySkull extends TileEntity implements ITickable
         sessionService = sessionServiceIn;
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         compound.setByte("SkullType", (byte)(this.skullType & 255));
@@ -47,6 +47,8 @@ public class TileEntitySkull extends TileEntity implements ITickable
             NBTUtil.writeGameProfile(nbttagcompound, this.playerProfile);
             compound.setTag("Owner", nbttagcompound);
         }
+
+        return compound;
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -99,16 +101,21 @@ public class TileEntitySkull extends TileEntity implements ITickable
         return this.dragonAnimated ? (float)this.dragonAnimatedTicks + p_184295_1_ : (float)this.dragonAnimatedTicks;
     }
 
+    @Nullable
     public GameProfile getPlayerProfile()
     {
         return this.playerProfile;
     }
 
-    public Packet<?> getDescriptionPacket()
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket()
     {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        this.writeToNBT(nbttagcompound);
-        return new SPacketUpdateTileEntity(this.pos, 4, nbttagcompound);
+        return new SPacketUpdateTileEntity(this.pos, 4, this.getUpdateTag());
+    }
+
+    public NBTTagCompound getUpdateTag()
+    {
+        return this.writeToNBT(new NBTTagCompound());
     }
 
     public void setType(int type)
@@ -117,7 +124,7 @@ public class TileEntitySkull extends TileEntity implements ITickable
         this.playerProfile = null;
     }
 
-    public void setPlayerProfile(GameProfile playerProfile)
+    public void setPlayerProfile(@Nullable GameProfile playerProfile)
     {
         this.skullType = 3;
         this.playerProfile = playerProfile;

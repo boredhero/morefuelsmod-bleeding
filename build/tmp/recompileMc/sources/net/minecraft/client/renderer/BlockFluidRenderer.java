@@ -43,7 +43,7 @@ public class BlockFluidRenderer
     public boolean renderFluid(IBlockAccess blockAccess, IBlockState blockStateIn, BlockPos blockPosIn, VertexBuffer worldRendererIn)
     {
         BlockLiquid blockliquid = (BlockLiquid)blockStateIn.getBlock();
-        boolean flag = blockStateIn.getMaterial() == Material.lava;
+        boolean flag = blockStateIn.getMaterial() == Material.LAVA;
         TextureAtlasSprite[] atextureatlassprite = flag ? this.atlasSpritesLava : this.atlasSpritesWater;
         int i = this.blockColors.colorMultiplier(blockStateIn, blockAccess, blockPosIn, 0);
         float f = (float)(i >> 16 & 255) / 255.0F;
@@ -77,7 +77,7 @@ public class BlockFluidRenderer
             if (flag1)
             {
                 flag3 = true;
-                float f12 = BlockLiquid.getFlowDirection(blockAccess, blockPosIn, material);
+                float f12 = BlockLiquid.getSlopeAngle(blockAccess, blockPosIn, material, blockStateIn);
                 TextureAtlasSprite textureatlassprite = f12 > -999.0F ? atextureatlassprite[1] : atextureatlassprite[0];
                 f7 -= f11;
                 f8 -= f11;
@@ -186,7 +186,7 @@ public class BlockFluidRenderer
                 {
                     Block block = blockAccess.getBlockState(blockpos).getBlock();
 
-                    if (block == Blocks.glass || block == Blocks.stained_glass)
+                    if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS)
                     {
                         textureatlassprite1 = this.atlasSpriteWaterOverlay;
                     }

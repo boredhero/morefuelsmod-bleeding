@@ -13,7 +13,7 @@ import org.apache.commons.lang3.ArrayUtils;
 @SideOnly(Side.CLIENT)
 public class GuiKeyBindingList extends GuiListExtended
 {
-    private final GuiControls field_148191_k;
+    private final GuiControls controlsScreen;
     private final Minecraft mc;
     private final GuiListExtended.IGuiListEntry[] listEntries;
     private int maxListLabelWidth = 0;
@@ -21,7 +21,7 @@ public class GuiKeyBindingList extends GuiListExtended
     public GuiKeyBindingList(GuiControls controls, Minecraft mcIn)
     {
         super(mcIn, controls.width + 45, controls.height, 63, controls.height - 32, 20);
-        this.field_148191_k = controls;
+        this.controlsScreen = controls;
         this.mc = mcIn;
         KeyBinding[] akeybinding = (KeyBinding[])ArrayUtils.clone(mcIn.gameSettings.keyBindings);
         this.listEntries = new GuiListExtended.IGuiListEntry[akeybinding.length + KeyBinding.getKeybinds().size()];
@@ -65,7 +65,7 @@ public class GuiKeyBindingList extends GuiListExtended
 
     protected int getScrollBarX()
     {
-        return super.getScrollBarX() + 15;
+        return super.getScrollBarX() + 35;
     }
 
     /**
@@ -96,12 +96,6 @@ public class GuiKeyBindingList extends GuiListExtended
         /**
          * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
          * clicked and the list should not be dragged.
-         *  
-         * @param mouseX Scaled X coordinate of the mouse on the entire screen
-         * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-         * @param mouseEvent The button on the mouse that was pressed
-         * @param relativeX Relative X coordinate of the mouse within this entry.
-         * @param relativeY Relative Y coordinate of the mouse within this entry.
          */
         public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
         {
@@ -134,31 +128,32 @@ public class GuiKeyBindingList extends GuiListExtended
         {
             this.keybinding = name;
             this.keyDesc = I18n.format(name.getKeyDescription(), new Object[0]);
-            this.btnChangeKeyBinding = new GuiButton(0, 0, 0, 75, 20, I18n.format(name.getKeyDescription(), new Object[0]));
+            this.btnChangeKeyBinding = new GuiButton(0, 0, 0, 95, 20, I18n.format(name.getKeyDescription(), new Object[0]));
             this.btnReset = new GuiButton(0, 0, 0, 50, 20, I18n.format("controls.reset", new Object[0]));
         }
 
         public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected)
         {
-            boolean flag = GuiKeyBindingList.this.field_148191_k.buttonId == this.keybinding;
+            boolean flag = GuiKeyBindingList.this.controlsScreen.buttonId == this.keybinding;
             GuiKeyBindingList.this.mc.fontRendererObj.drawString(this.keyDesc, x + 90 - GuiKeyBindingList.this.maxListLabelWidth, y + slotHeight / 2 - GuiKeyBindingList.this.mc.fontRendererObj.FONT_HEIGHT / 2, 16777215);
-            this.btnReset.xPosition = x + 190;
+            this.btnReset.xPosition = x + 210;
             this.btnReset.yPosition = y;
-            this.btnReset.enabled = this.keybinding.getKeyCode() != this.keybinding.getKeyCodeDefault();
+            this.btnReset.enabled = !this.keybinding.isSetToDefaultValue();
             this.btnReset.drawButton(GuiKeyBindingList.this.mc, mouseX, mouseY);
             this.btnChangeKeyBinding.xPosition = x + 105;
             this.btnChangeKeyBinding.yPosition = y;
-            this.btnChangeKeyBinding.displayString = GameSettings.getKeyDisplayString(this.keybinding.getKeyCode());
+            this.btnChangeKeyBinding.displayString = this.keybinding.getDisplayName();
             boolean flag1 = false;
+            boolean keyCodeModifierConflict = true; // less severe form of conflict, like SHIFT conflicting with SHIFT+G
 
             if (this.keybinding.getKeyCode() != 0)
             {
                 for (KeyBinding keybinding : GuiKeyBindingList.this.mc.gameSettings.keyBindings)
                 {
-                    if (keybinding != this.keybinding && keybinding.getKeyCode() == this.keybinding.getKeyCode())
+                    if (keybinding != this.keybinding && keybinding.conflicts(this.keybinding))
                     {
                         flag1 = true;
-                        break;
+                        keyCodeModifierConflict &= keybinding.hasKeyCodeModifierConflict(this.keybinding);
                     }
                 }
             }
@@ -169,7 +164,7 @@ public class GuiKeyBindingList extends GuiListExtended
             }
             else if (flag1)
             {
-                this.btnChangeKeyBinding.displayString = TextFormatting.RED + this.btnChangeKeyBinding.displayString;
+                this.btnChangeKeyBinding.displayString = (keyCodeModifierConflict ? TextFormatting.GOLD : TextFormatting.RED) + this.btnChangeKeyBinding.displayString;
             }
 
             this.btnChangeKeyBinding.drawButton(GuiKeyBindingList.this.mc, mouseX, mouseY);
@@ -178,22 +173,17 @@ public class GuiKeyBindingList extends GuiListExtended
         /**
          * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
          * clicked and the list should not be dragged.
-         *  
-         * @param mouseX Scaled X coordinate of the mouse on the entire screen
-         * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-         * @param mouseEvent The button on the mouse that was pressed
-         * @param relativeX Relative X coordinate of the mouse within this entry.
-         * @param relativeY Relative Y coordinate of the mouse within this entry.
          */
         public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
         {
             if (this.btnChangeKeyBinding.mousePressed(GuiKeyBindingList.this.mc, mouseX, mouseY))
             {
-                GuiKeyBindingList.this.field_148191_k.buttonId = this.keybinding;
+                GuiKeyBindingList.this.controlsScreen.buttonId = this.keybinding;
                 return true;
             }
             else if (this.btnReset.mousePressed(GuiKeyBindingList.this.mc, mouseX, mouseY))
             {
+                this.keybinding.setToDefault();
                 GuiKeyBindingList.this.mc.gameSettings.setOptionKeyBinding(this.keybinding, this.keybinding.getKeyCodeDefault());
                 KeyBinding.resetKeyBindingArrayAndHash();
                 return true;

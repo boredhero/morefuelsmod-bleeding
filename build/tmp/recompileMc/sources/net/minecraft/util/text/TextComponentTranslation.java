@@ -1,5 +1,6 @@
 package net.minecraft.util.text;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
@@ -16,8 +17,9 @@ public class TextComponentTranslation extends TextComponentBase
     private final Object[] formatArgs;
     private final Object syncLock = new Object();
     private long lastTranslationUpdateTimeInMilliseconds = -1L;
+    @VisibleForTesting
     List<ITextComponent> children = Lists.<ITextComponent>newArrayList();
-    public static final Pattern stringVariablePattern = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
+    public static final Pattern STRING_VARIABLE_PATTERN = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
     public TextComponentTranslation(String translationKey, Object... args)
     {
@@ -28,10 +30,12 @@ public class TextComponentTranslation extends TextComponentBase
         {
             if (object instanceof ITextComponent)
             {
-                ((ITextComponent)object).getChatStyle().setParentStyle(this.getChatStyle());
+                ((ITextComponent)object).getStyle().setParentStyle(this.getStyle());
             }
         }
     }
+
+    @VisibleForTesting
 
     /**
      * ensures that our children are initialized from the most recent string translation mapping.
@@ -76,7 +80,7 @@ public class TextComponentTranslation extends TextComponentBase
     protected void initializeFromFormat(String format)
     {
         boolean flag = false;
-        Matcher matcher = stringVariablePattern.matcher(format);
+        Matcher matcher = STRING_VARIABLE_PATTERN.matcher(format);
         int i = 0;
         int j = 0;
 
@@ -92,7 +96,7 @@ public class TextComponentTranslation extends TextComponentBase
                 if (k > j)
                 {
                     TextComponentString textcomponentstring = new TextComponentString(String.format(format.substring(j, k), new Object[0]));
-                    textcomponentstring.getChatStyle().setParentStyle(this.getChatStyle());
+                    textcomponentstring.getStyle().setParentStyle(this.getStyle());
                     this.children.add(textcomponentstring);
                 }
 
@@ -102,7 +106,7 @@ public class TextComponentTranslation extends TextComponentBase
                 if ("%".equals(s2) && "%%".equals(s))
                 {
                     TextComponentString textcomponentstring2 = new TextComponentString("%");
-                    textcomponentstring2.getChatStyle().setParentStyle(this.getChatStyle());
+                    textcomponentstring2.getStyle().setParentStyle(this.getStyle());
                     this.children.add(textcomponentstring2);
                 }
                 else
@@ -125,7 +129,7 @@ public class TextComponentTranslation extends TextComponentBase
             if (j < format.length())
             {
                 TextComponentString textcomponentstring1 = new TextComponentString(String.format(format.substring(j), new Object[0]));
-                textcomponentstring1.getChatStyle().setParentStyle(this.getChatStyle());
+                textcomponentstring1.getStyle().setParentStyle(this.getStyle());
                 this.children.add(textcomponentstring1);
             }
         }
@@ -153,22 +157,22 @@ public class TextComponentTranslation extends TextComponentBase
             else
             {
                 itextcomponent = new TextComponentString(object == null ? "null" : object.toString());
-                itextcomponent.getChatStyle().setParentStyle(this.getChatStyle());
+                itextcomponent.getStyle().setParentStyle(this.getStyle());
             }
 
             return itextcomponent;
         }
     }
 
-    public ITextComponent setChatStyle(Style style)
+    public ITextComponent setStyle(Style style)
     {
-        super.setChatStyle(style);
+        super.setStyle(style);
 
         for (Object object : this.formatArgs)
         {
             if (object instanceof ITextComponent)
             {
-                ((ITextComponent)object).getChatStyle().setParentStyle(this.getChatStyle());
+                ((ITextComponent)object).getStyle().setParentStyle(this.getStyle());
             }
         }
 
@@ -176,7 +180,7 @@ public class TextComponentTranslation extends TextComponentBase
         {
             for (ITextComponent itextcomponent : this.children)
             {
-                itextcomponent.getChatStyle().setParentStyle(style);
+                itextcomponent.getStyle().setParentStyle(style);
             }
         }
 
@@ -193,14 +197,14 @@ public class TextComponentTranslation extends TextComponentBase
      * Gets the text of this component, without any special formatting codes added, for chat.  TODO: why is this two
      * different methods?
      */
-    public String getUnformattedTextForChat()
+    public String getUnformattedComponentText()
     {
         this.ensureInitialized();
         StringBuilder stringbuilder = new StringBuilder();
 
         for (ITextComponent itextcomponent : this.children)
         {
-            stringbuilder.append(itextcomponent.getUnformattedTextForChat());
+            stringbuilder.append(itextcomponent.getUnformattedComponentText());
         }
 
         return stringbuilder.toString();
@@ -226,7 +230,7 @@ public class TextComponentTranslation extends TextComponentBase
         }
 
         TextComponentTranslation textcomponenttranslation = new TextComponentTranslation(this.key, aobject);
-        textcomponenttranslation.setChatStyle(this.getChatStyle().createShallowCopy());
+        textcomponenttranslation.setStyle(this.getStyle().createShallowCopy());
 
         for (ITextComponent itextcomponent : this.getSiblings())
         {
@@ -263,7 +267,7 @@ public class TextComponentTranslation extends TextComponentBase
 
     public String toString()
     {
-        return "TranslatableComponent{key=\'" + this.key + '\'' + ", args=" + Arrays.toString(this.formatArgs) + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
+        return "TranslatableComponent{key=\'" + this.key + '\'' + ", args=" + Arrays.toString(this.formatArgs) + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
     }
 
     public String getKey()

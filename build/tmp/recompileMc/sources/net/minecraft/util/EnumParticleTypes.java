@@ -3,6 +3,7 @@ package net.minecraft.util;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 
 public enum EnumParticleTypes
 {
@@ -101,11 +102,13 @@ public enum EnumParticleTypes
     /**
      * Gets the relative EnumParticleTypes by id.
      */
+    @Nullable
     public static EnumParticleTypes getParticleFromId(int particleId)
     {
         return (EnumParticleTypes)PARTICLES.get(Integer.valueOf(particleId));
     }
 
+    @Nullable
     public static EnumParticleTypes getByName(String nameIn)
     {
         return (EnumParticleTypes)BY_NAME.get(nameIn);

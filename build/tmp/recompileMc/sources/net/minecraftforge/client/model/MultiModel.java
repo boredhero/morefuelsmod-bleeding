@@ -37,7 +37,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 // TODO: Switch to vanilla class, or to something similar
 @Deprecated
 public final class MultiModel implements IModel

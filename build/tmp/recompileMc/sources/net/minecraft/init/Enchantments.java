@@ -1,43 +1,45 @@
 package net.minecraft.init;
 
+import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.ResourceLocation;
 
 public class Enchantments
 {
-    public static final Enchantment protection = getRegisteredEnchantment("protection");
+    public static final Enchantment PROTECTION = getRegisteredEnchantment("protection");
     /** Protection against fire */
-    public static final Enchantment fireProtection = getRegisteredEnchantment("fire_protection");
-    public static final Enchantment featherFalling = getRegisteredEnchantment("feather_falling");
-    public static final Enchantment blastProtection = getRegisteredEnchantment("blast_protection");
-    public static final Enchantment projectileProtection = getRegisteredEnchantment("projectile_protection");
-    public static final Enchantment respiration = getRegisteredEnchantment("respiration");
-    public static final Enchantment aquaAffinity = getRegisteredEnchantment("aqua_affinity");
-    public static final Enchantment thorns = getRegisteredEnchantment("thorns");
-    public static final Enchantment depthStrider = getRegisteredEnchantment("depth_strider");
-    public static final Enchantment frostWalker = getRegisteredEnchantment("frost_walker");
-    public static final Enchantment sharpness = getRegisteredEnchantment("sharpness");
-    public static final Enchantment smite = getRegisteredEnchantment("smite");
-    public static final Enchantment baneOfArthropods = getRegisteredEnchantment("bane_of_arthropods");
-    public static final Enchantment knockback = getRegisteredEnchantment("knockback");
+    public static final Enchantment FIRE_PROTECTION = getRegisteredEnchantment("fire_protection");
+    public static final Enchantment FEATHER_FALLING = getRegisteredEnchantment("feather_falling");
+    public static final Enchantment BLAST_PROTECTION = getRegisteredEnchantment("blast_protection");
+    public static final Enchantment PROJECTILE_PROTECTION = getRegisteredEnchantment("projectile_protection");
+    public static final Enchantment RESPIRATION = getRegisteredEnchantment("respiration");
+    public static final Enchantment AQUA_AFFINITY = getRegisteredEnchantment("aqua_affinity");
+    public static final Enchantment THORNS = getRegisteredEnchantment("thorns");
+    public static final Enchantment DEPTH_STRIDER = getRegisteredEnchantment("depth_strider");
+    public static final Enchantment FROST_WALKER = getRegisteredEnchantment("frost_walker");
+    public static final Enchantment SHARPNESS = getRegisteredEnchantment("sharpness");
+    public static final Enchantment SMITE = getRegisteredEnchantment("smite");
+    public static final Enchantment BANE_OF_ARTHROPODS = getRegisteredEnchantment("bane_of_arthropods");
+    public static final Enchantment KNOCKBACK = getRegisteredEnchantment("knockback");
     /** Lights mobs on fire */
-    public static final Enchantment fireAspect = getRegisteredEnchantment("fire_aspect");
-    public static final Enchantment looting = getRegisteredEnchantment("looting");
-    public static final Enchantment efficiency = getRegisteredEnchantment("efficiency");
-    public static final Enchantment silkTouch = getRegisteredEnchantment("silk_touch");
-    public static final Enchantment unbreaking = getRegisteredEnchantment("unbreaking");
-    public static final Enchantment fortune = getRegisteredEnchantment("fortune");
-    public static final Enchantment power = getRegisteredEnchantment("power");
-    public static final Enchantment punch = getRegisteredEnchantment("punch");
-    public static final Enchantment flame = getRegisteredEnchantment("flame");
-    public static final Enchantment infinity = getRegisteredEnchantment("infinity");
-    public static final Enchantment luckOfTheSea = getRegisteredEnchantment("luck_of_the_sea");
-    public static final Enchantment lure = getRegisteredEnchantment("lure");
-    public static final Enchantment mending = getRegisteredEnchantment("mending");
+    public static final Enchantment FIRE_ASPECT = getRegisteredEnchantment("fire_aspect");
+    public static final Enchantment LOOTING = getRegisteredEnchantment("looting");
+    public static final Enchantment EFFICIENCY = getRegisteredEnchantment("efficiency");
+    public static final Enchantment SILK_TOUCH = getRegisteredEnchantment("silk_touch");
+    public static final Enchantment UNBREAKING = getRegisteredEnchantment("unbreaking");
+    public static final Enchantment FORTUNE = getRegisteredEnchantment("fortune");
+    public static final Enchantment POWER = getRegisteredEnchantment("power");
+    public static final Enchantment PUNCH = getRegisteredEnchantment("punch");
+    public static final Enchantment FLAME = getRegisteredEnchantment("flame");
+    public static final Enchantment INFINITY = getRegisteredEnchantment("infinity");
+    public static final Enchantment LUCK_OF_THE_SEA = getRegisteredEnchantment("luck_of_the_sea");
+    public static final Enchantment LURE = getRegisteredEnchantment("lure");
+    public static final Enchantment MENDING = getRegisteredEnchantment("mending");
 
+    @Nullable
     private static Enchantment getRegisteredEnchantment(String id)
     {
-        Enchantment enchantment = (Enchantment)Enchantment.enchantmentRegistry.getObject(new ResourceLocation(id));
+        Enchantment enchantment = (Enchantment)Enchantment.REGISTRY.getObject(new ResourceLocation(id));
 
         if (enchantment == null)
         {

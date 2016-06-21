@@ -2,12 +2,13 @@ package net.minecraft.client.renderer.entity;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelHorse;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.LayeredTexture;
 import net.minecraft.entity.passive.EntityHorse;
-import net.minecraft.entity.passive.HorseArmorType;
+import net.minecraft.entity.passive.HorseType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderHorse extends RenderLiving<EntityHorse>
 {
-    private static final Map<String, ResourceLocation> field_110852_a = Maps.<String, ResourceLocation>newHashMap();
+    private static final Map<String, ResourceLocation> LAYERED_LOCATION_CACHE = Maps.<String, ResourceLocation>newHashMap();
 
     public RenderHorse(RenderManager rendermanagerIn, ModelHorse model, float shadowSizeIn)
     {
@@ -23,19 +24,18 @@ public class RenderHorse extends RenderLiving<EntityHorse>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntityHorse entitylivingbaseIn, float partialTickTime)
     {
         float f = 1.0F;
-        HorseArmorType horsearmortype = entitylivingbaseIn.getType();
+        HorseType horsetype = entitylivingbaseIn.getType();
 
-        if (horsearmortype == HorseArmorType.DONKEY)
+        if (horsetype == HorseType.DONKEY)
         {
             f *= 0.87F;
         }
-        else if (horsearmortype == HorseArmorType.MULE)
+        else if (horsetype == HorseType.MULE)
         {
             f *= 0.92F;
         }
@@ -49,26 +49,27 @@ public class RenderHorse extends RenderLiving<EntityHorse>
      */
     protected ResourceLocation getEntityTexture(EntityHorse entity)
     {
-        return !entity.func_110239_cn() ? entity.getType().getTexture() : this.func_188328_b(entity);
+        return !entity.hasLayeredTextures() ? entity.getType().getTexture() : this.getOrCreateLayeredResourceLoc(entity);
     }
 
-    private ResourceLocation func_188328_b(EntityHorse p_188328_1_)
+    @Nullable
+    private ResourceLocation getOrCreateLayeredResourceLoc(EntityHorse p_188328_1_)
     {
         String s = p_188328_1_.getHorseTexture();
 
-        if (!p_188328_1_.func_175507_cI())
+        if (!p_188328_1_.hasTexture())
         {
             return null;
         }
         else
         {
-            ResourceLocation resourcelocation = (ResourceLocation)field_110852_a.get(s);
+            ResourceLocation resourcelocation = (ResourceLocation)LAYERED_LOCATION_CACHE.get(s);
 
             if (resourcelocation == null)
             {
                 resourcelocation = new ResourceLocation(s);
                 Minecraft.getMinecraft().getTextureManager().loadTexture(resourcelocation, new LayeredTexture(p_188328_1_.getVariantTexturePaths()));
-                field_110852_a.put(s, resourcelocation);
+                LAYERED_LOCATION_CACHE.put(s, resourcelocation);
             }
 
             return resourcelocation;

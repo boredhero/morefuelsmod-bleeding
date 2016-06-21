@@ -50,7 +50,7 @@ public class GuiCreateWorld extends GuiScreen
     private int selectedIndex;
     public String chunkProviderSettingsJson = "";
     /** These filenames are known to be restricted on one or more OS's. */
-    private static final String[] disallowedFilenames = new String[] {"CON", "COM", "PRN", "AUX", "CLOCK$", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"};
+    private static final String[] DISALLOWED_FILENAMES = new String[] {"CON", "COM", "PRN", "AUX", "CLOCK$", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"};
 
     public GuiCreateWorld(GuiScreen p_i46320_1_)
     {
@@ -107,7 +107,7 @@ public class GuiCreateWorld extends GuiScreen
     {
         this.saveDirName = this.worldNameField.getText().trim();
 
-        for (char c0 : ChatAllowedCharacters.allowedCharactersArray)
+        for (char c0 : ChatAllowedCharacters.ILLEGAL_FILE_CHARACTERS)
         {
             this.saveDirName = this.saveDirName.replace(c0, '_');
         }
@@ -150,7 +150,7 @@ public class GuiCreateWorld extends GuiScreen
             this.btnBonusItems.displayString = this.btnBonusItems.displayString + I18n.format("options.off", new Object[0]);
         }
 
-        this.btnMapType.displayString = I18n.format("selectWorld.mapType", new Object[0]) + " " + I18n.format(WorldType.worldTypes[this.selectedIndex].getTranslateName(), new Object[0]);
+        this.btnMapType.displayString = I18n.format("selectWorld.mapType", new Object[0]) + " " + I18n.format(WorldType.WORLD_TYPES[this.selectedIndex].getTranslateName(), new Object[0]);
         this.btnAllowCommands.displayString = I18n.format("selectWorld.allowCommands", new Object[0]) + " ";
 
         if (this.allowCheats && !this.hardCoreMode)
@@ -171,7 +171,7 @@ public class GuiCreateWorld extends GuiScreen
     {
         name = name.replaceAll("[\\./\"]", "_");
 
-        for (String s : disallowedFilenames)
+        for (String s : DISALLOWED_FILENAMES)
         {
             if (name.equalsIgnoreCase(s))
             {
@@ -236,10 +236,10 @@ public class GuiCreateWorld extends GuiScreen
                     }
                 }
 
-                WorldType.worldTypes[this.selectedIndex].onGUICreateWorldPress();
+                WorldType.WORLD_TYPES[this.selectedIndex].onGUICreateWorldPress();
 
-                WorldSettings worldsettings = new WorldSettings(i, WorldSettings.GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.worldTypes[this.selectedIndex]);
-                worldsettings.setWorldName(this.chunkProviderSettingsJson);
+                WorldSettings worldsettings = new WorldSettings(i, WorldSettings.GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex]);
+                worldsettings.setGeneratorOptions(this.chunkProviderSettingsJson);
 
                 if (this.bonusChestEnabled && !this.hardCoreMode)
                 {
@@ -317,7 +317,7 @@ public class GuiCreateWorld extends GuiScreen
             {
                 ++this.selectedIndex;
 
-                if (this.selectedIndex >= WorldType.worldTypes.length)
+                if (this.selectedIndex >= WorldType.WORLD_TYPES.length)
                 {
                     this.selectedIndex = 0;
                 }
@@ -326,7 +326,7 @@ public class GuiCreateWorld extends GuiScreen
                 {
                     ++this.selectedIndex;
 
-                    if (this.selectedIndex >= WorldType.worldTypes.length)
+                    if (this.selectedIndex >= WorldType.WORLD_TYPES.length)
                     {
                         this.selectedIndex = 0;
                     }
@@ -344,7 +344,7 @@ public class GuiCreateWorld extends GuiScreen
             }
             else if (button.id == 8)
             {
-                WorldType.worldTypes[this.selectedIndex].onCustomizeButton(mc, this);
+                WorldType.WORLD_TYPES[this.selectedIndex].onCustomizeButton(mc, this);
             }
         }
     }
@@ -355,7 +355,7 @@ public class GuiCreateWorld extends GuiScreen
      */
     private boolean canSelectCurWorldType()
     {
-        WorldType worldtype = WorldType.worldTypes[this.selectedIndex];
+        WorldType worldtype = WorldType.WORLD_TYPES[this.selectedIndex];
         return worldtype != null && worldtype.getCanBeCreated() ? (worldtype == WorldType.DEBUG_WORLD ? isShiftKeyDown() : true) : false;
     }
 
@@ -376,7 +376,7 @@ public class GuiCreateWorld extends GuiScreen
     {
         this.inMoreWorldOptionsDisplay = toggle;
 
-        if (WorldType.worldTypes[this.selectedIndex] == WorldType.DEBUG_WORLD)
+        if (WorldType.WORLD_TYPES[this.selectedIndex] == WorldType.DEBUG_WORLD)
         {
             this.btnGameMode.visible = !this.inMoreWorldOptionsDisplay;
             this.btnGameMode.enabled = false;
@@ -404,11 +404,11 @@ public class GuiCreateWorld extends GuiScreen
                 this.savedGameMode = null;
             }
 
-            this.btnMapFeatures.visible = this.inMoreWorldOptionsDisplay && WorldType.worldTypes[this.selectedIndex] != WorldType.CUSTOMIZED;
+            this.btnMapFeatures.visible = this.inMoreWorldOptionsDisplay && WorldType.WORLD_TYPES[this.selectedIndex] != WorldType.CUSTOMIZED;
             this.btnBonusItems.visible = this.inMoreWorldOptionsDisplay;
             this.btnMapType.visible = this.inMoreWorldOptionsDisplay;
             this.btnAllowCommands.visible = this.inMoreWorldOptionsDisplay;
-            this.btnCustomizeType.visible = this.inMoreWorldOptionsDisplay && WorldType.worldTypes[this.selectedIndex].isCustomizable();
+            this.btnCustomizeType.visible = this.inMoreWorldOptionsDisplay && WorldType.WORLD_TYPES[this.selectedIndex].isCustomizable();
         }
 
         this.updateDisplayState();
@@ -468,10 +468,6 @@ public class GuiCreateWorld extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -495,9 +491,9 @@ public class GuiCreateWorld extends GuiScreen
 
             this.worldSeedField.drawTextBox();
 
-            if (WorldType.worldTypes[this.selectedIndex].showWorldInfoNotice())
+            if (WorldType.WORLD_TYPES[this.selectedIndex].showWorldInfoNotice())
             {
-                this.fontRendererObj.drawSplitString(I18n.format(WorldType.worldTypes[this.selectedIndex].getTranslatedInfo(), new Object[0]), this.btnMapType.xPosition + 2, this.btnMapType.yPosition + 22, this.btnMapType.getButtonWidth(), 10526880);
+                this.fontRendererObj.drawSplitString(I18n.format(WorldType.WORLD_TYPES[this.selectedIndex].getTranslatedInfo(), new Object[0]), this.btnMapType.xPosition + 2, this.btnMapType.yPosition + 22, this.btnMapType.getButtonWidth(), 10526880);
             }
         }
         else

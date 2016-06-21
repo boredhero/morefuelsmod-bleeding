@@ -1,6 +1,7 @@
 package net.minecraft.client.gui;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ITabCompleter;
 import net.minecraft.util.TabCompleter;
@@ -19,7 +20,7 @@ import org.lwjgl.input.Mouse;
 @SideOnly(Side.CLIENT)
 public class GuiChat extends GuiScreen implements ITabCompleter
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private String historyBuffer = "";
     /**
      * keeps position of which chat message you will select when you press up, (does not increase for duplicated
@@ -227,10 +228,6 @@ public class GuiChat extends GuiScreen implements ITabCompleter
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -238,7 +235,7 @@ public class GuiChat extends GuiScreen implements ITabCompleter
         this.inputField.drawTextBox();
         ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
 
-        if (itextcomponent != null && itextcomponent.getChatStyle().getChatHoverEvent() != null)
+        if (itextcomponent != null && itextcomponent.getStyle().getHoverEvent() != null)
         {
             this.handleComponentHover(itextcomponent, mouseX, mouseY);
         }
@@ -299,9 +296,9 @@ public class GuiChat extends GuiScreen implements ITabCompleter
                 }
             }
 
+            @Nullable
             public BlockPos getTargetBlockPos()
             {
-
                 BlockPos blockpos = null;
 
                 if (this.clientInstance.objectMouseOver != null && this.clientInstance.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK)

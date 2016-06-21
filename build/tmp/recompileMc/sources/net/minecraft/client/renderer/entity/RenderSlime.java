@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderSlime extends RenderLiving<EntitySlime>
 {
-    private static final ResourceLocation slimeTextures = new ResourceLocation("textures/entity/slime/slime.png");
+    private static final ResourceLocation SLIME_TEXTURES = new ResourceLocation("textures/entity/slime/slime.png");
 
     public RenderSlime(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn)
     {
@@ -29,8 +29,7 @@ public class RenderSlime extends RenderLiving<EntitySlime>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntitySlime entitylivingbaseIn, float partialTickTime)
     {
@@ -47,6 +46,6 @@ public class RenderSlime extends RenderLiving<EntitySlime>
      */
     protected ResourceLocation getEntityTexture(EntitySlime entity)
     {
-        return slimeTextures;
+        return SLIME_TEXTURES;
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.CommandBlockBaseLogic;
@@ -52,10 +53,6 @@ public class CommandHelp extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -76,7 +73,7 @@ public class CommandHelp extends CommandBase
             }
             catch (NumberInvalidException numberinvalidexception)
             {
-                Map<String, ICommand> map = this.func_184899_a(server);
+                Map<String, ICommand> map = this.getCommandMap(server);
                 ICommand icommand = (ICommand)map.get(args[0]);
 
                 if (icommand != null)
@@ -94,21 +91,21 @@ public class CommandHelp extends CommandBase
 
             int l = Math.min((k + 1) * 7, list.size());
             TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.help.header", new Object[] {Integer.valueOf(k + 1), Integer.valueOf(j + 1)});
-            textcomponenttranslation1.getChatStyle().setColor(TextFormatting.DARK_GREEN);
+            textcomponenttranslation1.getStyle().setColor(TextFormatting.DARK_GREEN);
             sender.addChatMessage(textcomponenttranslation1);
 
             for (int i1 = k * 7; i1 < l; ++i1)
             {
                 ICommand icommand1 = (ICommand)list.get(i1);
                 TextComponentTranslation textcomponenttranslation = new TextComponentTranslation(icommand1.getCommandUsage(sender), new Object[0]);
-                textcomponenttranslation.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + icommand1.getCommandName() + " "));
+                textcomponenttranslation.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/" + icommand1.getCommandName() + " "));
                 sender.addChatMessage(textcomponenttranslation);
             }
 
             if (k == 0 && sender instanceof EntityPlayer)
             {
                 TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.help.footer", new Object[0]);
-                textcomponenttranslation2.getChatStyle().setColor(TextFormatting.GREEN);
+                textcomponenttranslation2.getStyle().setColor(TextFormatting.GREEN);
                 sender.addChatMessage(textcomponenttranslation2);
             }
         }
@@ -121,16 +118,16 @@ public class CommandHelp extends CommandBase
         return list;
     }
 
-    protected Map<String, ICommand> func_184899_a(MinecraftServer server)
+    protected Map<String, ICommand> getCommandMap(MinecraftServer server)
     {
         return server.getCommandManager().getCommands();
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         if (args.length == 1)
         {
-            Set<String> set = this.func_184899_a(server).keySet();
+            Set<String> set = this.getCommandMap(server).keySet();
             /**
              * Returns a List of strings (chosen from the given strings) which the last word in the given string array
              * is a beginning-match for. (Tab completion).

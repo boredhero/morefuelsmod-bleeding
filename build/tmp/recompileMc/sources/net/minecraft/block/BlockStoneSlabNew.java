@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -27,7 +28,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
 
     public BlockStoneSlabNew()
     {
-        super(Material.rock);
+        super(Material.ROCK);
         IBlockState iblockstate = this.blockState.getBaseState();
 
         if (this.isDouble())
@@ -40,7 +41,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
         }
 
         this.setDefaultState(iblockstate.withProperty(VARIANT, BlockStoneSlabNew.EnumType.RED_SANDSTONE));
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     /**
@@ -54,14 +55,15 @@ public abstract class BlockStoneSlabNew extends BlockSlab
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Item.getItemFromBlock(Blocks.stone_slab2);
+        return Item.getItemFromBlock(Blocks.STONE_SLAB2);
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Blocks.stone_slab2, 1, ((BlockStoneSlabNew.EnumType)state.getValue(VARIANT)).getMetadata());
+        return new ItemStack(Blocks.STONE_SLAB2, 1, ((BlockStoneSlabNew.EnumType)state.getValue(VARIANT)).getMetadata());
     }
 
     /**
@@ -88,7 +90,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
     @SideOnly(Side.CLIENT)
     public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
     {
-        if (itemIn != Item.getItemFromBlock(Blocks.double_stone_slab2))
+        if (itemIn != Item.getItemFromBlock(Blocks.DOUBLE_STONE_SLAB2))
         {
             for (BlockStoneSlabNew.EnumType blockstoneslabnew$enumtype : BlockStoneSlabNew.EnumType.values())
             {
@@ -149,7 +151,7 @@ public abstract class BlockStoneSlabNew extends BlockSlab
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return ((BlockStoneSlabNew.EnumType)state.getValue(VARIANT)).func_181068_c();
+        return ((BlockStoneSlabNew.EnumType)state.getValue(VARIANT)).getMapColor();
     }
 
     /**
@@ -168,13 +170,13 @@ public abstract class BlockStoneSlabNew extends BlockSlab
         private static final BlockStoneSlabNew.EnumType[] META_LOOKUP = new BlockStoneSlabNew.EnumType[values().length];
         private final int meta;
         private final String name;
-        private final MapColor field_181069_e;
+        private final MapColor mapColor;
 
         private EnumType(int p_i46391_3_, String p_i46391_4_, MapColor p_i46391_5_)
         {
             this.meta = p_i46391_3_;
             this.name = p_i46391_4_;
-            this.field_181069_e = p_i46391_5_;
+            this.mapColor = p_i46391_5_;
         }
 
         public int getMetadata()
@@ -182,9 +184,9 @@ public abstract class BlockStoneSlabNew extends BlockSlab
             return this.meta;
         }
 
-        public MapColor func_181068_c()
+        public MapColor getMapColor()
         {
-            return this.field_181069_e;
+            return this.mapColor;
         }
 
         public String toString()

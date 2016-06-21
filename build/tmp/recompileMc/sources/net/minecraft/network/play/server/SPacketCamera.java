@@ -1,6 +1,7 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -46,6 +47,7 @@ public class SPacketCamera implements Packet<INetHandlerPlayClient>
         handler.handleCamera(this);
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public Entity getEntity(World worldIn)
     {

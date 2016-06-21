@@ -3,6 +3,7 @@ package net.minecraft.command;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.scoreboard.IScoreCriteria;
@@ -40,10 +41,6 @@ public class CommandTrigger extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -110,7 +107,7 @@ public class CommandTrigger extends CommandBase
 
                         if (entityplayermp.interactionManager.isCreative())
                         {
-                            notifyOperators(sender, this, "commands.trigger.success", new Object[] {args[0], args[1], args[2]});
+                            notifyCommandListener(sender, this, "commands.trigger.success", new Object[] {args[0], args[1], args[2]});
                         }
                     }
                 }
@@ -122,7 +119,7 @@ public class CommandTrigger extends CommandBase
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         if (args.length == 1)
         {

@@ -21,12 +21,12 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
     private static final ResourceLocation GUARDIAN_TEXTURE = new ResourceLocation("textures/entity/guardian.png");
     private static final ResourceLocation GUARDIAN_ELDER_TEXTURE = new ResourceLocation("textures/entity/guardian_elder.png");
     private static final ResourceLocation GUARDIAN_BEAM_TEXTURE = new ResourceLocation("textures/entity/guardian_beam.png");
-    int field_177115_a;
+    int lastModelVersion;
 
     public RenderGuardian(RenderManager renderManagerIn)
     {
         super(renderManagerIn, new ModelGuardian(), 0.5F);
-        this.field_177115_a = ((ModelGuardian)this.mainModel).func_178706_a();
+        this.lastModelVersion = ((ModelGuardian)this.mainModel).getModelVersion();
     }
 
     public boolean shouldRender(EntityGuardian livingEntity, ICamera camera, double camX, double camY, double camZ)
@@ -43,8 +43,8 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
 
                 if (entitylivingbase != null)
                 {
-                    Vec3d vec3d = this.func_177110_a(entitylivingbase, (double)entitylivingbase.height * 0.5D, 1.0F);
-                    Vec3d vec3d1 = this.func_177110_a(livingEntity, (double)livingEntity.getEyeHeight(), 1.0F);
+                    Vec3d vec3d = this.getPosition(entitylivingbase, (double)entitylivingbase.height * 0.5D, 1.0F);
+                    Vec3d vec3d1 = this.getPosition(livingEntity, (double)livingEntity.getEyeHeight(), 1.0F);
 
                     if (camera.isBoundingBoxInFrustum(new AxisAlignedBB(vec3d1.xCoord, vec3d1.yCoord, vec3d1.zCoord, vec3d.xCoord, vec3d.yCoord, vec3d.zCoord)))
                     {
@@ -57,7 +57,7 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
         }
     }
 
-    private Vec3d func_177110_a(EntityLivingBase entityLivingBaseIn, double p_177110_2_, float p_177110_4_)
+    private Vec3d getPosition(EntityLivingBase entityLivingBaseIn, double p_177110_2_, float p_177110_4_)
     {
         double d0 = entityLivingBaseIn.lastTickPosX + (entityLivingBaseIn.posX - entityLivingBaseIn.lastTickPosX) * (double)p_177110_4_;
         double d1 = p_177110_2_ + entityLivingBaseIn.lastTickPosY + (entityLivingBaseIn.posY - entityLivingBaseIn.lastTickPosY) * (double)p_177110_4_;
@@ -70,10 +70,10 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
      */
     public void doRender(EntityGuardian entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        if (this.field_177115_a != ((ModelGuardian)this.mainModel).func_178706_a())
+        if (this.lastModelVersion != ((ModelGuardian)this.mainModel).getModelVersion())
         {
             this.mainModel = new ModelGuardian();
-            this.field_177115_a = ((ModelGuardian)this.mainModel).func_178706_a();
+            this.lastModelVersion = ((ModelGuardian)this.mainModel).getModelVersion();
         }
 
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
@@ -81,7 +81,7 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
 
         if (entitylivingbase != null)
         {
-            float f = entity.func_175477_p(partialTicks);
+            float f = entity.getAttackAnimationScale(partialTicks);
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();
             this.bindTexture(GUARDIAN_BEAM_TEXTURE);
@@ -99,8 +99,8 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
             float f4 = entity.getEyeHeight();
             GlStateManager.pushMatrix();
             GlStateManager.translate((float)x, (float)y + f4, (float)z);
-            Vec3d vec3d = this.func_177110_a(entitylivingbase, (double)entitylivingbase.height * 0.5D, partialTicks);
-            Vec3d vec3d1 = this.func_177110_a(entity, (double)f4, partialTicks);
+            Vec3d vec3d = this.getPosition(entitylivingbase, (double)entitylivingbase.height * 0.5D, partialTicks);
+            Vec3d vec3d1 = this.getPosition(entity, (double)f4, partialTicks);
             Vec3d vec3d2 = vec3d.subtract(vec3d1);
             double d0 = vec3d2.lengthVector() + 1.0D;
             vec3d2 = vec3d2.normalize();
@@ -162,8 +162,7 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntityGuardian entitylivingbaseIn, float partialTickTime)
     {

@@ -61,18 +61,18 @@ public class SignStrictJSON implements IFixableData
     {
         if ("Sign".equals(compound.getString("id")))
         {
-            this.func_188224_a(compound, "Text1");
-            this.func_188224_a(compound, "Text2");
-            this.func_188224_a(compound, "Text3");
-            this.func_188224_a(compound, "Text4");
+            this.updateLine(compound, "Text1");
+            this.updateLine(compound, "Text2");
+            this.updateLine(compound, "Text3");
+            this.updateLine(compound, "Text4");
         }
 
         return compound;
     }
 
-    private void func_188224_a(NBTTagCompound compound, String p_188224_2_)
+    private void updateLine(NBTTagCompound compound, String key)
     {
-        String s = compound.getString(p_188224_2_);
+        String s = compound.getString(key);
         ITextComponent itextcomponent = null;
 
         if (!"null".equals(s) && !StringUtils.isNullOrEmpty(s))
@@ -132,6 +132,6 @@ public class SignStrictJSON implements IFixableData
             itextcomponent = new TextComponentString("");
         }
 
-        compound.setString(p_188224_2_, ITextComponent.Serializer.componentToJson(itextcomponent));
+        compound.setString(key, ITextComponent.Serializer.componentToJson(itextcomponent));
     }
 }

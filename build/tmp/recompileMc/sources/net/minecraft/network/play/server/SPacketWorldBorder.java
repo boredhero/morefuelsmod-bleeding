@@ -24,17 +24,17 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketWorldBorder(WorldBorder p_i46921_1_, SPacketWorldBorder.Action p_i46921_2_)
+    public SPacketWorldBorder(WorldBorder border, SPacketWorldBorder.Action actionIn)
     {
-        this.action = p_i46921_2_;
-        this.centerX = p_i46921_1_.getCenterX();
-        this.centerZ = p_i46921_1_.getCenterZ();
-        this.diameter = p_i46921_1_.getDiameter();
-        this.targetSize = p_i46921_1_.getTargetSize();
-        this.timeUntilTarget = p_i46921_1_.getTimeUntilTarget();
-        this.size = p_i46921_1_.getSize();
-        this.warningDistance = p_i46921_1_.getWarningDistance();
-        this.warningTime = p_i46921_1_.getWarningTime();
+        this.action = actionIn;
+        this.centerX = border.getCenterX();
+        this.centerZ = border.getCenterZ();
+        this.diameter = border.getDiameter();
+        this.targetSize = border.getTargetSize();
+        this.timeUntilTarget = border.getTimeUntilTarget();
+        this.size = border.getSize();
+        this.warningDistance = border.getWarningDistance();
+        this.warningTime = border.getWarningTime();
     }
 
     /**
@@ -124,7 +124,7 @@ public class SPacketWorldBorder implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public void func_179788_a(WorldBorder border)
+    public void apply(WorldBorder border)
     {
         switch (this.action)
         {

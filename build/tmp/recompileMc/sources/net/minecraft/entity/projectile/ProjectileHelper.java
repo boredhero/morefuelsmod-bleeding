@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 public final class ProjectileHelper
 {
-    public static RayTraceResult func_188802_a(Entity p_188802_0_, boolean p_188802_1_, boolean p_188802_2_, Entity p_188802_3_)
+    public static RayTraceResult forwardsRaycast(Entity p_188802_0_, boolean p_188802_1_, boolean p_188802_2_, Entity p_188802_3_)
     {
         double d0 = p_188802_0_.posX;
         double d1 = p_188802_0_.posY;
@@ -65,7 +65,7 @@ public final class ProjectileHelper
         return raytraceresult;
     }
 
-    public static final void func_188803_a(Entity p_188803_0_, float p_188803_1_)
+    public static final void rotateTowardsMovement(Entity p_188803_0_, float p_188803_1_)
     {
         double d0 = p_188803_0_.motionX;
         double d1 = p_188803_0_.motionY;

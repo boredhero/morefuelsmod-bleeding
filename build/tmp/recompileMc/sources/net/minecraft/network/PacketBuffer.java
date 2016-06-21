@@ -17,6 +17,7 @@ import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -62,9 +63,23 @@ public class PacketBuffer extends ByteBuf
 
     public byte[] readByteArray()
     {
-        byte[] abyte = new byte[this.readVarIntFromBuffer()];
-        this.readBytes(abyte);
-        return abyte;
+        return this.readByteArray(this.readableBytes());
+    }
+
+    public byte[] readByteArray(int p_189425_1_)
+    {
+        int i = this.readVarIntFromBuffer();
+
+        if (i > p_189425_1_)
+        {
+            throw new DecoderException("ByteArray with size " + i + " is bigger than allowed " + p_189425_1_);
+        }
+        else
+        {
+            byte[] abyte = new byte[i];
+            this.readBytes(abyte);
+            return abyte;
+        }
     }
 
     /**
@@ -84,20 +99,32 @@ public class PacketBuffer extends ByteBuf
 
     public int[] readVarIntArray()
     {
-        int[] aint = new int[this.readVarIntFromBuffer()];
+        return this.readVarIntArray(this.readableBytes());
+    }
 
-        for (int i = 0; i < aint.length; ++i)
+    public int[] readVarIntArray(int p_189424_1_)
+    {
+        int i = this.readVarIntFromBuffer();
+
+        if (i > p_189424_1_)
         {
-            aint[i] = this.readVarIntFromBuffer();
+            throw new DecoderException("VarIntArray with size " + i + " is bigger than allowed " + p_189424_1_);
         }
+        else
+        {
+            int[] aint = new int[i];
 
-        return aint;
+            for (int j = 0; j < aint.length; ++j)
+            {
+                aint[j] = this.readVarIntFromBuffer();
+            }
+
+            return aint;
+        }
     }
 
     /**
      * Writes an array of longs to the buffer, prefixed by the length of the array (as a VarInt).
-     *  
-     * @param array The array to write
      */
     public PacketBuffer writeLongArray(long[] array)
     {
@@ -113,27 +140,34 @@ public class PacketBuffer extends ByteBuf
 
     /**
      * Reads a length-prefixed array of longs from the buffer.
-     *  
-     * @param array An optional array that can be used to avoid a second alocation. If this array is not null and is the
-     * same length as the array to be read, this array will be filled. Otherwise, a new array will be created. This
-     * parameter is allowed to be null.
      */
     @SideOnly(Side.CLIENT)
-    public long[] readLongArray(long[] array)
+    public long[] readLongArray(@Nullable long[] array)
+    {
+        return this.readLongArray(array, this.readableBytes() / 8);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public long[] readLongArray(@Nullable long[] p_189423_1_, int p_189423_2_)
     {
         int i = this.readVarIntFromBuffer();
 
-        if (array == null || array.length != i)
+        if (p_189423_1_ == null || p_189423_1_.length != i)
         {
-            array = new long[i];
+            if (i > p_189423_2_)
+            {
+                throw new DecoderException("LongArray with size " + i + " is bigger than allowed " + p_189423_2_);
+            }
+
+            p_189423_1_ = new long[i];
         }
 
-        for (int j = 0; j < array.length; ++j)
+        for (int j = 0; j < p_189423_1_.length; ++j)
         {
-            array[j] = this.readLong();
+            p_189423_1_[j] = this.readLong();
         }
 
-        return array;
+        return p_189423_1_;
     }
 
     public BlockPos readBlockPos()
@@ -147,12 +181,12 @@ public class PacketBuffer extends ByteBuf
         return this;
     }
 
-    public ITextComponent readChatComponent() throws IOException
+    public ITextComponent readTextComponent() throws IOException
     {
         return ITextComponent.Serializer.jsonToComponent(this.readStringFromBuffer(32767));
     }
 
-    public PacketBuffer writeChatComponent(ITextComponent component)
+    public PacketBuffer writeTextComponent(ITextComponent component)
     {
         return this.writeString(ITextComponent.Serializer.componentToJson(component));
     }
@@ -264,7 +298,7 @@ public class PacketBuffer extends ByteBuf
     /**
      * Writes a compressed NBTTagCompound to this buffer
      */
-    public PacketBuffer writeNBTTagCompoundToBuffer(NBTTagCompound nbt)
+    public PacketBuffer writeNBTTagCompoundToBuffer(@Nullable NBTTagCompound nbt)
     {
         if (nbt == null)
         {
@@ -288,6 +322,7 @@ public class PacketBuffer extends ByteBuf
     /**
      * Reads a compressed NBTTagCompound from this buffer
      */
+    @Nullable
     public NBTTagCompound readNBTTagCompoundFromBuffer() throws IOException
     {
         int i = this.readerIndex();
@@ -315,7 +350,7 @@ public class PacketBuffer extends ByteBuf
     /**
      * Writes the ItemStack's ID (short), then size (byte), then damage. (short)
      */
-    public PacketBuffer writeItemStackToBuffer(ItemStack stack)
+    public PacketBuffer writeItemStackToBuffer(@Nullable ItemStack stack)
     {
         if (stack == null)
         {
@@ -342,6 +377,7 @@ public class PacketBuffer extends ByteBuf
     /**
      * Reads an ItemStack from this buffer
      */
+    @Nullable
     public ItemStack readItemStackFromBuffer() throws IOException
     {
         ItemStack itemstack = null;

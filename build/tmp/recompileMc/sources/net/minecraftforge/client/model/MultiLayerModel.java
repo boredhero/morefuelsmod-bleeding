@@ -32,7 +32,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 public final class MultiLayerModel implements IModelCustomData
 {
     public static final MultiLayerModel INSTANCE = new MultiLayerModel(ImmutableMap.<Optional<BlockRenderLayer>, ModelResourceLocation>of());

@@ -39,25 +39,25 @@ public class BlockPressurePlate extends BlockBasePressurePlate
 
     protected void playClickOnSound(World worldIn, BlockPos color)
     {
-        if (this.blockMaterial == Material.wood)
+        if (this.blockMaterial == Material.WOOD)
         {
-            worldIn.playSound((EntityPlayer)null, color, SoundEvents.block_wood_pressplate_click_on, SoundCategory.BLOCKS, 0.3F, 0.8F);
+            worldIn.playSound((EntityPlayer)null, color, SoundEvents.BLOCK_WOOD_PRESSPLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.8F);
         }
         else
         {
-            worldIn.playSound((EntityPlayer)null, color, SoundEvents.block_stone_pressplate_click_on, SoundCategory.BLOCKS, 0.3F, 0.6F);
+            worldIn.playSound((EntityPlayer)null, color, SoundEvents.BLOCK_STONE_PRESSPLATE_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
         }
     }
 
     protected void playClickOffSound(World worldIn, BlockPos pos)
     {
-        if (this.blockMaterial == Material.wood)
+        if (this.blockMaterial == Material.WOOD)
         {
-            worldIn.playSound((EntityPlayer)null, pos, SoundEvents.block_wood_pressplate_click_off, SoundCategory.BLOCKS, 0.3F, 0.7F);
+            worldIn.playSound((EntityPlayer)null, pos, SoundEvents.BLOCK_WOOD_PRESSPLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.7F);
         }
         else
         {
-            worldIn.playSound((EntityPlayer)null, pos, SoundEvents.block_stone_pressplate_click_off, SoundCategory.BLOCKS, 0.3F, 0.5F);
+            worldIn.playSound((EntityPlayer)null, pos, SoundEvents.BLOCK_STONE_PRESSPLATE_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
         }
     }
 

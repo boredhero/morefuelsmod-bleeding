@@ -3,6 +3,7 @@ package net.minecraft.scoreboard;
 import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -12,7 +13,7 @@ public abstract class Team
     /**
      * Same as ==
      */
-    public boolean isSameTeam(Team other)
+    public boolean isSameTeam(@Nullable Team other)
     {
         return other == null ? false : this == other;
     }

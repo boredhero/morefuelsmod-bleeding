@@ -1,5 +1,6 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.boss.EntityDragonPart;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,7 +24,7 @@ public interface IPhase
      */
     void doLocalUpdate();
 
-    void onCrystalDestroyed(EntityEnderCrystal crystal, BlockPos pos, DamageSource dmgSrc, EntityPlayer plyr);
+    void onCrystalDestroyed(EntityEnderCrystal crystal, BlockPos pos, DamageSource dmgSrc, @Nullable EntityPlayer plyr);
 
     /**
      * Called when this phase is set to active
@@ -44,6 +45,7 @@ public interface IPhase
     /**
      * Returns the location the dragon is flying toward
      */
+    @Nullable
     Vec3d getTargetLocation();
 
     /**

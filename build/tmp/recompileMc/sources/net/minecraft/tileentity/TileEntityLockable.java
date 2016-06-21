@@ -18,7 +18,7 @@ public abstract class TileEntityLockable extends TileEntity implements IInteract
         this.code = LockCode.fromNBT(compound);
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
 
@@ -26,6 +26,8 @@ public abstract class TileEntityLockable extends TileEntity implements IInteract
         {
             this.code.toNBT(compound);
         }
+
+        return compound;
     }
 
     public boolean isLocked()

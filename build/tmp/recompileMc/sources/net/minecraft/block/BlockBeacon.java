@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -27,9 +28,9 @@ public class BlockBeacon extends BlockContainer
 {
     public BlockBeacon()
     {
-        super(Material.glass, MapColor.diamondColor);
+        super(Material.GLASS, MapColor.DIAMOND);
         this.setHardness(3.0F);
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
     }
 
     /**
@@ -40,7 +41,7 @@ public class BlockBeacon extends BlockContainer
         return new TileEntityBeacon();
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -53,7 +54,7 @@ public class BlockBeacon extends BlockContainer
             if (tileentity instanceof TileEntityBeacon)
             {
                 playerIn.displayGUIChest((TileEntityBeacon)tileentity);
-                playerIn.addStat(StatList.beaconInteraction);
+                playerIn.addStat(StatList.BEACON_INTERACTION);
             }
 
             return true;
@@ -100,9 +101,11 @@ public class BlockBeacon extends BlockContainer
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
@@ -138,7 +141,7 @@ public class BlockBeacon extends BlockContainer
 
                     IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-                    if (iblockstate.getBlock() == Blocks.beacon)
+                    if (iblockstate.getBlock() == Blocks.BEACON)
                     {
                         ((WorldServer)worldIn).addScheduledTask(new Runnable()
                         {
@@ -149,7 +152,7 @@ public class BlockBeacon extends BlockContainer
                                 if (tileentity instanceof TileEntityBeacon)
                                 {
                                     ((TileEntityBeacon)tileentity).updateBeacon();
-                                    worldIn.addBlockEvent(blockpos, Blocks.beacon, 1, 0);
+                                    worldIn.addBlockEvent(blockpos, Blocks.BEACON, 1, 0);
                                 }
                             }
                         });

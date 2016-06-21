@@ -5,6 +5,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
@@ -66,7 +67,7 @@ public abstract class BlockFlower extends BlockBush
         {
             this.type = PropertyEnum.<BlockFlower.EnumFlowerType>create("type", BlockFlower.EnumFlowerType.class, new Predicate<BlockFlower.EnumFlowerType>()
             {
-                public boolean apply(BlockFlower.EnumFlowerType p_apply_1_)
+                public boolean apply(@Nullable BlockFlower.EnumFlowerType p_apply_1_)
                 {
                     return p_apply_1_.getBlockType() == BlockFlower.this.getBlockType();
                 }
@@ -105,7 +106,7 @@ public abstract class BlockFlower extends BlockBush
 
         public BlockFlower getBlock()
         {
-            return this == YELLOW ? Blocks.yellow_flower : Blocks.red_flower;
+            return this == YELLOW ? Blocks.YELLOW_FLOWER : Blocks.RED_FLOWER;
         }
     }
 
@@ -196,7 +197,7 @@ public abstract class BlockFlower extends BlockBush
             {
                 Collection<BlockFlower.EnumFlowerType> collection = Collections2.<BlockFlower.EnumFlowerType>filter(Lists.newArrayList(values()), new Predicate<BlockFlower.EnumFlowerType>()
                 {
-                    public boolean apply(BlockFlower.EnumFlowerType p_apply_1_)
+                    public boolean apply(@Nullable BlockFlower.EnumFlowerType p_apply_1_)
                     {
                         return p_apply_1_.getBlockType() == blockflower$enumflowercolor;
                     }

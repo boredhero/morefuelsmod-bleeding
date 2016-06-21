@@ -27,7 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderItemFrame extends Render<EntityItemFrame>
 {
-    private static final ResourceLocation mapBackgroundTextures = new ResourceLocation("textures/map/map_background.png");
+    private static final ResourceLocation MAP_BACKGROUND_TEXTURES = new ResourceLocation("textures/map/map_background.png");
     private final Minecraft mc = Minecraft.getMinecraft();
     private final ModelResourceLocation itemFrameModel = new ModelResourceLocation("item_frame", "normal");
     private final ModelResourceLocation mapModel = new ModelResourceLocation("item_frame", "map");
@@ -51,12 +51,12 @@ public class RenderItemFrame extends Render<EntityItemFrame>
         double d2 = (double)blockpos.getZ() - entity.posZ + z;
         GlStateManager.translate(d0 + 0.5D, d1 + 0.5D, d2 + 0.5D);
         GlStateManager.rotate(180.0F - entity.rotationYaw, 0.0F, 1.0F, 0.0F);
-        this.renderManager.renderEngine.bindTexture(TextureMap.locationBlocksTexture);
+        this.renderManager.renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         BlockRendererDispatcher blockrendererdispatcher = this.mc.getBlockRendererDispatcher();
         ModelManager modelmanager = blockrendererdispatcher.getBlockModelShapes().getModelManager();
         IBakedModel ibakedmodel;
 
-        if (entity.getDisplayedItem() != null && entity.getDisplayedItem().getItem() == Items.filled_map)
+        if (entity.getDisplayedItem() != null && entity.getDisplayedItem().getItem() == Items.FILLED_MAP)
         {
             ibakedmodel = modelmanager.getModel(this.mapModel);
         }
@@ -123,12 +123,12 @@ public class RenderItemFrame extends Render<EntityItemFrame>
             {
             if (item instanceof net.minecraft.item.ItemMap)
             {
-                this.renderManager.renderEngine.bindTexture(mapBackgroundTextures);
+                this.renderManager.renderEngine.bindTexture(MAP_BACKGROUND_TEXTURES);
                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
                 float f = 0.0078125F;
                 GlStateManager.scale(f, f, f);
                 GlStateManager.translate(-64.0F, -64.0F, 0.0F);
-                MapData mapdata = Items.filled_map.getMapData(entityitem.getEntityItem(), itemFrame.worldObj);
+                MapData mapdata = Items.FILLED_MAP.getMapData(entityitem.getEntityItem(), itemFrame.worldObj);
                 GlStateManager.translate(0.0F, 0.0F, -1.0F);
 
                 if (mapdata != null)
@@ -162,7 +162,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
     {
         if (Minecraft.isGuiEnabled() && entity.getDisplayedItem() != null && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
         {
-            double d0 = entity.getDistanceSqToEntity(this.renderManager.livingPlayer);
+            double d0 = entity.getDistanceSqToEntity(this.renderManager.renderViewEntity);
             float f = entity.isSneaking() ? 32.0F : 64.0F;
 
             if (d0 < (double)(f * f))

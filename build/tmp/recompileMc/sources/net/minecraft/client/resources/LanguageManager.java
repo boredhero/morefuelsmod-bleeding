@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import net.minecraft.client.resources.data.IMetadataSerializer;
 import net.minecraft.client.resources.data.LanguageMetadataSection;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.util.text.translation.LanguageMap;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -18,17 +18,17 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class LanguageManager implements IResourceManagerReloadListener
 {
-    private static final Logger logger = LogManager.getLogger();
-    private final IMetadataSerializer theMetadataSerializer;
+    private static final Logger LOGGER = LogManager.getLogger();
+    private final MetadataSerializer theMetadataSerializer;
     private String currentLanguage;
-    protected static final Locale currentLocale = new Locale();
+    protected static final Locale CURRENT_LOCALE = new Locale();
     private Map<String, Language> languageMap = Maps.<String, Language>newHashMap();
 
-    public LanguageManager(IMetadataSerializer theMetadataSerializerIn, String currentLanguageIn)
+    public LanguageManager(MetadataSerializer theMetadataSerializerIn, String currentLanguageIn)
     {
         this.theMetadataSerializer = theMetadataSerializerIn;
         this.currentLanguage = currentLanguageIn;
-        I18n.setLocale(currentLocale);
+        I18n.setLocale(CURRENT_LOCALE);
     }
 
     public void parseLanguageMetadata(List<IResourcePack> resourcesPacks)
@@ -54,11 +54,11 @@ public class LanguageManager implements IResourceManagerReloadListener
             }
             catch (RuntimeException runtimeexception)
             {
-                logger.warn((String)("Unable to parse metadata section of resourcepack: " + iresourcepack.getPackName()), (Throwable)runtimeexception);
+                LOGGER.warn((String)("Unable to parse metadata section of resourcepack: " + iresourcepack.getPackName()), (Throwable)runtimeexception);
             }
             catch (IOException ioexception)
             {
-                logger.warn((String)("Unable to parse metadata section of resourcepack: " + iresourcepack.getPackName()), (Throwable)ioexception);
+                LOGGER.warn((String)("Unable to parse metadata section of resourcepack: " + iresourcepack.getPackName()), (Throwable)ioexception);
             }
         }
     }
@@ -72,13 +72,13 @@ public class LanguageManager implements IResourceManagerReloadListener
             list.add(this.currentLanguage);
         }
 
-        currentLocale.loadLocaleDataFiles(resourceManager, list);
-        LanguageMap.replaceWith(currentLocale.properties);
+        CURRENT_LOCALE.loadLocaleDataFiles(resourceManager, list);
+        LanguageMap.replaceWith(CURRENT_LOCALE.properties);
     }
 
     public boolean isCurrentLocaleUnicode()
     {
-        return currentLocale.isUnicode();
+        return CURRENT_LOCALE.isUnicode();
     }
 
     public boolean isCurrentLanguageBidirectional()

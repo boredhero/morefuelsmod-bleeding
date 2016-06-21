@@ -88,7 +88,7 @@ public class HoverEvent
         SHOW_ITEM("show_item", true),
         SHOW_ENTITY("show_entity", true);
 
-        private static final Map<String, HoverEvent.Action> nameMapping = Maps.<String, HoverEvent.Action>newHashMap();
+        private static final Map<String, HoverEvent.Action> NAME_MAPPING = Maps.<String, HoverEvent.Action>newHashMap();
         private final boolean allowedInChat;
         private final String canonicalName;
 
@@ -119,14 +119,14 @@ public class HoverEvent
          */
         public static HoverEvent.Action getValueByCanonicalName(String canonicalNameIn)
         {
-            return (HoverEvent.Action)nameMapping.get(canonicalNameIn);
+            return (HoverEvent.Action)NAME_MAPPING.get(canonicalNameIn);
         }
 
         static
         {
             for (HoverEvent.Action hoverevent$action : values())
             {
-                nameMapping.put(hoverevent$action.getCanonicalName(), hoverevent$action);
+                NAME_MAPPING.put(hoverevent$action.getCanonicalName(), hoverevent$action);
             }
         }
     }

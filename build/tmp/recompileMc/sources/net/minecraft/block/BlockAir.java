@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumBlockRenderType;
@@ -12,7 +13,7 @@ public class BlockAir extends Block
 {
     protected BlockAir()
     {
-        super(Material.air);
+        super(Material.AIR);
     }
 
     /**
@@ -23,7 +24,8 @@ public class BlockAir extends Block
         return EnumBlockRenderType.INVISIBLE;
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return null;
     }

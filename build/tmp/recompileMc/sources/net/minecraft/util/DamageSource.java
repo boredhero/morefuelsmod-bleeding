@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -68,7 +69,7 @@ public class DamageSource
     /**
      * returns EntityDamageSourceIndirect of an arrow
      */
-    public static DamageSource causeArrowDamage(EntityArrow arrow, Entity indirectEntityIn)
+    public static DamageSource causeArrowDamage(EntityArrow arrow, @Nullable Entity indirectEntityIn)
     {
         return (new EntityDamageSourceIndirect("arrow", arrow, indirectEntityIn)).setProjectile();
     }
@@ -76,17 +77,17 @@ public class DamageSource
     /**
      * returns EntityDamageSourceIndirect of a fireball
      */
-    public static DamageSource causeFireballDamage(EntityFireball fireball, Entity indirectEntityIn)
+    public static DamageSource causeFireballDamage(EntityFireball fireball, @Nullable Entity indirectEntityIn)
     {
         return indirectEntityIn == null ? (new EntityDamageSourceIndirect("onFire", fireball, fireball)).setFireDamage().setProjectile() : (new EntityDamageSourceIndirect("fireball", fireball, indirectEntityIn)).setFireDamage().setProjectile();
     }
 
-    public static DamageSource causeThrownDamage(Entity source, Entity indirectEntityIn)
+    public static DamageSource causeThrownDamage(Entity source, @Nullable Entity indirectEntityIn)
     {
         return (new EntityDamageSourceIndirect("thrown", source, indirectEntityIn)).setProjectile();
     }
 
-    public static DamageSource causeIndirectMagicDamage(Entity source, Entity indirectEntityIn)
+    public static DamageSource causeIndirectMagicDamage(Entity source, @Nullable Entity indirectEntityIn)
     {
         return (new EntityDamageSourceIndirect("indirectMagic", source, indirectEntityIn)).setDamageBypassesArmor().setMagicDamage();
     }
@@ -99,12 +100,12 @@ public class DamageSource
         return (new EntityDamageSource("thorns", source)).setIsThornsDamage().setMagicDamage();
     }
 
-    public static DamageSource causeExplosionDamage(Explosion explosionIn)
+    public static DamageSource causeExplosionDamage(@Nullable Explosion explosionIn)
     {
         return explosionIn != null && explosionIn.getExplosivePlacedBy() != null ? (new EntityDamageSource("explosion.player", explosionIn.getExplosivePlacedBy())).setDifficultyScaled().setExplosion() : (new DamageSource("explosion")).setDifficultyScaled().setExplosion();
     }
 
-    public static DamageSource func_188405_b(EntityLivingBase entityLivingBaseIn)
+    public static DamageSource causeExplosionDamage(@Nullable EntityLivingBase entityLivingBaseIn)
     {
         return entityLivingBaseIn != null ? (new EntityDamageSource("explosion.player", entityLivingBaseIn)).setDifficultyScaled().setExplosion() : (new DamageSource("explosion")).setDifficultyScaled().setExplosion();
     }
@@ -168,11 +169,13 @@ public class DamageSource
         this.damageType = damageTypeIn;
     }
 
+    @Nullable
     public Entity getSourceOfDamage()
     {
         return this.getEntity();
     }
 
+    @Nullable
     public Entity getEntity()
     {
         return null;
@@ -281,6 +284,7 @@ public class DamageSource
     /**
      * Gets the location from which the damage originates.
      */
+    @Nullable
     public Vec3d getDamageLocation()
     {
         return null;

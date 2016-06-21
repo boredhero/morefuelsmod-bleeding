@@ -1,6 +1,7 @@
 package net.minecraft.entity;
 
 import com.google.common.base.Predicate;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockRedstoneDiode;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -21,7 +22,7 @@ public abstract class EntityHanging extends Entity
 {
     private static final Predicate<Entity> IS_HANGING_ENTITY = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return p_apply_1_ instanceof EntityHanging;
         }
@@ -29,6 +30,7 @@ public abstract class EntityHanging extends Entity
     private int tickCounter1;
     protected BlockPos hangingPosition;
     /** The direction the entity is facing */
+    @Nullable
     public EnumFacing facingDirection;
 
     public EntityHanging(World worldIn)
@@ -70,8 +72,8 @@ public abstract class EntityHanging extends Entity
             double d1 = (double)this.hangingPosition.getY() + 0.5D;
             double d2 = (double)this.hangingPosition.getZ() + 0.5D;
             double d3 = 0.46875D;
-            double d4 = this.func_174858_a(this.getWidthPixels());
-            double d5 = this.func_174858_a(this.getHeightPixels());
+            double d4 = this.offs(this.getWidthPixels());
+            double d5 = this.offs(this.getHeightPixels());
             d0 = d0 - (double)this.facingDirection.getFrontOffsetX() * 0.46875D;
             d2 = d2 - (double)this.facingDirection.getFrontOffsetZ() * 0.46875D;
             d1 = d1 + d5;
@@ -101,7 +103,7 @@ public abstract class EntityHanging extends Entity
         }
     }
 
-    private double func_174858_a(int p_174858_1_)
+    private double offs(int p_174858_1_)
     {
         return p_174858_1_ % 32 == 0 ? 0.5D : 0.0D;
     }
@@ -132,7 +134,7 @@ public abstract class EntityHanging extends Entity
      */
     public boolean onValidSurface()
     {
-        if (!this.worldObj.getCubes(this, this.getEntityBoundingBox()).isEmpty())
+        if (!this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty())
         {
             return false;
         }
@@ -155,7 +157,7 @@ public abstract class EntityHanging extends Entity
                     if (iblockstate.isSideSolid(this.worldObj, blockpos1, this.facingDirection))
                         continue;
 
-                    if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.func_185546_B(iblockstate))
+                    if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate))
                     {
                         return false;
                     }
@@ -213,7 +215,7 @@ public abstract class EntityHanging extends Entity
     }
 
     /**
-     * Tries to moves the entity by the passed in displacement. Args: x, y, z
+     * Tries to move the entity towards the specified location.
      */
     public void moveEntity(double x, double y, double z)
     {
@@ -225,7 +227,7 @@ public abstract class EntityHanging extends Entity
     }
 
     /**
-     * Adds to the current velocity of the entity. Args: x, y, z
+     * Adds to the current velocity of the entity.
      */
     public void addVelocity(double x, double y, double z)
     {
@@ -239,22 +241,22 @@ public abstract class EntityHanging extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setByte("Facing", (byte)this.facingDirection.getHorizontalIndex());
+        compound.setByte("Facing", (byte)this.facingDirection.getHorizontalIndex());
         BlockPos blockpos = this.getHangingPosition();
-        tagCompound.setInteger("TileX", blockpos.getX());
-        tagCompound.setInteger("TileY", blockpos.getY());
-        tagCompound.setInteger("TileZ", blockpos.getZ());
+        compound.setInteger("TileX", blockpos.getX());
+        compound.setInteger("TileY", blockpos.getY());
+        compound.setInteger("TileZ", blockpos.getZ());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.hangingPosition = new BlockPos(tagCompund.getInteger("TileX"), tagCompund.getInteger("TileY"), tagCompund.getInteger("TileZ"));
-        this.updateFacingWithBoundingBox(EnumFacing.getHorizontal(tagCompund.getByte("Facing")));
+        this.hangingPosition = new BlockPos(compound.getInteger("TileX"), compound.getInteger("TileY"), compound.getInteger("TileZ"));
+        this.updateFacingWithBoundingBox(EnumFacing.getHorizontal(compound.getByte("Facing")));
     }
 
     public abstract int getWidthPixels();
@@ -264,16 +266,16 @@ public abstract class EntityHanging extends Entity
     /**
      * Called when this entity is broken. Entity parameter may be null.
      */
-    public abstract void onBroken(Entity brokenEntity);
+    public abstract void onBroken(@Nullable Entity brokenEntity);
 
-    public abstract void func_184523_o();
+    public abstract void playPlaceSound();
 
     /**
      * Drops an item at the position of the entity.
      */
-    public EntityItem entityDropItem(ItemStack itemStackIn, float offsetY)
+    public EntityItem entityDropItem(ItemStack stack, float offsetY)
     {
-        EntityItem entityitem = new EntityItem(this.worldObj, this.posX + (double)((float)this.facingDirection.getFrontOffsetX() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.facingDirection.getFrontOffsetZ() * 0.15F), itemStackIn);
+        EntityItem entityitem = new EntityItem(this.worldObj, this.posX + (double)((float)this.facingDirection.getFrontOffsetX() * 0.15F), this.posY + (double)offsetY, this.posZ + (double)((float)this.facingDirection.getFrontOffsetZ() * 0.15F), stack);
         entityitem.setDefaultPickupDelay();
         this.worldObj.spawnEntityInWorld(entityitem);
         return entityitem;

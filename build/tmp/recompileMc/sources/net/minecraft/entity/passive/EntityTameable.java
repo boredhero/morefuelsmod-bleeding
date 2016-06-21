@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import com.google.common.base.Optional;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
@@ -35,45 +36,45 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(TAMED, Byte.valueOf((byte)0));
-        this.dataWatcher.register(OWNER_UNIQUE_ID, Optional.<UUID>absent());
+        this.dataManager.register(TAMED, Byte.valueOf((byte)0));
+        this.dataManager.register(OWNER_UNIQUE_ID, Optional.<UUID>absent());
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
+        super.writeEntityToNBT(compound);
 
         if (this.getOwnerId() == null)
         {
-            tagCompound.setString("OwnerUUID", "");
+            compound.setString("OwnerUUID", "");
         }
         else
         {
-            tagCompound.setString("OwnerUUID", this.getOwnerId().toString());
+            compound.setString("OwnerUUID", this.getOwnerId().toString());
         }
 
-        tagCompound.setBoolean("Sitting", this.isSitting());
+        compound.setBoolean("Sitting", this.isSitting());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
         String s = "";
 
-        if (tagCompund.hasKey("OwnerUUID", 8))
+        if (compound.hasKey("OwnerUUID", 8))
         {
-            s = tagCompund.getString("OwnerUUID");
+            s = compound.getString("OwnerUUID");
         }
         else
         {
-            String s1 = tagCompund.getString("Owner");
-            s = PreYggdrasilConverter.func_187473_a(this.getServer(), s1);
+            String s1 = compound.getString("Owner");
+            s = PreYggdrasilConverter.convertMobOwnerIfNeeded(this.getServer(), s1);
         }
 
         if (!s.isEmpty())
@@ -91,10 +92,10 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
 
         if (this.aiSit != null)
         {
-            this.aiSit.setSitting(tagCompund.getBoolean("Sitting"));
+            this.aiSit.setSitting(compound.getBoolean("Sitting"));
         }
 
-        this.setSitting(tagCompund.getBoolean("Sitting"));
+        this.setSitting(compound.getBoolean("Sitting"));
     }
 
     public boolean canBeLeashedTo(EntityPlayer player)
@@ -142,20 +143,20 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
 
     public boolean isTamed()
     {
-        return (((Byte)this.dataWatcher.get(TAMED)).byteValue() & 4) != 0;
+        return (((Byte)this.dataManager.get(TAMED)).byteValue() & 4) != 0;
     }
 
     public void setTamed(boolean tamed)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(TAMED)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(TAMED)).byteValue();
 
         if (tamed)
         {
-            this.dataWatcher.set(TAMED, Byte.valueOf((byte)(b0 | 4)));
+            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 | 4)));
         }
         else
         {
-            this.dataWatcher.set(TAMED, Byte.valueOf((byte)(b0 & -5)));
+            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 & -5)));
         }
 
         this.setupTamedAI();
@@ -167,33 +168,35 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
 
     public boolean isSitting()
     {
-        return (((Byte)this.dataWatcher.get(TAMED)).byteValue() & 1) != 0;
+        return (((Byte)this.dataManager.get(TAMED)).byteValue() & 1) != 0;
     }
 
     public void setSitting(boolean sitting)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(TAMED)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(TAMED)).byteValue();
 
         if (sitting)
         {
-            this.dataWatcher.set(TAMED, Byte.valueOf((byte)(b0 | 1)));
+            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 | 1)));
         }
         else
         {
-            this.dataWatcher.set(TAMED, Byte.valueOf((byte)(b0 & -2)));
+            this.dataManager.set(TAMED, Byte.valueOf((byte)(b0 & -2)));
         }
     }
 
+    @Nullable
     public UUID getOwnerId()
     {
-        return (UUID)((Optional)this.dataWatcher.get(OWNER_UNIQUE_ID)).orNull();
+        return (UUID)((Optional)this.dataManager.get(OWNER_UNIQUE_ID)).orNull();
     }
 
-    public void setOwnerId(UUID p_184754_1_)
+    public void setOwnerId(@Nullable UUID p_184754_1_)
     {
-        this.dataWatcher.set(OWNER_UNIQUE_ID, Optional.fromNullable(p_184754_1_));
+        this.dataManager.set(OWNER_UNIQUE_ID, Optional.fromNullable(p_184754_1_));
     }
 
+    @Nullable
     public EntityLivingBase getOwner()
     {
         try
@@ -243,24 +246,24 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     /**
      * Returns whether this Entity is on the same team as the given Entity.
      */
-    public boolean isOnSameTeam(Entity p_184191_1_)
+    public boolean isOnSameTeam(Entity entityIn)
     {
         if (this.isTamed())
         {
             EntityLivingBase entitylivingbase = this.getOwner();
 
-            if (p_184191_1_ == entitylivingbase)
+            if (entityIn == entitylivingbase)
             {
                 return true;
             }
 
             if (entitylivingbase != null)
             {
-                return entitylivingbase.isOnSameTeam(p_184191_1_);
+                return entitylivingbase.isOnSameTeam(entityIn);
             }
         }
 
-        return super.isOnSameTeam(p_184191_1_);
+        return super.isOnSameTeam(entityIn);
     }
 
     /**

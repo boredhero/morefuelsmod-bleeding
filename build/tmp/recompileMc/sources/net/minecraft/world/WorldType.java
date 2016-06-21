@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class WorldType
 {
     /** List of world types. */
-    public static WorldType[] worldTypes = new WorldType[16];
+    public static WorldType[] WORLD_TYPES = new WorldType[16];
     /** Default world type. */
     public static final WorldType DEFAULT = (new WorldType(0, "default", 1)).setVersioned();
     /** Flat world type. */
@@ -42,7 +42,7 @@ public class WorldType
         this.generatorVersion = version;
         this.canBeCreated = true;
         this.worldTypeId = id;
-        worldTypes[id] = this;
+        WORLD_TYPES[id] = this;
     }
 
     public String getWorldTypeName()
@@ -118,11 +118,11 @@ public class WorldType
 
     public static WorldType parseWorldType(String type)
     {
-        for (int i = 0; i < worldTypes.length; ++i)
+        for (int i = 0; i < WORLD_TYPES.length; ++i)
         {
-            if (worldTypes[i] != null && worldTypes[i].worldType.equalsIgnoreCase(type))
+            if (WORLD_TYPES[i] != null && WORLD_TYPES[i].worldType.equalsIgnoreCase(type))
             {
-                return worldTypes[i];
+                return WORLD_TYPES[i];
             }
         }
 
@@ -158,11 +158,11 @@ public class WorldType
         if (this == FLAT)
         {
             net.minecraft.world.gen.FlatGeneratorInfo flatgeneratorinfo = net.minecraft.world.gen.FlatGeneratorInfo.createFlatGeneratorFromString(world.getWorldInfo().getGeneratorOptions());
-            return new net.minecraft.world.biome.BiomeProviderSingle(net.minecraft.world.biome.BiomeGenBase.getBiomeFromBiomeList(flatgeneratorinfo.getBiome(), net.minecraft.init.Biomes.DEFAULT));
+            return new net.minecraft.world.biome.BiomeProviderSingle(net.minecraft.world.biome.Biome.getBiome(flatgeneratorinfo.getBiome(), net.minecraft.init.Biomes.DEFAULT));
         }
         else if (this == DEBUG_WORLD)
         {
-            return new net.minecraft.world.biome.BiomeProviderSingle(net.minecraft.init.Biomes.plains);
+            return new net.minecraft.world.biome.BiomeProviderSingle(net.minecraft.init.Biomes.PLAINS);
         }
         else
         {
@@ -201,16 +201,16 @@ public class WorldType
     /*=================================================== FORGE START ======================================*/
     private static int getNextID()
     {
-        for (int x = 0; x < worldTypes.length; x++)
+        for (int x = 0; x < WORLD_TYPES.length; x++)
         {
-            if (worldTypes[x] == null)
+            if (WORLD_TYPES[x] == null)
             {
                 return x;
             }
         }
 
-        int oldLen = worldTypes.length;
-        worldTypes = java.util.Arrays.copyOf(worldTypes, oldLen + 16);
+        int oldLen = WORLD_TYPES.length;
+        WORLD_TYPES = java.util.Arrays.copyOf(WORLD_TYPES, oldLen + 16);
         return oldLen;
     }
 

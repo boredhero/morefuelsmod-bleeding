@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -12,14 +13,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockStateContainer implements IBlockStatePaletteResizer
 {
     private static final IBlockStatePalette REGISTRY_BASED_PALETTE = new BlockStatePaletteRegistry();
-    protected static final IBlockState AIR_BLOCK_STATE = Blocks.air.getDefaultState();
-    protected BitArray bits;
-    protected IBlockStatePalette field_186022_c;
-    private int field_186024_e = 0;
+    protected static final IBlockState AIR_BLOCK_STATE = Blocks.AIR.getDefaultState();
+    protected BitArray storage;
+    protected IBlockStatePalette palette;
+    private int bits = 0;
 
     public BlockStateContainer()
     {
-        this.func_186012_b(4);
+        this.setBits(4);
     }
 
     private static int getIndex(int x, int y, int z)
@@ -27,41 +28,41 @@ public class BlockStateContainer implements IBlockStatePaletteResizer
         return y << 8 | z << 4 | x;
     }
 
-    private void func_186012_b(int p_186012_1_)
+    private void setBits(int bitsIn)
     {
-        if (p_186012_1_ != this.field_186024_e)
+        if (bitsIn != this.bits)
         {
-            this.field_186024_e = p_186012_1_;
+            this.bits = bitsIn;
 
-            if (this.field_186024_e <= 4)
+            if (this.bits <= 4)
             {
-                this.field_186024_e = 4;
-                this.field_186022_c = new BlockStatePaletteLinear(this.field_186024_e, this);
+                this.bits = 4;
+                this.palette = new BlockStatePaletteLinear(this.bits, this);
             }
-            else if (this.field_186024_e <= 8)
+            else if (this.bits <= 8)
             {
-                this.field_186022_c = new BlockStatePaletteHashMap(this.field_186024_e, this);
+                this.palette = new BlockStatePaletteHashMap(this.bits, this);
             }
             else
             {
-                this.field_186022_c = REGISTRY_BASED_PALETTE;
-                this.field_186024_e = MathHelper.calculateLogBaseTwoDeBruijn(Block.BLOCK_STATE_IDS.size());
+                this.palette = REGISTRY_BASED_PALETTE;
+                this.bits = MathHelper.calculateLogBaseTwoDeBruijn(Block.BLOCK_STATE_IDS.size());
             }
 
-            this.field_186022_c.func_186041_a(AIR_BLOCK_STATE);
-            this.bits = new BitArray(this.field_186024_e, 4096);
+            this.palette.idFor(AIR_BLOCK_STATE);
+            this.storage = new BitArray(this.bits, 4096);
         }
     }
 
-    public int func_186008_a(int p_186008_1_, IBlockState p_186008_2_)
+    public int onResize(int p_186008_1_, IBlockState state)
     {
-        BitArray bitarray = this.bits;
-        IBlockStatePalette iblockstatepalette = this.field_186022_c;
-        this.func_186012_b(p_186008_1_);
+        BitArray bitarray = this.storage;
+        IBlockStatePalette iblockstatepalette = this.palette;
+        this.setBits(p_186008_1_);
 
         for (int i = 0; i < bitarray.size(); ++i)
         {
-            IBlockState iblockstate = iblockstatepalette.getBlockState(bitarray.func_188142_a(i));
+            IBlockState iblockstate = iblockstatepalette.getBlockState(bitarray.getAt(i));
 
             if (iblockstate != null)
             {
@@ -69,7 +70,7 @@ public class BlockStateContainer implements IBlockStatePaletteResizer
             }
         }
 
-        return this.field_186022_c.func_186041_a(p_186008_2_);
+        return this.palette.idFor(state);
     }
 
     public void set(int x, int y, int z, IBlockState state)
@@ -77,10 +78,10 @@ public class BlockStateContainer implements IBlockStatePaletteResizer
         this.set(getIndex(x, y, z), state);
     }
 
-    protected void set(int p_186014_1_, IBlockState state)
+    protected void set(int index, IBlockState state)
     {
-        int i = this.field_186022_c.func_186041_a(state);
-        this.bits.func_188141_a(p_186014_1_, i);
+        int i = this.palette.idFor(state);
+        this.storage.setAt(index, i);
     }
 
     public IBlockState get(int x, int y, int z)
@@ -88,9 +89,9 @@ public class BlockStateContainer implements IBlockStatePaletteResizer
         return this.get(getIndex(x, y, z));
     }
 
-    protected IBlockState get(int p_186015_1_)
+    protected IBlockState get(int index)
     {
-        IBlockState iblockstate = this.field_186022_c.getBlockState(this.bits.func_188142_a(p_186015_1_));
+        IBlockState iblockstate = this.palette.getBlockState(this.storage.getAt(index));
         return iblockstate == null ? AIR_BLOCK_STATE : iblockstate;
     }
 
@@ -99,22 +100,23 @@ public class BlockStateContainer implements IBlockStatePaletteResizer
     {
         int i = buf.readByte();
 
-        if (this.field_186024_e != i)
+        if (this.bits != i)
         {
-            this.func_186012_b(i);
+            this.setBits(i);
         }
 
-        this.field_186022_c.read(buf);
-        buf.readLongArray(this.bits.func_188143_a());
+        this.palette.read(buf);
+        buf.readLongArray(this.storage.getBackingLongArray());
     }
 
     public void write(PacketBuffer buf)
     {
-        buf.writeByte(this.field_186024_e);
-        this.field_186022_c.write(buf);
-        buf.writeLongArray(this.bits.func_188143_a());
+        buf.writeByte(this.bits);
+        this.palette.write(buf);
+        buf.writeLongArray(this.storage.getBackingLongArray());
     }
 
+    @Nullable
     public NibbleArray getDataForNBT(byte[] p_186017_1_, NibbleArray p_186017_2_)
     {
         NibbleArray nibblearray = null;
@@ -143,7 +145,7 @@ public class BlockStateContainer implements IBlockStatePaletteResizer
         return nibblearray;
     }
 
-    public void setDataFromNBT(byte[] p_186019_1_, NibbleArray p_186019_2_, NibbleArray p_186019_3_)
+    public void setDataFromNBT(byte[] p_186019_1_, NibbleArray p_186019_2_, @Nullable NibbleArray p_186019_3_)
     {
         for (int i = 0; i < 4096; ++i)
         {
@@ -156,9 +158,8 @@ public class BlockStateContainer implements IBlockStatePaletteResizer
         }
     }
 
-    public int func_186018_a()
+    public int getSerializedSize()
     {
-        int i = this.bits.size();
-        return 1 + this.field_186022_c.func_186040_a() + PacketBuffer.getVarIntSize(i) + i * 8;
+        return 1 + this.palette.getSerializedState() + PacketBuffer.getVarIntSize(this.storage.size()) + this.storage.getBackingLongArray().length * 8;
     }
 }

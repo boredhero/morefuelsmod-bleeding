@@ -98,7 +98,7 @@ public class ItemWrittenBook extends Item
         }
 
         playerIn.openBook(itemStackIn, hand);
-        playerIn.addStat(StatList.func_188057_b(this));
+        playerIn.addStat(StatList.getObjectUseStats(this));
         return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
     }
 
@@ -139,7 +139,7 @@ public class ItemWrittenBook extends Item
                     if (player instanceof EntityPlayerMP && player.getHeldItemMainhand() == stack)
                     {
                         Slot slot = player.openContainer.getSlotFromInventory(player.inventory, player.inventory.currentItem);
-                        ((EntityPlayerMP)player).playerNetServerHandler.sendPacket(new SPacketSetSlot(0, slot.slotNumber, stack));
+                        ((EntityPlayerMP)player).connection.sendPacket(new SPacketSetSlot(0, slot.slotNumber, stack));
                     }
                 }
             }

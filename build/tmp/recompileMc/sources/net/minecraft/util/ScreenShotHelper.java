@@ -24,8 +24,8 @@ import org.lwjgl.BufferUtils;
 @SideOnly(Side.CLIENT)
 public class ScreenShotHelper
 {
-    private static final Logger logger = LogManager.getLogger();
-    private static final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
     /** A buffer to hold pixel values returned by OpenGL. */
     private static IntBuffer pixelBuffer;
     /** The built-up array that contains all the pixel values returned by OpenGL. */
@@ -34,23 +34,12 @@ public class ScreenShotHelper
     /**
      * Saves a screenshot in the game directory with a time-stamped filename.
      * Returns an ITextComponent indicating the success/failure of the saving.
-     *  
-     * @param gameDirectory The minecraft game directory, normally %appdata%/.minecraft
-     * @param width The requested width of the screenshot
-     * @param height The requested height of the screenshot
-     * @param buffer The framebuffer
      */
     public static ITextComponent saveScreenshot(File gameDirectory, int width, int height, Framebuffer buffer)
     {
         /**
          * Saves a screenshot in the game directory with the given file name (or null to generate a time-stamped name).
          * Returns an ITextComponent indicating the success/failure of the saving.
-         *  
-         * @param gameDirectory The minecraft game directory, normally %appdata%/.minecraft
-         * @param screenshotName The requested name for the screenshot, or null to generate a timestamped name.
-         * @param width The requested width of the screenshot
-         * @param height The requested height of the screenshot
-         * @param buffer The framebuffer
          */
         return saveScreenshot(gameDirectory, (String)null, width, height, buffer);
     }
@@ -58,12 +47,6 @@ public class ScreenShotHelper
     /**
      * Saves a screenshot in the game directory with the given file name (or null to generate a time-stamped name).
      * Returns an ITextComponent indicating the success/failure of the saving.
-     *  
-     * @param gameDirectory The minecraft game directory, normally %appdata%/.minecraft
-     * @param screenshotName The requested name for the screenshot, or null to generate a timestamped name.
-     * @param width The requested width of the screenshot
-     * @param height The requested height of the screenshot
-     * @param buffer The framebuffer
      */
     public static ITextComponent saveScreenshot(File gameDirectory, String screenshotName, int width, int height, Framebuffer buffer)
     {
@@ -83,15 +66,19 @@ public class ScreenShotHelper
                 file2 = new File(file1, screenshotName);
             }
 
+            file2 = file2.getCanonicalFile(); // FORGE: Fix errors on Windows with paths that include \.\
+            net.minecraftforge.client.event.ScreenshotEvent event = net.minecraftforge.client.ForgeHooksClient.onScreenshot(bufferedimage, file2);
+            if (event.isCanceled()) return event.getCancelMessage(); else file2 = event.getScreenshotFile();
             ImageIO.write(bufferedimage, "png", (File)file2);
             ITextComponent itextcomponent = new TextComponentString(file2.getName());
-            itextcomponent.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath()));
-            itextcomponent.getChatStyle().setUnderlined(Boolean.valueOf(true));
+            itextcomponent.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath()));
+            itextcomponent.getStyle().setUnderlined(Boolean.valueOf(true));
+            if (event.getResultMessage() != null) return event.getResultMessage();
             return new TextComponentTranslation("screenshot.success", new Object[] {itextcomponent});
         }
         catch (Exception exception)
         {
-            logger.warn((String)"Couldn\'t save screenshot", (Throwable)exception);
+            LOGGER.warn((String)"Couldn\'t save screenshot", (Throwable)exception);
             return new TextComponentTranslation("screenshot.failure", new Object[] {exception.getMessage()});
         }
     }
@@ -160,7 +147,7 @@ public class ScreenShotHelper
      */
     private static File getTimestampedPNGFileForDirectory(File gameDirectory)
     {
-        String s = dateFormat.format(new Date()).toString();
+        String s = DATE_FORMAT.format(new Date()).toString();
         int i = 1;
 
         while (true)

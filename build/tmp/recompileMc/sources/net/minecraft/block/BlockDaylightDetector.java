@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -34,12 +35,12 @@ public class BlockDaylightDetector extends BlockContainer
 
     public BlockDaylightDetector(boolean inverted)
     {
-        super(Material.wood);
+        super(Material.WOOD);
         this.inverted = inverted;
         this.setDefaultState(this.blockState.getBaseState().withProperty(POWER, Integer.valueOf(0)));
-        this.setCreativeTab(CreativeTabs.tabRedstone);
+        this.setCreativeTab(CreativeTabs.REDSTONE);
         this.setHardness(0.2F);
-        this.setStepSound(SoundType.WOOD);
+        this.setSoundType(SoundType.WOOD);
         this.setUnlocalizedName("daylightDetector");
     }
 
@@ -82,7 +83,7 @@ public class BlockDaylightDetector extends BlockContainer
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (playerIn.isAllowEdit())
         {
@@ -94,13 +95,13 @@ public class BlockDaylightDetector extends BlockContainer
             {
                 if (this.inverted)
                 {
-                    worldIn.setBlockState(pos, Blocks.daylight_detector.getDefaultState().withProperty(POWER, state.getValue(POWER)), 4);
-                    Blocks.daylight_detector.updatePower(worldIn, pos);
+                    worldIn.setBlockState(pos, Blocks.DAYLIGHT_DETECTOR.getDefaultState().withProperty(POWER, state.getValue(POWER)), 4);
+                    Blocks.DAYLIGHT_DETECTOR.updatePower(worldIn, pos);
                 }
                 else
                 {
-                    worldIn.setBlockState(pos, Blocks.daylight_detector_inverted.getDefaultState().withProperty(POWER, state.getValue(POWER)), 4);
-                    Blocks.daylight_detector_inverted.updatePower(worldIn, pos);
+                    worldIn.setBlockState(pos, Blocks.DAYLIGHT_DETECTOR_INVERTED.getDefaultState().withProperty(POWER, state.getValue(POWER)), 4);
+                    Blocks.DAYLIGHT_DETECTOR_INVERTED.updatePower(worldIn, pos);
                 }
 
                 return true;
@@ -115,14 +116,15 @@ public class BlockDaylightDetector extends BlockContainer
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Item.getItemFromBlock(Blocks.daylight_detector);
+        return Item.getItemFromBlock(Blocks.DAYLIGHT_DETECTOR);
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Blocks.daylight_detector);
+        return new ItemStack(Blocks.DAYLIGHT_DETECTOR);
     }
 
     public boolean isFullCube(IBlockState state)

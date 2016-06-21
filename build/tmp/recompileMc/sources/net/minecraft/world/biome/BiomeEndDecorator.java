@@ -17,29 +17,29 @@ import net.minecraft.world.gen.feature.WorldGenSpikes;
 
 public class BiomeEndDecorator extends BiomeDecorator
 {
-    private static final LoadingCache<Long, WorldGenSpikes.EndSpike[]> field_185427_L = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).<Long, WorldGenSpikes.EndSpike[]>build(new BiomeEndDecorator.SpikeCacheLoader());
+    private static final LoadingCache<Long, WorldGenSpikes.EndSpike[]> SPIKE_CACHE = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).<Long, WorldGenSpikes.EndSpike[]>build(new BiomeEndDecorator.SpikeCacheLoader());
     private final WorldGenSpikes spikeGen = new WorldGenSpikes();
 
-    protected void genDecorations(BiomeGenBase biomeGenBaseIn, World worldIn, Random random)
+    protected void genDecorations(Biome biomeGenBaseIn, World worldIn, Random random)
     {
         this.generateOres(worldIn, random);
-        WorldGenSpikes.EndSpike[] aworldgenspikes$endspike = func_185426_a(worldIn);
+        WorldGenSpikes.EndSpike[] aworldgenspikes$endspike = getSpikesForWorld(worldIn);
 
         for (WorldGenSpikes.EndSpike worldgenspikes$endspike : aworldgenspikes$endspike)
         {
-            if (worldgenspikes$endspike.func_186154_a(this.field_180294_c))
+            if (worldgenspikes$endspike.doesStartInChunk(this.chunkPos))
             {
-                this.spikeGen.func_186143_a(worldgenspikes$endspike);
-                this.spikeGen.generate(worldIn, random, new BlockPos(worldgenspikes$endspike.func_186151_a(), 45, worldgenspikes$endspike.func_186152_b()));
+                this.spikeGen.setSpike(worldgenspikes$endspike);
+                this.spikeGen.generate(worldIn, random, new BlockPos(worldgenspikes$endspike.getCenterX(), 45, worldgenspikes$endspike.getCenterZ()));
             }
         }
     }
 
-    public static WorldGenSpikes.EndSpike[] func_185426_a(World p_185426_0_)
+    public static WorldGenSpikes.EndSpike[] getSpikesForWorld(World p_185426_0_)
     {
         Random random = new Random(p_185426_0_.getSeed());
         long i = random.nextLong() & 65535L;
-        return (WorldGenSpikes.EndSpike[])field_185427_L.getUnchecked(Long.valueOf(i));
+        return (WorldGenSpikes.EndSpike[])SPIKE_CACHE.getUnchecked(Long.valueOf(i));
     }
 
     static class SpikeCacheLoader extends CacheLoader<Long, WorldGenSpikes.EndSpike[]>

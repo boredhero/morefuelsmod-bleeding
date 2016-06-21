@@ -98,18 +98,18 @@ public class ModelRenderer
         return this;
     }
 
-    public ModelRenderer addBox(float p_178769_1_, float p_178769_2_, float p_178769_3_, int p_178769_4_, int p_178769_5_, int p_178769_6_, boolean p_178769_7_)
+    public ModelRenderer addBox(float offX, float offY, float offZ, int width, int height, int depth, boolean mirrored)
     {
-        this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, p_178769_1_, p_178769_2_, p_178769_3_, p_178769_4_, p_178769_5_, p_178769_6_, 0.0F, p_178769_7_));
+        this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, 0.0F, mirrored));
         return this;
     }
 
     /**
-     * Creates a textured box. Args: originX, originY, originZ, width, height, depth, scaleFactor.
+     * Creates a textured box.
      */
-    public void addBox(float p_78790_1_, float p_78790_2_, float p_78790_3_, int width, int height, int depth, float scaleFactor)
+    public void addBox(float offX, float offY, float offZ, int width, int height, int depth, float scaleFactor)
     {
-        this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, p_78790_1_, p_78790_2_, p_78790_3_, width, height, depth, scaleFactor));
+        this.cubeList.add(new ModelBox(this, this.textureOffsetX, this.textureOffsetY, offX, offY, offZ, width, height, depth, scaleFactor));
     }
 
     public void setRotationPoint(float rotationPointXIn, float rotationPointYIn, float rotationPointZIn)
@@ -202,7 +202,7 @@ public class ModelRenderer
     }
 
     @SideOnly(Side.CLIENT)
-    public void renderWithRotation(float p_78791_1_)
+    public void renderWithRotation(float scale)
     {
         if (!this.isHidden)
         {
@@ -210,11 +210,11 @@ public class ModelRenderer
             {
                 if (!this.compiled)
                 {
-                    this.compileDisplayList(p_78791_1_);
+                    this.compileDisplayList(scale);
                 }
 
                 GlStateManager.pushMatrix();
-                GlStateManager.translate(this.rotationPointX * p_78791_1_, this.rotationPointY * p_78791_1_, this.rotationPointZ * p_78791_1_);
+                GlStateManager.translate(this.rotationPointX * scale, this.rotationPointY * scale, this.rotationPointZ * scale);
 
                 if (this.rotateAngleY != 0.0F)
                 {

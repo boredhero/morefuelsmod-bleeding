@@ -4,13 +4,13 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStructure;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.IStringSerializable;
@@ -20,7 +20,7 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraft.world.gen.structure.template.PlacementSettings;
@@ -39,7 +39,7 @@ public class TileEntityStructure extends TileEntity
     private TileEntityStructure.Mode mode = TileEntityStructure.Mode.DATA;
     private boolean ignoreEntities;
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         compound.setString("name", this.name);
@@ -55,6 +55,7 @@ public class TileEntityStructure extends TileEntity
         compound.setString("mirror", this.mirror.toString());
         compound.setString("mode", this.mode.toString());
         compound.setBoolean("ignoreEntities", this.ignoreEntities);
+        return compound;
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -96,11 +97,15 @@ public class TileEntityStructure extends TileEntity
         this.ignoreEntities = compound.getBoolean("ignoreEntities");
     }
 
-    public Packet<?> getDescriptionPacket()
+    @Nullable
+    public SPacketUpdateTileEntity getUpdatePacket()
     {
-        NBTTagCompound nbttagcompound = new NBTTagCompound();
-        this.writeToNBT(nbttagcompound);
-        return new SPacketUpdateTileEntity(this.pos, 7, nbttagcompound);
+        return new SPacketUpdateTileEntity(this.pos, 7, this.getUpdateTag());
+    }
+
+    public NBTTagCompound getUpdateTag()
+    {
+        return this.writeToNBT(new NBTTagCompound());
     }
 
     public void setName(String nameIn)
@@ -138,7 +143,7 @@ public class TileEntityStructure extends TileEntity
         this.mode = modeIn;
         IBlockState iblockstate = this.worldObj.getBlockState(this.getPos());
 
-        if (iblockstate.getBlock() == Blocks.structure_block)
+        if (iblockstate.getBlock() == Blocks.STRUCTURE_BLOCK)
         {
             this.worldObj.setBlockState(this.getPos(), iblockstate.withProperty(BlockStructure.MODE, modeIn), 2);
         }
@@ -149,7 +154,7 @@ public class TileEntityStructure extends TileEntity
         this.ignoreEntities = ignoreEntitiesIn;
     }
 
-    public boolean func_184417_l()
+    public boolean detectSize()
     {
         if (this.mode != TileEntityStructure.Mode.SAVE)
         {
@@ -161,8 +166,8 @@ public class TileEntityStructure extends TileEntity
             int i = 128;
             BlockPos blockpos1 = new BlockPos(blockpos.getX() - 128, 0, blockpos.getZ() - 128);
             BlockPos blockpos2 = new BlockPos(blockpos.getX() + 128, 255, blockpos.getZ() + 128);
-            List<TileEntityStructure> list = this.func_184418_a(blockpos1, blockpos2);
-            List<TileEntityStructure> list1 = this.func_184415_a(list);
+            List<TileEntityStructure> list = this.getNearbyCornerBlocks(blockpos1, blockpos2);
+            List<TileEntityStructure> list1 = this.filterRelatedCornerBlocks(list);
 
             if (list1.size() < 1)
             {
@@ -170,7 +175,7 @@ public class TileEntityStructure extends TileEntity
             }
             else
             {
-                StructureBoundingBox structureboundingbox = this.func_184416_a(blockpos, list1);
+                StructureBoundingBox structureboundingbox = this.calculateEnclosingBoundingBox(blockpos, list1);
 
                 if (structureboundingbox.maxX - structureboundingbox.minX > 1 && structureboundingbox.maxY - structureboundingbox.minY > 1 && structureboundingbox.maxZ - structureboundingbox.minZ > 1)
                 {
@@ -189,11 +194,11 @@ public class TileEntityStructure extends TileEntity
         }
     }
 
-    private List<TileEntityStructure> func_184415_a(List<TileEntityStructure> p_184415_1_)
+    private List<TileEntityStructure> filterRelatedCornerBlocks(List<TileEntityStructure> p_184415_1_)
     {
         Iterable<TileEntityStructure> iterable = Iterables.filter(p_184415_1_, new Predicate<TileEntityStructure>()
         {
-            public boolean apply(TileEntityStructure p_apply_1_)
+            public boolean apply(@Nullable TileEntityStructure p_apply_1_)
             {
                 return p_apply_1_.mode == TileEntityStructure.Mode.CORNER && TileEntityStructure.this.name.equals(p_apply_1_.name);
             }
@@ -201,7 +206,7 @@ public class TileEntityStructure extends TileEntity
         return Lists.newArrayList(iterable);
     }
 
-    private List<TileEntityStructure> func_184418_a(BlockPos p_184418_1_, BlockPos p_184418_2_)
+    private List<TileEntityStructure> getNearbyCornerBlocks(BlockPos p_184418_1_, BlockPos p_184418_2_)
     {
         List<TileEntityStructure> list = Lists.<TileEntityStructure>newArrayList();
 
@@ -209,7 +214,7 @@ public class TileEntityStructure extends TileEntity
         {
             IBlockState iblockstate = this.worldObj.getBlockState(blockpos$mutableblockpos);
 
-            if (iblockstate.getBlock() == Blocks.structure_block)
+            if (iblockstate.getBlock() == Blocks.STRUCTURE_BLOCK)
             {
                 TileEntity tileentity = this.worldObj.getTileEntity(blockpos$mutableblockpos);
 
@@ -223,7 +228,7 @@ public class TileEntityStructure extends TileEntity
         return list;
     }
 
-    private StructureBoundingBox func_184416_a(BlockPos p_184416_1_, List<TileEntityStructure> p_184416_2_)
+    private StructureBoundingBox calculateEnclosingBoundingBox(BlockPos p_184416_1_, List<TileEntityStructure> p_184416_2_)
     {
         StructureBoundingBox structureboundingbox;
 
@@ -272,7 +277,7 @@ public class TileEntityStructure extends TileEntity
         return structureboundingbox;
     }
 
-    public boolean func_184419_m()
+    public boolean save()
     {
         if (this.mode == TileEntityStructure.Mode.SAVE && !this.worldObj.isRemote)
         {
@@ -281,7 +286,7 @@ public class TileEntityStructure extends TileEntity
             MinecraftServer minecraftserver = this.worldObj.getMinecraftServer();
             TemplateManager templatemanager = worldserver.getStructureTemplateManager();
             Template template = templatemanager.getTemplate(minecraftserver, new ResourceLocation(this.name));
-            template.takeBlocksFromWorld(this.worldObj, blockpos, this.size, !this.ignoreEntities, Blocks.barrier);
+            template.takeBlocksFromWorld(this.worldObj, blockpos, this.size, !this.ignoreEntities, Blocks.BARRIER);
             template.setAuthor(this.author);
             templatemanager.writeTemplate(minecraftserver, new ResourceLocation(this.name));
             return true;
@@ -292,7 +297,7 @@ public class TileEntityStructure extends TileEntity
         }
     }
 
-    public boolean func_184412_n()
+    public boolean load()
     {
         if (this.mode == TileEntityStructure.Mode.LOAD && !this.worldObj.isRemote)
         {
@@ -318,11 +323,11 @@ public class TileEntityStructure extends TileEntity
 
                 for (Entity entity : this.worldObj.getEntitiesWithinAABBExcludingEntity((Entity)null, new AxisAlignedBB(blockpos, blockpos1.add(blockpos).add(-1, -1, -1))))
                 {
-                    this.worldObj.removePlayerEntityDangerously(entity);
+                    this.worldObj.removeEntityDangerously(entity);
                 }
 
-                PlacementSettings placementsettings = (new PlacementSettings()).setMirror(this.mirror).setRotation(this.rotation).setIgnoreEntities(this.ignoreEntities).setChunk((ChunkCoordIntPair)null).setReplacedBlock((Block)null).setIgnoreStructureBlock(false);
-                template.func_186260_a(this.worldObj, blockpos, placementsettings);
+                PlacementSettings placementsettings = (new PlacementSettings()).setMirror(this.mirror).setRotation(this.rotation).setIgnoreEntities(this.ignoreEntities).setChunk((ChunkPos)null).setReplacedBlock((Block)null).setIgnoreStructureBlock(false);
+                template.addBlocksToWorldChunk(this.worldObj, blockpos, placementsettings);
                 return true;
             }
         }
@@ -339,14 +344,14 @@ public class TileEntityStructure extends TileEntity
         CORNER("corner", 2),
         DATA("data", 3);
 
-        private static final TileEntityStructure.Mode[] field_185115_e = new TileEntityStructure.Mode[values().length];
+        private static final TileEntityStructure.Mode[] MODES = new TileEntityStructure.Mode[values().length];
         private final String modeName;
         private final int modeId;
 
-        private Mode(String p_i47027_3_, int p_i47027_4_)
+        private Mode(String modeNameIn, int modeIdIn)
         {
-            this.modeName = p_i47027_3_;
-            this.modeId = p_i47027_4_;
+            this.modeName = modeNameIn;
+            this.modeId = modeIdIn;
         }
 
         public String getName()
@@ -359,21 +364,21 @@ public class TileEntityStructure extends TileEntity
             return this.modeId;
         }
 
-        public static TileEntityStructure.Mode func_185108_a(int p_185108_0_)
+        public static TileEntityStructure.Mode getById(int id)
         {
-            if (p_185108_0_ < 0 || p_185108_0_ >= field_185115_e.length)
+            if (id < 0 || id >= MODES.length)
             {
-                p_185108_0_ = 0;
+                id = 0;
             }
 
-            return field_185115_e[p_185108_0_];
+            return MODES[id];
         }
 
         static
         {
             for (TileEntityStructure.Mode tileentitystructure$mode : values())
             {
-                field_185115_e[tileentitystructure$mode.getModeId()] = tileentitystructure$mode;
+                MODES[tileentitystructure$mode.getModeId()] = tileentitystructure$mode;
             }
         }
     }

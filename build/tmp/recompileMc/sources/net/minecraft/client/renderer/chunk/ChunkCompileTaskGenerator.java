@@ -97,17 +97,17 @@ public class ChunkCompileTaskGenerator implements Comparable<ChunkCompileTaskGen
         }
     }
 
-    public void addFinishRunnable(Runnable p_178539_1_)
+    public void addFinishRunnable(Runnable runnable)
     {
         this.lock.lock();
 
         try
         {
-            this.listFinishRunnables.add(p_178539_1_);
+            this.listFinishRunnables.add(runnable);
 
             if (this.finished)
             {
-                p_178539_1_.run();
+                runnable.run();
             }
         }
         finally

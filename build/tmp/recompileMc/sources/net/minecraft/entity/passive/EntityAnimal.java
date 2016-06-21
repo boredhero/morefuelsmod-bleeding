@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,7 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class EntityAnimal extends EntityAgeable implements IAnimals
 {
-    protected Block spawnableBlock = Blocks.grass;
+    protected Block spawnableBlock = Blocks.GRASS;
     private int inLove;
     private EntityPlayer playerInLove;
 
@@ -82,16 +83,16 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
 
     public float getBlockPathWeight(BlockPos pos)
     {
-        return this.worldObj.getBlockState(pos.down()).getBlock() == Blocks.grass ? 10.0F : this.worldObj.getLightBrightness(pos) - 0.5F;
+        return this.worldObj.getBlockState(pos.down()).getBlock() == Blocks.GRASS ? 10.0F : this.worldObj.getLightBrightness(pos) - 0.5F;
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setInteger("InLove", this.inLove);
+        super.writeEntityToNBT(compound);
+        compound.setInteger("InLove", this.inLove);
     }
 
     /**
@@ -105,10 +106,10 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.inLove = tagCompund.getInteger("InLove");
+        super.readEntityFromNBT(compound);
+        this.inLove = compound.getInteger("InLove");
     }
 
     /**
@@ -151,12 +152,12 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(ItemStack stack)
+    public boolean isBreedingItem(@Nullable ItemStack stack)
     {
-        return stack == null ? false : stack.getItem() == Items.wheat;
+        return stack == null ? false : stack.getItem() == Items.WHEAT;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand p_184645_2_, ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
         if (stack != null)
         {
@@ -170,12 +171,12 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
             if (this.isChild() && this.isBreedingItem(stack))
             {
                 this.consumeItemFromStack(player, stack);
-                this.func_175501_a((int)((float)(-this.getGrowingAge() / 20) * 0.1F), true);
+                this.ageUp((int)((float)(-this.getGrowingAge() / 20) * 0.1F), true);
                 return true;
             }
         }
 
-        return super.processInteract(player, p_184645_2_, stack);
+        return super.processInteract(player, hand, stack);
     }
 
     /**

@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import javax.annotation.Nullable;
 import net.minecraft.init.Biomes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -19,9 +20,9 @@ public class WorldProviderEnd extends WorldProvider
     /**
      * creates a new world chunk manager for WorldProvider
      */
-    public void registerWorldChunkManager()
+    public void createBiomeProvider()
     {
-        this.worldChunkMgr = new BiomeProviderSingle(Biomes.sky);
+        this.biomeProvider = new BiomeProviderSingle(Biomes.SKY);
         this.hasNoSky = true;
         NBTTagCompound nbttagcompound = this.worldObj.getWorldInfo().getDimensionData(DimensionType.THE_END);
         this.dragonFightManager = this.worldObj instanceof WorldServer ? new DragonFightManager((WorldServer)this.worldObj, nbttagcompound.getCompoundTag("DragonFight")) : null;
@@ -158,6 +159,7 @@ public class WorldProviderEnd extends WorldProvider
         }
     }
 
+    @Nullable
     public DragonFightManager getDragonFightManager()
     {
         return this.dragonFightManager;

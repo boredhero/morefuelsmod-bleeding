@@ -20,7 +20,7 @@ public abstract class RConThreadBase implements Runnable
     protected final String threadName;
     /** Thread for this runnable class */
     protected Thread rconThread;
-    protected int field_72615_d = 5;
+    protected int maxStopWait = 5;
     protected List<DatagramSocket> socketList = Lists.<DatagramSocket>newArrayList();
     protected List<ServerSocket> serverSocketList = Lists.<ServerSocket>newArrayList();
 

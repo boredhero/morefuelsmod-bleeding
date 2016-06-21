@@ -111,15 +111,15 @@ public class ServerAddress
         }
     }
 
-    private static int parseIntWithDefault(String p_78862_0_, int p_78862_1_)
+    private static int parseIntWithDefault(String value, int defaultValue)
     {
         try
         {
-            return Integer.parseInt(p_78862_0_.trim());
+            return Integer.parseInt(value.trim());
         }
         catch (Exception var3)
         {
-            return p_78862_1_;
+            return defaultValue;
         }
     }
 }

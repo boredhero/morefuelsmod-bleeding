@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -23,7 +24,7 @@ public class BlockRedstoneOre extends Block
 
     public BlockRedstoneOre(boolean isOn)
     {
-        super(Material.rock);
+        super(Material.ROCK);
 
         if (isOn)
         {
@@ -50,13 +51,13 @@ public class BlockRedstoneOre extends Block
     /**
      * Triggered whenever an entity collides with this block (enters into the block)
      */
-    public void onEntityCollidedWithBlock(World worldIn, BlockPos pos, Entity entityIn)
+    public void onEntityWalk(World worldIn, BlockPos pos, Entity entityIn)
     {
         this.activate(worldIn, pos);
-        super.onEntityCollidedWithBlock(worldIn, pos, entityIn);
+        super.onEntityWalk(worldIn, pos, entityIn);
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         this.activate(worldIn, pos);
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
@@ -66,26 +67,27 @@ public class BlockRedstoneOre extends Block
     {
         this.spawnParticles(worldIn, pos);
 
-        if (this == Blocks.redstone_ore)
+        if (this == Blocks.REDSTONE_ORE)
         {
-            worldIn.setBlockState(pos, Blocks.lit_redstone_ore.getDefaultState());
+            worldIn.setBlockState(pos, Blocks.LIT_REDSTONE_ORE.getDefaultState());
         }
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (this == Blocks.lit_redstone_ore)
+        if (this == Blocks.LIT_REDSTONE_ORE)
         {
-            worldIn.setBlockState(pos, Blocks.redstone_ore.getDefaultState());
+            worldIn.setBlockState(pos, Blocks.REDSTONE_ORE.getDefaultState());
         }
     }
 
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.redstone;
+        return Items.REDSTONE;
     }
 
     /**
@@ -123,11 +125,11 @@ public class BlockRedstoneOre extends Block
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState worldIn, World pos, BlockPos state, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
         if (this.isOn)
         {
-            this.spawnParticles(pos, state);
+            this.spawnParticles(worldIn, pos);
         }
     }
 
@@ -181,11 +183,12 @@ public class BlockRedstoneOre extends Block
 
     protected ItemStack createStackedBlock(IBlockState state)
     {
-        return new ItemStack(Blocks.redstone_ore);
+        return new ItemStack(Blocks.REDSTONE_ORE);
     }
 
+    @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Item.getItemFromBlock(Blocks.redstone_ore), 1, this.damageDropped(state));
+        return new ItemStack(Item.getItemFromBlock(Blocks.REDSTONE_ORE), 1, this.damageDropped(state));
     }
 }

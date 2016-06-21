@@ -10,11 +10,11 @@ import net.minecraft.world.chunk.ChunkPrimer;
 
 public class MapGenRavine extends MapGenBase
 {
-    protected static final IBlockState field_186135_a = Blocks.flowing_lava.getDefaultState();
-    protected static final IBlockState field_186136_b = Blocks.air.getDefaultState();
-    private float[] field_75046_d = new float[1024];
+    protected static final IBlockState FLOWING_LAVA = Blocks.FLOWING_LAVA.getDefaultState();
+    protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
+    private float[] rs = new float[1024];
 
-    protected void func_180707_a(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_)
+    protected void addTunnel(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_)
     {
         Random random = new Random(p_180707_1_);
         double d0 = (double)(p_180707_3_ * 16 + 8);
@@ -45,7 +45,7 @@ public class MapGenRavine extends MapGenBase
                 f2 = 1.0F + random.nextFloat() * random.nextFloat();
             }
 
-            this.field_75046_d[j] = f2 * f2;
+            this.rs[j] = f2 * f2;
         }
 
         for (; p_180707_15_ < p_180707_16_; ++p_180707_15_)
@@ -159,7 +159,7 @@ public class MapGenRavine extends MapGenBase
                                     {
                                         double d8 = ((double)(j2 - 1) + 0.5D - p_180707_8_) / d2;
 
-                                        if ((d10 * d10 + d7 * d7) * (double)this.field_75046_d[j2 - 1] + d8 * d8 / 6.0D < 1.0D)
+                                        if ((d10 * d10 + d7 * d7) * (double)this.rs[j2 - 1] + d8 * d8 / 6.0D < 1.0D)
                                         {
                                             if (isTopBlock(p_180707_5_, j3, j2, i2, p_180707_3_, p_180707_4_))
                                             {
@@ -200,23 +200,23 @@ public class MapGenRavine extends MapGenBase
                 float f = this.rand.nextFloat() * ((float)Math.PI * 2F);
                 float f1 = (this.rand.nextFloat() - 0.5F) * 2.0F / 8.0F;
                 float f2 = (this.rand.nextFloat() * 2.0F + this.rand.nextFloat()) * 2.0F;
-                this.func_180707_a(this.rand.nextLong(), p_180701_4_, p_180701_5_, chunkPrimerIn, d0, d1, d2, f2, f, f1, 0, 0, 3.0D);
+                this.addTunnel(this.rand.nextLong(), p_180701_4_, p_180701_5_, chunkPrimerIn, d0, d1, d2, f2, f, f1, 0, 0, 3.0D);
             }
         }
     }
     protected boolean isOceanBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ)
     {
         net.minecraft.block.Block block = data.getBlockState(x, y, z).getBlock();
-        return block== Blocks.flowing_water || block == Blocks.water;
+        return block== Blocks.FLOWING_WATER || block == Blocks.WATER;
     }
 
     //Exception biomes to make sure we generate like vanilla
-    private boolean isExceptionBiome(net.minecraft.world.biome.BiomeGenBase biome)
+    private boolean isExceptionBiome(net.minecraft.world.biome.Biome biome)
     {
-        if (biome == net.minecraft.init.Biomes.beach) return true;
-        if (biome == net.minecraft.init.Biomes.desert) return true;
-        if (biome == net.minecraft.init.Biomes.mushroomIsland) return true;
-        if (biome == net.minecraft.init.Biomes.mushroomIslandShore) return true;
+        if (biome == net.minecraft.init.Biomes.BEACH) return true;
+        if (biome == net.minecraft.init.Biomes.DESERT) return true;
+        if (biome == net.minecraft.init.Biomes.MUSHROOM_ISLAND) return true;
+        if (biome == net.minecraft.init.Biomes.MUSHROOM_ISLAND_SHORE) return true;
         return false;
     }
 
@@ -224,9 +224,9 @@ public class MapGenRavine extends MapGenBase
     //Vanilla bugs to make sure that we generate the map the same way vanilla does.
     private boolean isTopBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ)
     {
-        net.minecraft.world.biome.BiomeGenBase biome = worldObj.getBiomeGenForCoords(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
+        net.minecraft.world.biome.Biome biome = worldObj.getBiomeGenForCoords(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
         IBlockState state = data.getBlockState(x, y, z);
-        return (isExceptionBiome(biome) ? state.getBlock() == Blocks.grass : state.getBlock() == biome.topBlock);
+        return (isExceptionBiome(biome) ? state.getBlock() == Blocks.GRASS : state.getBlock() == biome.topBlock);
     }
 
     /**
@@ -246,20 +246,20 @@ public class MapGenRavine extends MapGenBase
      */
     protected void digBlock(ChunkPrimer data, int x, int y, int z, int chunkX, int chunkZ, boolean foundTop)
     {
-        net.minecraft.world.biome.BiomeGenBase biome = worldObj.getBiomeGenForCoords(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
+        net.minecraft.world.biome.Biome biome = worldObj.getBiomeGenForCoords(new BlockPos(x + chunkX * 16, 0, z + chunkZ * 16));
         IBlockState state = data.getBlockState(x, y, z);
-        IBlockState top = isExceptionBiome(biome) ? Blocks.grass.getDefaultState() : biome.topBlock;
-        IBlockState filler = isExceptionBiome(biome) ? Blocks.dirt.getDefaultState() : biome.fillerBlock;
+        IBlockState top = isExceptionBiome(biome) ? Blocks.GRASS.getDefaultState() : biome.topBlock;
+        IBlockState filler = isExceptionBiome(biome) ? Blocks.DIRT.getDefaultState() : biome.fillerBlock;
 
-        if (state.getBlock() == Blocks.stone || state.getBlock() == top.getBlock() || state.getBlock() == filler.getBlock())
+        if (state.getBlock() == Blocks.STONE || state.getBlock() == top.getBlock() || state.getBlock() == filler.getBlock())
         {
             if (y - 1 < 10)
             {
-                data.setBlockState(x, y, z, field_186135_a);
+                data.setBlockState(x, y, z, FLOWING_LAVA);
             }
             else
             {
-                data.setBlockState(x, y, z, field_186136_b);
+                data.setBlockState(x, y, z, AIR);
 
                 if (foundTop && data.getBlockState(x, y - 1, z).getBlock() == filler.getBlock())
                 {

@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Random;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -157,7 +158,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         if (enumactionresult == EnumActionResult.SUCCESS)
         {
-            playerIn.addStat(StatList.func_188057_b(this.item));
+            playerIn.addStat(StatList.getObjectUseStats(this.item));
         }
 
         return enumactionresult;
@@ -176,6 +177,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     /**
      * Called when the item in use count reach 0, e.g. item food eaten. Return the new ItemStack. Args : world, entity
      */
+    @Nullable
     public ItemStack onItemUseFinish(World worldIn, EntityLivingBase entityLiving)
     {
         return this.getItem().onItemUseFinish(this, worldIn, entityLiving);
@@ -186,7 +188,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
-        ResourceLocation resourcelocation = (ResourceLocation)Item.itemRegistry.getNameForObject(this.item);
+        ResourceLocation resourcelocation = (ResourceLocation)Item.REGISTRY.getNameForObject(this.item);
         nbt.setString("id", resourcelocation == null ? "minecraft:air" : resourcelocation.toString());
         nbt.setByte("Count", (byte)this.stackSize);
         nbt.setShort("Damage", (short)this.itemDamage);
@@ -310,7 +312,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         {
             if (amount > 0)
             {
-                int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.unbreaking, this);
+                int i = EnchantmentHelper.getEnchantmentLevel(Enchantments.UNBREAKING, this);
                 int j = 0;
 
                 for (int k = 0; i > 0 && k < amount; ++k)
@@ -351,7 +353,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                     if (entityIn instanceof EntityPlayer)
                     {
                         EntityPlayer entityplayer = (EntityPlayer)entityIn;
-                        entityplayer.addStat(StatList.func_188059_c(this.item));
+                        entityplayer.addStat(StatList.getObjectBreakStats(this.item));
                     }
 
                     if (this.stackSize < 0)
@@ -366,7 +368,8 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     }
 
     /**
-     * Calls the corresponding fct in di
+     * Calls the delegated method to the Item to damage the incoming Entity, and if necessary, triggers a stats
+     * increase.
      */
     public void hitEntity(EntityLivingBase entityIn, EntityPlayer playerIn)
     {
@@ -374,7 +377,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         if (flag)
         {
-            playerIn.addStat(StatList.func_188057_b(this.item));
+            playerIn.addStat(StatList.getObjectUseStats(this.item));
         }
     }
 
@@ -387,7 +390,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         if (flag)
         {
-            playerIn.addStat(StatList.func_188057_b(this.item));
+            playerIn.addStat(StatList.getObjectUseStats(this.item));
         }
     }
 
@@ -422,15 +425,27 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return itemstack;
     }
 
-    public static boolean areItemStackTagsEqual(ItemStack stackA, ItemStack stackB)
+    public static boolean areItemStackTagsEqual(@Nullable ItemStack stackA, @Nullable ItemStack stackB)
     {
-        return stackA == null && stackB == null ? true : (stackA != null && stackB != null ? (stackA.stackTagCompound == null && stackB.stackTagCompound != null ? false : stackA.stackTagCompound == null || stackA.stackTagCompound.equals(stackB.stackTagCompound)) : false);
+        if (stackA == null && stackB == null) return true;
+        if (stackA == null && stackB != null) return false;
+        if (stackA != null && stackB == null) return false;
+        if (stackA.stackTagCompound == null && stackB.stackTagCompound != null) return false;
+        if (stackA.stackTagCompound != null && stackB.stackTagCompound == null) return false;
+        if (stackA.stackTagCompound != null && !stackA.stackTagCompound.equals(stackB.stackTagCompound)) return false;
+        if (stackA.capabilities != null || stackB.capabilities != null)
+        {
+            boolean ret = stackA.capabilities != null ? stackA.capabilities.areCompatible(stackB.capabilities) : stackB.capabilities.areCompatible(null);
+            if (!ret) return false;
+        }
+
+        return true;
     }
 
     /**
      * compares ItemStack argument1 with ItemStack argument2; returns true if both ItemStacks are equal
      */
-    public static boolean areItemStacksEqual(ItemStack stackA, ItemStack stackB)
+    public static boolean areItemStacksEqual(@Nullable ItemStack stackA, @Nullable ItemStack stackB)
     {
         return stackA == null && stackB == null ? true : (stackA != null && stackB != null ? stackA.isItemStackEqual(stackB) : false);
     }
@@ -440,32 +455,36 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     private boolean isItemStackEqual(ItemStack other)
     {
-        return this.stackSize != other.stackSize ? false : (this.item != other.item ? false : (this.itemDamage != other.itemDamage ? false : (this.stackTagCompound == null && other.stackTagCompound != null ? false : this.stackTagCompound == null || this.stackTagCompound.equals(other.stackTagCompound))));
+        if (this.stackSize != other.stackSize) return false;
+        if (this.item != other.item) return false;
+        if (this.itemDamage != other.itemDamage) return false;
+        if (!ItemStack.areItemStackTagsEqual(this, other)) return false;
+        return true;
     }
 
     /**
      * Compares Item and damage value of the two stacks
      */
-    public static boolean areItemsEqual(ItemStack stackA, ItemStack stackB)
+    public static boolean areItemsEqual(@Nullable ItemStack stackA, @Nullable ItemStack stackB)
     {
         return stackA == stackB ? true : (stackA != null && stackB != null ? stackA.isItemEqual(stackB) : false);
     }
 
-    public static boolean func_185132_d(ItemStack p_185132_0_, ItemStack p_185132_1_)
+    public static boolean areItemsEqualIgnoreDurability(@Nullable ItemStack stackA, @Nullable ItemStack stackB)
     {
-        return p_185132_0_ == p_185132_1_ ? true : (p_185132_0_ != null && p_185132_1_ != null ? p_185132_0_.func_185136_b(p_185132_1_) : false);
+        return stackA == stackB ? true : (stackA != null && stackB != null ? stackA.isItemEqualIgnoreDurability(stackB) : false);
     }
 
     /**
      * compares ItemStack argument to the instance ItemStack; returns true if the Items contained in both ItemStacks are
      * equal
      */
-    public boolean isItemEqual(ItemStack other)
+    public boolean isItemEqual(@Nullable ItemStack other)
     {
         return other != null && this.item == other.item && this.itemDamage == other.itemDamage;
     }
 
-    public boolean func_185136_b(ItemStack stack)
+    public boolean isItemEqualIgnoreDurability(@Nullable ItemStack stack)
     {
         return !this.isItemStackDamageable() ? this.isItemEqual(stack) : stack != null && this.item == stack.item;
     }
@@ -507,7 +526,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
     public void onCrafting(World worldIn, EntityPlayer playerIn, int amount)
     {
-        playerIn.addStat(StatList.func_188060_a(this.item), amount);
+        playerIn.addStat(StatList.getCraftStats(this.item), amount);
         this.item.onCreated(this, worldIn, playerIn);
     }
 
@@ -522,7 +541,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     }
 
     /**
-     * Called when the player releases the use item button. Args: world, entityplayer, itemInUseCount
+     * Called when the player releases the use item button.
      */
     public void onPlayerStoppedUsing(World worldIn, EntityLivingBase entityLiving, int timeLeft)
     {
@@ -540,6 +559,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     /**
      * Returns the NBTTagCompound of the ItemStack.
      */
+    @Nullable
     public NBTTagCompound getTagCompound()
     {
         return this.stackTagCompound;
@@ -682,7 +702,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 s = s + String.format("#%04d%s", new Object[] {Integer.valueOf(i), s1});
             }
         }
-        else if (!this.hasDisplayName() && this.item == Items.filled_map)
+        else if (!this.hasDisplayName() && this.item == Items.FILLED_MAP)
         {
             s = s + " #" + this.itemDamage;
         }
@@ -869,7 +889,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 list.add("Durability: " + (this.getMaxDamage() - this.getItemDamage()) + " / " + this.getMaxDamage());
             }
 
-            list.add(TextFormatting.DARK_GRAY + ((ResourceLocation)Item.itemRegistry.getNameForObject(this.item)).toString());
+            list.add(TextFormatting.DARK_GRAY + ((ResourceLocation)Item.REGISTRY.getNameForObject(this.item)).toString());
 
             if (this.hasTagCompound())
             {
@@ -964,6 +984,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     /**
      * Return the item frame this stack is on. Returns null if not on an item frame.
      */
+    @Nullable
     public EntityItemFrame getItemFrame()
     {
         return this.itemFrame;
@@ -1042,6 +1063,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         nbttaglist.appendTag(nbttagcompound);
     }
 
+    @Deprecated
     public void setItem(Item newItem)
     {
         if (newItem == this.item && item != null && this.capabilities != null) //Item Didn't change but refreshed
@@ -1062,23 +1084,22 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     /**
      * Get a ChatComponent for this Item's display name that shows this Item on hover
      */
-    public ITextComponent getChatComponent()
+    public ITextComponent getTextComponent()
     {
         TextComponentString textcomponentstring = new TextComponentString(this.getDisplayName());
 
         if (this.hasDisplayName())
         {
-            textcomponentstring.getChatStyle().setItalic(Boolean.valueOf(true));
+            textcomponentstring.getStyle().setItalic(Boolean.valueOf(true));
         }
 
         ITextComponent itextcomponent = (new TextComponentString("[")).appendSibling(textcomponentstring).appendText("]");
 
         if (this.item != null)
         {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            this.writeToNBT(nbttagcompound);
-            itextcomponent.getChatStyle().setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
-            itextcomponent.getChatStyle().setColor(this.getRarity().rarityColor);
+            NBTTagCompound nbttagcompound = this.writeToNBT(new NBTTagCompound());
+            itextcomponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
+            itextcomponent.getStyle().setColor(this.getRarity().rarityColor);
         }
 
         return itextcomponent;

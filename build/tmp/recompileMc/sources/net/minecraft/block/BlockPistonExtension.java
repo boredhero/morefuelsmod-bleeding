@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -33,18 +34,18 @@ public class BlockPistonExtension extends BlockDirectional
     protected static final AxisAlignedBB PISTON_EXTENSION_NORTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.25D);
     protected static final AxisAlignedBB PISTON_EXTENSION_UP_AABB = new AxisAlignedBB(0.0D, 0.75D, 0.0D, 1.0D, 1.0D, 1.0D);
     protected static final AxisAlignedBB PISTON_EXTENSION_DOWN_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D);
-    protected static final AxisAlignedBB field_185636_C = new AxisAlignedBB(0.375D, -0.25D, 0.375D, 0.625D, 0.75D, 0.625D);
-    protected static final AxisAlignedBB field_185638_D = new AxisAlignedBB(0.375D, 0.25D, 0.375D, 0.625D, 1.25D, 0.625D);
-    protected static final AxisAlignedBB field_185640_E = new AxisAlignedBB(0.375D, 0.375D, -0.25D, 0.625D, 0.625D, 0.75D);
-    protected static final AxisAlignedBB field_185642_F = new AxisAlignedBB(0.375D, 0.375D, 0.25D, 0.625D, 0.625D, 1.25D);
-    protected static final AxisAlignedBB field_185644_G = new AxisAlignedBB(-0.25D, 0.375D, 0.375D, 0.75D, 0.625D, 0.625D);
-    protected static final AxisAlignedBB field_185645_I = new AxisAlignedBB(0.25D, 0.375D, 0.375D, 1.25D, 0.625D, 0.625D);
+    protected static final AxisAlignedBB UP_ARM_AABB = new AxisAlignedBB(0.375D, -0.25D, 0.375D, 0.625D, 0.75D, 0.625D);
+    protected static final AxisAlignedBB DOWN_ARM_AABB = new AxisAlignedBB(0.375D, 0.25D, 0.375D, 0.625D, 1.25D, 0.625D);
+    protected static final AxisAlignedBB SOUTH_ARM_AABB = new AxisAlignedBB(0.375D, 0.375D, -0.25D, 0.625D, 0.625D, 0.75D);
+    protected static final AxisAlignedBB NORTH_ARM_AABB = new AxisAlignedBB(0.375D, 0.375D, 0.25D, 0.625D, 0.625D, 1.25D);
+    protected static final AxisAlignedBB EAST_ARM_AABB = new AxisAlignedBB(-0.25D, 0.375D, 0.375D, 0.75D, 0.625D, 0.625D);
+    protected static final AxisAlignedBB WEST_ARM_AABB = new AxisAlignedBB(0.25D, 0.375D, 0.375D, 1.25D, 0.625D, 0.625D);
 
     public BlockPistonExtension()
     {
-        super(Material.piston);
+        super(Material.PISTON);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(TYPE, BlockPistonExtension.EnumPistonType.DEFAULT).withProperty(SHORT, Boolean.valueOf(false)));
-        this.setStepSound(SoundType.STONE);
+        this.setSoundType(SoundType.STONE);
         this.setHardness(0.5F);
     }
 
@@ -68,36 +69,34 @@ public class BlockPistonExtension extends BlockDirectional
         }
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, Entity p_185477_6_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
     {
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, state.getBoundingBox(worldIn, pos));
-        addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, this.func_185633_i(state));
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, state.getBoundingBox(worldIn, pos));
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, this.getArmShape(state));
     }
 
-    private AxisAlignedBB func_185633_i(IBlockState p_185633_1_)
+    private AxisAlignedBB getArmShape(IBlockState state)
     {
-        switch ((EnumFacing)p_185633_1_.getValue(FACING))
+        switch ((EnumFacing)state.getValue(FACING))
         {
             case DOWN:
             default:
-                return field_185638_D;
+                return DOWN_ARM_AABB;
             case UP:
-                return field_185636_C;
+                return UP_ARM_AABB;
             case NORTH:
-                return field_185642_F;
+                return NORTH_ARM_AABB;
             case SOUTH:
-                return field_185640_E;
+                return SOUTH_ARM_AABB;
             case WEST:
-                return field_185645_I;
+                return WEST_ARM_AABB;
             case EAST:
-                return field_185644_G;
+                return EAST_ARM_AABB;
         }
     }
 
     /**
      * Checks if an IBlockState represents a block that is opaque and a full cube.
-     *  
-     * @param state The block state to check.
      */
     public boolean isFullyOpaque(IBlockState state)
     {
@@ -111,7 +110,7 @@ public class BlockPistonExtension extends BlockDirectional
             BlockPos blockpos = pos.offset(((EnumFacing)state.getValue(FACING)).getOpposite());
             Block block = worldIn.getBlockState(blockpos).getBlock();
 
-            if (block == Blocks.piston || block == Blocks.sticky_piston)
+            if (block == Blocks.PISTON || block == Blocks.STICKY_PISTON)
             {
                 worldIn.setBlockToAir(blockpos);
             }
@@ -127,7 +126,7 @@ public class BlockPistonExtension extends BlockDirectional
         pos = pos.offset(enumfacing);
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if ((iblockstate.getBlock() == Blocks.piston || iblockstate.getBlock() == Blocks.sticky_piston) && ((Boolean)iblockstate.getValue(BlockPistonBase.EXTENDED)).booleanValue())
+        if ((iblockstate.getBlock() == Blocks.PISTON || iblockstate.getBlock() == Blocks.STICKY_PISTON) && ((Boolean)iblockstate.getValue(BlockPistonBase.EXTENDED)).booleanValue())
         {
             iblockstate.getBlock().dropBlockAsItem(worldIn, pos, iblockstate, 0);
             worldIn.setBlockToAir(pos);
@@ -169,21 +168,23 @@ public class BlockPistonExtension extends BlockDirectional
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
         BlockPos blockpos = pos.offset(enumfacing.getOpposite());
         IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-        if (iblockstate.getBlock() != Blocks.piston && iblockstate.getBlock() != Blocks.sticky_piston)
+        if (iblockstate.getBlock() != Blocks.PISTON && iblockstate.getBlock() != Blocks.STICKY_PISTON)
         {
             worldIn.setBlockToAir(pos);
         }
         else
         {
-            iblockstate.getBlock().onNeighborBlockChange(worldIn, blockpos, iblockstate, neighborBlock);
+            iblockstate.neighborChanged(worldIn, blockpos, blockIn);
         }
     }
 
@@ -193,6 +194,7 @@ public class BlockPistonExtension extends BlockDirectional
         return true;
     }
 
+    @Nullable
     public static EnumFacing getFacing(int meta)
     {
         int i = meta & 7;
@@ -201,7 +203,7 @@ public class BlockPistonExtension extends BlockDirectional
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(state.getValue(TYPE) == BlockPistonExtension.EnumPistonType.STICKY ? Blocks.sticky_piston : Blocks.piston);
+        return new ItemStack(state.getValue(TYPE) == BlockPistonExtension.EnumPistonType.STICKY ? Blocks.STICKY_PISTON : Blocks.PISTON);
     }
 
     /**

@@ -1,7 +1,7 @@
 package net.minecraft.world;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.play.server.SPacketUpdateEntityNBT;
+import net.minecraft.network.play.server.SPacketUpdateBossInfo;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -12,7 +12,7 @@ public class BossInfoLerping extends BossInfo
     protected float rawPercent = 0.0F;
     protected long percentSetTime = 0L;
 
-    public BossInfoLerping(SPacketUpdateEntityNBT packetIn)
+    public BossInfoLerping(SPacketUpdateBossInfo packetIn)
     {
         super(packetIn.getUniqueId(), packetIn.getName(), packetIn.getColor(), packetIn.getOverlay());
         this.rawPercent = packetIn.getPercent();
@@ -37,8 +37,7 @@ public class BossInfoLerping extends BossInfo
         return this.percent + (this.rawPercent - this.percent) * f;
     }
 
-    @SuppressWarnings("incomplete-switch")
-    public void updateFromPacket(SPacketUpdateEntityNBT packetIn)
+    public void updateFromPacket(SPacketUpdateBossInfo packetIn)
     {
         switch (packetIn.getOperation())
         {

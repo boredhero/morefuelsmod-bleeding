@@ -27,17 +27,17 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
 {
-    private static final Logger logger = LogManager.getLogger();
-    private static final ThreadPoolExecutor field_148302_b = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final ThreadPoolExecutor EXECUTOR = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
     private static final ResourceLocation UNKNOWN_SERVER = new ResourceLocation("textures/misc/unknown_server.png");
     private static final ResourceLocation SERVER_SELECTION_BUTTONS = new ResourceLocation("textures/gui/server_selection.png");
     private final GuiMultiplayer owner;
     private final Minecraft mc;
     private final ServerData server;
     private final ResourceLocation serverIcon;
-    private String field_148299_g;
-    private DynamicTexture field_148305_h;
-    private long field_148298_f;
+    private String lastIconB64;
+    private DynamicTexture icon;
+    private long lastClickTime;
 
     protected ServerListEntryNormal(GuiMultiplayer p_i45048_1_, ServerData serverIn)
     {
@@ -45,18 +45,18 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
         this.server = serverIn;
         this.mc = Minecraft.getMinecraft();
         this.serverIcon = new ResourceLocation("servers/" + serverIn.serverIP + "/icon");
-        this.field_148305_h = (DynamicTexture)this.mc.getTextureManager().getTexture(this.serverIcon);
+        this.icon = (DynamicTexture)this.mc.getTextureManager().getTexture(this.serverIcon);
     }
 
     public void drawEntry(int slotIndex, int x, int y, int listWidth, int slotHeight, int mouseX, int mouseY, boolean isSelected)
     {
-        if (!this.server.field_78841_f)
+        if (!this.server.pinged)
         {
-            this.server.field_78841_f = true;
+            this.server.pinged = true;
             this.server.pingToServer = -2L;
             this.server.serverMOTD = "";
             this.server.populationInfo = "";
-            field_148302_b.submit(new Runnable()
+            EXECUTOR.submit(new Runnable()
             {
                 public void run()
                 {
@@ -78,8 +78,8 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
             });
         }
 
-        boolean flag = this.server.version > 107;
-        boolean flag1 = this.server.version < 107;
+        boolean flag = this.server.version > 110;
+        boolean flag1 = this.server.version < 110;
         boolean flag2 = flag || flag1;
         this.mc.fontRendererObj.drawString(this.server.serverName, x + 32 + 3, y + 1, 16777215);
         List<String> list = this.mc.fontRendererObj.listFormattedStringToWidth(net.minecraftforge.fml.client.FMLClientHandler.instance().fixDescription(this.server.serverMOTD), listWidth - 48 - 2);
@@ -103,7 +103,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
             s1 = flag ? "Client out of date!" : "Server out of date!";
             s = this.server.playerList;
         }
-        else if (this.server.field_78841_f && this.server.pingToServer != -2L)
+        else if (this.server.pinged && this.server.pingToServer != -2L)
         {
             if (this.server.pingToServer < 0L)
             {
@@ -154,17 +154,17 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
         }
 
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(Gui.icons);
+        this.mc.getTextureManager().bindTexture(Gui.ICONS);
         Gui.drawModalRectWithCustomSizedTexture(x + listWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256.0F, 256.0F);
 
-        if (this.server.getBase64EncodedIconData() != null && !this.server.getBase64EncodedIconData().equals(this.field_148299_g))
+        if (this.server.getBase64EncodedIconData() != null && !this.server.getBase64EncodedIconData().equals(this.lastIconB64))
         {
-            this.field_148299_g = this.server.getBase64EncodedIconData();
+            this.lastIconB64 = this.server.getBase64EncodedIconData();
             this.prepareServerIcon();
             this.owner.getServerList().saveServerList();
         }
 
-        if (this.field_148305_h != null)
+        if (this.icon != null)
         {
             this.drawTextureAt(x, y, this.serverIcon);
         }
@@ -198,7 +198,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
             int k1 = mouseX - x;
             int l1 = mouseY - y;
 
-            if (this.func_178013_b())
+            if (this.canJoin())
             {
                 if (k1 < 32 && k1 > 16)
                 {
@@ -210,7 +210,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
                 }
             }
 
-            if (this.owner.func_175392_a(this, slotIndex))
+            if (this.owner.canMoveUp(this, slotIndex))
             {
                 if (k1 < 16 && l1 < 16)
                 {
@@ -222,7 +222,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
                 }
             }
 
-            if (this.owner.func_175394_b(this, slotIndex))
+            if (this.owner.canMoveDown(this, slotIndex))
             {
                 if (k1 < 16 && l1 > 16)
                 {
@@ -244,7 +244,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
         GlStateManager.disableBlend();
     }
 
-    private boolean func_178013_b()
+    private boolean canJoin()
     {
         return true;
     }
@@ -254,7 +254,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
         if (this.server.getBase64EncodedIconData() == null)
         {
             this.mc.getTextureManager().deleteTexture(this.serverIcon);
-            this.field_148305_h = null;
+            this.icon = null;
         }
         else
         {
@@ -272,7 +272,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
                 }
                 catch (Throwable throwable)
                 {
-                    logger.error("Invalid icon for server " + this.server.serverName + " (" + this.server.serverIP + ")", throwable);
+                    LOGGER.error("Invalid icon for server " + this.server.serverName + " (" + this.server.serverIP + ")", throwable);
                     this.server.setBase64EncodedIconData((String)null);
                 }
                 finally
@@ -284,59 +284,53 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
                 return;
             }
 
-            if (this.field_148305_h == null)
+            if (this.icon == null)
             {
-                this.field_148305_h = new DynamicTexture(bufferedimage.getWidth(), bufferedimage.getHeight());
-                this.mc.getTextureManager().loadTexture(this.serverIcon, this.field_148305_h);
+                this.icon = new DynamicTexture(bufferedimage.getWidth(), bufferedimage.getHeight());
+                this.mc.getTextureManager().loadTexture(this.serverIcon, this.icon);
             }
 
-            bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), this.field_148305_h.getTextureData(), 0, bufferedimage.getWidth());
-            this.field_148305_h.updateDynamicTexture();
+            bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), this.icon.getTextureData(), 0, bufferedimage.getWidth());
+            this.icon.updateDynamicTexture();
         }
     }
 
     /**
      * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
      * clicked and the list should not be dragged.
-     *  
-     * @param mouseX Scaled X coordinate of the mouse on the entire screen
-     * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-     * @param mouseEvent The button on the mouse that was pressed
-     * @param relativeX Relative X coordinate of the mouse within this entry.
-     * @param relativeY Relative Y coordinate of the mouse within this entry.
      */
     public boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY)
     {
         if (relativeX <= 32)
         {
-            if (relativeX < 32 && relativeX > 16 && this.func_178013_b())
+            if (relativeX < 32 && relativeX > 16 && this.canJoin())
             {
                 this.owner.selectServer(slotIndex);
                 this.owner.connectToSelected();
                 return true;
             }
 
-            if (relativeX < 16 && relativeY < 16 && this.owner.func_175392_a(this, slotIndex))
+            if (relativeX < 16 && relativeY < 16 && this.owner.canMoveUp(this, slotIndex))
             {
-                this.owner.func_175391_a(this, slotIndex, GuiScreen.isShiftKeyDown());
+                this.owner.moveServerUp(this, slotIndex, GuiScreen.isShiftKeyDown());
                 return true;
             }
 
-            if (relativeX < 16 && relativeY > 16 && this.owner.func_175394_b(this, slotIndex))
+            if (relativeX < 16 && relativeY > 16 && this.owner.canMoveDown(this, slotIndex))
             {
-                this.owner.func_175393_b(this, slotIndex, GuiScreen.isShiftKeyDown());
+                this.owner.moveServerDown(this, slotIndex, GuiScreen.isShiftKeyDown());
                 return true;
             }
         }
 
         this.owner.selectServer(slotIndex);
 
-        if (Minecraft.getSystemTime() - this.field_148298_f < 250L)
+        if (Minecraft.getSystemTime() - this.lastClickTime < 250L)
         {
             this.owner.connectToSelected();
         }
 
-        this.field_148298_f = Minecraft.getSystemTime();
+        this.lastClickTime = Minecraft.getSystemTime();
         return false;
     }
 

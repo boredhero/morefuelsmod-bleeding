@@ -1,6 +1,7 @@
 package net.minecraft.inventory;
 
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockAnvil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -20,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ContainerRepair extends Container
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     /** Here comes out item you merged and/or renamed. */
     private IInventory outputSlot;
     /** The 2slots where you put your items in that you want to merge and/or rename. */
@@ -66,7 +67,7 @@ public class ContainerRepair extends Container
             /**
              * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
              */
-            public boolean isItemValid(ItemStack stack)
+            public boolean isItemValid(@Nullable ItemStack stack)
             {
                 return false;
             }
@@ -110,7 +111,7 @@ public class ContainerRepair extends Container
                 ContainerRepair.this.maximumCost = 0;
                 IBlockState iblockstate = worldIn.getBlockState(blockPosIn);
 
-                if (!playerIn.capabilities.isCreativeMode && !worldIn.isRemote && iblockstate.getBlock() == Blocks.anvil && playerIn.getRNG().nextFloat() < breakChance)
+                if (!playerIn.capabilities.isCreativeMode && !worldIn.isRemote && iblockstate.getBlock() == Blocks.ANVIL && playerIn.getRNG().nextFloat() < breakChance)
                 {
                     int l = ((Integer)iblockstate.getValue(BlockAnvil.DAMAGE)).intValue();
                     ++l;
@@ -118,17 +119,17 @@ public class ContainerRepair extends Container
                     if (l > 2)
                     {
                         worldIn.setBlockToAir(blockPosIn);
-                        worldIn.playAuxSFX(1029, blockPosIn, 0);
+                        worldIn.playEvent(1029, blockPosIn, 0);
                     }
                     else
                     {
                         worldIn.setBlockState(blockPosIn, iblockstate.withProperty(BlockAnvil.DAMAGE, Integer.valueOf(l)), 2);
-                        worldIn.playAuxSFX(1030, blockPosIn, 0);
+                        worldIn.playEvent(1030, blockPosIn, 0);
                     }
                 }
                 else if (!worldIn.isRemote)
                 {
-                    worldIn.playAuxSFX(1030, blockPosIn, 0);
+                    worldIn.playEvent(1030, blockPosIn, 0);
                 }
             }
         });
@@ -188,7 +189,7 @@ public class ContainerRepair extends Container
             if (itemstack2 != null)
             {
                 if (!net.minecraftforge.common.ForgeHooks.onAnvilChange(this, itemstack, itemstack2, outputSlot, repairedItemName, j)) return;
-                flag = itemstack2.getItem() == Items.enchanted_book && !Items.enchanted_book.getEnchantments(itemstack2).hasNoTags();
+                flag = itemstack2.getItem() == Items.ENCHANTED_BOOK && !Items.ENCHANTED_BOOK.getEnchantments(itemstack2).hasNoTags();
 
                 if (itemstack1.isItemStackDamageable() && itemstack1.getItem().getIsRepairable(itemstack, itemstack2))
                 {
@@ -253,7 +254,7 @@ public class ContainerRepair extends Container
                             j3 = i3 == j3 ? j3 + 1 : Math.max(j3, i3);
                             boolean flag1 = enchantment1.canApply(itemstack);
 
-                            if (this.thePlayer.capabilities.isCreativeMode || itemstack.getItem() == Items.enchanted_book)
+                            if (this.thePlayer.capabilities.isCreativeMode || itemstack.getItem() == Items.ENCHANTED_BOOK)
                             {
                                 flag1 = true;
                             }
@@ -277,7 +278,7 @@ public class ContainerRepair extends Container
                                 map.put(enchantment1, Integer.valueOf(j3));
                                 int k3 = 0;
 
-                                switch (enchantment1.getWeight())
+                                switch (enchantment1.getRarity())
                                 {
                                     case COMMON:
                                         k3 = 1;
@@ -362,9 +363,9 @@ public class ContainerRepair extends Container
         }
     }
 
-    public void onCraftGuiOpened(ICrafting listener)
+    public void addListener(IContainerListener listener)
     {
-        super.onCraftGuiOpened(listener);
+        super.addListener(listener);
         listener.sendProgressBarUpdate(this, 0, this.maximumCost);
     }
 
@@ -392,7 +393,7 @@ public class ContainerRepair extends Container
 
                 if (itemstack != null)
                 {
-                    playerIn.dropPlayerItemWithRandomChoice(itemstack, false);
+                    playerIn.dropItem(itemstack, false);
                 }
             }
         }
@@ -400,12 +401,13 @@ public class ContainerRepair extends Container
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return this.theWorld.getBlockState(this.selfPosition).getBlock() != Blocks.anvil ? false : playerIn.getDistanceSq((double)this.selfPosition.getX() + 0.5D, (double)this.selfPosition.getY() + 0.5D, (double)this.selfPosition.getZ() + 0.5D) <= 64.0D;
+        return this.theWorld.getBlockState(this.selfPosition).getBlock() != Blocks.ANVIL ? false : playerIn.getDistanceSq((double)this.selfPosition.getX() + 0.5D, (double)this.selfPosition.getY() + 0.5D, (double)this.selfPosition.getZ() + 0.5D) <= 64.0D;
     }
 
     /**
      * Take a stack from the specified inventory slot.
      */
+    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
         ItemStack itemstack = null;

@@ -2,6 +2,7 @@ package net.minecraft.network.datasync;
 
 import com.google.common.base.Optional;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
@@ -79,11 +80,11 @@ public class DataSerializers
     {
         public void write(PacketBuffer buf, ITextComponent value)
         {
-            buf.writeChatComponent(value);
+            buf.writeTextComponent(value);
         }
         public ITextComponent read(PacketBuffer buf) throws java.io.IOException
         {
-            return buf.readChatComponent();
+            return buf.readTextComponent();
         }
         public DataParameter<ITextComponent> createKey(int id)
         {
@@ -236,6 +237,7 @@ public class DataSerializers
         REGISTRY.add(serializer);
     }
 
+    @Nullable
     public static DataSerializer<?> getSerializer(int id)
     {
         return (DataSerializer)REGISTRY.get(id);

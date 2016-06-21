@@ -3,6 +3,7 @@ package net.minecraft.world.biome;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.init.Biomes;
@@ -15,13 +16,13 @@ import net.minecraft.world.storage.WorldInfo;
 
 public class BiomeProvider
 {
-    public static List<BiomeGenBase> allowedBiomes = Lists.newArrayList(Biomes.forest, Biomes.plains, Biomes.taiga, Biomes.taigaHills, Biomes.forestHills, Biomes.jungle, Biomes.jungleHills);
+    public static List<Biome> allowedBiomes = Lists.newArrayList(Biomes.FOREST, Biomes.PLAINS, Biomes.TAIGA, Biomes.TAIGA_HILLS, Biomes.FOREST_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS);
     private GenLayer genBiomes;
     /** A GenLayer containing the indices into BiomeGenBase.biomeList[] */
     private GenLayer biomeIndexLayer;
     /** The biome list. */
     private final BiomeCache biomeCache;
-    private final List<BiomeGenBase> biomesToSpawnIn;
+    private final List<Biome> biomesToSpawnIn;
 
     protected BiomeProvider()
     {
@@ -38,12 +39,12 @@ public class BiomeProvider
         this.biomeIndexLayer = agenlayer[1];
     }
 
-    public BiomeProvider(WorldInfo p_i46712_1_)
+    public BiomeProvider(WorldInfo info)
     {
-        this(p_i46712_1_.getSeed(), p_i46712_1_.getTerrainType(), p_i46712_1_.getGeneratorOptions());
+        this(info.getSeed(), info.getTerrainType(), info.getGeneratorOptions());
     }
 
-    public List<BiomeGenBase> getBiomesToSpawnIn()
+    public List<Biome> getBiomesToSpawnIn()
     {
         return this.biomesToSpawnIn;
     }
@@ -51,14 +52,14 @@ public class BiomeProvider
     /**
      * Returns the biome generator
      */
-    public BiomeGenBase getBiomeGenerator(BlockPos pos)
+    public Biome getBiomeGenerator(BlockPos pos)
     {
-        return this.getBiomeGenerator(pos, (BiomeGenBase)null);
+        return this.getBiomeGenerator(pos, (Biome)null);
     }
 
-    public BiomeGenBase getBiomeGenerator(BlockPos pos, BiomeGenBase biomeGenBaseIn)
+    public Biome getBiomeGenerator(BlockPos pos, Biome biomeGenBaseIn)
     {
-        return this.biomeCache.func_180284_a(pos.getX(), pos.getZ(), biomeGenBaseIn);
+        return this.biomeCache.getBiome(pos.getX(), pos.getZ(), biomeGenBaseIn);
     }
 
     /**
@@ -72,13 +73,13 @@ public class BiomeProvider
     /**
      * Returns an array of biomes for the location input.
      */
-    public BiomeGenBase[] getBiomesForGeneration(BiomeGenBase[] biomes, int x, int z, int width, int height)
+    public Biome[] getBiomesForGeneration(Biome[] biomes, int x, int z, int width, int height)
     {
         IntCache.resetIntCache();
 
         if (biomes == null || biomes.length < width * height)
         {
-            biomes = new BiomeGenBase[width * height];
+            biomes = new Biome[width * height];
         }
 
         int[] aint = this.genBiomes.getInts(x, z, width, height);
@@ -87,7 +88,7 @@ public class BiomeProvider
         {
             for (int i = 0; i < width * height; ++i)
             {
-                biomes[i] = BiomeGenBase.getBiomeFromBiomeList(aint[i], Biomes.DEFAULT);
+                biomes[i] = Biome.getBiome(aint[i], Biomes.DEFAULT);
             }
 
             return biomes;
@@ -106,31 +107,30 @@ public class BiomeProvider
     }
 
     /**
-     * Returns biomes to use for the blocks and loads the other data like temperature and humidity onto the
-     * WorldChunkManager Args: oldBiomeList, x, z, width, depth
+     * Gets biomes to use for the blocks and loads the other data like temperature and humidity onto the
+     * WorldChunkManager.
      */
-    public BiomeGenBase[] loadBlockGeneratorData(BiomeGenBase[] oldBiomeList, int x, int z, int width, int depth)
+    public Biome[] loadBlockGeneratorData(@Nullable Biome[] oldBiomeList, int x, int z, int width, int depth)
     {
         return this.getBiomeGenAt(oldBiomeList, x, z, width, depth, true);
     }
 
     /**
-     * Return a list of biomes for the specified blocks. Args: listToReuse, x, y, width, length, cacheFlag (if false,
-     * don't check biomeCache to avoid infinite loop in BiomeCacheBlock)
+     * Gets a list of biomes for the specified blocks.
      */
-    public BiomeGenBase[] getBiomeGenAt(BiomeGenBase[] listToReuse, int x, int z, int width, int length, boolean cacheFlag)
+    public Biome[] getBiomeGenAt(@Nullable Biome[] listToReuse, int x, int z, int width, int length, boolean cacheFlag)
     {
         IntCache.resetIntCache();
 
         if (listToReuse == null || listToReuse.length < width * length)
         {
-            listToReuse = new BiomeGenBase[width * length];
+            listToReuse = new Biome[width * length];
         }
 
         if (cacheFlag && width == 16 && length == 16 && (x & 15) == 0 && (z & 15) == 0)
         {
-            BiomeGenBase[] abiomegenbase = this.biomeCache.getCachedBiomes(x, z);
-            System.arraycopy(abiomegenbase, 0, listToReuse, 0, width * length);
+            Biome[] abiome = this.biomeCache.getCachedBiomes(x, z);
+            System.arraycopy(abiome, 0, listToReuse, 0, width * length);
             return listToReuse;
         }
         else
@@ -139,7 +139,7 @@ public class BiomeProvider
 
             for (int i = 0; i < width * length; ++i)
             {
-                listToReuse[i] = BiomeGenBase.getBiomeFromBiomeList(aint[i], Biomes.DEFAULT);
+                listToReuse[i] = Biome.getBiome(aint[i], Biomes.DEFAULT);
             }
 
             return listToReuse;
@@ -149,13 +149,13 @@ public class BiomeProvider
     /**
      * checks given Chunk's Biomes against List of allowed ones
      */
-    public boolean areBiomesViable(int p_76940_1_, int p_76940_2_, int p_76940_3_, List<BiomeGenBase> p_76940_4_)
+    public boolean areBiomesViable(int x, int z, int radius, List<Biome> allowed)
     {
         IntCache.resetIntCache();
-        int i = p_76940_1_ - p_76940_3_ >> 2;
-        int j = p_76940_2_ - p_76940_3_ >> 2;
-        int k = p_76940_1_ + p_76940_3_ >> 2;
-        int l = p_76940_2_ + p_76940_3_ >> 2;
+        int i = x - radius >> 2;
+        int j = z - radius >> 2;
+        int k = x + radius >> 2;
+        int l = z + radius >> 2;
         int i1 = k - i + 1;
         int j1 = l - j + 1;
         int[] aint = this.genBiomes.getInts(i, j, i1, j1);
@@ -164,9 +164,9 @@ public class BiomeProvider
         {
             for (int k1 = 0; k1 < i1 * j1; ++k1)
             {
-                BiomeGenBase biomegenbase = BiomeGenBase.getBiome(aint[k1]);
+                Biome biome = Biome.getBiome(aint[k1]);
 
-                if (!p_76940_4_.contains(biomegenbase))
+                if (!allowed.contains(biome))
                 {
                     return false;
                 }
@@ -179,15 +179,16 @@ public class BiomeProvider
             CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Invalid Biome id");
             CrashReportCategory crashreportcategory = crashreport.makeCategory("Layer");
             crashreportcategory.addCrashSection("Layer", this.genBiomes.toString());
-            crashreportcategory.addCrashSection("x", Integer.valueOf(p_76940_1_));
-            crashreportcategory.addCrashSection("z", Integer.valueOf(p_76940_2_));
-            crashreportcategory.addCrashSection("radius", Integer.valueOf(p_76940_3_));
-            crashreportcategory.addCrashSection("allowed", p_76940_4_);
+            crashreportcategory.addCrashSection("x", Integer.valueOf(x));
+            crashreportcategory.addCrashSection("z", Integer.valueOf(z));
+            crashreportcategory.addCrashSection("radius", Integer.valueOf(radius));
+            crashreportcategory.addCrashSection("allowed", allowed);
             throw new ReportedException(crashreport);
         }
     }
 
-    public BlockPos findBiomePosition(int x, int z, int range, List<BiomeGenBase> biomes, Random random)
+    @Nullable
+    public BlockPos findBiomePosition(int x, int z, int range, List<Biome> biomes, Random random)
     {
         IntCache.resetIntCache();
         int i = x - range >> 2;
@@ -204,9 +205,9 @@ public class BiomeProvider
         {
             int i2 = i + l1 % i1 << 2;
             int j2 = j + l1 / i1 << 2;
-            BiomeGenBase biomegenbase = BiomeGenBase.getBiome(aint[l1]);
+            Biome biome = Biome.getBiome(aint[l1]);
 
-            if (biomes.contains(biomegenbase) && (blockpos == null || random.nextInt(k1 + 1) == 0))
+            if (biomes.contains(biome) && (blockpos == null || random.nextInt(k1 + 1) == 0))
             {
                 blockpos = new BlockPos(i2, 0, j2);
                 ++k1;

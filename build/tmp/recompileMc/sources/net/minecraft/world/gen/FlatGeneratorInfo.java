@@ -9,7 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class FlatGeneratorInfo
 {
@@ -43,7 +43,7 @@ public class FlatGeneratorInfo
         return this.flatLayers;
     }
 
-    public void func_82645_d()
+    public void updateLayers()
     {
         int i = 0;
 
@@ -117,7 +117,7 @@ public class FlatGeneratorInfo
         return stringbuilder.toString();
     }
 
-    private static FlatLayerInfo func_180715_a(int p_180715_0_, String p_180715_1_, int p_180715_2_)
+    private static FlatLayerInfo getLayerFromString(int p_180715_0_, String p_180715_1_, int p_180715_2_)
     {
         String[] astring = p_180715_0_ >= 3 ? p_180715_1_.split("\\*", 2) : p_180715_1_.split("x", 2);
         int i = 1;
@@ -187,7 +187,7 @@ public class FlatGeneratorInfo
                 }
             }
 
-            if (block == Blocks.air)
+            if (block == Blocks.AIR)
             {
                 j = 0;
             }
@@ -207,7 +207,7 @@ public class FlatGeneratorInfo
         return flatlayerinfo;
     }
 
-    private static List<FlatLayerInfo> func_180716_a(int p_180716_0_, String p_180716_1_)
+    private static List<FlatLayerInfo> getLayersFromString(int p_180716_0_, String p_180716_1_)
     {
         if (p_180716_1_ != null && p_180716_1_.length() >= 1)
         {
@@ -217,7 +217,7 @@ public class FlatGeneratorInfo
 
             for (String s : astring)
             {
-                FlatLayerInfo flatlayerinfo = func_180715_a(p_180716_0_, s, i);
+                FlatLayerInfo flatlayerinfo = getLayerFromString(p_180716_0_, s, i);
 
                 if (flatlayerinfo == null)
                 {
@@ -251,13 +251,13 @@ public class FlatGeneratorInfo
             {
                 FlatGeneratorInfo flatgeneratorinfo = new FlatGeneratorInfo();
                 int j = astring.length == 1 ? 0 : 1;
-                List<FlatLayerInfo> list = func_180716_a(i, astring[j++]);
+                List<FlatLayerInfo> list = getLayersFromString(i, astring[j++]);
 
                 if (list != null && !list.isEmpty())
                 {
                     flatgeneratorinfo.getFlatLayers().addAll(list);
-                    flatgeneratorinfo.func_82645_d();
-                    int k = BiomeGenBase.getIdForBiome(Biomes.plains);
+                    flatgeneratorinfo.updateLayers();
+                    int k = Biome.getIdForBiome(Biomes.PLAINS);
 
                     if (i > 0 && astring.length > j)
                     {
@@ -318,11 +318,11 @@ public class FlatGeneratorInfo
     public static FlatGeneratorInfo getDefaultFlatGenerator()
     {
         FlatGeneratorInfo flatgeneratorinfo = new FlatGeneratorInfo();
-        flatgeneratorinfo.setBiome(BiomeGenBase.getIdForBiome(Biomes.plains));
-        flatgeneratorinfo.getFlatLayers().add(new FlatLayerInfo(1, Blocks.bedrock));
-        flatgeneratorinfo.getFlatLayers().add(new FlatLayerInfo(2, Blocks.dirt));
-        flatgeneratorinfo.getFlatLayers().add(new FlatLayerInfo(1, Blocks.grass));
-        flatgeneratorinfo.func_82645_d();
+        flatgeneratorinfo.setBiome(Biome.getIdForBiome(Biomes.PLAINS));
+        flatgeneratorinfo.getFlatLayers().add(new FlatLayerInfo(1, Blocks.BEDROCK));
+        flatgeneratorinfo.getFlatLayers().add(new FlatLayerInfo(2, Blocks.DIRT));
+        flatgeneratorinfo.getFlatLayers().add(new FlatLayerInfo(1, Blocks.GRASS));
+        flatgeneratorinfo.updateLayers();
         flatgeneratorinfo.getWorldFeatures().put("village", Maps.<String, String>newHashMap());
         return flatgeneratorinfo;
     }

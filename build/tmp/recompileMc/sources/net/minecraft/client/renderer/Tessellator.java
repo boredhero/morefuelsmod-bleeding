@@ -9,12 +9,12 @@ public class Tessellator
     private VertexBuffer worldRenderer;
     private WorldVertexBufferUploader vboUploader = new WorldVertexBufferUploader();
     /** The static instance of the Tessellator. */
-    private static final Tessellator instance = new Tessellator(2097152);
+    private static final Tessellator INSTANCE = new Tessellator(2097152);
 
     public static Tessellator getInstance()
     {
         /** The static instance of the Tessellator. */
-        return instance;
+        return INSTANCE;
     }
 
     public Tessellator(int bufferSize)

@@ -7,7 +7,7 @@ import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +30,8 @@ public abstract class EntityAITarget extends EntityAIBase
      * see the target
      */
     private int targetUnseenTicks;
-    protected EntityLivingBase field_188509_g;
-    protected int field_188510_h;
+    protected EntityLivingBase target;
+    protected int unseenMemoryTicks;
 
     public EntityAITarget(EntityCreature creature, boolean checkSight)
     {
@@ -40,7 +40,7 @@ public abstract class EntityAITarget extends EntityAIBase
 
     public EntityAITarget(EntityCreature creature, boolean checkSight, boolean onlyNearby)
     {
-        this.field_188510_h = 60;
+        this.unseenMemoryTicks = 60;
         this.taskOwner = creature;
         this.shouldCheckSight = checkSight;
         this.nearbyOnly = onlyNearby;
@@ -55,7 +55,7 @@ public abstract class EntityAITarget extends EntityAIBase
 
         if (entitylivingbase == null)
         {
-            entitylivingbase = this.field_188509_g;
+            entitylivingbase = this.target;
         }
 
         if (entitylivingbase == null)
@@ -91,7 +91,7 @@ public abstract class EntityAITarget extends EntityAIBase
                         {
                             this.targetUnseenTicks = 0;
                         }
-                        else if (++this.targetUnseenTicks > this.field_188510_h)
+                        else if (++this.targetUnseenTicks > this.unseenMemoryTicks)
                         {
                             return false;
                         }
@@ -133,7 +133,7 @@ public abstract class EntityAITarget extends EntityAIBase
     public void resetTask()
     {
         this.taskOwner.setAttackTarget((EntityLivingBase)null);
-        this.field_188509_g = null;
+        this.target = null;
     }
 
     /**
@@ -228,15 +228,15 @@ public abstract class EntityAITarget extends EntityAIBase
     private boolean canEasilyReach(EntityLivingBase target)
     {
         this.targetSearchDelay = 10 + this.taskOwner.getRNG().nextInt(5);
-        PathEntity pathentity = this.taskOwner.getNavigator().getPathToEntityLiving(target);
+        Path path = this.taskOwner.getNavigator().getPathToEntityLiving(target);
 
-        if (pathentity == null)
+        if (path == null)
         {
             return false;
         }
         else
         {
-            PathPoint pathpoint = pathentity.getFinalPathPoint();
+            PathPoint pathpoint = path.getFinalPathPoint();
 
             if (pathpoint == null)
             {

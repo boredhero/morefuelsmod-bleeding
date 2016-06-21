@@ -25,10 +25,6 @@ public class CommandDefaultGameMode extends CommandGameMode
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -40,16 +36,13 @@ public class CommandDefaultGameMode extends CommandGameMode
         {
             WorldSettings.GameType worldsettings$gametype = this.getGameModeFromCommand(sender, args[0]);
             this.setDefaultGameType(worldsettings$gametype, server);
-            notifyOperators(sender, this, "commands.defaultgamemode.success", new Object[] {new TextComponentTranslation("gameMode." + worldsettings$gametype.getName(), new Object[0])});
+            notifyCommandListener(sender, this, "commands.defaultgamemode.success", new Object[] {new TextComponentTranslation("gameMode." + worldsettings$gametype.getName(), new Object[0])});
         }
     }
 
     /**
      * Set the default game type for the server. Also propogate the changes to all players if the server is set to force
      * game mode
-     *  
-     * @param gameType The game type to set
-     * @param server The Minecraft server instance
      */
     protected void setDefaultGameType(WorldSettings.GameType gameType, MinecraftServer server)
     {

@@ -3,6 +3,7 @@ package net.minecraft.entity.projectile;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -35,9 +36,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class EntityArrow extends Entity implements IProjectile
 {
-    private static final Predicate<Entity> field_184553_f = Predicates.and(new Predicate[] {EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, new Predicate<Entity>()
+    private static final Predicate<Entity> ARROW_TARGETS = Predicates.and(new Predicate[] {EntitySelectors.NOT_SPECTATING, EntitySelectors.IS_ALIVE, new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return p_apply_1_.canBeCollidedWith();
         }
@@ -50,9 +51,9 @@ public abstract class EntityArrow extends Entity implements IProjectile
     private Block inTile;
     private int inData;
     protected boolean inGround;
-    protected int field_184552_b;
+    protected int timeInGround;
     /** 1 if the player can pick up the arrow */
-    public EntityArrow.PickupStatus canBePickedUp;
+    public EntityArrow.PickupStatus pickupStatus;
     /** Seems to be some sort of timer for animating an arrow. */
     public int arrowShake;
     /** The owner of this arrow. */
@@ -69,7 +70,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
         this.xTile = -1;
         this.yTile = -1;
         this.zTile = -1;
-        this.canBePickedUp = EntityArrow.PickupStatus.DISALLOWED;
+        this.pickupStatus = EntityArrow.PickupStatus.DISALLOWED;
         this.damage = 2.0D;
         this.setSize(0.5F, 0.5F);
     }
@@ -87,13 +88,12 @@ public abstract class EntityArrow extends Entity implements IProjectile
 
         if (shooter instanceof EntityPlayer)
         {
-            this.canBePickedUp = EntityArrow.PickupStatus.ALLOWED;
+            this.pickupStatus = EntityArrow.PickupStatus.ALLOWED;
         }
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -111,10 +111,10 @@ public abstract class EntityArrow extends Entity implements IProjectile
 
     protected void entityInit()
     {
-        this.dataWatcher.register(CRITICAL, Byte.valueOf((byte)0));
+        this.dataManager.register(CRITICAL, Byte.valueOf((byte)0));
     }
 
-    public void func_184547_a(Entity p_184547_1_, float p_184547_2_, float p_184547_3_, float p_184547_4_, float p_184547_5_, float p_184547_6_)
+    public void setAim(Entity p_184547_1_, float p_184547_2_, float p_184547_3_, float p_184547_4_, float p_184547_5_, float p_184547_6_)
     {
         float f = -MathHelper.sin(p_184547_3_ * 0.017453292F) * MathHelper.cos(p_184547_2_ * 0.017453292F);
         float f1 = -MathHelper.sin(p_184547_2_ * 0.017453292F);
@@ -153,15 +153,18 @@ public abstract class EntityArrow extends Entity implements IProjectile
         this.ticksInGround = 0;
     }
 
+    /**
+     * Set the position and rotation values directly without any clamping.
+     */
     @SideOnly(Side.CLIENT)
-    public void setPositionAndRotation2(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean p_180426_10_)
+    public void setPositionAndRotationDirect(double x, double y, double z, float yaw, float pitch, int posRotationIncrements, boolean teleport)
     {
         this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
 
     /**
-     * Sets the velocity to the args. Args: x, y, z
+     * Updates the velocity of the entity to a new value.
      */
     @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
@@ -200,9 +203,9 @@ public abstract class EntityArrow extends Entity implements IProjectile
         IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
         Block block = iblockstate.getBlock();
 
-        if (iblockstate.getMaterial() != Material.air)
+        if (iblockstate.getMaterial() != Material.AIR)
         {
-            AxisAlignedBB axisalignedbb = iblockstate.getSelectedBoundingBox(this.worldObj, blockpos);
+            AxisAlignedBB axisalignedbb = iblockstate.getCollisionBoundingBox(this.worldObj, blockpos);
 
             if (axisalignedbb != Block.NULL_AABB && axisalignedbb.offset(blockpos).isVecInside(new Vec3d(this.posX, this.posY, this.posZ)))
             {
@@ -238,11 +241,11 @@ public abstract class EntityArrow extends Entity implements IProjectile
                 this.ticksInAir = 0;
             }
 
-            ++this.field_184552_b;
+            ++this.timeInGround;
         }
         else
         {
-            this.field_184552_b = 0;
+            this.timeInGround = 0;
             ++this.ticksInAir;
             Vec3d vec3d1 = new Vec3d(this.posX, this.posY, this.posZ);
             Vec3d vec3d = new Vec3d(this.posX + this.motionX, this.posY + this.motionY, this.posZ + this.motionZ);
@@ -255,7 +258,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
                 vec3d = new Vec3d(raytraceresult.hitVec.xCoord, raytraceresult.hitVec.yCoord, raytraceresult.hitVec.zCoord);
             }
 
-            Entity entity = this.func_184551_a(vec3d1, vec3d);
+            Entity entity = this.findEntityOnPath(vec3d1, vec3d);
 
             if (entity != null)
             {
@@ -274,7 +277,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
 
             if (raytraceresult != null)
             {
-                this.func_184549_a(raytraceresult);
+                this.onHit(raytraceresult);
             }
 
             if (this.getIsCritical())
@@ -341,9 +344,12 @@ public abstract class EntityArrow extends Entity implements IProjectile
         }
     }
 
-    protected void func_184549_a(RayTraceResult p_184549_1_)
+    /**
+     * Called when the arrow hits a block or an entity
+     */
+    protected void onHit(RayTraceResult raytraceResultIn)
     {
-        Entity entity = p_184549_1_.entityHit;
+        Entity entity = raytraceResultIn.entityHit;
 
         if (entity != null)
         {
@@ -402,11 +408,11 @@ public abstract class EntityArrow extends Entity implements IProjectile
 
                     if (this.shootingEntity != null && entitylivingbase != this.shootingEntity && entitylivingbase instanceof EntityPlayer && this.shootingEntity instanceof EntityPlayerMP)
                     {
-                        ((EntityPlayerMP)this.shootingEntity).playerNetServerHandler.sendPacket(new SPacketChangeGameState(6, 0.0F));
+                        ((EntityPlayerMP)this.shootingEntity).connection.sendPacket(new SPacketChangeGameState(6, 0.0F));
                     }
                 }
 
-                this.playSound(SoundEvents.entity_arrow_hit, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+                this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
 
                 if (!(entity instanceof EntityEnderman))
                 {
@@ -424,7 +430,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
 
                 if (!this.worldObj.isRemote && this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ < 0.0010000000474974513D)
                 {
-                    if (this.canBePickedUp == EntityArrow.PickupStatus.ALLOWED)
+                    if (this.pickupStatus == EntityArrow.PickupStatus.ALLOWED)
                     {
                         this.entityDropItem(this.getArrowStack(), 0.1F);
                     }
@@ -435,26 +441,26 @@ public abstract class EntityArrow extends Entity implements IProjectile
         }
         else
         {
-            BlockPos blockpos = p_184549_1_.getBlockPos();
+            BlockPos blockpos = raytraceResultIn.getBlockPos();
             this.xTile = blockpos.getX();
             this.yTile = blockpos.getY();
             this.zTile = blockpos.getZ();
             IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
             this.inTile = iblockstate.getBlock();
             this.inData = this.inTile.getMetaFromState(iblockstate);
-            this.motionX = (double)((float)(p_184549_1_.hitVec.xCoord - this.posX));
-            this.motionY = (double)((float)(p_184549_1_.hitVec.yCoord - this.posY));
-            this.motionZ = (double)((float)(p_184549_1_.hitVec.zCoord - this.posZ));
+            this.motionX = (double)((float)(raytraceResultIn.hitVec.xCoord - this.posX));
+            this.motionY = (double)((float)(raytraceResultIn.hitVec.yCoord - this.posY));
+            this.motionZ = (double)((float)(raytraceResultIn.hitVec.zCoord - this.posZ));
             float f2 = MathHelper.sqrt_double(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ);
             this.posX -= this.motionX / (double)f2 * 0.05000000074505806D;
             this.posY -= this.motionY / (double)f2 * 0.05000000074505806D;
             this.posZ -= this.motionZ / (double)f2 * 0.05000000074505806D;
-            this.playSound(SoundEvents.entity_arrow_hit, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
+            this.playSound(SoundEvents.ENTITY_ARROW_HIT, 1.0F, 1.2F / (this.rand.nextFloat() * 0.2F + 0.9F));
             this.inGround = true;
             this.arrowShake = 7;
             this.setIsCritical(false);
 
-            if (iblockstate.getMaterial() != Material.air)
+            if (iblockstate.getMaterial() != Material.AIR)
             {
                 this.inTile.onEntityCollidedWithBlock(this.worldObj, blockpos, iblockstate, this);
             }
@@ -465,10 +471,11 @@ public abstract class EntityArrow extends Entity implements IProjectile
     {
     }
 
-    protected Entity func_184551_a(Vec3d p_184551_1_, Vec3d p_184551_2_)
+    @Nullable
+    protected Entity findEntityOnPath(Vec3d start, Vec3d end)
     {
         Entity entity = null;
-        List<Entity> list = this.worldObj.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().addCoord(this.motionX, this.motionY, this.motionZ).expandXyz(1.0D), field_184553_f);
+        List<Entity> list = this.worldObj.getEntitiesInAABBexcluding(this, this.getEntityBoundingBox().addCoord(this.motionX, this.motionY, this.motionZ).expandXyz(1.0D), ARROW_TARGETS);
         double d0 = 0.0D;
 
         for (int i = 0; i < list.size(); ++i)
@@ -478,11 +485,11 @@ public abstract class EntityArrow extends Entity implements IProjectile
             if (entity1 != this.shootingEntity || this.ticksInAir >= 5)
             {
                 AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expandXyz(0.30000001192092896D);
-                RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(p_184551_1_, p_184551_2_);
+                RayTraceResult raytraceresult = axisalignedbb.calculateIntercept(start, end);
 
                 if (raytraceresult != null)
                 {
-                    double d1 = p_184551_1_.squareDistanceTo(raytraceresult.hitVec);
+                    double d1 = start.squareDistanceTo(raytraceresult.hitVec);
 
                     if (d1 < d0 || d0 == 0.0D)
                     {
@@ -499,56 +506,56 @@ public abstract class EntityArrow extends Entity implements IProjectile
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setInteger("xTile", this.xTile);
-        tagCompound.setInteger("yTile", this.yTile);
-        tagCompound.setInteger("zTile", this.zTile);
-        tagCompound.setShort("life", (short)this.ticksInGround);
-        ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.inTile);
-        tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
-        tagCompound.setByte("inData", (byte)this.inData);
-        tagCompound.setByte("shake", (byte)this.arrowShake);
-        tagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
-        tagCompound.setByte("pickup", (byte)this.canBePickedUp.ordinal());
-        tagCompound.setDouble("damage", this.damage);
+        compound.setInteger("xTile", this.xTile);
+        compound.setInteger("yTile", this.yTile);
+        compound.setInteger("zTile", this.zTile);
+        compound.setShort("life", (short)this.ticksInGround);
+        ResourceLocation resourcelocation = (ResourceLocation)Block.REGISTRY.getNameForObject(this.inTile);
+        compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
+        compound.setByte("inData", (byte)this.inData);
+        compound.setByte("shake", (byte)this.arrowShake);
+        compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+        compound.setByte("pickup", (byte)this.pickupStatus.ordinal());
+        compound.setDouble("damage", this.damage);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.xTile = tagCompund.getInteger("xTile");
-        this.yTile = tagCompund.getInteger("yTile");
-        this.zTile = tagCompund.getInteger("zTile");
-        this.ticksInGround = tagCompund.getShort("life");
+        this.xTile = compound.getInteger("xTile");
+        this.yTile = compound.getInteger("yTile");
+        this.zTile = compound.getInteger("zTile");
+        this.ticksInGround = compound.getShort("life");
 
-        if (tagCompund.hasKey("inTile", 8))
+        if (compound.hasKey("inTile", 8))
         {
-            this.inTile = Block.getBlockFromName(tagCompund.getString("inTile"));
+            this.inTile = Block.getBlockFromName(compound.getString("inTile"));
         }
         else
         {
-            this.inTile = Block.getBlockById(tagCompund.getByte("inTile") & 255);
+            this.inTile = Block.getBlockById(compound.getByte("inTile") & 255);
         }
 
-        this.inData = tagCompund.getByte("inData") & 255;
-        this.arrowShake = tagCompund.getByte("shake") & 255;
-        this.inGround = tagCompund.getByte("inGround") == 1;
+        this.inData = compound.getByte("inData") & 255;
+        this.arrowShake = compound.getByte("shake") & 255;
+        this.inGround = compound.getByte("inGround") == 1;
 
-        if (tagCompund.hasKey("damage", 99))
+        if (compound.hasKey("damage", 99))
         {
-            this.damage = tagCompund.getDouble("damage");
+            this.damage = compound.getDouble("damage");
         }
 
-        if (tagCompund.hasKey("pickup", 99))
+        if (compound.hasKey("pickup", 99))
         {
-            this.canBePickedUp = EntityArrow.PickupStatus.func_188795_a(tagCompund.getByte("pickup"));
+            this.pickupStatus = EntityArrow.PickupStatus.getByOrdinal(compound.getByte("pickup"));
         }
-        else if (tagCompund.hasKey("player", 99))
+        else if (compound.hasKey("player", 99))
         {
-            this.canBePickedUp = tagCompund.getBoolean("player") ? EntityArrow.PickupStatus.ALLOWED : EntityArrow.PickupStatus.DISALLOWED;
+            this.pickupStatus = compound.getBoolean("player") ? EntityArrow.PickupStatus.ALLOWED : EntityArrow.PickupStatus.DISALLOWED;
         }
     }
 
@@ -559,16 +566,16 @@ public abstract class EntityArrow extends Entity implements IProjectile
     {
         if (!this.worldObj.isRemote && this.inGround && this.arrowShake <= 0)
         {
-            boolean flag = this.canBePickedUp == EntityArrow.PickupStatus.ALLOWED || this.canBePickedUp == EntityArrow.PickupStatus.CREATIVE_ONLY && entityIn.capabilities.isCreativeMode;
+            boolean flag = this.pickupStatus == EntityArrow.PickupStatus.ALLOWED || this.pickupStatus == EntityArrow.PickupStatus.CREATIVE_ONLY && entityIn.capabilities.isCreativeMode;
 
-            if (this.canBePickedUp == EntityArrow.PickupStatus.ALLOWED && !entityIn.inventory.addItemStackToInventory(this.getArrowStack()))
+            if (this.pickupStatus == EntityArrow.PickupStatus.ALLOWED && !entityIn.inventory.addItemStackToInventory(this.getArrowStack()))
             {
                 flag = false;
             }
 
             if (flag)
             {
-                this.playSound(SoundEvents.entity_item_pickup, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
+                this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
                 entityIn.onItemPickup(this, 1);
                 this.setDead();
             }
@@ -611,9 +618,9 @@ public abstract class EntityArrow extends Entity implements IProjectile
     }
 
     /**
-     * If returns false, the item will not inflict any damage against entities.
+     * Returns true if it's possible to attack this entity with an item.
      */
-    public boolean canAttackWithItem()
+    public boolean canBeAttackedWithItem()
     {
         return false;
     }
@@ -628,15 +635,15 @@ public abstract class EntityArrow extends Entity implements IProjectile
      */
     public void setIsCritical(boolean critical)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(CRITICAL)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(CRITICAL)).byteValue();
 
         if (critical)
         {
-            this.dataWatcher.set(CRITICAL, Byte.valueOf((byte)(b0 | 1)));
+            this.dataManager.set(CRITICAL, Byte.valueOf((byte)(b0 | 1)));
         }
         else
         {
-            this.dataWatcher.set(CRITICAL, Byte.valueOf((byte)(b0 & -2)));
+            this.dataManager.set(CRITICAL, Byte.valueOf((byte)(b0 & -2)));
         }
     }
 
@@ -645,7 +652,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
      */
     public boolean getIsCritical()
     {
-        byte b0 = ((Byte)this.dataWatcher.get(CRITICAL)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(CRITICAL)).byteValue();
         return (b0 & 1) != 0;
     }
 
@@ -655,14 +662,14 @@ public abstract class EntityArrow extends Entity implements IProjectile
         ALLOWED,
         CREATIVE_ONLY;
 
-        public static EntityArrow.PickupStatus func_188795_a(int p_188795_0_)
+        public static EntityArrow.PickupStatus getByOrdinal(int ordinal)
         {
-            if (p_188795_0_ < 0 || p_188795_0_ > values().length)
+            if (ordinal < 0 || ordinal > values().length)
             {
-                p_188795_0_ = 0;
+                ordinal = 0;
             }
 
-            return values()[p_188795_0_];
+            return values()[ordinal];
         }
     }
 }

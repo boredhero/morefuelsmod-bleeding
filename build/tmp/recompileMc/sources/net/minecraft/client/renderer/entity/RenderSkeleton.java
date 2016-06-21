@@ -12,8 +12,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderSkeleton extends RenderBiped<EntitySkeleton>
 {
-    private static final ResourceLocation skeletonTextures = new ResourceLocation("textures/entity/skeleton/skeleton.png");
-    private static final ResourceLocation witherSkeletonTextures = new ResourceLocation("textures/entity/skeleton/wither_skeleton.png");
+    private static final ResourceLocation SKELETON_TEXTURES = new ResourceLocation("textures/entity/skeleton/skeleton.png");
+    private static final ResourceLocation WITHER_SKELETON_TEXTURES = new ResourceLocation("textures/entity/skeleton/wither_skeleton.png");
 
     public RenderSkeleton(RenderManager renderManagerIn)
     {
@@ -30,8 +30,7 @@ public class RenderSkeleton extends RenderBiped<EntitySkeleton>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntitySkeleton entitylivingbaseIn, float partialTickTime)
     {
@@ -51,6 +50,6 @@ public class RenderSkeleton extends RenderBiped<EntitySkeleton>
      */
     protected ResourceLocation getEntityTexture(EntitySkeleton entity)
     {
-        return entity.getSkeletonType() == 1 ? witherSkeletonTextures : skeletonTextures;
+        return entity.getSkeletonType() == 1 ? WITHER_SKELETON_TEXTURES : SKELETON_TEXTURES;
     }
 }

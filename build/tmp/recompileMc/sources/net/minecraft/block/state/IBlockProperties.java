@@ -1,6 +1,7 @@
 package net.minecraft.block.state;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -30,7 +31,7 @@ public interface IBlockProperties
     int getLightOpacity(IBlockAccess world, BlockPos pos);
 
     @Deprecated //Forge location aware version below
-    int getlightValue();
+    int getLightValue();
     int getLightValue(IBlockAccess world, BlockPos pos);
 
     @SideOnly(Side.CLIENT)
@@ -83,16 +84,17 @@ public interface IBlockProperties
     IBlockState getActualState(IBlockAccess blockAccess, BlockPos pos);
 
     @SideOnly(Side.CLIENT)
-    AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos);
+    AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos);
 
     @SideOnly(Side.CLIENT)
     boolean shouldSideBeRendered(IBlockAccess blockAccess, BlockPos pos, EnumFacing facing);
 
     boolean isOpaqueCube();
 
-    AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos);
+    @Nullable
+    AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos);
 
-    void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, Entity p_185908_5_);
+    void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_);
 
     AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos);
 

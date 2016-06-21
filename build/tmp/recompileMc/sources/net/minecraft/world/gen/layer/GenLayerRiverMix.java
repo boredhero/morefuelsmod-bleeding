@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.layer;
 
 import net.minecraft.init.Biomes;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class GenLayerRiverMix extends GenLayer
 {
@@ -38,21 +38,21 @@ public class GenLayerRiverMix extends GenLayer
 
         for (int i = 0; i < areaWidth * areaHeight; ++i)
         {
-            if (aint[i] != BiomeGenBase.getIdForBiome(Biomes.ocean) && aint[i] != BiomeGenBase.getIdForBiome(Biomes.deepOcean))
+            if (aint[i] != Biome.getIdForBiome(Biomes.OCEAN) && aint[i] != Biome.getIdForBiome(Biomes.DEEP_OCEAN))
             {
-                if (aint1[i] == BiomeGenBase.getIdForBiome(Biomes.river))
+                if (aint1[i] == Biome.getIdForBiome(Biomes.RIVER))
                 {
-                    if (aint[i] == BiomeGenBase.getIdForBiome(Biomes.icePlains))
+                    if (aint[i] == Biome.getIdForBiome(Biomes.ICE_PLAINS))
                     {
-                        aint2[i] = BiomeGenBase.getIdForBiome(Biomes.frozenRiver);
+                        aint2[i] = Biome.getIdForBiome(Biomes.FROZEN_RIVER);
                     }
-                    else if (aint[i] != BiomeGenBase.getIdForBiome(Biomes.mushroomIsland) && aint[i] != BiomeGenBase.getIdForBiome(Biomes.mushroomIslandShore))
+                    else if (aint[i] != Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND) && aint[i] != Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND_SHORE))
                     {
                         aint2[i] = aint1[i] & 255;
                     }
                     else
                     {
-                        aint2[i] = BiomeGenBase.getIdForBiome(Biomes.mushroomIslandShore);
+                        aint2[i] = Biome.getIdForBiome(Biomes.MUSHROOM_ISLAND_SHORE);
                     }
                 }
                 else

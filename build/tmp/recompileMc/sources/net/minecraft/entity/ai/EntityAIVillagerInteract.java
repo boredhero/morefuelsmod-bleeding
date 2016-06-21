@@ -27,7 +27,7 @@ public class EntityAIVillagerInteract extends EntityAIWatchClosest2
     {
         super.startExecuting();
 
-        if (this.villager.canAbondonItems() && this.closestEntity instanceof EntityVillager && ((EntityVillager)this.closestEntity).func_175557_cr())
+        if (this.villager.canAbondonItems() && this.closestEntity instanceof EntityVillager && ((EntityVillager)this.closestEntity).wantsMoreFood())
         {
             this.interactionDelay = 10;
         }
@@ -61,18 +61,18 @@ public class EntityAIVillagerInteract extends EntityAIWatchClosest2
                     {
                         Item item = itemstack.getItem();
 
-                        if ((item == Items.bread || item == Items.potato || item == Items.carrot || item == Items.beetroot) && itemstack.stackSize > 3)
+                        if ((item == Items.BREAD || item == Items.POTATO || item == Items.CARROT || item == Items.BEETROOT) && itemstack.stackSize > 3)
                         {
                             int l = itemstack.stackSize / 2;
                             itemstack.stackSize -= l;
                             itemstack1 = new ItemStack(item, l, itemstack.getMetadata());
                         }
-                        else if (item == Items.wheat && itemstack.stackSize > 5)
+                        else if (item == Items.WHEAT && itemstack.stackSize > 5)
                         {
                             int j = itemstack.stackSize / 2 / 3 * 3;
                             int k = j / 3;
                             itemstack.stackSize -= j;
-                            itemstack1 = new ItemStack(Items.bread, k, 0);
+                            itemstack1 = new ItemStack(Items.BREAD, k, 0);
                         }
 
                         if (itemstack.stackSize <= 0)

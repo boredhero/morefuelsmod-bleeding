@@ -31,8 +31,10 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidContainerItem;
 
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.google.common.base.Function;
@@ -42,7 +44,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 public final class ModelDynBucket implements IModel, IModelCustomData, IRetexturableModel
 {
     public static final ModelResourceLocation LOCATION = new ModelResourceLocation(new ResourceLocation("forge", "dynbucket"), "inventory");
@@ -238,14 +239,7 @@ public final class ModelDynBucket implements IModel, IModelCustomData, IRetextur
         @Override
         public IBakedModel handleItemState(IBakedModel originalModel, ItemStack stack, World world, EntityLivingBase entity)
         {
-            FluidStack fluidStack = FluidContainerRegistry.getFluidForFilledItem(stack);
-            if (fluidStack == null)
-            {
-                if (stack.getItem() instanceof IFluidContainerItem)
-                {
-                    fluidStack = ((IFluidContainerItem) stack.getItem()).getFluid(stack);
-                }
-            }
+            FluidStack fluidStack = FluidUtil.getFluidContained(stack);
 
             // not a fluid item apparently
             if (fluidStack == null)

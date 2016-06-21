@@ -14,17 +14,9 @@ out
 .idea
 
 # gradle
+build
+.gradle
 
 # other
 eclipse
 run
-
-/MinecraftForge-Credits.txt
-/MinecraftForge-License.txt
-/Paulscode SoundSystem CodecIBXM License.txt
-/Paulscode IBXM Library License.txt
-/LICENSE-fml.txt
-/CREDITS-fml.txt
-/morefuelsmod_Server.launch
-/morefuelsmod_Client.launch
-/forge-1.9-12.16.0.1780-1.9-changelog.txt

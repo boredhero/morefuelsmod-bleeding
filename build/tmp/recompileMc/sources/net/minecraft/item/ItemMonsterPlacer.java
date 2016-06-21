@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -35,7 +36,7 @@ public class ItemMonsterPlacer extends Item
 {
     public ItemMonsterPlacer()
     {
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
     }
 
     public String getItemStackDisplayName(ItemStack stack)
@@ -68,7 +69,7 @@ public class ItemMonsterPlacer extends Item
         {
             IBlockState iblockstate = worldIn.getBlockState(pos);
 
-            if (iblockstate.getBlock() == Blocks.mob_spawner)
+            if (iblockstate.getBlock() == Blocks.MOB_SPAWNER)
             {
                 TileEntity tileentity = worldIn.getTileEntity(pos);
 
@@ -119,10 +120,8 @@ public class ItemMonsterPlacer extends Item
 
     /**
      * Applies the data in the EntityTag tag of the given ItemStack to the given Entity.
-     *  
-     * @param entityWorld The world the Entity resides in
      */
-    public static void applyItemEntityDataToEntity(World entityWorld, EntityPlayer p_185079_1_, ItemStack stack, Entity targetEntity)
+    public static void applyItemEntityDataToEntity(World entityWorld, @Nullable EntityPlayer player, ItemStack stack, @Nullable Entity targetEntity)
     {
         MinecraftServer minecraftserver = entityWorld.getMinecraftServer();
 
@@ -132,13 +131,12 @@ public class ItemMonsterPlacer extends Item
 
             if (nbttagcompound != null && nbttagcompound.hasKey("EntityTag", 10))
             {
-                if (!entityWorld.isRemote && targetEntity.func_184213_bq() && (p_185079_1_ == null || !minecraftserver.getPlayerList().canSendCommands(p_185079_1_.getGameProfile())))
+                if (!entityWorld.isRemote && targetEntity.ignoreItemEntityData() && (player == null || !minecraftserver.getPlayerList().canSendCommands(player.getGameProfile())))
                 {
                     return;
                 }
 
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                targetEntity.writeToNBT(nbttagcompound1);
+                NBTTagCompound nbttagcompound1 = targetEntity.writeToNBT(new NBTTagCompound());
                 UUID uuid = targetEntity.getUniqueID();
                 nbttagcompound1.merge(nbttagcompound.getCompoundTag("EntityTag"));
                 targetEntity.setUniqueId(uuid);
@@ -155,7 +153,7 @@ public class ItemMonsterPlacer extends Item
         }
         else
         {
-            RayTraceResult raytraceresult = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
+            RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
 
             if (raytraceresult != null && raytraceresult.typeOfHit == RayTraceResult.Type.BLOCK)
             {
@@ -187,7 +185,7 @@ public class ItemMonsterPlacer extends Item
                             --itemStackIn.stackSize;
                         }
 
-                        playerIn.addStat(StatList.func_188057_b(this));
+                        playerIn.addStat(StatList.getObjectUseStats(this));
                         return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
                     }
                 }
@@ -207,20 +205,21 @@ public class ItemMonsterPlacer extends Item
      * Spawns the creature specified by the egg's type in the location specified by the last three parameters.
      * Parameters: world, entityID, x, y, z.
      */
-    public static Entity spawnCreature(World worldIn, String name, double x, double y, double z)
+    @Nullable
+    public static Entity spawnCreature(World worldIn, @Nullable String entityID, double x, double y, double z)
     {
-        if (name != null && EntityList.entityEggs.containsKey(name))
+        if (entityID != null && EntityList.ENTITY_EGGS.containsKey(entityID))
         {
             Entity entity = null;
 
             for (int i = 0; i < 1; ++i)
             {
-                entity = EntityList.func_188429_b(name, worldIn);
+                entity = EntityList.createEntityByIDFromName(entityID, worldIn);
 
                 if (entity instanceof EntityLivingBase)
                 {
                     EntityLiving entityliving = (EntityLiving)entity;
-                    entity.setLocationAndAngles(x, y, z, MathHelper.wrapAngleTo180_float(worldIn.rand.nextFloat() * 360.0F), 0.0F);
+                    entity.setLocationAndAngles(x, y, z, MathHelper.wrapDegrees(worldIn.rand.nextFloat() * 360.0F), 0.0F);
                     entityliving.rotationYawHead = entityliving.rotationYaw;
                     entityliving.renderYawOffset = entityliving.rotationYaw;
                     entityliving.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityliving)), (IEntityLivingData)null);
@@ -243,7 +242,7 @@ public class ItemMonsterPlacer extends Item
     @SideOnly(Side.CLIENT)
     public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
     {
-        for (EntityList.EntityEggInfo entitylist$entityegginfo : EntityList.entityEggs.values())
+        for (EntityList.EntityEggInfo entitylist$entityegginfo : EntityList.ENTITY_EGGS.values())
         {
             ItemStack itemstack = new ItemStack(itemIn, 1);
             applyEntityIdToItemStack(itemstack, entitylist$entityegginfo.spawnedID);
@@ -253,9 +252,6 @@ public class ItemMonsterPlacer extends Item
 
     /**
      * APplies the given entity ID to the given ItemStack's NBT data.
-     *  
-     * @param stack The ItemStack to apply the entity ID to
-     * @param entityId The entity ID to apply to the ItemStack
      */
     @SideOnly(Side.CLIENT)
     public static void applyEntityIdToItemStack(ItemStack stack, String entityId)
@@ -269,9 +265,8 @@ public class ItemMonsterPlacer extends Item
 
     /**
      * Gets the entity ID associated with a given ItemStack in its NBT data.
-     *  
-     * @param stack The ItemStack to retrieve an entity ID from
      */
+    @Nullable
     public static String getEntityIdFromItem(ItemStack stack)
     {
         NBTTagCompound nbttagcompound = stack.getTagCompound();

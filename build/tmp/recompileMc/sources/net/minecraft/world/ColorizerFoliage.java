@@ -15,7 +15,7 @@ public class ColorizerFoliage
     }
 
     /**
-     * Gets foliage color from temperature and humidity. Args: temperature, humidity
+     * Gets the color modifier to use for foliage.
      */
     public static int getFoliageColor(double temperature, double humidity)
     {

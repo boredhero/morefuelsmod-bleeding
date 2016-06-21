@@ -7,14 +7,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
@@ -25,12 +26,12 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraft.world.gen.ChunkProviderDebug;
@@ -41,7 +42,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Chunk
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final ExtendedBlockStorage NULL_BLOCK_STORAGE = null;
     /**
      * Used to store block IDs, block MSBs, Sky-light maps, Block-light maps, and metadata. Each entry corresponds to a
@@ -83,6 +84,7 @@ public class Chunk
     /** Contains the current round-robin relight check index, and is implied as the relight check location as well. */
     private int queuedLightChecks;
     private ConcurrentLinkedQueue<BlockPos> tileEntityPosQueue;
+    public boolean unloaded;
 
     public Chunk(World worldIn, int x, int z)
     {
@@ -122,7 +124,7 @@ public class Chunk
                 {
                     IBlockState iblockstate = primer.getBlockState(j, l, k);
 
-                    if (iblockstate.getMaterial() != Material.air)
+                    if (iblockstate.getMaterial() != Material.AIR)
                     {
                         int i1 = l >> 4;
 
@@ -159,6 +161,7 @@ public class Chunk
         return this.heightMap[z << 4 | x];
     }
 
+    @Nullable
     private ExtendedBlockStorage getLastExtendedBlockStorage()
     {
         for (int i = this.storageArrays.length - 1; i >= 0; --i)
@@ -498,7 +501,8 @@ public class Chunk
 
     private int getBlockLightOpacity(int x, int y, int z)
     {
-        return this.getBlockState(x, y, z).getLightOpacity(this.worldObj, new BlockPos(x, y, z));
+        IBlockState state = this.getBlockState(x, y, z); //Forge: Can sometimes be called before we are added to the global world list. So use the less accurate one during that. It'll be recalculated later
+        return this.unloaded ? state.getLightOpacity() : state.getLightOpacity(this.worldObj, new BlockPos(x, y, z));
     }
 
     public IBlockState getBlockState(BlockPos pos)
@@ -506,49 +510,49 @@ public class Chunk
         return this.getBlockState(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public IBlockState getBlockState(final int p_186032_1_, final int p_186032_2_, final int p_186032_3_)
+    public IBlockState getBlockState(final int x, final int y, final int z)
     {
         if (this.worldObj.getWorldType() == WorldType.DEBUG_WORLD)
         {
             IBlockState iblockstate = null;
 
-            if (p_186032_2_ == 60)
+            if (y == 60)
             {
-                iblockstate = Blocks.barrier.getDefaultState();
+                iblockstate = Blocks.BARRIER.getDefaultState();
             }
 
-            if (p_186032_2_ == 70)
+            if (y == 70)
             {
-                iblockstate = ChunkProviderDebug.func_177461_b(p_186032_1_, p_186032_3_);
+                iblockstate = ChunkProviderDebug.getBlockStateFor(x, z);
             }
 
-            return iblockstate == null ? Blocks.air.getDefaultState() : iblockstate;
+            return iblockstate == null ? Blocks.AIR.getDefaultState() : iblockstate;
         }
         else
         {
             try
             {
-                if (p_186032_2_ >= 0 && p_186032_2_ >> 4 < this.storageArrays.length)
+                if (y >= 0 && y >> 4 < this.storageArrays.length)
                 {
-                    ExtendedBlockStorage extendedblockstorage = this.storageArrays[p_186032_2_ >> 4];
+                    ExtendedBlockStorage extendedblockstorage = this.storageArrays[y >> 4];
 
                     if (extendedblockstorage != NULL_BLOCK_STORAGE)
                     {
-                        return extendedblockstorage.get(p_186032_1_ & 15, p_186032_2_ & 15, p_186032_3_ & 15);
+                        return extendedblockstorage.get(x & 15, y & 15, z & 15);
                     }
                 }
 
-                return Blocks.air.getDefaultState();
+                return Blocks.AIR.getDefaultState();
             }
             catch (Throwable throwable)
             {
                 CrashReport crashreport = CrashReport.makeCrashReport(throwable, "Getting block state");
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Block being got");
-                crashreportcategory.addCrashSectionCallable("Location", new Callable<String>()
+                crashreportcategory.setDetail("Location", new ICrashReportDetail<String>()
                 {
                     public String call() throws Exception
                     {
-                        return CrashReportCategory.getCoordinateInfo(p_186032_1_, p_186032_2_, p_186032_3_);
+                        return CrashReportCategory.getCoordinateInfo(x, y, z);
                     }
                 });
                 throw new ReportedException(crashreport);
@@ -556,6 +560,7 @@ public class Chunk
         }
     }
 
+    @Nullable
     public IBlockState setBlockState(BlockPos pos, IBlockState state)
     {
         int i = pos.getX() & 15;
@@ -585,7 +590,7 @@ public class Chunk
 
             if (extendedblockstorage == NULL_BLOCK_STORAGE)
             {
-                if (block == Blocks.air)
+                if (block == Blocks.AIR)
                 {
                     return null;
                 }
@@ -645,7 +650,8 @@ public class Chunk
                     }
                 }
 
-                if (!this.worldObj.isRemote && block1 != block)
+                // If capturing blocks, only run block physics for TE's. Non-TE's are handled in ForgeHooks.onPlaceItemIntoWorld
+                if (!this.worldObj.isRemote && block1 != block && (!this.worldObj.captureBlockSnapshots || block.hasTileEntity(state)))
                 {
                     block.onBlockAdded(this.worldObj, pos, state);
                 }
@@ -736,7 +742,7 @@ public class Chunk
     }
 
     /**
-     * Adds an entity to the chunk. Args: entity
+     * Adds an entity to the chunk.
      */
     public void addEntity(Entity entityIn)
     {
@@ -746,7 +752,7 @@ public class Chunk
 
         if (i != this.xPosition || j != this.zPosition)
         {
-            logger.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.xPosition + ", " + this.zPosition + "), " + entityIn, new Object[] {entityIn});
+            LOGGER.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.xPosition + ", " + this.zPosition + "), " + entityIn, new Object[] {entityIn});
             entityIn.setDead();
         }
 
@@ -781,19 +787,19 @@ public class Chunk
     /**
      * Removes entity at the specified index from the entity array.
      */
-    public void removeEntityAtIndex(Entity entityIn, int p_76608_2_)
+    public void removeEntityAtIndex(Entity entityIn, int index)
     {
-        if (p_76608_2_ < 0)
+        if (index < 0)
         {
-            p_76608_2_ = 0;
+            index = 0;
         }
 
-        if (p_76608_2_ >= this.entityLists.length)
+        if (index >= this.entityLists.length)
         {
-            p_76608_2_ = this.entityLists.length - 1;
+            index = this.entityLists.length - 1;
         }
 
-        this.entityLists[p_76608_2_].remove(entityIn);
+        this.entityLists[index].remove(entityIn);
     }
 
     public boolean canSeeSky(BlockPos pos)
@@ -804,6 +810,7 @@ public class Chunk
         return j >= this.heightMap[k << 4 | i];
     }
 
+    @Nullable
     private TileEntity createNewTileEntity(BlockPos pos)
     {
         IBlockState iblockstate = this.getBlockState(pos);
@@ -811,6 +818,7 @@ public class Chunk
         return !block.hasTileEntity(iblockstate) ? null : block.createTileEntity(this.worldObj, iblockstate);
     }
 
+    @Nullable
     public TileEntity getTileEntity(BlockPos pos, Chunk.EnumCreateEntityType p_177424_2_)
     {
         TileEntity tileentity = (TileEntity)this.chunkTileEntityMap.get(pos);
@@ -830,7 +838,7 @@ public class Chunk
             }
             else if (p_177424_2_ == Chunk.EnumCreateEntityType.QUEUED)
             {
-                this.tileEntityPosQueue.add(pos.getImmutable());
+                this.tileEntityPosQueue.add(pos.toImmutable());
             }
         }
 
@@ -849,6 +857,7 @@ public class Chunk
 
     public void addTileEntity(BlockPos pos, TileEntity tileEntityIn)
     {
+        if (tileEntityIn.getWorld() != this.worldObj) //Forge don't call unless it's changed, could screw up bad mods.
         tileEntityIn.setWorldObj(this.worldObj);
         tileEntityIn.setPos(pos);
 
@@ -928,7 +937,7 @@ public class Chunk
     /**
      * Fills the given list of all entities that intersect within the given bounding box that aren't the passed entity.
      */
-    public void getEntitiesWithinAABBForEntity(Entity entityIn, AxisAlignedBB aabb, List<Entity> listToFill, Predicate <? super Entity > p_177414_4_)
+    public void getEntitiesWithinAABBForEntity(@Nullable Entity entityIn, AxisAlignedBB aabb, List<Entity> listToFill, Predicate <? super Entity > p_177414_4_)
     {
         int i = MathHelper.floor_double((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0D);
         int j = MathHelper.floor_double((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0D);
@@ -1050,11 +1059,11 @@ public class Chunk
         }
     }
 
-    protected void populateChunk(IChunkGenerator p_186034_1_)
+    protected void populateChunk(IChunkGenerator generator)
     {
         if (this.isTerrainPopulated())
         {
-            if (p_186034_1_.generateStructures(this, this.xPosition, this.zPosition))
+            if (generator.generateStructures(this, this.xPosition, this.zPosition))
             {
                 this.setChunkModified();
             }
@@ -1062,8 +1071,8 @@ public class Chunk
         else
         {
             this.checkLight();
-            p_186034_1_.populate(this.xPosition, this.zPosition);
-            net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.xPosition, this.zPosition, this.worldObj, p_186034_1_, this.worldObj.getChunkProvider());
+            generator.populate(this.xPosition, this.zPosition);
+            net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.xPosition, this.zPosition, this.worldObj, generator, this.worldObj.getChunkProvider());
             this.setChunkModified();
         }
     }
@@ -1142,9 +1151,9 @@ public class Chunk
     /**
      * Gets a ChunkCoordIntPair representing the Chunk's position.
      */
-    public ChunkCoordIntPair getChunkCoordIntPair()
+    public ChunkPos getChunkCoordIntPair()
     {
-        return new ChunkCoordIntPair(this.xPosition, this.zPosition);
+        return new ChunkPos(this.xPosition, this.zPosition);
     }
 
     /**
@@ -1180,7 +1189,7 @@ public class Chunk
     {
         if (this.storageArrays.length != newStorageArrays.length)
         {
-            logger.warn("Could not set level chunk sections, array length is " + newStorageArrays.length + " instead of " + this.storageArrays.length);
+            LOGGER.warn("Could not set level chunk sections, array length is " + newStorageArrays.length + " instead of " + this.storageArrays.length);
         }
         else
         {
@@ -1189,7 +1198,7 @@ public class Chunk
     }
 
     @SideOnly(Side.CLIENT)
-    public void fillChunk(PacketBuffer p_186033_1_, int p_186033_2_, boolean p_186033_3_)
+    public void fillChunk(PacketBuffer buf, int p_186033_2_, boolean p_186033_3_)
     {
         for(TileEntity tileEntity : chunkTileEntityMap.values())
         {
@@ -1219,19 +1228,19 @@ public class Chunk
                     this.storageArrays[i] = extendedblockstorage;
                 }
 
-                extendedblockstorage.getData().read(p_186033_1_);
-                p_186033_1_.readBytes(extendedblockstorage.getBlocklightArray().getData());
+                extendedblockstorage.getData().read(buf);
+                buf.readBytes(extendedblockstorage.getBlocklightArray().getData());
 
                 if (flag)
                 {
-                    p_186033_1_.readBytes(extendedblockstorage.getSkylightArray().getData());
+                    buf.readBytes(extendedblockstorage.getSkylightArray().getData());
                 }
             }
         }
 
         if (p_186033_3_)
         {
-            p_186033_1_.readBytes(this.blockBiomeArray);
+            buf.readBytes(this.blockBiomeArray);
         }
 
         for (int j = 0; j < this.storageArrays.length; ++j)
@@ -1258,7 +1267,7 @@ public class Chunk
         for (TileEntity te : invalidList) te.invalidate();
     }
 
-    public BiomeGenBase getBiome(BlockPos pos, BiomeProvider chunkManager)
+    public Biome getBiome(BlockPos pos, BiomeProvider provider)
     {
         int i = pos.getX() & 15;
         int j = pos.getZ() & 15;
@@ -1266,13 +1275,13 @@ public class Chunk
 
         if (k == 255)
         {
-            BiomeGenBase biomegenbase = chunkManager.getBiomeGenerator(pos, Biomes.plains);
-            k = BiomeGenBase.getIdForBiome(biomegenbase);
+            Biome biome = provider.getBiomeGenerator(pos, Biomes.PLAINS);
+            k = Biome.getIdForBiome(biome);
             this.blockBiomeArray[j << 4 | i] = (byte)(k & 255);
         }
 
-        BiomeGenBase biomegenbase1 = BiomeGenBase.getBiome(k);
-        return biomegenbase1 == null ? Biomes.plains : biomegenbase1;
+        Biome biome1 = Biome.getBiome(k);
+        return biome1 == null ? Biomes.PLAINS : biome1;
     }
 
     /**
@@ -1291,7 +1300,7 @@ public class Chunk
     {
         if (this.blockBiomeArray.length != biomeArray.length)
         {
-            logger.warn("Could not set level chunk biomes, array length is " + biomeArray.length + " instead of " + this.blockBiomeArray.length);
+            LOGGER.warn("Could not set level chunk biomes, array length is " + biomeArray.length + " instead of " + this.blockBiomeArray.length);
         }
         else
         {
@@ -1453,7 +1462,7 @@ public class Chunk
 
         for (int j = i + 16 - 1; j > this.worldObj.getSeaLevel() || j > 0 && !flag1; --j)
         {
-            blockpos$mutableblockpos.set(blockpos$mutableblockpos.getX(), j, blockpos$mutableblockpos.getZ());
+            blockpos$mutableblockpos.setPos(blockpos$mutableblockpos.getX(), j, blockpos$mutableblockpos.getZ());
             int k = this.getBlockLightOpacity(blockpos$mutableblockpos);
 
             if (k == 255 && blockpos$mutableblockpos.getY() < this.worldObj.getSeaLevel())
@@ -1473,7 +1482,7 @@ public class Chunk
 
         for (int l = blockpos$mutableblockpos.getY(); l > 0; --l)
         {
-            blockpos$mutableblockpos.set(blockpos$mutableblockpos.getX(), l, blockpos$mutableblockpos.getZ());
+            blockpos$mutableblockpos.setPos(blockpos$mutableblockpos.getX(), l, blockpos$mutableblockpos.getZ());
 
             if (this.getBlockState(blockpos$mutableblockpos).getLightValue(this.worldObj, blockpos$mutableblockpos) > 0)
             {
@@ -1509,7 +1518,7 @@ public class Chunk
     {
         if (this.heightMap.length != newHeightMap.length)
         {
-            logger.warn("Could not set level chunk heightmap, array length is " + newHeightMap.length + " instead of " + this.heightMap.length);
+            LOGGER.warn("Could not set level chunk heightmap, array length is " + newHeightMap.length + " instead of " + this.heightMap.length);
         }
         else
         {

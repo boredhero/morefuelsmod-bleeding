@@ -5,6 +5,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -18,7 +19,7 @@ public abstract class TextComponentBase implements ITextComponent
      */
     public ITextComponent appendSibling(ITextComponent component)
     {
-        component.getChatStyle().setParentStyle(this.getChatStyle());
+        component.getStyle().setParentStyle(this.getStyle());
         this.siblings.add(component);
         return this;
     }
@@ -36,19 +37,19 @@ public abstract class TextComponentBase implements ITextComponent
         return this.appendSibling(new TextComponentString(text));
     }
 
-    public ITextComponent setChatStyle(Style style)
+    public ITextComponent setStyle(Style style)
     {
         this.style = style;
 
         for (ITextComponent itextcomponent : this.siblings)
         {
-            itextcomponent.getChatStyle().setParentStyle(this.getChatStyle());
+            itextcomponent.getStyle().setParentStyle(this.getStyle());
         }
 
         return this;
     }
 
-    public Style getChatStyle()
+    public Style getStyle()
     {
         if (this.style == null)
         {
@@ -56,7 +57,7 @@ public abstract class TextComponentBase implements ITextComponent
 
             for (ITextComponent itextcomponent : this.siblings)
             {
-                itextcomponent.getChatStyle().setParentStyle(this.style);
+                itextcomponent.getStyle().setParentStyle(this.style);
             }
         }
 
@@ -77,7 +78,7 @@ public abstract class TextComponentBase implements ITextComponent
 
         for (ITextComponent itextcomponent : this)
         {
-            stringbuilder.append(itextcomponent.getUnformattedTextForChat());
+            stringbuilder.append(itextcomponent.getUnformattedComponentText());
         }
 
         return stringbuilder.toString();
@@ -92,8 +93,8 @@ public abstract class TextComponentBase implements ITextComponent
 
         for (ITextComponent itextcomponent : this)
         {
-            stringbuilder.append(itextcomponent.getChatStyle().getFormattingCode());
-            stringbuilder.append(itextcomponent.getUnformattedTextForChat());
+            stringbuilder.append(itextcomponent.getStyle().getFormattingCode());
+            stringbuilder.append(itextcomponent.getUnformattedComponentText());
             stringbuilder.append((Object)TextFormatting.RESET);
         }
 
@@ -104,17 +105,17 @@ public abstract class TextComponentBase implements ITextComponent
     {
         Iterator<ITextComponent> iterator = Iterators.concat(Iterators.transform(components.iterator(), new Function<ITextComponent, Iterator<ITextComponent>>()
         {
-            public Iterator<ITextComponent> apply(ITextComponent p_apply_1_)
+            public Iterator<ITextComponent> apply(@Nullable ITextComponent p_apply_1_)
             {
                 return p_apply_1_.iterator();
             }
         }));
         iterator = Iterators.transform(iterator, new Function<ITextComponent, ITextComponent>()
         {
-            public ITextComponent apply(ITextComponent p_apply_1_)
+            public ITextComponent apply(@Nullable ITextComponent p_apply_1_)
             {
                 ITextComponent itextcomponent = p_apply_1_.createCopy();
-                itextcomponent.setChatStyle(itextcomponent.getChatStyle().createDeepCopy());
+                itextcomponent.setStyle(itextcomponent.getStyle().createDeepCopy());
                 return itextcomponent;
             }
         });
@@ -134,7 +135,7 @@ public abstract class TextComponentBase implements ITextComponent
         else
         {
             TextComponentBase textcomponentbase = (TextComponentBase)p_equals_1_;
-            return this.siblings.equals(textcomponentbase.siblings) && this.getChatStyle().equals(textcomponentbase.getChatStyle());
+            return this.siblings.equals(textcomponentbase.siblings) && this.getStyle().equals(textcomponentbase.getStyle());
         }
     }
 

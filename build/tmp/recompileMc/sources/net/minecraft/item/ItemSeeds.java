@@ -19,7 +19,7 @@ public class ItemSeeds extends Item implements net.minecraftforge.common.IPlanta
     {
         this.crops = crops;
         this.soilBlockID = soil;
-        this.setCreativeTab(CreativeTabs.tabMaterials);
+        this.setCreativeTab(CreativeTabs.MATERIALS);
     }
 
     /**
@@ -43,7 +43,7 @@ public class ItemSeeds extends Item implements net.minecraftforge.common.IPlanta
     @Override
     public net.minecraftforge.common.EnumPlantType getPlantType(net.minecraft.world.IBlockAccess world, BlockPos pos)
     {
-        return this.crops == net.minecraft.init.Blocks.nether_wart ? net.minecraftforge.common.EnumPlantType.Nether : net.minecraftforge.common.EnumPlantType.Crop;
+        return this.crops == net.minecraft.init.Blocks.NETHER_WART ? net.minecraftforge.common.EnumPlantType.Nether : net.minecraftforge.common.EnumPlantType.Crop;
     }
 
     @Override

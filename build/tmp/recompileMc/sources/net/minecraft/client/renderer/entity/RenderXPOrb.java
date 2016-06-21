@@ -14,7 +14,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderXPOrb extends Render<EntityXPOrb>
 {
-    private static final ResourceLocation experienceOrbTextures = new ResourceLocation("textures/entity/experience_orb.png");
+    private static final ResourceLocation EXPERIENCE_ORB_TEXTURES = new ResourceLocation("textures/entity/experience_orb.png");
 
     public RenderXPOrb(RenderManager renderManagerIn)
     {
@@ -76,6 +76,6 @@ public class RenderXPOrb extends Render<EntityXPOrb>
      */
     protected ResourceLocation getEntityTexture(EntityXPOrb entity)
     {
-        return experienceOrbTextures;
+        return EXPERIENCE_ORB_TEXTURES;
     }
 }

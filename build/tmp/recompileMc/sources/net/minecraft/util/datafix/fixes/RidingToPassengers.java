@@ -15,22 +15,22 @@ public class RidingToPassengers implements IFixableData
     {
         while (compound.hasKey("Riding", 10))
         {
-            NBTTagCompound nbttagcompound = this.func_188220_b(compound);
-            this.func_188219_a(compound, nbttagcompound);
+            NBTTagCompound nbttagcompound = this.extractVehicle(compound);
+            this.addPassengerToVehicle(compound, nbttagcompound);
             compound = nbttagcompound;
         }
 
         return compound;
     }
 
-    protected void func_188219_a(NBTTagCompound p_188219_1_, NBTTagCompound p_188219_2_)
+    protected void addPassengerToVehicle(NBTTagCompound p_188219_1_, NBTTagCompound p_188219_2_)
     {
         NBTTagList nbttaglist = new NBTTagList();
         nbttaglist.appendTag(p_188219_1_);
         p_188219_2_.setTag("Passengers", nbttaglist);
     }
 
-    protected NBTTagCompound func_188220_b(NBTTagCompound p_188220_1_)
+    protected NBTTagCompound extractVehicle(NBTTagCompound p_188220_1_)
     {
         NBTTagCompound nbttagcompound = p_188220_1_.getCompoundTag("Riding");
         p_188220_1_.removeTag("Riding");

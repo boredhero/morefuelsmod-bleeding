@@ -32,7 +32,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 public final class ItemLayerModel implements IRetexturableModel
 {
     public static final ItemLayerModel INSTANCE = new ItemLayerModel(ImmutableList.<ResourceLocation>of());

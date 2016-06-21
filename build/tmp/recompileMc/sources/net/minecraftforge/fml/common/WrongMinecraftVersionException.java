@@ -11,6 +11,8 @@
  */
 
 package net.minecraftforge.fml.common;
+import net.minecraftforge.fml.common.EnhancedRuntimeException.WrappedPrintStream;
+
 
 public class WrongMinecraftVersionException extends EnhancedRuntimeException
 {

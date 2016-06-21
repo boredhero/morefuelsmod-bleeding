@@ -5,6 +5,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.chunk.IChunkGenerator;
 
+import net.minecraftforge.fml.common.eventhandler.Event.HasResult;
+
 public class ChunkGeneratorEvent extends Event
 {
     private final IChunkGenerator gen;

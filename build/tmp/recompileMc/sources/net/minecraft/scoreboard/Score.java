@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 public class Score
 {
-    public static final Comparator<Score> scoreComparator = new Comparator<Score>()
+    public static final Comparator<Score> SCORE_COMPARATOR = new Comparator<Score>()
     {
         public int compare(Score p_compare_1_, Score p_compare_2_)
         {
@@ -50,7 +50,7 @@ public class Score
         }
     }
 
-    public void func_96648_a()
+    public void incrementScore()
     {
         if (this.theScoreObjective.getCriteria().isReadOnly())
         {
@@ -75,7 +75,7 @@ public class Score
         if (i != points || this.forceUpdate)
         {
             this.forceUpdate = false;
-            this.getScoreScoreboard().func_96536_a(this);
+            this.getScoreScoreboard().onScoreUpdated(this);
         }
     }
 

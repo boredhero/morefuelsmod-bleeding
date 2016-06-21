@@ -19,7 +19,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class FileResourcePack extends AbstractResourcePack implements Closeable
 {
-    public static final Splitter entryNameSplitter = Splitter.on('/').omitEmptyStrings().limit(3);
+    public static final Splitter ENTRY_NAME_SPLITTER = Splitter.on('/').omitEmptyStrings().limit(3);
     private ZipFile resourcePackZipFile;
 
     public FileResourcePack(File resourcePackFileIn)
@@ -87,7 +87,7 @@ public class FileResourcePack extends AbstractResourcePack implements Closeable
 
             if (s.startsWith("assets/"))
             {
-                List<String> list = Lists.newArrayList(entryNameSplitter.split(s));
+                List<String> list = Lists.newArrayList(ENTRY_NAME_SPLITTER.split(s));
 
                 if (list.size() > 1)
                 {

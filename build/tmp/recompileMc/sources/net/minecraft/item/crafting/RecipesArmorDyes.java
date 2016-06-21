@@ -2,6 +2,7 @@ package net.minecraft.item.crafting;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -39,7 +40,7 @@ public class RecipesArmorDyes implements IRecipe
                 }
                 else
                 {
-                    if (itemstack1.getItem() != Items.dye)
+                    if (itemstack1.getItem() != Items.DYE)
                     {
                         return false;
                     }
@@ -55,6 +56,7 @@ public class RecipesArmorDyes implements IRecipe
     /**
      * Returns an Item that is the result of this recipe
      */
+    @Nullable
     public ItemStack getCraftingResult(InventoryCrafting inv)
     {
         ItemStack itemstack = null;
@@ -96,7 +98,7 @@ public class RecipesArmorDyes implements IRecipe
                 }
                 else
                 {
-                    if (itemstack1.getItem() != Items.dye)
+                    if (itemstack1.getItem() != Items.DYE)
                     {
                         return null;
                     }
@@ -143,6 +145,7 @@ public class RecipesArmorDyes implements IRecipe
         return 10;
     }
 
+    @Nullable
     public ItemStack getRecipeOutput()
     {
         return null;

@@ -13,16 +13,16 @@ public class BlockCarrot extends BlockCrops
 
     protected Item getSeed()
     {
-        return Items.carrot;
+        return Items.CARROT;
     }
 
     protected Item getCrop()
     {
-        return Items.carrot;
+        return Items.CARROT;
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
-        return CARROT_AABB[((Integer)state.getValue(this.getAge())).intValue()];
+        return CARROT_AABB[((Integer)state.getValue(this.getAgeProperty())).intValue()];
     }
 }

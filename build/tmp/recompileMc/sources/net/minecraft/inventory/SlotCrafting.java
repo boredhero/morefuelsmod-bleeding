@@ -1,5 +1,6 @@
 package net.minecraft.inventory;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -20,9 +21,9 @@ public class SlotCrafting extends Slot
     /** The number of items that have been crafted so far. Gets passed to ItemStack.onCrafting before being reset. */
     private int amountCrafted;
 
-    public SlotCrafting(EntityPlayer player, InventoryCrafting craftingInventory, IInventory p_i45790_3_, int slotIndex, int xPosition, int yPosition)
+    public SlotCrafting(EntityPlayer player, InventoryCrafting craftingInventory, IInventory inventoryIn, int slotIndex, int xPosition, int yPosition)
     {
-        super(p_i45790_3_, slotIndex, xPosition, yPosition);
+        super(inventoryIn, slotIndex, xPosition, yPosition);
         this.thePlayer = player;
         this.craftMatrix = craftingInventory;
     }
@@ -30,7 +31,7 @@ public class SlotCrafting extends Slot
     /**
      * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
      */
-    public boolean isItemValid(ItemStack stack)
+    public boolean isItemValid(@Nullable ItemStack stack)
     {
         return false;
     }
@@ -71,54 +72,54 @@ public class SlotCrafting extends Slot
 
         this.amountCrafted = 0;
 
-        if (stack.getItem() == Item.getItemFromBlock(Blocks.crafting_table))
+        if (stack.getItem() == Item.getItemFromBlock(Blocks.CRAFTING_TABLE))
         {
-            this.thePlayer.addStat(AchievementList.buildWorkBench);
+            this.thePlayer.addStat(AchievementList.BUILD_WORK_BENCH);
         }
 
         if (stack.getItem() instanceof ItemPickaxe)
         {
-            this.thePlayer.addStat(AchievementList.buildPickaxe);
+            this.thePlayer.addStat(AchievementList.BUILD_PICKAXE);
         }
 
-        if (stack.getItem() == Item.getItemFromBlock(Blocks.furnace))
+        if (stack.getItem() == Item.getItemFromBlock(Blocks.FURNACE))
         {
-            this.thePlayer.addStat(AchievementList.buildFurnace);
+            this.thePlayer.addStat(AchievementList.BUILD_FURNACE);
         }
 
         if (stack.getItem() instanceof ItemHoe)
         {
-            this.thePlayer.addStat(AchievementList.buildHoe);
+            this.thePlayer.addStat(AchievementList.BUILD_HOE);
         }
 
-        if (stack.getItem() == Items.bread)
+        if (stack.getItem() == Items.BREAD)
         {
-            this.thePlayer.addStat(AchievementList.makeBread);
+            this.thePlayer.addStat(AchievementList.MAKE_BREAD);
         }
 
-        if (stack.getItem() == Items.cake)
+        if (stack.getItem() == Items.CAKE)
         {
-            this.thePlayer.addStat(AchievementList.bakeCake);
+            this.thePlayer.addStat(AchievementList.BAKE_CAKE);
         }
 
         if (stack.getItem() instanceof ItemPickaxe && ((ItemPickaxe)stack.getItem()).getToolMaterial() != Item.ToolMaterial.WOOD)
         {
-            this.thePlayer.addStat(AchievementList.buildBetterPickaxe);
+            this.thePlayer.addStat(AchievementList.BUILD_BETTER_PICKAXE);
         }
 
         if (stack.getItem() instanceof ItemSword)
         {
-            this.thePlayer.addStat(AchievementList.buildSword);
+            this.thePlayer.addStat(AchievementList.BUILD_SWORD);
         }
 
-        if (stack.getItem() == Item.getItemFromBlock(Blocks.enchanting_table))
+        if (stack.getItem() == Item.getItemFromBlock(Blocks.ENCHANTING_TABLE))
         {
-            this.thePlayer.addStat(AchievementList.enchantments);
+            this.thePlayer.addStat(AchievementList.ENCHANTMENTS);
         }
 
-        if (stack.getItem() == Item.getItemFromBlock(Blocks.bookshelf))
+        if (stack.getItem() == Item.getItemFromBlock(Blocks.BOOKSHELF))
         {
-            this.thePlayer.addStat(AchievementList.bookcase);
+            this.thePlayer.addStat(AchievementList.BOOKCASE);
         }
     }
 
@@ -127,7 +128,7 @@ public class SlotCrafting extends Slot
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(playerIn, stack, craftMatrix);
         this.onCrafting(stack);
         net.minecraftforge.common.ForgeHooks.setCraftingPlayer(playerIn);
-        ItemStack[] aitemstack = CraftingManager.getInstance().func_180303_b(this.craftMatrix, playerIn.worldObj);
+        ItemStack[] aitemstack = CraftingManager.getInstance().getRemainingItems(this.craftMatrix, playerIn.worldObj);
         net.minecraftforge.common.ForgeHooks.setCraftingPlayer(null);
 
         for (int i = 0; i < aitemstack.length; ++i)
@@ -154,7 +155,7 @@ public class SlotCrafting extends Slot
                 }
                 else if (!this.thePlayer.inventory.addItemStackToInventory(itemstack1))
                 {
-                    this.thePlayer.dropPlayerItemWithRandomChoice(itemstack1, false);
+                    this.thePlayer.dropItem(itemstack1, false);
                 }
             }
         }

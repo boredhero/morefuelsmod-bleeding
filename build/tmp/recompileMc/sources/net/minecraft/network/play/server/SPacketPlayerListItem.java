@@ -6,6 +6,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import java.io.IOException;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -86,7 +87,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
 
                     if (buf.readBoolean())
                     {
-                        itextcomponent = buf.readChatComponent();
+                        itextcomponent = buf.readTextComponent();
                     }
 
                     break;
@@ -103,7 +104,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
 
                     if (buf.readBoolean())
                     {
-                        itextcomponent = buf.readChatComponent();
+                        itextcomponent = buf.readTextComponent();
                     }
 
                     break;
@@ -158,7 +159,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
                     else
                     {
                         buf.writeBoolean(true);
-                        buf.writeChatComponent(spacketplayerlistitem$addplayerdata.getDisplayName());
+                        buf.writeTextComponent(spacketplayerlistitem$addplayerdata.getDisplayName());
                     }
 
                     break;
@@ -180,7 +181,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
                     else
                     {
                         buf.writeBoolean(true);
-                        buf.writeChatComponent(spacketplayerlistitem$addplayerdata.getDisplayName());
+                        buf.writeTextComponent(spacketplayerlistitem$addplayerdata.getDisplayName());
                     }
 
                     break;
@@ -231,7 +232,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
         private final GameProfile profile;
         private final ITextComponent displayName;
 
-        public AddPlayerData(GameProfile profileIn, int latencyIn, WorldSettings.GameType gameModeIn, ITextComponent displayNameIn)
+        public AddPlayerData(GameProfile profileIn, int latencyIn, WorldSettings.GameType gameModeIn, @Nullable ITextComponent displayNameIn)
         {
             this.profile = profileIn;
             this.ping = latencyIn;
@@ -254,6 +255,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
             return this.gamemode;
         }
 
+        @Nullable
         public ITextComponent getDisplayName()
         {
             return this.displayName;

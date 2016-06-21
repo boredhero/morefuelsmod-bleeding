@@ -26,7 +26,7 @@ import org.lwjgl.input.Keyboard;
 public abstract class GuiContainer extends GuiScreen
 {
     /** The location of the inventory background texture */
-    public static final ResourceLocation inventoryBackground = new ResourceLocation("textures/gui/container/inventory.png");
+    public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation("textures/gui/container/inventory.png");
     /** The X size of the inventory window in pixels. */
     protected int xSize = 176;
     /** The Y size of the inventory window in pixels. */
@@ -85,10 +85,6 @@ public abstract class GuiContainer extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -197,12 +193,6 @@ public abstract class GuiContainer extends GuiScreen
      * Draws an ItemStack.
      *  
      * The z index is increased by 32 (and not decreased afterwards), and the item is then rendered at z=200.
-     *  
-     * @param stack The ItemStack to draw
-     * @param x The x location to draw the item at
-     * @param y The y location to draw the item at
-     * @param altText An alternative String to display instead of the number of items in the stack. May be null, in
-     * which case the number of items in the stack is rendered.
      */
     private void drawItemStack(ItemStack stack, int x, int y, String altText)
     {
@@ -220,9 +210,6 @@ public abstract class GuiContainer extends GuiScreen
 
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
@@ -230,18 +217,11 @@ public abstract class GuiContainer extends GuiScreen
 
     /**
      * Draws the background layer of this container (behind the items).
-     *  
-     * @param partialTicks How far into the current tick the game is, with 0.0 being the start of the tick and 1.0 being
-     * the end.
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected abstract void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY);
 
     /**
      * Draws the given slot: any item in it, the slot's background, the hovered highlight, etc.
-     *  
-     * @param slotIn The slot to draw
      */
     private void drawSlot(Slot slotIn)
     {
@@ -286,7 +266,7 @@ public abstract class GuiContainer extends GuiScreen
             else
             {
                 this.dragSplittingSlots.remove(slotIn);
-                this.updateActivePotionEffects();
+                this.updateDragSplitting();
             }
         }
 
@@ -323,7 +303,7 @@ public abstract class GuiContainer extends GuiScreen
         this.zLevel = 0.0F;
     }
 
-    private void updateActivePotionEffects()
+    private void updateDragSplitting()
     {
         ItemStack itemstack = this.mc.thePlayer.inventory.getItemStack();
 
@@ -376,7 +356,7 @@ public abstract class GuiContainer extends GuiScreen
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException
     {
         super.mouseClicked(mouseX, mouseY, mouseButton);
-        boolean flag = mouseButton == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100;
+        boolean flag = this.mc.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100);
         Slot slot = this.getSlotAtPosition(mouseX, mouseY);
         long i = Minecraft.getSystemTime();
         this.doubleClick = this.lastClickSlot == slot && i - this.lastClickTime < 250L && this.lastClickButton == mouseButton;
@@ -425,7 +405,7 @@ public abstract class GuiContainer extends GuiScreen
                 {
                     if (this.mc.thePlayer.inventory.getItemStack() == null)
                     {
-                        if (mouseButton == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100)
+                        if (this.mc.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100))
                         {
                             this.handleMouseClick(slot, l, mouseButton, ClickType.CLONE);
                         }
@@ -463,7 +443,7 @@ public abstract class GuiContainer extends GuiScreen
                         {
                             this.dragSplittingLimit = 1;
                         }
-                        else if (mouseButton == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100)
+                        else if (this.mc.gameSettings.keyBindPickBlock.isActiveAndMatches(mouseButton - 100))
                         {
                             this.dragSplittingLimit = 2;
                         }
@@ -523,16 +503,12 @@ public abstract class GuiContainer extends GuiScreen
         else if (this.dragSplitting && slot != null && itemstack != null && itemstack.stackSize > this.dragSplittingSlots.size() && Container.canAddItemToSlot(slot, itemstack, true) && slot.isItemValid(itemstack) && this.inventorySlots.canDragIntoSlot(slot))
         {
             this.dragSplittingSlots.add(slot);
-            this.updateActivePotionEffects();
+            this.updateDragSplitting();
         }
     }
 
     /**
      * Called when a mouse button is released.
-     *  
-     * @param mouseX Current mouse x coordinate
-     * @param mouseY Current mouse y coordinate
-     * @param state The mouse button that was released
      */
     protected void mouseReleased(int mouseX, int mouseY, int state)
     {
@@ -562,7 +538,7 @@ public abstract class GuiContainer extends GuiScreen
                 {
                     for (Slot slot2 : this.inventorySlots.inventorySlots)
                     {
-                        if (slot2 != null && slot2.canTakeStack(this.mc.thePlayer) && slot2.getHasStack() && slot2.inventory == slot.inventory && Container.canAddItemToSlot(slot2, this.shiftClickedSlot, true))
+                        if (slot2 != null && slot2.canTakeStack(this.mc.thePlayer) && slot2.getHasStack() && slot2.isSameInventory(slot) && Container.canAddItemToSlot(slot2, this.shiftClickedSlot, true))
                         {
                             this.handleMouseClick(slot2, slot2.slotNumber, state, ClickType.QUICK_MOVE);
                         }
@@ -638,18 +614,18 @@ public abstract class GuiContainer extends GuiScreen
             }
             else if (this.dragSplitting && !this.dragSplittingSlots.isEmpty())
             {
-                this.handleMouseClick((Slot)null, -999, Container.func_94534_d(0, this.dragSplittingLimit), ClickType.QUICK_CRAFT);
+                this.handleMouseClick((Slot)null, -999, Container.getQuickcraftMask(0, this.dragSplittingLimit), ClickType.QUICK_CRAFT);
 
                 for (Slot slot1 : this.dragSplittingSlots)
                 {
-                    this.handleMouseClick(slot1, slot1.slotNumber, Container.func_94534_d(1, this.dragSplittingLimit), ClickType.QUICK_CRAFT);
+                    this.handleMouseClick(slot1, slot1.slotNumber, Container.getQuickcraftMask(1, this.dragSplittingLimit), ClickType.QUICK_CRAFT);
                 }
 
-                this.handleMouseClick((Slot)null, -999, Container.func_94534_d(2, this.dragSplittingLimit), ClickType.QUICK_CRAFT);
+                this.handleMouseClick((Slot)null, -999, Container.getQuickcraftMask(2, this.dragSplittingLimit), ClickType.QUICK_CRAFT);
             }
             else if (this.mc.thePlayer.inventory.getItemStack() != null)
             {
-                if (state == this.mc.gameSettings.keyBindPickBlock.getKeyCode() + 100)
+                if (this.mc.gameSettings.keyBindPickBlock.isActiveAndMatches(state - 100))
                 {
                     this.handleMouseClick(slot, k, state, ClickType.CLONE);
                 }
@@ -677,10 +653,6 @@ public abstract class GuiContainer extends GuiScreen
 
     /**
      * Returns whether the mouse is over the given slot.
-     *  
-     * @param slotIn The slot to check
-     * @param mouseX Mouse x coordinate on the screen
-     * @param mouseY Mouse y coordinate on the screen
      */
     private boolean isMouseOverSlot(Slot slotIn, int mouseX, int mouseY)
     {
@@ -690,15 +662,6 @@ public abstract class GuiContainer extends GuiScreen
     /**
      * Test if the 2D point is in a rectangle (relative to the GUI). Args : rectX, rectY, rectWidth, rectHeight, pointX,
      * pointY
-     *  
-     * @param rectX Left x coordinate of the rectangle
-     * @param rectY Top y coordinate of the rectangle
-     * @param rectWidth Width of the rectangle
-     * @param rectHeight Height of the rectangle
-     * @param pointX X coordinate of the point, on screen. this.guiLeft is subtracted from it to get the test location
-     * within the rectangle
-     * @param pointY Y coordinate of the point, on screen. this.guiTop is subtracted from it to get the test location
-     * within the rectangle
      */
     protected boolean isPointInRegion(int rectX, int rectY, int rectWidth, int rectHeight, int pointX, int pointY)
     {
@@ -711,12 +674,6 @@ public abstract class GuiContainer extends GuiScreen
 
     /**
      * Called when the mouse is clicked over a slot or outside the gui.
-     *  
-     * @param slotIn The slot that was clicked, or null if the click was outside of the GUI.
-     * @param slotId The ID of the slot that was clicked. There are a few other values that are used with special
-     * clicks.
-     * @param mouseButton The mouse button that was clicked.
-     * @param type The type of the click.
      */
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type)
     {
@@ -725,7 +682,7 @@ public abstract class GuiContainer extends GuiScreen
             slotId = slotIn.slotNumber;
         }
 
-        this.mc.playerController.func_187098_a(this.inventorySlots.windowId, slotId, mouseButton, type, this.mc.thePlayer);
+        this.mc.playerController.windowClick(this.inventorySlots.windowId, slotId, mouseButton, type, this.mc.thePlayer);
     }
 
     /**
@@ -734,7 +691,7 @@ public abstract class GuiContainer extends GuiScreen
      */
     protected void keyTyped(char typedChar, int keyCode) throws IOException
     {
-        if (keyCode == 1 || keyCode == this.mc.gameSettings.keyBindInventory.getKeyCode())
+        if (keyCode == 1 || this.mc.gameSettings.keyBindInventory.isActiveAndMatches(keyCode))
         {
             this.mc.thePlayer.closeScreen();
         }
@@ -743,11 +700,11 @@ public abstract class GuiContainer extends GuiScreen
 
         if (this.theSlot != null && this.theSlot.getHasStack())
         {
-            if (keyCode == this.mc.gameSettings.keyBindPickBlock.getKeyCode())
+            if (this.mc.gameSettings.keyBindPickBlock.isActiveAndMatches(keyCode))
             {
                 this.handleMouseClick(this.theSlot, this.theSlot.slotNumber, 0, ClickType.CLONE);
             }
-            else if (keyCode == this.mc.gameSettings.keyBindDrop.getKeyCode())
+            else if (this.mc.gameSettings.keyBindDrop.isActiveAndMatches(keyCode))
             {
                 this.handleMouseClick(this.theSlot, this.theSlot.slotNumber, isCtrlKeyDown() ? 1 : 0, ClickType.THROW);
             }
@@ -758,8 +715,6 @@ public abstract class GuiContainer extends GuiScreen
      * Checks whether a hotbar key (to swap the hovered item with an item in the hotbar) has been pressed. If so, it
      * swaps the given items.
      * Returns true if a hotbar key was pressed.
-     *  
-     * @param keyCode The LWJGL keycode for the key that was pressed.
      */
     protected boolean checkHotbarKeys(int keyCode)
     {
@@ -767,7 +722,7 @@ public abstract class GuiContainer extends GuiScreen
         {
             for (int i = 0; i < 9; ++i)
             {
-                if (keyCode == this.mc.gameSettings.keyBindsHotbar[i].getKeyCode())
+                if (this.mc.gameSettings.keyBindsHotbar[i].isActiveAndMatches(keyCode))
                 {
                     this.handleMouseClick(this.theSlot, this.theSlot.slotNumber, i, ClickType.SWAP);
                     return true;

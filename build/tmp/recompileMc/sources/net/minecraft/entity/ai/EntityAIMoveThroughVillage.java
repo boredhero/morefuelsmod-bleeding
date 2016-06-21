@@ -3,7 +3,7 @@ package net.minecraft.entity.ai;
 import com.google.common.collect.Lists;
 import java.util.List;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -16,7 +16,7 @@ public class EntityAIMoveThroughVillage extends EntityAIBase
     private EntityCreature theEntity;
     private double movementSpeed;
     /** The PathNavigate of our entity. */
-    private PathEntity entityPathNavigate;
+    private Path entityPathNavigate;
     private VillageDoorInfo doorInfo;
     private boolean isNocturnal;
     private List<VillageDoorInfo> doorList = Lists.<VillageDoorInfo>newArrayList();

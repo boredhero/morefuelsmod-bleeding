@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,8 +23,8 @@ public class BlockWeb extends Block
 {
     public BlockWeb()
     {
-        super(Material.web);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        super(Material.WEB);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     /**
@@ -42,7 +43,8 @@ public class BlockWeb extends Block
         return false;
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -55,9 +57,10 @@ public class BlockWeb extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.string;
+        return Items.STRING;
     }
 
     protected boolean canSilkHarvest()
@@ -71,11 +74,11 @@ public class BlockWeb extends Block
         return BlockRenderLayer.CUTOUT;
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
     {
-        if (!worldIn.isRemote && stack != null && stack.getItem() == Items.shears)
+        if (!worldIn.isRemote && stack != null && stack.getItem() == Items.SHEARS)
         {
-            player.addStat(StatList.func_188055_a(this));
+            player.addStat(StatList.getBlockStats(this));
             spawnAsEntity(worldIn, pos, new ItemStack(Item.getItemFromBlock(this), 1));
         }
         else

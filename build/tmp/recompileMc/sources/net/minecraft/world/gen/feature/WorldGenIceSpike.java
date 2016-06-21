@@ -18,7 +18,7 @@ public class WorldGenIceSpike extends WorldGenerator
             position = position.down();
         }
 
-        if (worldIn.getBlockState(position).getBlock() != Blocks.snow)
+        if (worldIn.getBlockState(position).getBlock() != Blocks.SNOW)
         {
             return false;
         }
@@ -51,9 +51,9 @@ public class WorldGenIceSpike extends WorldGenerator
                             IBlockState iblockstate = worldIn.getBlockState(position.add(i1, k, j1));
                             Block block = iblockstate.getBlock();
 
-                            if (iblockstate.getBlock().isAir(iblockstate, worldIn, position.add(i1, k, j1)) || block == Blocks.dirt || block == Blocks.snow || block == Blocks.ice)
+                            if (iblockstate.getBlock().isAir(iblockstate, worldIn, position.add(i1, k, j1)) || block == Blocks.DIRT || block == Blocks.SNOW || block == Blocks.ICE)
                             {
-                                this.setBlockAndNotifyAdequately(worldIn, position.add(i1, k, j1), Blocks.packed_ice.getDefaultState());
+                                this.setBlockAndNotifyAdequately(worldIn, position.add(i1, k, j1), Blocks.PACKED_ICE.getDefaultState());
                             }
 
                             if (k != 0 && l > 1)
@@ -61,9 +61,9 @@ public class WorldGenIceSpike extends WorldGenerator
                                 iblockstate = worldIn.getBlockState(position.add(i1, -k, j1));
                                 block = iblockstate.getBlock();
 
-                                if (iblockstate.getBlock().isAir(iblockstate, worldIn, position.add(i1, -k, j1)) || block == Blocks.dirt || block == Blocks.snow || block == Blocks.ice)
+                                if (iblockstate.getBlock().isAir(iblockstate, worldIn, position.add(i1, -k, j1)) || block == Blocks.DIRT || block == Blocks.SNOW || block == Blocks.ICE)
                                 {
-                                    this.setBlockAndNotifyAdequately(worldIn, position.add(i1, -k, j1), Blocks.packed_ice.getDefaultState());
+                                    this.setBlockAndNotifyAdequately(worldIn, position.add(i1, -k, j1), Blocks.PACKED_ICE.getDefaultState());
                                 }
                             }
                         }
@@ -99,12 +99,12 @@ public class WorldGenIceSpike extends WorldGenerator
                         IBlockState iblockstate1 = worldIn.getBlockState(blockpos);
                         Block block1 = iblockstate1.getBlock();
 
-                        if (!iblockstate1.getBlock().isAir(iblockstate1, worldIn, blockpos) && block1 != Blocks.dirt && block1 != Blocks.snow && block1 != Blocks.ice && block1 != Blocks.packed_ice)
+                        if (!iblockstate1.getBlock().isAir(iblockstate1, worldIn, blockpos) && block1 != Blocks.DIRT && block1 != Blocks.SNOW && block1 != Blocks.ICE && block1 != Blocks.PACKED_ICE)
                         {
                             break;
                         }
 
-                        this.setBlockAndNotifyAdequately(worldIn, blockpos, Blocks.packed_ice.getDefaultState());
+                        this.setBlockAndNotifyAdequately(worldIn, blockpos, Blocks.PACKED_ICE.getDefaultState());
                         blockpos = blockpos.down();
                         --j2;
 

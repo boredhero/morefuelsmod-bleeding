@@ -18,17 +18,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderZombie extends RenderBiped<EntityZombie>
 {
-    private static final ResourceLocation zombieVillagerTextures = new ResourceLocation("textures/entity/zombie_villager/zombie_villager.png");
-    private static final ResourceLocation field_188330_l = new ResourceLocation("textures/entity/zombie_villager/zombie_farmer.png");
-    private static final ResourceLocation field_188331_m = new ResourceLocation("textures/entity/zombie_villager/zombie_librarian.png");
-    private static final ResourceLocation field_188332_n = new ResourceLocation("textures/entity/zombie_villager/zombie_priest.png");
-    private static final ResourceLocation field_188333_o = new ResourceLocation("textures/entity/zombie_villager/zombie_smith.png");
-    private static final ResourceLocation field_188329_p = new ResourceLocation("textures/entity/zombie_villager/zombie_butcher.png");
-    private static final ResourceLocation zombieTextures = new ResourceLocation("textures/entity/zombie/zombie.png");
+    private static final ResourceLocation ZOMBIE_VILLAGER_TEXTURES = new ResourceLocation("textures/entity/zombie_villager/zombie_villager.png");
+    private static final ResourceLocation ZOMBIE_VILLAGER_FARMER_LOCATION = new ResourceLocation("textures/entity/zombie_villager/zombie_farmer.png");
+    private static final ResourceLocation ZOMBIE_VILLAGER_LIBRARIAN_LOC = new ResourceLocation("textures/entity/zombie_villager/zombie_librarian.png");
+    private static final ResourceLocation ZOMBIE_VILLAGER_PRIEST_LOCATION = new ResourceLocation("textures/entity/zombie_villager/zombie_priest.png");
+    private static final ResourceLocation ZOMBIE_VILLAGER_SMITH_LOCATION = new ResourceLocation("textures/entity/zombie_villager/zombie_smith.png");
+    private static final ResourceLocation ZOMBIE_VILLAGER_BUTCHER_LOCATION = new ResourceLocation("textures/entity/zombie_villager/zombie_butcher.png");
+    private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("textures/entity/zombie/zombie.png");
     private final ModelBiped defaultModel;
     private ModelZombieVillager zombieVillagerModel;
-    private final List<LayerRenderer<EntityZombie>> field_177121_n;
-    private final List<LayerRenderer<EntityZombie>> field_177122_o;
+    private final List<LayerRenderer<EntityZombie>> villagerLayers;
+    private final List<LayerRenderer<EntityZombie>> defaultLayers;
 
     public RenderZombie(RenderManager renderManagerIn)
     {
@@ -46,7 +46,7 @@ public class RenderZombie extends RenderBiped<EntityZombie>
             }
         };
         this.addLayer(layerbipedarmor);
-        this.field_177122_o = Lists.newArrayList(this.layerRenderers);
+        this.defaultLayers = Lists.newArrayList(this.layerRenderers);
 
         if (layerrenderer instanceof LayerCustomHead)
         {
@@ -56,7 +56,7 @@ public class RenderZombie extends RenderBiped<EntityZombie>
 
         this.removeLayer(layerbipedarmor);
         this.addLayer(new LayerVillagerArmor(this));
-        this.field_177121_n = Lists.newArrayList(this.layerRenderers);
+        this.villagerLayers = Lists.newArrayList(this.layerRenderers);
     }
 
     /**
@@ -64,7 +64,7 @@ public class RenderZombie extends RenderBiped<EntityZombie>
      */
     public void doRender(EntityZombie entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        this.func_82427_a(entity);
+        this.swapArmor(entity);
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
 
@@ -75,51 +75,37 @@ public class RenderZombie extends RenderBiped<EntityZombie>
     {
         if (entity.isVillager())
         {
-            switch (entity.getVillagerType())
-            {
-                case 0:
-                    return field_188330_l;
-                case 1:
-                    return field_188331_m;
-                case 2:
-                    return field_188332_n;
-                case 3:
-                    return field_188333_o;
-                case 4:
-                    return field_188329_p;
-                default:
-                    return zombieVillagerTextures;
-            }
+            return entity.getVillagerTypeForge().getZombieSkin();
         }
         else
         {
-            return zombieTextures;
+            return ZOMBIE_TEXTURES;
         }
     }
 
-    private void func_82427_a(EntityZombie zombie)
+    private void swapArmor(EntityZombie zombie)
     {
         if (zombie.isVillager())
         {
             this.mainModel = this.zombieVillagerModel;
-            this.layerRenderers = this.field_177121_n;
+            this.layerRenderers = this.villagerLayers;
         }
         else
         {
             this.mainModel = this.defaultModel;
-            this.layerRenderers = this.field_177122_o;
+            this.layerRenderers = this.defaultLayers;
         }
 
         this.modelBipedMain = (ModelBiped)this.mainModel;
     }
 
-    protected void rotateCorpse(EntityZombie bat, float p_77043_2_, float p_77043_3_, float partialTicks)
+    protected void rotateCorpse(EntityZombie entityLiving, float p_77043_2_, float p_77043_3_, float partialTicks)
     {
-        if (bat.isConverting())
+        if (entityLiving.isConverting())
         {
-            p_77043_3_ += (float)(Math.cos((double)bat.ticksExisted * 3.25D) * Math.PI * 0.25D);
+            p_77043_3_ += (float)(Math.cos((double)entityLiving.ticksExisted * 3.25D) * Math.PI * 0.25D);
         }
 
-        super.rotateCorpse(bat, p_77043_2_, p_77043_3_, partialTicks);
+        super.rotateCorpse(entityLiving, p_77043_2_, p_77043_3_, partialTicks);
     }
 }

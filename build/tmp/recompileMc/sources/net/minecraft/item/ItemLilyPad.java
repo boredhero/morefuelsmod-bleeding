@@ -25,7 +25,7 @@ public class ItemLilyPad extends ItemColored
 
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
-        RayTraceResult raytraceresult = this.getMovingObjectPositionFromPlayer(worldIn, playerIn, true);
+        RayTraceResult raytraceresult = this.rayTrace(worldIn, playerIn, true);
 
         if (raytraceresult == null)
         {
@@ -45,26 +45,26 @@ public class ItemLilyPad extends ItemColored
                 BlockPos blockpos1 = blockpos.up();
                 IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
-                if (iblockstate.getMaterial() == Material.water && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.isAirBlock(blockpos1))
+                if (iblockstate.getMaterial() == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 && worldIn.isAirBlock(blockpos1))
                 {
                     // special case for handling block placement with water lilies
                     net.minecraftforge.common.util.BlockSnapshot blocksnapshot = net.minecraftforge.common.util.BlockSnapshot.getBlockSnapshot(worldIn, blockpos1);
-                    worldIn.setBlockState(blockpos1, Blocks.waterlily.getDefaultState());
+                    worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState());
                     if (net.minecraftforge.event.ForgeEventFactory.onPlayerBlockPlace(playerIn, blocksnapshot, net.minecraft.util.EnumFacing.UP).isCanceled())
                     {
                         blocksnapshot.restore(true, false);
                         return new ActionResult<ItemStack>(EnumActionResult.FAIL, itemStackIn);
                     }
 
-                    worldIn.setBlockState(blockpos1, Blocks.waterlily.getDefaultState(), 11);
+                    worldIn.setBlockState(blockpos1, Blocks.WATERLILY.getDefaultState(), 11);
 
                     if (!playerIn.capabilities.isCreativeMode)
                     {
                         --itemStackIn.stackSize;
                     }
 
-                    playerIn.addStat(StatList.func_188057_b(this));
-                    worldIn.playSound(playerIn, blockpos, SoundEvents.block_waterlily_place, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    playerIn.addStat(StatList.getObjectUseStats(this));
+                    worldIn.playSound(playerIn, blockpos, SoundEvents.BLOCK_WATERLILY_PLACE, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
                 }
             }

@@ -12,6 +12,7 @@ import com.google.gson.stream.JsonReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -109,8 +110,6 @@ public class JsonUtils
     /**
      * Gets the string value of the field on the JsonObject with the given name, or the given default value if the field
      * is missing.
-     *  
-     * @param fallback The fallback value to return if the specified {@code memberName} does not exist
      */
     @SideOnly(Side.CLIENT)
     public static String getString(JsonObject json, String memberName, String fallback)
@@ -191,8 +190,6 @@ public class JsonUtils
     /**
      * Gets the boolean value of the field on the JsonObject with the given name, or the given default value if the
      * field is missing.
-     *  
-     * @param fallback The fallback value to return if the specified {@code memberName} does not exist
      */
     public static boolean getBoolean(JsonObject json, String memberName, boolean fallback)
     {
@@ -237,8 +234,6 @@ public class JsonUtils
     /**
      * Gets the float value of the field on the JsonObject with the given name, or the given default value if the field
      * is missing.
-     *  
-     * @param fallback The fallback value to return if the specified {@code memberName} does not exist
      */
     public static float getFloat(JsonObject json, String memberName, float fallback)
     {
@@ -283,8 +278,6 @@ public class JsonUtils
     /**
      * Gets the integer value of the field on the JsonObject with the given name, or the given default value if the
      * field is missing.
-     *  
-     * @param fallback The fallback value to return if the specified {@code memberName} does not exist
      */
     public static int getInt(JsonObject json, String memberName, int fallback)
     {
@@ -326,8 +319,6 @@ public class JsonUtils
     /**
      * Gets the JsonObject field on the JsonObject with the given name, or the given default value if the field is
      * missing.
-     *  
-     * @param fallback The fallback value to return if the specified {@code memberName} does not exist
      */
     @SideOnly(Side.CLIENT)
     public static JsonObject getJsonObject(JsonObject json, String memberName, JsonObject fallback)
@@ -373,16 +364,14 @@ public class JsonUtils
     /**
      * Gets the JsonArray field on the JsonObject with the given name, or the given default value if the field is
      * missing.
-     *  
-     * @param fallback The fallback value to return if the specified {@code memberName} does not exist
      */
     @SideOnly(Side.CLIENT)
-    public static JsonArray getJsonArray(JsonObject json, String memberName, JsonArray fallback)
+    public static JsonArray getJsonArray(JsonObject json, String memberName, @Nullable JsonArray fallback)
     {
         return json.has(memberName) ? getJsonArray(json.get(memberName), memberName) : fallback;
     }
 
-    public static <T> T deserializeClass(JsonElement json, String memberName, JsonDeserializationContext context, Class <? extends T > adapter)
+    public static <T> T deserializeClass(@Nullable JsonElement json, String memberName, JsonDeserializationContext context, Class <? extends T > adapter)
     {
         if (json != null)
         {

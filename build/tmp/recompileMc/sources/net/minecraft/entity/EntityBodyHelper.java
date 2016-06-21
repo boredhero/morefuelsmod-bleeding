@@ -10,9 +10,9 @@ public class EntityBodyHelper
     private int rotationTickCounter;
     private float prevRenderYawHead;
 
-    public EntityBodyHelper(EntityLivingBase p_i1611_1_)
+    public EntityBodyHelper(EntityLivingBase livingIn)
     {
-        this.theLiving = p_i1611_1_;
+        this.theLiving = livingIn;
     }
 
     /**
@@ -63,7 +63,7 @@ public class EntityBodyHelper
      */
     private float computeAngleWithBound(float p_75665_1_, float p_75665_2_, float p_75665_3_)
     {
-        float f = MathHelper.wrapAngleTo180_float(p_75665_1_ - p_75665_2_);
+        float f = MathHelper.wrapDegrees(p_75665_1_ - p_75665_2_);
 
         if (f < -p_75665_3_)
         {

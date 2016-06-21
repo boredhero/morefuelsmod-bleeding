@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.layer;
 
 import net.minecraft.init.Biomes;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class GenLayerDeepOcean extends GenLayer
 {
@@ -57,7 +57,7 @@ public class GenLayerDeepOcean extends GenLayer
 
                 if (k2 == 0 && l2 > 3)
                 {
-                    aint1[j1 + i1 * areaWidth] = BiomeGenBase.getIdForBiome(Biomes.deepOcean);
+                    aint1[j1 + i1 * areaWidth] = Biome.getIdForBiome(Biomes.DEEP_OCEAN);
                 }
                 else
                 {

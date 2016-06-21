@@ -34,7 +34,7 @@ public class SPacketDisconnect implements Packet<INetHandlerLoginClient>
      */
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeChatComponent(this.reason);
+        buf.writeTextComponent(this.reason);
     }
 
     /**

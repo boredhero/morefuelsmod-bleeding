@@ -15,7 +15,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-import net.minecraft.client.renderer.vertex.VertexFormatElement.EnumUsage;
 public class LightUtil
 {
     private static final float s2 = (float)Math.pow(2, .5);

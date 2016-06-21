@@ -49,7 +49,7 @@ import org.apache.logging.log4j.Logger;
 public class ServerPinger
 {
     private static final Splitter PING_RESPONSE_SPLITTER = Splitter.on('\u0000').limit(6);
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private final List<NetworkManager> pingDestinations = Collections.<NetworkManager>synchronizedList(Lists.<NetworkManager>newArrayList());
 
     public void ping(final ServerData server) throws UnknownHostException
@@ -62,18 +62,18 @@ public class ServerPinger
         server.playerList = null;
         networkmanager.setNetHandler(new INetHandlerStatusClient()
         {
-            private boolean field_147403_d = false;
-            private boolean field_183009_e = false;
-            private long field_175092_e = 0L;
+            private boolean successful = false;
+            private boolean receivedStatus = false;
+            private long pingSentAt = 0L;
             public void handleServerInfo(SPacketServerInfo packetIn)
             {
-                if (this.field_183009_e)
+                if (this.receivedStatus)
                 {
                     networkmanager.closeChannel(new TextComponentString("Received unrequested status"));
                 }
                 else
                 {
-                    this.field_183009_e = true;
+                    this.receivedStatus = true;
                     ServerStatusResponse serverstatusresponse = packetIn.getResponse();
 
                     if (serverstatusresponse.getServerDescription() != null)
@@ -85,10 +85,10 @@ public class ServerPinger
                         server.serverMOTD = "";
                     }
 
-                    if (serverstatusresponse.getProtocolVersionInfo() != null)
+                    if (serverstatusresponse.getVersion() != null)
                     {
-                        server.gameVersion = serverstatusresponse.getProtocolVersionInfo().getName();
-                        server.version = serverstatusresponse.getProtocolVersionInfo().getProtocol();
+                        server.gameVersion = serverstatusresponse.getVersion().getName();
+                        server.version = serverstatusresponse.getVersion().getProtocol();
                     }
                     else
                     {
@@ -96,15 +96,15 @@ public class ServerPinger
                         server.version = 0;
                     }
 
-                    if (serverstatusresponse.getPlayerCountData() != null)
+                    if (serverstatusresponse.getPlayers() != null)
                     {
-                        server.populationInfo = TextFormatting.GRAY + "" + serverstatusresponse.getPlayerCountData().getOnlinePlayerCount() + "" + TextFormatting.DARK_GRAY + "/" + TextFormatting.GRAY + serverstatusresponse.getPlayerCountData().getMaxPlayers();
+                        server.populationInfo = TextFormatting.GRAY + "" + serverstatusresponse.getPlayers().getOnlinePlayerCount() + "" + TextFormatting.DARK_GRAY + "/" + TextFormatting.GRAY + serverstatusresponse.getPlayers().getMaxPlayers();
 
-                        if (ArrayUtils.isNotEmpty(serverstatusresponse.getPlayerCountData().getPlayers()))
+                        if (ArrayUtils.isNotEmpty(serverstatusresponse.getPlayers().getPlayers()))
                         {
                             StringBuilder stringbuilder = new StringBuilder();
 
-                            for (GameProfile gameprofile : serverstatusresponse.getPlayerCountData().getPlayers())
+                            for (GameProfile gameprofile : serverstatusresponse.getPlayers().getPlayers())
                             {
                                 if (stringbuilder.length() > 0)
                                 {
@@ -114,14 +114,14 @@ public class ServerPinger
                                 stringbuilder.append(gameprofile.getName());
                             }
 
-                            if (serverstatusresponse.getPlayerCountData().getPlayers().length < serverstatusresponse.getPlayerCountData().getOnlinePlayerCount())
+                            if (serverstatusresponse.getPlayers().getPlayers().length < serverstatusresponse.getPlayers().getOnlinePlayerCount())
                             {
                                 if (stringbuilder.length() > 0)
                                 {
                                     stringbuilder.append("\n");
                                 }
 
-                                stringbuilder.append("... and ").append(serverstatusresponse.getPlayerCountData().getOnlinePlayerCount() - serverstatusresponse.getPlayerCountData().getPlayers().length).append(" more ...");
+                                stringbuilder.append("... and ").append(serverstatusresponse.getPlayers().getOnlinePlayerCount() - serverstatusresponse.getPlayers().getPlayers().length).append(" more ...");
                             }
 
                             server.playerList = stringbuilder.toString();
@@ -142,7 +142,7 @@ public class ServerPinger
                         }
                         else
                         {
-                            ServerPinger.logger.error("Invalid server icon (unknown format)");
+                            ServerPinger.LOGGER.error("Invalid server icon (unknown format)");
                         }
                     }
                     else
@@ -151,14 +151,14 @@ public class ServerPinger
                     }
 
                     net.minecraftforge.fml.client.FMLClientHandler.instance().bindServerListData(server, serverstatusresponse);
-                    this.field_175092_e = Minecraft.getSystemTime();
-                    networkmanager.sendPacket(new CPacketPing(this.field_175092_e));
-                    this.field_147403_d = true;
+                    this.pingSentAt = Minecraft.getSystemTime();
+                    networkmanager.sendPacket(new CPacketPing(this.pingSentAt));
+                    this.successful = true;
                 }
             }
             public void handlePong(SPacketPong packetIn)
             {
-                long i = this.field_175092_e;
+                long i = this.pingSentAt;
                 long j = Minecraft.getSystemTime();
                 server.pingToServer = j - i;
                 networkmanager.closeChannel(new TextComponentString("Finished"));
@@ -168,9 +168,9 @@ public class ServerPinger
              */
             public void onDisconnect(ITextComponent reason)
             {
-                if (!this.field_147403_d)
+                if (!this.successful)
                 {
-                    ServerPinger.logger.error("Can\'t ping " + server.serverIP + ": " + reason.getUnformattedText());
+                    ServerPinger.LOGGER.error("Can\'t ping " + server.serverIP + ": " + reason.getUnformattedText());
                     server.serverMOTD = TextFormatting.DARK_RED + "Can\'t connect to server.";
                     server.populationInfo = "";
                     ServerPinger.this.tryCompatibilityPing(server);
@@ -180,12 +180,12 @@ public class ServerPinger
 
         try
         {
-            networkmanager.sendPacket(new C00Handshake(107, serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS));
+            networkmanager.sendPacket(new C00Handshake(110, serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS));
             networkmanager.sendPacket(new CPacketServerQuery());
         }
         catch (Throwable throwable)
         {
-            logger.error((Object)throwable);
+            LOGGER.error((Object)throwable);
         }
     }
 

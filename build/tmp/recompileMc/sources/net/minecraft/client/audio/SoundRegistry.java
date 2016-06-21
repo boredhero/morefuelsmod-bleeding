@@ -18,9 +18,9 @@ public class SoundRegistry extends RegistrySimple<ResourceLocation, SoundEventAc
         return this.soundRegistry;
     }
 
-    public void func_186803_a(SoundEventAccessor p_186803_1_)
+    public void add(SoundEventAccessor accessor)
     {
-        this.putObject(p_186803_1_.func_188714_b(), p_186803_1_);
+        this.putObject(accessor.getLocation(), accessor);
     }
 
     /**

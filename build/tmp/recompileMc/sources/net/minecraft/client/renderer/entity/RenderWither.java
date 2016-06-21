@@ -11,8 +11,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderWither extends RenderLiving<EntityWither>
 {
-    private static final ResourceLocation invulnerableWitherTextures = new ResourceLocation("textures/entity/wither/wither_invulnerable.png");
-    private static final ResourceLocation witherTextures = new ResourceLocation("textures/entity/wither/wither.png");
+    private static final ResourceLocation INVULNERABLE_WITHER_TEXTURES = new ResourceLocation("textures/entity/wither/wither_invulnerable.png");
+    private static final ResourceLocation WITHER_TEXTURES = new ResourceLocation("textures/entity/wither/wither.png");
 
     public RenderWither(RenderManager renderManagerIn)
     {
@@ -26,12 +26,11 @@ public class RenderWither extends RenderLiving<EntityWither>
     protected ResourceLocation getEntityTexture(EntityWither entity)
     {
         int i = entity.getInvulTime();
-        return i > 0 && (i > 80 || i / 5 % 2 != 1) ? invulnerableWitherTextures : witherTextures;
+        return i > 0 && (i > 80 || i / 5 % 2 != 1) ? INVULNERABLE_WITHER_TEXTURES : WITHER_TEXTURES;
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntityWither entitylivingbaseIn, float partialTickTime)
     {

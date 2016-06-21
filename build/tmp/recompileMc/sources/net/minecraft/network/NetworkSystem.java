@@ -28,10 +28,10 @@ import java.net.SocketAddress;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
 import net.minecraft.client.network.NetHandlerHandshakeMemory;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.network.play.server.SPacketDisconnect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.NetHandlerHandshakeTCP;
@@ -45,8 +45,8 @@ import org.apache.logging.log4j.Logger;
 
 public class NetworkSystem
 {
-    private static final Logger logger = LogManager.getLogger();
-    public static final LazyLoadBase<NioEventLoopGroup> eventLoops = new LazyLoadBase<NioEventLoopGroup>()
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static final LazyLoadBase<NioEventLoopGroup> SERVER_NIO_EVENTLOOP = new LazyLoadBase<NioEventLoopGroup>()
     {
         protected NioEventLoopGroup load()
         {
@@ -94,13 +94,13 @@ public class NetworkSystem
             {
                 oclass = EpollServerSocketChannel.class;
                 lazyloadbase = SERVER_EPOLL_EVENTLOOP;
-                logger.info("Using epoll channel type");
+                LOGGER.info("Using epoll channel type");
             }
             else
             {
                 oclass = NioServerSocketChannel.class;
-                lazyloadbase = eventLoops;
-                logger.info("Using default channel type");
+                lazyloadbase = SERVER_NIO_EVENTLOOP;
+                LOGGER.info("Using default channel type");
             }
 
             this.endpoints.add(((ServerBootstrap)((ServerBootstrap)(new ServerBootstrap()).channel(oclass)).childHandler(new ChannelInitializer<Channel>()
@@ -145,7 +145,7 @@ public class NetworkSystem
                     NetworkSystem.this.networkManagers.add(networkmanager);
                     p_initChannel_1_.pipeline().addLast((String)"packet_handler", (ChannelHandler)networkmanager);
                 }
-            }).group((EventLoopGroup)eventLoops.getValue()).localAddress(LocalAddress.ANY)).bind().syncUninterruptibly();
+            }).group((EventLoopGroup)SERVER_NIO_EVENTLOOP.getValue()).localAddress(LocalAddress.ANY)).bind().syncUninterruptibly();
             this.endpoints.add(channelfuture);
         }
 
@@ -167,7 +167,7 @@ public class NetworkSystem
             }
             catch (InterruptedException var4)
             {
-                logger.error("Interrupted whilst closing channel");
+                LOGGER.error("Interrupted whilst closing channel");
             }
         }
     }
@@ -200,7 +200,7 @@ public class NetworkSystem
                             {
                                 CrashReport crashreport = CrashReport.makeCrashReport(exception, "Ticking memory connection");
                                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Ticking connection");
-                                crashreportcategory.addCrashSectionCallable("Connection", new Callable<String>()
+                                crashreportcategory.setDetail("Connection", new ICrashReportDetail<String>()
                                 {
                                     public String call() throws Exception
                                     {
@@ -210,7 +210,7 @@ public class NetworkSystem
                                 throw new ReportedException(crashreport);
                             }
 
-                            logger.warn((String)("Failed to handle packet for " + networkmanager.getRemoteAddress()), (Throwable)exception);
+                            LOGGER.warn((String)("Failed to handle packet for " + networkmanager.getRemoteAddress()), (Throwable)exception);
                             final TextComponentString textcomponentstring = new TextComponentString("Internal server error");
                             networkmanager.sendPacket(new SPacketDisconnect(textcomponentstring), new GenericFutureListener < Future <? super Void >> ()
                             {

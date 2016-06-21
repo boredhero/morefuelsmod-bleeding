@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -24,7 +25,7 @@ public class BlockStructure extends BlockContainer
 
     public BlockStructure()
     {
-        super(Material.iron, MapColor.silverColor);
+        super(Material.IRON, MapColor.SILVER);
         this.setDefaultState(this.blockState.getBaseState());
     }
 
@@ -36,7 +37,7 @@ public class BlockStructure extends BlockContainer
         return new TileEntityStructure();
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         return false;
     }
@@ -48,6 +49,7 @@ public class BlockStructure extends BlockContainer
     {
     }
 
+    @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         return null;
@@ -83,7 +85,7 @@ public class BlockStructure extends BlockContainer
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(MODE, TileEntityStructure.Mode.func_185108_a(meta));
+        return this.getDefaultState().withProperty(MODE, TileEntityStructure.Mode.getById(meta));
     }
 
     /**

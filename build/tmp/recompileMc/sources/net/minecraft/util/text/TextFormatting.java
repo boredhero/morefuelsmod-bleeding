@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 public enum TextFormatting
 {
@@ -32,12 +33,12 @@ public enum TextFormatting
     ITALIC("ITALIC", 'o', true),
     RESET("RESET", 'r', -1);
 
-    private static final Map<String, TextFormatting> nameMapping = Maps.<String, TextFormatting>newHashMap();
+    private static final Map<String, TextFormatting> NAME_MAPPING = Maps.<String, TextFormatting>newHashMap();
     /**
      * Matches formatting codes that indicate that the client should treat the following text as bold, recolored,
      * obfuscated, etc.
      */
-    private static final Pattern formattingCodePattern = Pattern.compile("(?i)" + String.valueOf('\u00a7') + "[0-9A-FK-OR]");
+    private static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)" + String.valueOf('\u00a7') + "[0-9A-FK-OR]");
     /** The name of this color/formatting */
     private final String name;
     /** The formatting code that produces this format. */
@@ -115,24 +116,25 @@ public enum TextFormatting
     /**
      * Returns a copy of the given string, with formatting codes stripped away.
      */
-    public static String getTextWithoutFormattingCodes(String text)
+    @Nullable
+    public static String getTextWithoutFormattingCodes(@Nullable String text)
     {
-        return text == null ? null : formattingCodePattern.matcher(text).replaceAll("");
+        return text == null ? null : FORMATTING_CODE_PATTERN.matcher(text).replaceAll("");
     }
 
     /**
      * Gets a value by its friendly name; null if the given name does not map to a defined value.
      */
-    public static TextFormatting getValueByName(String friendlyName)
+    @Nullable
+    public static TextFormatting getValueByName(@Nullable String friendlyName)
     {
-        return friendlyName == null ? null : (TextFormatting)nameMapping.get(lowercaseAlpha(friendlyName));
+        return friendlyName == null ? null : (TextFormatting)NAME_MAPPING.get(lowercaseAlpha(friendlyName));
     }
 
     /**
      * Get a TextFormatting from it's color index
-     *  
-     * @param index The color index
      */
+    @Nullable
     public static TextFormatting fromColorIndex(int index)
     {
         if (index < 0)
@@ -172,7 +174,7 @@ public enum TextFormatting
     {
         for (TextFormatting textformatting : values())
         {
-            nameMapping.put(lowercaseAlpha(textformatting.name), textformatting);
+            NAME_MAPPING.put(lowercaseAlpha(textformatting.name), textformatting);
         }
     }
 }

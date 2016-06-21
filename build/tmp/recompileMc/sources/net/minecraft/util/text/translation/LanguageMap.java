@@ -16,9 +16,9 @@ import org.apache.commons.io.IOUtils;
 public class LanguageMap
 {
     /** Pattern that matches numeric variable placeholders in a resource string, such as "%d", "%3$d", "%.2f" */
-    private static final Pattern numericVariablePattern = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
+    private static final Pattern NUMERIC_VARIABLE_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
     /** A Splitter that splits a string on the first "=".  For example, "a=b=c" would split into ["a", "b=c"]. */
-    private static final Splitter equalSignSplitter = Splitter.on('=').limit(2);
+    private static final Splitter EQUAL_SIGN_SPLITTER = Splitter.on('=').limit(2);
     /** Is the private singleton instance of StringTranslate. */
     private static LanguageMap instance = new LanguageMap();
     private final Map<String, String> languageList = Maps.<String, String>newHashMap();
@@ -55,12 +55,12 @@ public class LanguageMap
             {
                 if (!s.isEmpty() && s.charAt(0) != 35)
                 {
-                    String[] astring = (String[])Iterables.toArray(equalSignSplitter.split(s), String.class);
+                    String[] astring = (String[])Iterables.toArray(EQUAL_SIGN_SPLITTER.split(s), String.class);
 
                     if (astring != null && astring.length == 2)
                     {
                         String s1 = astring[0];
-                        String s2 = numericVariablePattern.matcher(astring[1]).replaceAll("%$1s");
+                        String s2 = NUMERIC_VARIABLE_PATTERN.matcher(astring[1]).replaceAll("%$1s");
                         table.put(s1, s2);
                     }
                 }

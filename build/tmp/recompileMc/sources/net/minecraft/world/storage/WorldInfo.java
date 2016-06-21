@@ -3,8 +3,9 @@ package net.minecraft.world.storage;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
 import net.minecraft.crash.CrashReportCategory;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -75,7 +76,7 @@ public class WorldInfo
     private double borderDamagePerBlock = 0.2D;
     private int borderWarningDistance = 5;
     private int borderWarningTime = 15;
-    private final Map<DimensionType, NBTTagCompound> field_186348_N = Maps.newEnumMap(DimensionType.class);
+    private final Map<DimensionType, NBTTagCompound> dimensionData = Maps.newEnumMap(DimensionType.class);
     private GameRules theGameRules = new GameRules();
     private java.util.Map<String, net.minecraft.nbt.NBTBase> additionalProperties;
 
@@ -248,7 +249,7 @@ public class WorldInfo
 
             for (String s : nbttagcompound1.getKeySet())
             {
-                this.field_186348_N.put(DimensionType.getById(Integer.parseInt(s)), nbttagcompound1.getCompoundTag(s));
+                this.dimensionData.put(DimensionType.getById(Integer.parseInt(s)), nbttagcompound1.getCompoundTag(s));
             }
         }
     }
@@ -268,7 +269,7 @@ public class WorldInfo
         this.mapFeaturesEnabled = settings.isMapFeaturesEnabled();
         this.hardcore = settings.getHardcoreEnabled();
         this.terrainType = settings.getTerrainType();
-        this.generatorOptions = settings.getWorldName();
+        this.generatorOptions = settings.getGeneratorOptions();
         this.allowCommands = settings.areCommandsAllowed();
     }
 
@@ -314,7 +315,7 @@ public class WorldInfo
     /**
      * Creates a new NBTTagCompound for the world, with the given NBTTag as the "Player"
      */
-    public NBTTagCompound cloneNBTCompound(NBTTagCompound nbt)
+    public NBTTagCompound cloneNBTCompound(@Nullable NBTTagCompound nbt)
     {
         if (nbt == null)
         {
@@ -329,11 +330,11 @@ public class WorldInfo
     private void updateTagCompound(NBTTagCompound nbt, NBTTagCompound playerNbt)
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
-        nbttagcompound.setString("Name", "1.9");
-        nbttagcompound.setInteger("Id", 169);
+        nbttagcompound.setString("Name", "1.9.4");
+        nbttagcompound.setInteger("Id", 184);
         nbttagcompound.setBoolean("Snapshot", false);
         nbt.setTag("Version", nbttagcompound);
-        nbt.setInteger("DataVersion", 169);
+        nbt.setInteger("DataVersion", 184);
         nbt.setLong("RandomSeed", this.randomSeed);
         nbt.setString("generatorName", this.terrainType.getWorldTypeName());
         nbt.setInteger("generatorVersion", this.terrainType.getGeneratorVersion());
@@ -376,7 +377,7 @@ public class WorldInfo
         nbt.setTag("GameRules", this.theGameRules.writeToNBT());
         NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
-        for (Entry<DimensionType, NBTTagCompound> entry : this.field_186348_N.entrySet())
+        for (Entry<DimensionType, NBTTagCompound> entry : this.dimensionData.entrySet())
         {
             nbttagcompound1.setTag(String.valueOf(((DimensionType)entry.getKey()).getId()), (NBTBase)entry.getValue());
         }
@@ -867,49 +868,49 @@ public class WorldInfo
      */
     public void addToCrashReport(CrashReportCategory category)
     {
-        category.addCrashSectionCallable("Level seed", new Callable<String>()
+        category.setDetail("Level seed", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return String.valueOf(WorldInfo.this.getSeed());
             }
         });
-        category.addCrashSectionCallable("Level generator", new Callable<String>()
+        category.setDetail("Level generator", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return String.format("ID %02d - %s, ver %d. Features enabled: %b", new Object[] {Integer.valueOf(WorldInfo.this.terrainType.getWorldTypeID()), WorldInfo.this.terrainType.getWorldTypeName(), Integer.valueOf(WorldInfo.this.terrainType.getGeneratorVersion()), Boolean.valueOf(WorldInfo.this.mapFeaturesEnabled)});
             }
         });
-        category.addCrashSectionCallable("Level generator options", new Callable<String>()
+        category.setDetail("Level generator options", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return WorldInfo.this.generatorOptions;
             }
         });
-        category.addCrashSectionCallable("Level spawn location", new Callable<String>()
+        category.setDetail("Level spawn location", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return CrashReportCategory.getCoordinateInfo(WorldInfo.this.spawnX, WorldInfo.this.spawnY, WorldInfo.this.spawnZ);
             }
         });
-        category.addCrashSectionCallable("Level time", new Callable<String>()
+        category.setDetail("Level time", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return String.format("%d game time, %d day time", new Object[] {Long.valueOf(WorldInfo.this.totalTime), Long.valueOf(WorldInfo.this.worldTime)});
             }
         });
-        category.addCrashSectionCallable("Level dimension", new Callable<String>()
+        category.setDetail("Level dimension", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return String.valueOf(WorldInfo.this.dimension);
             }
         });
-        category.addCrashSectionCallable("Level storage version", new Callable<String>()
+        category.setDetail("Level storage version", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -934,14 +935,14 @@ public class WorldInfo
                 return String.format("0x%05X - %s", new Object[] {Integer.valueOf(WorldInfo.this.saveVersion), s});
             }
         });
-        category.addCrashSectionCallable("Level weather", new Callable<String>()
+        category.setDetail("Level weather", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", new Object[] {Integer.valueOf(WorldInfo.this.rainTime), Boolean.valueOf(WorldInfo.this.raining), Integer.valueOf(WorldInfo.this.thunderTime), Boolean.valueOf(WorldInfo.this.thundering)});
             }
         });
-        category.addCrashSectionCallable("Level game mode", new Callable<String>()
+        category.setDetail("Level game mode", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -972,13 +973,13 @@ public class WorldInfo
 
     public NBTTagCompound getDimensionData(DimensionType dimensionIn)
     {
-        NBTTagCompound nbttagcompound = (NBTTagCompound)this.field_186348_N.get(dimensionIn);
+        NBTTagCompound nbttagcompound = (NBTTagCompound)this.dimensionData.get(dimensionIn);
         return nbttagcompound == null ? new NBTTagCompound() : nbttagcompound;
     }
 
     public void setDimensionData(DimensionType dimensionIn, NBTTagCompound compound)
     {
-        this.field_186348_N.put(dimensionIn, compound);
+        this.dimensionData.put(dimensionIn, compound);
     }
 
     @SideOnly(Side.CLIENT)

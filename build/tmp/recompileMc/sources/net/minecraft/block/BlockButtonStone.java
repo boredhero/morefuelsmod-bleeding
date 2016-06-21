@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.SoundCategory;
@@ -13,13 +14,13 @@ public class BlockButtonStone extends BlockButton
         super(false);
     }
 
-    protected void func_185615_a(EntityPlayer p_185615_1_, World player, BlockPos pos)
+    protected void playClickSound(@Nullable EntityPlayer player, World worldIn, BlockPos pos)
     {
-        player.playSound(p_185615_1_, pos, SoundEvents.block_stone_button_click_on, SoundCategory.BLOCKS, 0.3F, 0.6F);
+        worldIn.playSound(player, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_ON, SoundCategory.BLOCKS, 0.3F, 0.6F);
     }
 
-    protected void func_185617_b(World worldIn, BlockPos pos)
+    protected void playReleaseSound(World worldIn, BlockPos pos)
     {
-        worldIn.playSound((EntityPlayer)null, pos, SoundEvents.block_stone_button_click_off, SoundCategory.BLOCKS, 0.3F, 0.5F);
+        worldIn.playSound((EntityPlayer)null, pos, SoundEvents.BLOCK_STONE_BUTTON_CLICK_OFF, SoundCategory.BLOCKS, 0.3F, 0.5F);
     }
 }

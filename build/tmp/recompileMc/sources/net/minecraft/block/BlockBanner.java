@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -31,7 +32,7 @@ public class BlockBanner extends BlockContainer
 
     protected BlockBanner()
     {
-        super(Material.wood);
+        super(Material.WOOD);
     }
 
     /**
@@ -42,7 +43,8 @@ public class BlockBanner extends BlockContainer
         return I18n.translateToLocal("item.banner.white.name");
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -84,20 +86,21 @@ public class BlockBanner extends BlockContainer
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Items.banner;
+        return Items.BANNER;
     }
 
+    @Nullable
     private ItemStack getTileDataItemStack(World worldIn, BlockPos pos, IBlockState state)
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
         if (tileentity instanceof TileEntityBanner)
         {
-            ItemStack itemstack = new ItemStack(Items.banner, 1, ((TileEntityBanner)tileentity).getBaseColor());
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            tileentity.writeToNBT(nbttagcompound);
+            ItemStack itemstack = new ItemStack(Items.BANNER, 1, ((TileEntityBanner)tileentity).getBaseColor());
+            NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
             nbttagcompound.removeTag("x");
             nbttagcompound.removeTag("y");
             nbttagcompound.removeTag("z");
@@ -114,7 +117,7 @@ public class BlockBanner extends BlockContainer
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         ItemStack itemstack = this.getTileDataItemStack(worldIn, pos, state);
-        return itemstack != null ? itemstack : new ItemStack(Items.banner);
+        return itemstack != null ? itemstack : new ItemStack(Items.BANNER);
     }
 
     /**
@@ -132,12 +135,12 @@ public class BlockBanner extends BlockContainer
         return !this.hasInvalidNeighbor(worldIn, pos) && super.canPlaceBlockAt(worldIn, pos);
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
     {
         if (te instanceof TileEntityBanner)
         {
             TileEntityBanner tileentitybanner = (TileEntityBanner)te;
-            ItemStack itemstack = new ItemStack(Items.banner, 1, ((TileEntityBanner)te).getBaseColor());
+            ItemStack itemstack = new ItemStack(Items.BANNER, 1, ((TileEntityBanner)te).getBaseColor());
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             TileEntityBanner.setBaseColorAndPatterns(nbttagcompound, tileentitybanner.getBaseColor(), tileentitybanner.getPatterns());
             itemstack.setTagInfo("BlockEntityTag", nbttagcompound);
@@ -158,7 +161,7 @@ public class BlockBanner extends BlockContainer
         if (te instanceof TileEntityBanner)
         {
             TileEntityBanner banner = (TileEntityBanner)te;
-            ItemStack item = new ItemStack(Items.banner, 1, banner.getBaseColor());
+            ItemStack item = new ItemStack(Items.BANNER, 1, banner.getBaseColor());
             NBTTagCompound nbt = new NBTTagCompound();
             TileEntityBanner.setBaseColorAndPatterns(nbt, banner.getBaseColor(), banner.getPatterns());
             item.setTagInfo("BlockEntityTag", nbt);
@@ -166,7 +169,7 @@ public class BlockBanner extends BlockContainer
         }
         else
         {
-            ret.add(new ItemStack(Items.banner, 1, 0));
+            ret.add(new ItemStack(Items.BANNER, 1, 0));
         }
         return ret;
     }
@@ -218,9 +221,11 @@ public class BlockBanner extends BlockContainer
             }
 
             /**
-             * Called when a neighboring block changes.
+             * Called when a neighboring block was changed and marks that this state should perform any checks during a
+             * neighbor change. Cases may include when redstone power is updated, cactus blocks popping off due to a
+             * neighboring solid block, etc.
              */
-            public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+            public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
             {
                 EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
 
@@ -230,7 +235,7 @@ public class BlockBanner extends BlockContainer
                     worldIn.setBlockToAir(pos);
                 }
 
-                super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
+                super.neighborChanged(state, worldIn, pos, blockIn);
             }
 
             /**
@@ -280,7 +285,7 @@ public class BlockBanner extends BlockContainer
              */
             public IBlockState withRotation(IBlockState state, Rotation rot)
             {
-                return state.withProperty(ROTATION, Integer.valueOf(rot.func_185833_a(((Integer)state.getValue(ROTATION)).intValue(), 16)));
+                return state.withProperty(ROTATION, Integer.valueOf(rot.rotate(((Integer)state.getValue(ROTATION)).intValue(), 16)));
             }
 
             /**
@@ -293,9 +298,11 @@ public class BlockBanner extends BlockContainer
             }
 
             /**
-             * Called when a neighboring block changes.
+             * Called when a neighboring block was changed and marks that this state should perform any checks during a
+             * neighbor change. Cases may include when redstone power is updated, cactus blocks popping off due to a
+             * neighboring solid block, etc.
              */
-            public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+            public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
             {
                 if (!worldIn.getBlockState(pos.down()).getMaterial().isSolid())
                 {
@@ -303,7 +310,7 @@ public class BlockBanner extends BlockContainer
                     worldIn.setBlockToAir(pos);
                 }
 
-                super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
+                super.neighborChanged(state, worldIn, pos, blockIn);
             }
 
             /**

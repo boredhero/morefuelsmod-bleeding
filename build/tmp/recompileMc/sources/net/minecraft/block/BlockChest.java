@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -33,20 +34,20 @@ import net.minecraft.world.World;
 public class BlockChest extends BlockContainer
 {
     public static final PropertyDirection FACING = BlockHorizontal.FACING;
-    protected static final AxisAlignedBB field_185557_b = new AxisAlignedBB(0.0625D, 0.0D, 0.0D, 0.9375D, 0.875D, 0.9375D);
-    protected static final AxisAlignedBB field_185558_c = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.875D, 1.0D);
-    protected static final AxisAlignedBB field_185559_d = new AxisAlignedBB(0.0D, 0.0D, 0.0625D, 0.9375D, 0.875D, 0.9375D);
-    protected static final AxisAlignedBB field_185560_e = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 1.0D, 0.875D, 0.9375D);
-    protected static final AxisAlignedBB field_185561_f = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.875D, 0.9375D);
+    protected static final AxisAlignedBB NORTH_CHEST_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0D, 0.9375D, 0.875D, 0.9375D);
+    protected static final AxisAlignedBB SOUTH_CHEST_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.875D, 1.0D);
+    protected static final AxisAlignedBB WEST_CHEST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0625D, 0.9375D, 0.875D, 0.9375D);
+    protected static final AxisAlignedBB EAST_CHEST_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 1.0D, 0.875D, 0.9375D);
+    protected static final AxisAlignedBB NOT_CONNECTED_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.875D, 0.9375D);
     /** 0 : Normal chest, 1 : Trapped chest */
     public final BlockChest.Type chestType;
 
-    protected BlockChest(BlockChest.Type p_i46689_1_)
+    protected BlockChest(BlockChest.Type chestTypeIn)
     {
-        super(Material.wood);
+        super(Material.WOOD);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
-        this.chestType = p_i46689_1_;
-        this.setCreativeTab(p_i46689_1_ == BlockChest.Type.TRAP ? CreativeTabs.tabRedstone : CreativeTabs.tabDecorations);
+        this.chestType = chestTypeIn;
+        this.setCreativeTab(chestTypeIn == BlockChest.Type.TRAP ? CreativeTabs.REDSTONE : CreativeTabs.DECORATIONS);
     }
 
     /**
@@ -72,7 +73,7 @@ public class BlockChest extends BlockContainer
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
-        return source.getBlockState(pos.north()).getBlock() == this ? field_185557_b : (source.getBlockState(pos.south()).getBlock() == this ? field_185558_c : (source.getBlockState(pos.west()).getBlock() == this ? field_185559_d : (source.getBlockState(pos.east()).getBlock() == this ? field_185560_e : field_185561_f)));
+        return source.getBlockState(pos.north()).getBlock() == this ? NORTH_CHEST_AABB : (source.getBlockState(pos.south()).getBlock() == this ? SOUTH_CHEST_AABB : (source.getBlockState(pos.west()).getBlock() == this ? WEST_CHEST_AABB : (source.getBlockState(pos.east()).getBlock() == this ? EAST_CHEST_AABB : NOT_CONNECTED_AABB)));
     }
 
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
@@ -376,11 +377,13 @@ public class BlockChest extends BlockContainer
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
-        super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
+        super.neighborChanged(state, worldIn, pos, blockIn);
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
         if (tileentity instanceof TileEntityChest)
@@ -402,7 +405,7 @@ public class BlockChest extends BlockContainer
         super.breakBlock(worldIn, pos, state);
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -418,11 +421,11 @@ public class BlockChest extends BlockContainer
 
                 if (this.chestType == BlockChest.Type.BASIC)
                 {
-                    playerIn.addStat(StatList.chestOpened);
+                    playerIn.addStat(StatList.CHEST_OPENED);
                 }
                 else if (this.chestType == BlockChest.Type.TRAP)
                 {
-                    playerIn.addStat(StatList.trappedChestTriggered);
+                    playerIn.addStat(StatList.TRAPPED_CHEST_TRIGGERED);
                 }
             }
 
@@ -430,9 +433,16 @@ public class BlockChest extends BlockContainer
         }
     }
 
+    @Nullable
     public ILockableContainer getLockableContainer(World worldIn, BlockPos pos)
     {
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+        return this.getContainer(worldIn, pos, false);
+    }
+
+    @Nullable
+    public ILockableContainer getContainer(World p_189418_1_, BlockPos p_189418_2_, boolean p_189418_3_)
+    {
+        TileEntity tileentity = p_189418_1_.getTileEntity(p_189418_2_);
 
         if (!(tileentity instanceof TileEntityChest))
         {
@@ -442,7 +452,7 @@ public class BlockChest extends BlockContainer
         {
             ILockableContainer ilockablecontainer = (TileEntityChest)tileentity;
 
-            if (this.isBlocked(worldIn, pos))
+            if (!p_189418_3_ && this.isBlocked(p_189418_1_, p_189418_2_))
             {
                 return null;
             }
@@ -450,17 +460,17 @@ public class BlockChest extends BlockContainer
             {
                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
                 {
-                    BlockPos blockpos = pos.offset(enumfacing);
-                    Block block = worldIn.getBlockState(blockpos).getBlock();
+                    BlockPos blockpos = p_189418_2_.offset(enumfacing);
+                    Block block = p_189418_1_.getBlockState(blockpos).getBlock();
 
                     if (block == this)
                     {
-                        if (this.isBlocked(worldIn, blockpos))
+                        if (this.isBlocked(p_189418_1_, blockpos))
                         {
                             return null;
                         }
 
-                        TileEntity tileentity1 = worldIn.getTileEntity(blockpos);
+                        TileEntity tileentity1 = p_189418_1_.getTileEntity(blockpos);
 
                         if (tileentity1 instanceof TileEntityChest)
                         {

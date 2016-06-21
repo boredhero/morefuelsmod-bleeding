@@ -21,7 +21,7 @@ public interface ISaveFormat
     ISaveHandler getSaveLoader(String saveName, boolean storePlayerdata);
 
     @SideOnly(Side.CLIENT)
-    List<SaveFormatComparator> getSaveList() throws AnvilConverterException;
+    List<WorldSummary> getSaveList() throws AnvilConverterException;
 
     /**
      * gets if the map is old chunk saving (true) or McRegion (false)
@@ -41,8 +41,7 @@ public interface ISaveFormat
     boolean isNewLevelIdAcceptable(String saveName);
 
     /**
-     * @args: Takes one argument - the name of the directory of the world to delete. @desc: Delete the world by deleting
-     * the associated directory recursively.
+     * Deletes a world directory.
      */
     @SideOnly(Side.CLIENT)
     boolean deleteWorldDirectory(String saveName);

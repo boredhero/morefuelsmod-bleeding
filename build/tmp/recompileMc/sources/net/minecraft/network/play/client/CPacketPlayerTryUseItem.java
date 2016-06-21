@@ -4,34 +4,19 @@ import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class CPacketPlayerTryUseItem implements Packet<INetHandlerPlayServer>
 {
-    private BlockPos position;
-    private EnumFacing placedBlockDirection;
     private EnumHand hand;
-    private float facingX;
-    private float facingY;
-    private float facingZ;
 
     public CPacketPlayerTryUseItem()
     {
     }
 
-    @SideOnly(Side.CLIENT)
-    public CPacketPlayerTryUseItem(BlockPos posIn, EnumFacing p_i46858_2_, EnumHand handIn, float p_i46858_4_, float p_i46858_5_, float p_i46858_6_)
+    public CPacketPlayerTryUseItem(EnumHand handIn)
     {
-        this.position = posIn;
-        this.placedBlockDirection = p_i46858_2_;
         this.hand = handIn;
-        this.facingX = p_i46858_4_;
-        this.facingY = p_i46858_5_;
-        this.facingZ = p_i46858_6_;
     }
 
     /**
@@ -39,12 +24,7 @@ public class CPacketPlayerTryUseItem implements Packet<INetHandlerPlayServer>
      */
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.position = buf.readBlockPos();
-        this.placedBlockDirection = (EnumFacing)buf.readEnumValue(EnumFacing.class);
         this.hand = (EnumHand)buf.readEnumValue(EnumHand.class);
-        this.facingX = (float)buf.readUnsignedByte() / 16.0F;
-        this.facingY = (float)buf.readUnsignedByte() / 16.0F;
-        this.facingZ = (float)buf.readUnsignedByte() / 16.0F;
     }
 
     /**
@@ -52,12 +32,7 @@ public class CPacketPlayerTryUseItem implements Packet<INetHandlerPlayServer>
      */
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeBlockPos(this.position);
-        buf.writeEnumValue(this.placedBlockDirection);
         buf.writeEnumValue(this.hand);
-        buf.writeByte((int)(this.facingX * 16.0F));
-        buf.writeByte((int)(this.facingY * 16.0F));
-        buf.writeByte((int)(this.facingZ * 16.0F));
     }
 
     /**
@@ -65,36 +40,11 @@ public class CPacketPlayerTryUseItem implements Packet<INetHandlerPlayServer>
      */
     public void processPacket(INetHandlerPlayServer handler)
     {
-        handler.processRightClickBlock(this);
-    }
-
-    public BlockPos getPos()
-    {
-        return this.position;
-    }
-
-    public EnumFacing func_187024_b()
-    {
-        return this.placedBlockDirection;
+        handler.processPlayerBlockPlacement(this);
     }
 
     public EnumHand getHand()
     {
         return this.hand;
-    }
-
-    public float func_187026_d()
-    {
-        return this.facingX;
-    }
-
-    public float func_187025_e()
-    {
-        return this.facingY;
-    }
-
-    public float func_187020_f()
-    {
-        return this.facingZ;
     }
 }

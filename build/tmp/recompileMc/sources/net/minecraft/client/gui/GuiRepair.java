@@ -10,7 +10,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerRepair;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -23,9 +23,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 @SideOnly(Side.CLIENT)
-public class GuiRepair extends GuiContainer implements ICrafting
+public class GuiRepair extends GuiContainer implements IContainerListener
 {
-    private static final ResourceLocation anvilResource = new ResourceLocation("textures/gui/container/anvil.png");
+    private static final ResourceLocation ANVIL_RESOURCE = new ResourceLocation("textures/gui/container/anvil.png");
     private ContainerRepair anvil;
     private GuiTextField nameField;
     private InventoryPlayer playerInventory;
@@ -52,8 +52,8 @@ public class GuiRepair extends GuiContainer implements ICrafting
         this.nameField.setDisabledTextColour(-1);
         this.nameField.setEnableBackgroundDrawing(false);
         this.nameField.setMaxStringLength(30);
-        this.inventorySlots.removeCraftingFromCrafters(this);
-        this.inventorySlots.onCraftGuiOpened(this);
+        this.inventorySlots.removeListener(this);
+        this.inventorySlots.addListener(this);
     }
 
     /**
@@ -63,14 +63,11 @@ public class GuiRepair extends GuiContainer implements ICrafting
     {
         super.onGuiClosed();
         Keyboard.enableRepeatEvents(false);
-        this.inventorySlots.removeCraftingFromCrafters(this);
+        this.inventorySlots.removeListener(this);
     }
 
     /**
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
@@ -150,7 +147,7 @@ public class GuiRepair extends GuiContainer implements ICrafting
         }
 
         this.anvil.updateItemName(s);
-        this.mc.thePlayer.sendQueue.addToSendQueue(new CPacketCustomPayload("MC|ItemName", (new PacketBuffer(Unpooled.buffer())).writeString(s)));
+        this.mc.thePlayer.connection.sendPacket(new CPacketCustomPayload("MC|ItemName", (new PacketBuffer(Unpooled.buffer())).writeString(s)));
     }
 
     /**
@@ -164,10 +161,6 @@ public class GuiRepair extends GuiContainer implements ICrafting
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {
@@ -179,16 +172,11 @@ public class GuiRepair extends GuiContainer implements ICrafting
 
     /**
      * Draws the background layer of this container (behind the items).
-     *  
-     * @param partialTicks How far into the current tick the game is, with 0.0 being the start of the tick and 1.0 being
-     * the end.
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
      */
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        this.mc.getTextureManager().bindTexture(anvilResource);
+        this.mc.getTextureManager().bindTexture(ANVIL_RESOURCE);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
@@ -210,7 +198,7 @@ public class GuiRepair extends GuiContainer implements ICrafting
 
     /**
      * Sends the contents of an inventory slot to the client-side Container. This doesn't have to match the actual
-     * contents of that slot. Args: Container, slot number, slot contents
+     * contents of that slot.
      */
     public void sendSlotContents(Container containerToSend, int slotInd, ItemStack stack)
     {

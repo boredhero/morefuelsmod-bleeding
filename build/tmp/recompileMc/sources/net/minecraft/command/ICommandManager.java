@@ -2,6 +2,7 @@ package net.minecraft.command;
 
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 
 public interface ICommandManager
@@ -13,7 +14,7 @@ public interface ICommandManager
      */
     int executeCommand(ICommandSender sender, String rawCommand);
 
-    List<String> getTabCompletionOptions(ICommandSender sender, String input, BlockPos pos);
+    List<String> getTabCompletionOptions(ICommandSender sender, String input, @Nullable BlockPos pos);
 
     List<ICommand> getPossibleCommands(ICommandSender sender);
 

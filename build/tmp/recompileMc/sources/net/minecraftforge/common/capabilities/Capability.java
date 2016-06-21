@@ -55,7 +55,7 @@ public class Capability<T>
          * @param capability The Capability being stored.
          * @param instance An instance of that capabilities interface.
          * @param side The side of the object the instance is associated with.
-         * @param A NBT holding the data. Must not be null, as doesn't make sense to call this function with nothing to read...
+         * @param nbt A NBT holding the data. Must not be null, as doesn't make sense to call this function with nothing to read...
          */
         void readNBT(Capability<T> capability, T instance, EnumFacing side, NBTBase nbt);
     }
@@ -65,10 +65,29 @@ public class Capability<T>
      * the fully qualified class name for the target interface.
      */
     public String getName() { return name; }
+
     /**
      * @return An instance of the default storage handler. You can safely use this store your default implementation in NBT.
      */
     public IStorage<T> getStorage() { return storage; }
+    
+    /**
+     * Quick access to the IStorage's readNBT. 
+     * See {@link IStorage#readNBT(Capability, Object, EnumFacing, NBTBase)}  for documentation.
+     */
+    public void readNBT(T instance, EnumFacing side, NBTBase nbt)
+    {
+    	storage.readNBT(this, instance, side, nbt); 
+    }
+    
+    /**
+     * Quick access to the IStorage's writeNBT. 
+     * See {@link IStorage#writeNBT(Capability, Object, EnumFacing)} for documentation.
+     */
+    public NBTBase writeNBT(T instance, EnumFacing side)
+    {
+    	return storage.writeNBT(this, instance, side);
+    }
 
     /**
      * A NEW instance of the default implementation.

@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class PhaseSittingScanning extends PhaseSittingBase
 {
-    private int field_188667_b;
+    private int scanningTime;
 
     public PhaseSittingScanning(EntityDragon dragonIn)
     {
@@ -20,12 +20,12 @@ public class PhaseSittingScanning extends PhaseSittingBase
      */
     public void doLocalUpdate()
     {
-        ++this.field_188667_b;
-        EntityLivingBase entitylivingbase = this.dragon.worldObj.func_184142_a(this.dragon, 20.0D, 10.0D);
+        ++this.scanningTime;
+        EntityLivingBase entitylivingbase = this.dragon.worldObj.getNearestAttackablePlayer(this.dragon, 20.0D, 10.0D);
 
         if (entitylivingbase != null)
         {
-            if (this.field_188667_b > 25)
+            if (this.scanningTime > 25)
             {
                 this.dragon.getPhaseManager().setPhase(PhaseList.SITTING_ATTACKING);
             }
@@ -40,7 +40,7 @@ public class PhaseSittingScanning extends PhaseSittingBase
                 {
                     double d0 = entitylivingbase.posX - this.dragon.dragonPartHead.posX;
                     double d1 = entitylivingbase.posZ - this.dragon.dragonPartHead.posZ;
-                    double d2 = MathHelper.clamp_double(MathHelper.wrapAngleTo180_double(180.0D - MathHelper.atan2(d0, d1) * (180D / Math.PI) - (double)this.dragon.rotationYaw), -100.0D, 100.0D);
+                    double d2 = MathHelper.clamp_double(MathHelper.wrapDegrees(180.0D - MathHelper.atan2(d0, d1) * (180D / Math.PI) - (double)this.dragon.rotationYaw), -100.0D, 100.0D);
                     this.dragon.randomYawVelocity *= 0.8F;
                     float f2 = MathHelper.sqrt_double(d0 * d0 + d1 * d1) + 1.0F;
                     float f3 = f2;
@@ -55,15 +55,15 @@ public class PhaseSittingScanning extends PhaseSittingBase
                 }
             }
         }
-        else if (this.field_188667_b >= 100)
+        else if (this.scanningTime >= 100)
         {
-            entitylivingbase = this.dragon.worldObj.func_184142_a(this.dragon, 150.0D, 150.0D);
+            entitylivingbase = this.dragon.worldObj.getNearestAttackablePlayer(this.dragon, 150.0D, 150.0D);
             this.dragon.getPhaseManager().setPhase(PhaseList.TAKEOFF);
 
             if (entitylivingbase != null)
             {
                 this.dragon.getPhaseManager().setPhase(PhaseList.CHARGING_PLAYER);
-                ((PhaseChargingPlayer)this.dragon.getPhaseManager().getPhase(PhaseList.CHARGING_PLAYER)).func_188668_a(new Vec3d(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ));
+                ((PhaseChargingPlayer)this.dragon.getPhaseManager().getPhase(PhaseList.CHARGING_PLAYER)).setTarget(new Vec3d(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ));
             }
         }
     }
@@ -73,7 +73,7 @@ public class PhaseSittingScanning extends PhaseSittingBase
      */
     public void initPhase()
     {
-        this.field_188667_b = 0;
+        this.scanningTime = 0;
     }
 
     public PhaseList<PhaseSittingScanning> getPhaseList()

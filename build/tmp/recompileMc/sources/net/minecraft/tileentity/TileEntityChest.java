@@ -1,5 +1,6 @@
 package net.minecraft.tileentity;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -48,9 +48,9 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     {
     }
 
-    public TileEntityChest(BlockChest.Type p_i46677_1_)
+    public TileEntityChest(BlockChest.Type typeIn)
     {
-        this.cachedChestType = p_i46677_1_;
+        this.cachedChestType = typeIn;
     }
 
     /**
@@ -64,6 +64,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     /**
      * Returns the stack in the given slot.
      */
+    @Nullable
     public ItemStack getStackInSlot(int index)
     {
         this.fillWithLoot((EntityPlayer)null);
@@ -73,10 +74,11 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
+    @Nullable
     public ItemStack decrStackSize(int index, int count)
     {
         this.fillWithLoot((EntityPlayer)null);
-        ItemStack itemstack = ItemStackHelper.func_188382_a(this.chestContents, index, count);
+        ItemStack itemstack = ItemStackHelper.getAndSplit(this.chestContents, index, count);
 
         if (itemstack != null)
         {
@@ -89,16 +91,17 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     /**
      * Removes a stack from the given slot and returns it.
      */
+    @Nullable
     public ItemStack removeStackFromSlot(int index)
     {
         this.fillWithLoot((EntityPlayer)null);
-        return ItemStackHelper.func_188383_a(this.chestContents, index);
+        return ItemStackHelper.getAndRemove(this.chestContents, index);
     }
 
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, ItemStack stack)
+    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
     {
         this.fillWithLoot((EntityPlayer)null);
         this.chestContents[index] = stack;
@@ -159,7 +162,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
         }
     }
 
-    public void writeToNBT(NBTTagCompound compound)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
 
@@ -185,6 +188,8 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
         {
             compound.setString("CustomName", this.customName);
         }
+
+        return compound;
     }
 
     /**
@@ -211,7 +216,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     }
 
     @SuppressWarnings("incomplete-switch")
-    private void func_174910_a(TileEntityChest chestTe, EnumFacing side)
+    private void setNeighbor(TileEntityChest chestTe, EnumFacing side)
     {
         if (chestTe.isInvalid())
         {
@@ -270,6 +275,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
         }
     }
 
+    @Nullable
     protected TileEntityChest getAdjacentChest(EnumFacing side)
     {
         BlockPos blockpos = this.pos.offset(side);
@@ -281,7 +287,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
             if (tileentity instanceof TileEntityChest)
             {
                 TileEntityChest tileentitychest = (TileEntityChest)tileentity;
-                tileentitychest.func_174910_a(this, side.getOpposite());
+                tileentitychest.setNeighbor(this, side.getOpposite());
                 return tileentitychest;
             }
         }
@@ -350,7 +356,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
                 d1 += 0.5D;
             }
 
-            this.worldObj.playSound((EntityPlayer)null, d1, (double)j + 0.5D, d2, SoundEvents.block_chest_open, SoundCategory.BLOCKS, 0.5F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+            this.worldObj.playSound((EntityPlayer)null, d1, (double)j + 0.5D, d2, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
         }
 
         if (this.numPlayersUsing == 0 && this.lidAngle > 0.0F || this.numPlayersUsing > 0 && this.lidAngle < 1.0F)
@@ -388,7 +394,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
                     d3 += 0.5D;
                 }
 
-                this.worldObj.playSound((EntityPlayer)null, d3, (double)j + 0.5D, d0, SoundEvents.block_chest_close, SoundCategory.BLOCKS, 0.5F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
+                this.worldObj.playSound((EntityPlayer)null, d3, (double)j + 0.5D, d0, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
             }
 
             if (this.lidAngle < 0.0F)
@@ -527,9 +533,4 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
         return super.getCapability(net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
     }
 
-    public void setLoot(ResourceLocation lootTableIn, long lootSeedIn)
-    {
-        this.lootTable = lootTableIn;
-        this.lootTableSeed = lootSeedIn;
-    }
 }

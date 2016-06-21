@@ -26,7 +26,7 @@ public class WorldGenMegaJungle extends WorldGenHugeTrees
         }
         else
         {
-            this.func_175930_c(worldIn, position.up(i), 2);
+            this.createCrown(worldIn, position.up(i), 2);
 
             for (int j = position.getY() + i - 2 - rand.nextInt(4); j > position.getY() + i / 2; j -= 2 + rand.nextInt(4))
             {
@@ -61,8 +61,8 @@ public class WorldGenMegaJungle extends WorldGenHugeTrees
 
                     if (i2 > 0)
                     {
-                        this.func_181632_a(worldIn, rand, blockpos.west(), BlockVine.EAST);
-                        this.func_181632_a(worldIn, rand, blockpos.north(), BlockVine.SOUTH);
+                        this.placeVine(worldIn, rand, blockpos.west(), BlockVine.EAST);
+                        this.placeVine(worldIn, rand, blockpos.north(), BlockVine.SOUTH);
                     }
                 }
 
@@ -76,8 +76,8 @@ public class WorldGenMegaJungle extends WorldGenHugeTrees
 
                         if (i2 > 0)
                         {
-                            this.func_181632_a(worldIn, rand, blockpos1.east(), BlockVine.WEST);
-                            this.func_181632_a(worldIn, rand, blockpos1.north(), BlockVine.SOUTH);
+                            this.placeVine(worldIn, rand, blockpos1.east(), BlockVine.WEST);
+                            this.placeVine(worldIn, rand, blockpos1.north(), BlockVine.SOUTH);
                         }
                     }
 
@@ -89,8 +89,8 @@ public class WorldGenMegaJungle extends WorldGenHugeTrees
 
                         if (i2 > 0)
                         {
-                            this.func_181632_a(worldIn, rand, blockpos2.east(), BlockVine.WEST);
-                            this.func_181632_a(worldIn, rand, blockpos2.south(), BlockVine.NORTH);
+                            this.placeVine(worldIn, rand, blockpos2.east(), BlockVine.WEST);
+                            this.placeVine(worldIn, rand, blockpos2.south(), BlockVine.NORTH);
                         }
                     }
 
@@ -102,8 +102,8 @@ public class WorldGenMegaJungle extends WorldGenHugeTrees
 
                         if (i2 > 0)
                         {
-                            this.func_181632_a(worldIn, rand, blockpos3.west(), BlockVine.EAST);
-                            this.func_181632_a(worldIn, rand, blockpos3.south(), BlockVine.NORTH);
+                            this.placeVine(worldIn, rand, blockpos3.west(), BlockVine.EAST);
+                            this.placeVine(worldIn, rand, blockpos3.south(), BlockVine.NORTH);
                         }
                     }
                 }
@@ -113,15 +113,15 @@ public class WorldGenMegaJungle extends WorldGenHugeTrees
         }
     }
 
-    private void func_181632_a(World p_181632_1_, Random p_181632_2_, BlockPos p_181632_3_, PropertyBool p_181632_4_)
+    private void placeVine(World p_181632_1_, Random p_181632_2_, BlockPos p_181632_3_, PropertyBool p_181632_4_)
     {
         if (p_181632_2_.nextInt(3) > 0 && p_181632_1_.isAirBlock(p_181632_3_))
         {
-            this.setBlockAndNotifyAdequately(p_181632_1_, p_181632_3_, Blocks.vine.getDefaultState().withProperty(p_181632_4_, Boolean.valueOf(true)));
+            this.setBlockAndNotifyAdequately(p_181632_1_, p_181632_3_, Blocks.VINE.getDefaultState().withProperty(p_181632_4_, Boolean.valueOf(true)));
         }
     }
 
-    private void func_175930_c(World worldIn, BlockPos p_175930_2_, int p_175930_3_)
+    private void createCrown(World worldIn, BlockPos p_175930_2_, int p_175930_3_)
     {
         int i = 2;
 

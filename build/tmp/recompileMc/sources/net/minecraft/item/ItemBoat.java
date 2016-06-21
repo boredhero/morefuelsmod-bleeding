@@ -25,7 +25,7 @@ public class ItemBoat extends Item
     {
         this.type = typeIn;
         this.maxStackSize = 1;
-        this.setCreativeTab(CreativeTabs.tabTransport);
+        this.setCreativeTab(CreativeTabs.TRANSPORTATION);
         this.setUnlocalizedName("boat." + typeIn.getName());
     }
 
@@ -84,12 +84,12 @@ public class ItemBoat extends Item
             else
             {
                 Block block = worldIn.getBlockState(raytraceresult.getBlockPos()).getBlock();
-                boolean flag1 = block == Blocks.water || block == Blocks.flowing_water;
+                boolean flag1 = block == Blocks.WATER || block == Blocks.FLOWING_WATER;
                 EntityBoat entityboat = new EntityBoat(worldIn, raytraceresult.hitVec.xCoord, flag1 ? raytraceresult.hitVec.yCoord - 0.12D : raytraceresult.hitVec.yCoord, raytraceresult.hitVec.zCoord);
                 entityboat.setBoatType(this.type);
                 entityboat.rotationYaw = playerIn.rotationYaw;
 
-                if (!worldIn.getCubes(entityboat, entityboat.getEntityBoundingBox().expandXyz(-0.1D)).isEmpty())
+                if (!worldIn.getCollisionBoxes(entityboat, entityboat.getEntityBoundingBox().expandXyz(-0.1D)).isEmpty())
                 {
                     return new ActionResult(EnumActionResult.FAIL, itemStackIn);
                 }
@@ -105,7 +105,7 @@ public class ItemBoat extends Item
                         --itemStackIn.stackSize;
                     }
 
-                    playerIn.addStat(StatList.func_188057_b(this));
+                    playerIn.addStat(StatList.getObjectUseStats(this));
                     return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
                 }
             }

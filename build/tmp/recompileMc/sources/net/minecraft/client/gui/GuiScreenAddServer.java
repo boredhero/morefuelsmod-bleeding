@@ -3,6 +3,7 @@ package net.minecraft.client.gui;
 import com.google.common.base.Predicate;
 import java.io.IOException;
 import java.net.IDN;
+import javax.annotation.Nullable;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.StringUtils;
@@ -18,9 +19,9 @@ public class GuiScreenAddServer extends GuiScreen
     private GuiTextField serverIPField;
     private GuiTextField serverNameField;
     private GuiButton serverResourcePacks;
-    private Predicate<String> field_181032_r = new Predicate<String>()
+    private Predicate<String> addressFilter = new Predicate<String>()
     {
-        public boolean apply(String p_apply_1_)
+        public boolean apply(@Nullable String p_apply_1_)
         {
             if (StringUtils.isNullOrEmpty(p_apply_1_))
             {
@@ -82,7 +83,7 @@ public class GuiScreenAddServer extends GuiScreen
         this.serverIPField = new GuiTextField(1, this.fontRendererObj, this.width / 2 - 100, 106, 200, 20);
         this.serverIPField.setMaxStringLength(128);
         this.serverIPField.setText(this.serverData.serverIP);
-        this.serverIPField.setValidator(this.field_181032_r);
+        this.serverIPField.setValidator(this.addressFilter);
         ((GuiButton)this.buttonList.get(0)).enabled = !this.serverIPField.getText().isEmpty() && this.serverIPField.getText().split(":").length > 0 && !this.serverNameField.getText().isEmpty();
     }
 
@@ -154,10 +155,6 @@ public class GuiScreenAddServer extends GuiScreen
 
     /**
      * Draws the screen and all the components in it.
-     *  
-     * @param mouseX Mouse x coordinate
-     * @param mouseY Mouse y coordinate
-     * @param partialTicks How far into the current tick (1/20th of a second) the game is
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks)
     {

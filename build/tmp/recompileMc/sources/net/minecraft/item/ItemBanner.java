@@ -25,9 +25,9 @@ public class ItemBanner extends ItemBlock
 {
     public ItemBanner()
     {
-        super(Blocks.standing_banner);
+        super(Blocks.STANDING_BANNER);
         this.maxStackSize = 16;
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
         this.setHasSubtypes(true);
         this.setMaxDamage(0);
     }
@@ -44,7 +44,7 @@ public class ItemBanner extends ItemBlock
         {
             pos = pos.offset(facing);
 
-            if (playerIn.canPlayerEdit(pos, facing, stack) && Blocks.standing_banner.canPlaceBlockAt(worldIn, pos))
+            if (playerIn.canPlayerEdit(pos, facing, stack) && Blocks.STANDING_BANNER.canPlaceBlockAt(worldIn, pos))
             {
                 if (worldIn.isRemote)
                 {
@@ -57,11 +57,11 @@ public class ItemBanner extends ItemBlock
                     if (facing == EnumFacing.UP)
                     {
                         int i = MathHelper.floor_double((double)((playerIn.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
-                        worldIn.setBlockState(pos, Blocks.standing_banner.getDefaultState().withProperty(BlockStandingSign.ROTATION, Integer.valueOf(i)), 3);
+                        worldIn.setBlockState(pos, Blocks.STANDING_BANNER.getDefaultState().withProperty(BlockStandingSign.ROTATION, Integer.valueOf(i)), 3);
                     }
                     else
                     {
-                        worldIn.setBlockState(pos, Blocks.wall_banner.getDefaultState().withProperty(BlockWallSign.FACING, facing), 3);
+                        worldIn.setBlockState(pos, Blocks.WALL_BANNER.getDefaultState().withProperty(BlockWallSign.FACING, facing), 3);
                     }
 
                     --stack.stackSize;
@@ -95,7 +95,7 @@ public class ItemBanner extends ItemBlock
     }
 
     @SideOnly(Side.CLIENT)
-    public static void func_185054_a(ItemStack stack, List<String> p_185054_1_)
+    public static void appendHoverTextFromTileEntityTag(ItemStack stack, List<String> p_185054_1_)
     {
         NBTTagCompound nbttagcompound = stack.getSubCompound("BlockEntityTag", false);
 
@@ -123,7 +123,7 @@ public class ItemBanner extends ItemBlock
     @SideOnly(Side.CLIENT)
     public void addInformation(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
     {
-        func_185054_a(stack, tooltip);
+        appendHoverTextFromTileEntityTag(stack, tooltip);
     }
 
     /**
@@ -150,7 +150,7 @@ public class ItemBanner extends ItemBlock
     @SideOnly(Side.CLIENT)
     public CreativeTabs getCreativeTab()
     {
-        return CreativeTabs.tabDecorations;
+        return CreativeTabs.DECORATIONS;
     }
 
     public static EnumDyeColor getBaseColor(ItemStack stack)

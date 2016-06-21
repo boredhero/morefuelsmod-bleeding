@@ -19,8 +19,8 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
 {
     private static final ResourceLocation END_SKY_TEXTURE = new ResourceLocation("textures/environment/end_sky.png");
     private static final ResourceLocation END_PORTAL_TEXTURE = new ResourceLocation("textures/entity/end_portal.png");
-    private static final Random field_147527_e = new Random(31100L);
-    FloatBuffer field_147528_b = GLAllocation.createDirectFloatBuffer(16);
+    private static final Random RANDOM = new Random(31100L);
+    FloatBuffer buffer = GLAllocation.createDirectFloatBuffer(16);
 
     public void renderTileEntityAt(TileEntityEndPortal te, double x, double y, double z, float partialTicks, int destroyStage)
     {
@@ -28,7 +28,7 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
         float f1 = (float)this.rendererDispatcher.entityY;
         float f2 = (float)this.rendererDispatcher.entityZ;
         GlStateManager.disableLighting();
-        field_147527_e.setSeed(31100L);
+        RANDOM.setSeed(31100L);
         float f3 = 0.75F;
 
         for (int i = 0; i < 16; ++i)
@@ -70,10 +70,10 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
             GlStateManager.texGen(GlStateManager.TexGen.T, 9217);
             GlStateManager.texGen(GlStateManager.TexGen.R, 9217);
             GlStateManager.texGen(GlStateManager.TexGen.Q, 9216);
-            GlStateManager.texGen(GlStateManager.TexGen.S, 9473, this.func_147525_a(1.0F, 0.0F, 0.0F, 0.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.T, 9473, this.func_147525_a(0.0F, 0.0F, 1.0F, 0.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.R, 9473, this.func_147525_a(0.0F, 0.0F, 0.0F, 1.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.Q, 9474, this.func_147525_a(0.0F, 1.0F, 0.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.S, 9473, this.getBuffer(1.0F, 0.0F, 0.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.T, 9473, this.getBuffer(0.0F, 0.0F, 1.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.R, 9473, this.getBuffer(0.0F, 0.0F, 0.0F, 1.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.Q, 9474, this.getBuffer(0.0F, 1.0F, 0.0F, 0.0F));
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.S);
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.T);
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.R);
@@ -93,9 +93,9 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            float f11 = (field_147527_e.nextFloat() * 0.5F + 0.1F) * f6;
-            float f12 = (field_147527_e.nextFloat() * 0.5F + 0.4F) * f6;
-            float f13 = (field_147527_e.nextFloat() * 0.5F + 0.5F) * f6;
+            float f11 = (RANDOM.nextFloat() * 0.5F + 0.1F) * f6;
+            float f12 = (RANDOM.nextFloat() * 0.5F + 0.4F) * f6;
+            float f13 = (RANDOM.nextFloat() * 0.5F + 0.5F) * f6;
 
             if (i == 0)
             {
@@ -120,11 +120,11 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
         GlStateManager.enableLighting();
     }
 
-    private FloatBuffer func_147525_a(float p_147525_1_, float p_147525_2_, float p_147525_3_, float p_147525_4_)
+    private FloatBuffer getBuffer(float p_147525_1_, float p_147525_2_, float p_147525_3_, float p_147525_4_)
     {
-        this.field_147528_b.clear();
-        this.field_147528_b.put(p_147525_1_).put(p_147525_2_).put(p_147525_3_).put(p_147525_4_);
-        this.field_147528_b.flip();
-        return this.field_147528_b;
+        this.buffer.clear();
+        this.buffer.put(p_147525_1_).put(p_147525_2_).put(p_147525_3_).put(p_147525_4_);
+        this.buffer.flip();
+        return this.buffer;
     }
 }

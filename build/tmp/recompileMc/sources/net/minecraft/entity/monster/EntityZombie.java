@@ -3,6 +3,7 @@ package net.minecraft.entity.monster;
 import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -56,13 +57,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EntityZombie extends EntityMob
 {
     /** The attribute which determines the chance that this mob will spawn reinforcements */
-    protected static final IAttribute reinforcementChance = (new RangedAttribute((IAttribute)null, "zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D)).setDescription("Spawn Reinforcements Chance");
-    private static final UUID babySpeedBoostUUID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
-    private static final AttributeModifier babySpeedBoostModifier = new AttributeModifier(babySpeedBoostUUID, "Baby speed boost", 0.5D, 1);
+    protected static final IAttribute SPAWN_REINFORCEMENTS_CHANCE = (new RangedAttribute((IAttribute)null, "zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D)).setDescription("Spawn Reinforcements Chance");
+    private static final UUID BABY_SPEED_BOOST_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
+    private static final AttributeModifier BABY_SPEED_BOOST = new AttributeModifier(BABY_SPEED_BOOST_ID, "Baby speed boost", 0.5D, 1);
     private static final DataParameter<Boolean> IS_CHILD = EntityDataManager.<Boolean>createKey(EntityZombie.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Integer> VILLAGER_TYPE = EntityDataManager.<Integer>createKey(EntityZombie.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> CONVERTING = EntityDataManager.<Boolean>createKey(EntityZombie.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> ARMS_RAISED = EntityDataManager.<Boolean>createKey(EntityZombie.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<String>  VILLAGER_TYPE_STR = EntityDataManager.<String>createKey(EntityZombie.class, DataSerializers.STRING);
     private final EntityAIBreakDoor breakDoor = new EntityAIBreakDoor(this);
     /** Ticker used to determine the time remaining for this zombie to convert into a villager when cured. */
     private int conversionTime;
@@ -105,7 +107,7 @@ public class EntityZombie extends EntityMob
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.23000000417232513D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
-        this.getAttributeMap().registerAttribute(reinforcementChance).setBaseValue(this.rand.nextDouble() * net.minecraftforge.common.ForgeModContainer.zombieSummonBaseChance);
+        this.getAttributeMap().registerAttribute(SPAWN_REINFORCEMENTS_CHANCE).setBaseValue(this.rand.nextDouble() * net.minecraftforge.common.ForgeModContainer.zombieSummonBaseChance);
     }
 
     protected void entityInit()
@@ -113,6 +115,7 @@ public class EntityZombie extends EntityMob
         super.entityInit();
         this.getDataManager().register(IS_CHILD, Boolean.valueOf(false));
         this.getDataManager().register(VILLAGER_TYPE, Integer.valueOf(0));
+        this.getDataManager().register(VILLAGER_TYPE_STR, "");
         this.getDataManager().register(CONVERTING, Boolean.valueOf(false));
         this.getDataManager().register(ARMS_RAISED, Boolean.valueOf(false));
     }
@@ -136,14 +139,14 @@ public class EntityZombie extends EntityMob
     /**
      * Sets or removes EntityAIBreakDoor task
      */
-    public void setBreakDoorsAItask(boolean par1)
+    public void setBreakDoorsAItask(boolean enabled)
     {
-        if (this.isBreakDoorsTaskSet != par1)
+        if (this.isBreakDoorsTaskSet != enabled)
         {
-            this.isBreakDoorsTaskSet = par1;
-            ((PathNavigateGround)this.getNavigator()).setBreakDoors(par1);
+            this.isBreakDoorsTaskSet = enabled;
+            ((PathNavigateGround)this.getNavigator()).setBreakDoors(enabled);
 
-            if (par1)
+            if (enabled)
             {
                 this.tasks.addTask(1, this.breakDoor);
             }
@@ -185,11 +188,11 @@ public class EntityZombie extends EntityMob
         if (this.worldObj != null && !this.worldObj.isRemote)
         {
             IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-            iattributeinstance.removeModifier(babySpeedBoostModifier);
+            iattributeinstance.removeModifier(BABY_SPEED_BOOST);
 
             if (childZombie)
             {
-                iattributeinstance.applyModifier(babySpeedBoostModifier);
+                iattributeinstance.applyModifier(BABY_SPEED_BOOST);
             }
         }
 
@@ -201,17 +204,32 @@ public class EntityZombie extends EntityMob
      */
     public boolean isVillager()
     {
-        return ((Integer)this.getDataManager().get(VILLAGER_TYPE)).intValue() > 0;
+        return getVillagerTypeForge() != null;
     }
 
+    @Deprecated // Use Forge Variant
     public int getVillagerType()
     {
         return ((Integer)this.getDataManager().get(VILLAGER_TYPE)).intValue() - 1;
     }
+    private net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession prof;
+    @Nullable
+    public net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession getVillagerTypeForge()
+    {
+        return this.prof;
+    }
 
+    @Deprecated //Use Forge version below
     public void setVillagerType(int villagerType)
     {
         this.getDataManager().set(VILLAGER_TYPE, Integer.valueOf(villagerType + 1));
+        net.minecraftforge.fml.common.registry.VillagerRegistry.onSetProfession(this, villagerType);
+    }
+    public void setVillagerType(@Nullable net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession type)
+    {
+        this.prof = type;
+        this.getDataManager().set(VILLAGER_TYPE_STR, type == null ? "" : type.getRegistryName().toString());
+        net.minecraftforge.fml.common.registry.VillagerRegistry.onSetProfession(this, type);
     }
 
     public void setToNotVillager()
@@ -224,6 +242,17 @@ public class EntityZombie extends EntityMob
         if (IS_CHILD.equals(key))
         {
             this.setChildSize(this.isChild());
+        }
+        else if (VILLAGER_TYPE.equals(key))
+        {
+            net.minecraftforge.fml.common.registry.VillagerRegistry.onSetProfession(this, this.getDataManager().get(VILLAGER_TYPE) - 1);
+        }
+        else if (VILLAGER_TYPE_STR.equals(key))
+        {
+            String name = this.getDataManager().get(VILLAGER_TYPE_STR);
+            net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession p =
+                    "".equals(name) ? null : net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new ResourceLocation(name));
+            this.setVillagerType(p);
         }
 
         super.notifyDataManagerChange(key);
@@ -288,11 +317,11 @@ public class EntityZombie extends EntityMob
             int i = MathHelper.floor_double(this.posX);
             int j = MathHelper.floor_double(this.posY);
             int k = MathHelper.floor_double(this.posZ);
-            net.minecraftforge.event.entity.living.ZombieEvent.SummonAidEvent summonAid = net.minecraftforge.event.ForgeEventFactory.fireZombieSummonAid(this, worldObj, i, j, k, entitylivingbase, this.getEntityAttribute(reinforcementChance).getAttributeValue());
+            net.minecraftforge.event.entity.living.ZombieEvent.SummonAidEvent summonAid = net.minecraftforge.event.ForgeEventFactory.fireZombieSummonAid(this, worldObj, i, j, k, entitylivingbase, this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue());
             if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return true;
 
             if (summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW  ||
-                entitylivingbase != null && this.worldObj.getDifficulty() == EnumDifficulty.HARD && (double)this.rand.nextFloat() < this.getEntityAttribute(reinforcementChance).getAttributeValue() && this.worldObj.getGameRules().getBoolean("doMobSpawning"))
+                entitylivingbase != null && this.worldObj.getDifficulty() == EnumDifficulty.HARD && (double)this.rand.nextFloat() < this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).getAttributeValue() && this.worldObj.getGameRules().getBoolean("doMobSpawning"))
             {
                 EntityZombie entityzombie;
                 if (summonAid.getCustomSummonedAid() != null && summonAid.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
@@ -314,13 +343,13 @@ public class EntityZombie extends EntityMob
                     {
                         entityzombie.setPosition((double)i1, (double)j1, (double)k1);
 
-                        if (!this.worldObj.isAnyPlayerWithinRangeAt((double)i1, (double)j1, (double)k1, 7.0D) && this.worldObj.checkNoEntityCollision(entityzombie.getEntityBoundingBox(), entityzombie) && this.worldObj.getCubes(entityzombie, entityzombie.getEntityBoundingBox()).isEmpty() && !this.worldObj.isAnyLiquid(entityzombie.getEntityBoundingBox()))
+                        if (!this.worldObj.isAnyPlayerWithinRangeAt((double)i1, (double)j1, (double)k1, 7.0D) && this.worldObj.checkNoEntityCollision(entityzombie.getEntityBoundingBox(), entityzombie) && this.worldObj.getCollisionBoxes(entityzombie, entityzombie.getEntityBoundingBox()).isEmpty() && !this.worldObj.containsAnyLiquid(entityzombie.getEntityBoundingBox()))
                         {
                             this.worldObj.spawnEntityInWorld(entityzombie);
                             if (entitylivingbase != null) entityzombie.setAttackTarget(entitylivingbase);
                             entityzombie.onInitialSpawn(this.worldObj.getDifficultyForLocation(new BlockPos(entityzombie)), (IEntityLivingData)null);
-                            this.getEntityAttribute(reinforcementChance).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05000000074505806D, 0));
-                            entityzombie.getEntityAttribute(reinforcementChance).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05000000074505806D, 0));
+                            this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement caller charge", -0.05000000074505806D, 0));
+                            entityzombie.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Zombie reinforcement callee charge", -0.05000000074505806D, 0));
                             break;
                         }
                     }
@@ -373,22 +402,22 @@ public class EntityZombie extends EntityMob
 
     protected SoundEvent getAmbientSound()
     {
-        return this.isVillager() ? SoundEvents.entity_zombie_villager_ambient : SoundEvents.entity_zombie_ambient;
+        return this.isVillager() ? SoundEvents.ENTITY_ZOMBIE_VILLAGER_AMBIENT : SoundEvents.ENTITY_ZOMBIE_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return this.isVillager() ? SoundEvents.entity_zombie_villager_hurt : SoundEvents.entity_zombie_hurt;
+        return this.isVillager() ? SoundEvents.ENTITY_ZOMBIE_VILLAGER_HURT : SoundEvents.ENTITY_ZOMBIE_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return this.isVillager() ? SoundEvents.entity_zombie_villager_death : SoundEvents.entity_zombie_death;
+        return this.isVillager() ? SoundEvents.ENTITY_ZOMBIE_VILLAGER_DEATH : SoundEvents.ENTITY_ZOMBIE_DEATH;
     }
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        this.playSound(this.isVillager() ? SoundEvents.entity_zombie_villager_step : SoundEvents.entity_zombie_step, 0.15F, 1.0F);
+        this.playSound(this.isVillager() ? SoundEvents.ENTITY_ZOMBIE_VILLAGER_STEP : SoundEvents.ENTITY_ZOMBIE_STEP, 0.15F, 1.0F);
     }
 
     /**
@@ -399,6 +428,7 @@ public class EntityZombie extends EntityMob
         return EnumCreatureAttribute.UNDEAD;
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_ZOMBIE;
@@ -417,11 +447,11 @@ public class EntityZombie extends EntityMob
 
             if (i == 0)
             {
-                this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.iron_sword));
+                this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
             }
             else
             {
-                this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.iron_shovel));
+                this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SHOVEL));
             }
         }
     }
@@ -429,55 +459,65 @@ public class EntityZombie extends EntityMob
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
+        super.writeEntityToNBT(compound);
 
         if (this.isChild())
         {
-            tagCompound.setBoolean("IsBaby", true);
+            compound.setBoolean("IsBaby", true);
         }
 
         if (this.isVillager())
         {
-            tagCompound.setBoolean("IsVillager", true);
-            tagCompound.setInteger("VillagerProfession", this.getVillagerType());
+            compound.setBoolean("IsVillager", true);
+            compound.setInteger("VillagerProfession", this.getVillagerType());
+            compound.setString("VillagerProfessionName", this.getVillagerTypeForge() == null ? "" : this.getVillagerTypeForge().getRegistryName().toString());
         }
 
-        tagCompound.setInteger("ConversionTime", this.isConverting() ? this.conversionTime : -1);
-        tagCompound.setBoolean("CanBreakDoors", this.isBreakDoorsTaskSet());
+        compound.setInteger("ConversionTime", this.isConverting() ? this.conversionTime : -1);
+        compound.setBoolean("CanBreakDoors", this.isBreakDoorsTaskSet());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
 
-        if (tagCompund.getBoolean("IsBaby"))
+        if (compound.getBoolean("IsBaby"))
         {
             this.setChild(true);
         }
 
-        if (tagCompund.getBoolean("IsVillager"))
+        if (compound.getBoolean("IsVillager"))
         {
-            if (tagCompund.hasKey("VillagerProfession", 99))
+            if (compound.hasKey("VillagerProfession", 99))
             {
-                this.setVillagerType(tagCompund.getInteger("VillagerProfession"));
+                this.setVillagerType(compound.getInteger("VillagerProfession"));
             }
             else
             {
-                this.setVillagerType(this.worldObj.rand.nextInt(5));
+                net.minecraftforge.fml.common.registry.VillagerRegistry.setRandomProfession(this, this.worldObj.rand);
+            }
+            String name = compound.getString("VillagerProfessionName");
+            if (!"".equals(name))
+            {
+                net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession p =
+                    net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new ResourceLocation(name));
+                if (p == null)
+                    p = net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new ResourceLocation("minecraft:farmer"));
+                this.setVillagerType(p);
             }
         }
 
-        if (tagCompund.hasKey("ConversionTime", 99) && tagCompund.getInteger("ConversionTime") > -1)
+        if (compound.hasKey("ConversionTime", 99) && compound.getInteger("ConversionTime") > -1)
         {
-            this.startConversion(tagCompund.getInteger("ConversionTime"));
+            this.startConversion(compound.getInteger("ConversionTime"));
         }
 
-        this.setBreakDoorsAItask(tagCompund.getBoolean("CanBreakDoors"));
+        this.setBreakDoorsAItask(compound.getBoolean("CanBreakDoors"));
     }
 
     /**
@@ -499,7 +539,7 @@ public class EntityZombie extends EntityMob
             entityzombie.copyLocationAndAnglesFrom(entityLivingIn);
             this.worldObj.removeEntity(entityLivingIn);
             entityzombie.onInitialSpawn(this.worldObj.getDifficultyForLocation(new BlockPos(entityzombie)), new EntityZombie.GroupData(false, true));
-            entityzombie.setVillagerType(entityvillager.getProfession());
+            entityzombie.setVillagerType(entityvillager.getProfessionForge());
             entityzombie.setChild(entityLivingIn.isChild());
             entityzombie.setNoAI(entityvillager.isAIDisabled());
 
@@ -510,7 +550,7 @@ public class EntityZombie extends EntityMob
             }
 
             this.worldObj.spawnEntityInWorld(entityzombie);
-            this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1026, new BlockPos((int)this.posX, (int)this.posY, (int)this.posZ), 0);
+            this.worldObj.playEvent((EntityPlayer)null, 1026, new BlockPos((int)this.posX, (int)this.posY, (int)this.posZ), 0);
         }
     }
 
@@ -526,16 +566,17 @@ public class EntityZombie extends EntityMob
         return f;
     }
 
-    protected boolean func_175448_a(ItemStack stack)
+    protected boolean canEquipItem(ItemStack stack)
     {
-        return stack.getItem() == Items.egg && this.isChild() && this.isRiding() ? false : super.func_175448_a(stack);
+        return stack.getItem() == Items.EGG && this.isChild() && this.isRiding() ? false : super.canEquipItem(stack);
     }
 
     /**
      * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
      * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
      */
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
+    @Nullable
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
         float f = difficulty.getClampedAdditionalDifficulty();
@@ -552,7 +593,7 @@ public class EntityZombie extends EntityMob
 
             if (entityzombie$groupdata.isVillager)
             {
-                this.setVillagerType(this.rand.nextInt(5));
+                net.minecraftforge.fml.common.registry.VillagerRegistry.setRandomProfession(this, this.rand);
             }
 
             if (entityzombie$groupdata.isChild)
@@ -592,7 +633,7 @@ public class EntityZombie extends EntityMob
 
             if (calendar.get(2) + 1 == 10 && calendar.get(5) == 31 && this.rand.nextFloat() < 0.25F)
             {
-                this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(this.rand.nextFloat() < 0.1F ? Blocks.lit_pumpkin : Blocks.pumpkin));
+                this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(this.rand.nextFloat() < 0.1F ? Blocks.LIT_PUMPKIN : Blocks.PUMPKIN));
                 this.inventoryArmorDropChances[EntityEquipmentSlot.HEAD.getIndex()] = 0.0F;
             }
         }
@@ -607,7 +648,7 @@ public class EntityZombie extends EntityMob
 
         if (this.rand.nextFloat() < f * 0.05F)
         {
-            this.getEntityAttribute(reinforcementChance).applyModifier(new AttributeModifier("Leader zombie bonus", this.rand.nextDouble() * 0.25D + 0.5D, 0));
+            this.getEntityAttribute(SPAWN_REINFORCEMENTS_CHANCE).applyModifier(new AttributeModifier("Leader zombie bonus", this.rand.nextDouble() * 0.25D + 0.5D, 0));
             this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).applyModifier(new AttributeModifier("Leader zombie bonus", this.rand.nextDouble() * 3.0D + 1.0D, 2));
             this.setBreakDoorsAItask(true);
         }
@@ -615,9 +656,9 @@ public class EntityZombie extends EntityMob
         return livingdata;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand p_184645_2_, ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
-        if (stack != null && stack.getItem() == Items.golden_apple && stack.getMetadata() == 0 && this.isVillager() && this.isPotionActive(MobEffects.weakness))
+        if (stack != null && stack.getItem() == Items.GOLDEN_APPLE && stack.getMetadata() == 0 && this.isVillager() && this.isPotionActive(MobEffects.WEAKNESS))
         {
             if (!player.capabilities.isCreativeMode)
             {
@@ -645,8 +686,8 @@ public class EntityZombie extends EntityMob
     {
         this.conversionTime = ticks;
         this.getDataManager().set(CONVERTING, Boolean.valueOf(true));
-        this.removePotionEffect(MobEffects.weakness);
-        this.addPotionEffect(new PotionEffect(MobEffects.damageBoost, ticks, Math.min(this.worldObj.getDifficulty().getDifficultyId() - 1, 0)));
+        this.removePotionEffect(MobEffects.WEAKNESS);
+        this.addPotionEffect(new PotionEffect(MobEffects.STRENGTH, ticks, Math.min(this.worldObj.getDifficulty().getDifficultyId() - 1, 0)));
         this.worldObj.setEntityState(this, (byte)16);
     }
 
@@ -657,7 +698,7 @@ public class EntityZombie extends EntityMob
         {
             if (!this.isSilent())
             {
-                this.worldObj.playSound(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, SoundEvents.entity_zombie_villager_cure, this.getSoundCategory(), 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.7F + 0.3F, false);
+                this.worldObj.playSound(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE, this.getSoundCategory(), 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.7F + 0.3F, false);
             }
         }
         else
@@ -699,7 +740,10 @@ public class EntityZombie extends EntityMob
 
         this.worldObj.removeEntity(this);
         entityvillager.setNoAI(this.isAIDisabled());
-        entityvillager.setProfession(this.getVillagerType());
+        if (this.getVillagerTypeForge() != null)
+            entityvillager.setProfession(this.getVillagerTypeForge());
+        else
+            entityvillager.setProfession(0);
 
         if (this.hasCustomName())
         {
@@ -708,8 +752,8 @@ public class EntityZombie extends EntityMob
         }
 
         this.worldObj.spawnEntityInWorld(entityvillager);
-        entityvillager.addPotionEffect(new PotionEffect(MobEffects.confusion, 200, 0));
-        this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1027, new BlockPos((int)this.posX, (int)this.posY, (int)this.posZ), 0);
+        entityvillager.addPotionEffect(new PotionEffect(MobEffects.NAUSEA, 200, 0));
+        this.worldObj.playEvent((EntityPlayer)null, 1027, new BlockPos((int)this.posX, (int)this.posY, (int)this.posZ), 0);
     }
 
     /**
@@ -730,9 +774,9 @@ public class EntityZombie extends EntityMob
                 {
                     for (int i1 = (int)this.posZ - 4; i1 < (int)this.posZ + 4 && j < 14; ++i1)
                     {
-                        Block block = this.worldObj.getBlockState(blockpos$mutableblockpos.set(k, l, i1)).getBlock();
+                        Block block = this.worldObj.getBlockState(blockpos$mutableblockpos.setPos(k, l, i1)).getBlock();
 
-                        if (block == Blocks.iron_bars || block == Blocks.bed)
+                        if (block == Blocks.IRON_BARS || block == Blocks.BED)
                         {
                             if (this.rand.nextFloat() < 0.3F)
                             {
@@ -758,7 +802,7 @@ public class EntityZombie extends EntityMob
     }
 
     /**
-     * Sets the width and height of the entity. Args: width, height
+     * Sets the width and height of the entity.
      */
     protected final void setSize(float width, float height)
     {
@@ -797,8 +841,8 @@ public class EntityZombie extends EntityMob
 
         if (cause.getEntity() instanceof EntityCreeper && !(this instanceof EntityPigZombie) && ((EntityCreeper)cause.getEntity()).getPowered() && ((EntityCreeper)cause.getEntity()).isAIEnabled())
         {
-            ((EntityCreeper)cause.getEntity()).func_175493_co();
-            this.entityDropItem(new ItemStack(Items.skull, 1, 2), 0.0F);
+            ((EntityCreeper)cause.getEntity()).incrementDroppedSkulls();
+            this.entityDropItem(new ItemStack(Items.SKULL, 1, 2), 0.0F);
         }
     }
 

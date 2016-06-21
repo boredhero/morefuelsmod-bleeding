@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
@@ -25,13 +26,13 @@ public class TemplateManager
         this("structures");
     }
 
-    public TemplateManager(String p_i46661_1_)
+    public TemplateManager(String basefolderIn)
     {
         this.templates = Maps.<String, Template>newHashMap();
-        this.baseFolder = p_i46661_1_;
+        this.baseFolder = basefolderIn;
     }
 
-    public Template getTemplate(MinecraftServer server, ResourceLocation id)
+    public Template getTemplate(@Nullable MinecraftServer server, ResourceLocation id)
     {
         String s = id.getResourcePath();
 
@@ -133,12 +134,12 @@ public class TemplateManager
     /**
      * reads a template from an inputstream
      */
-    private void readTemplateFromStream(String p_186239_1_, InputStream p_186239_2_) throws IOException
+    private void readTemplateFromStream(String id, InputStream stream) throws IOException
     {
-        NBTTagCompound nbttagcompound = CompressedStreamTools.readCompressed(p_186239_2_);
+        NBTTagCompound nbttagcompound = CompressedStreamTools.readCompressed(stream);
         Template template = new Template();
         template.read(nbttagcompound);
-        this.templates.put(p_186239_1_, template);
+        this.templates.put(id, template);
     }
 
     /**
@@ -169,19 +170,18 @@ public class TemplateManager
             }
 
             File file2 = new File(file1, s + ".nbt");
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
             Template template = (Template)this.templates.get(s);
             OutputStream outputstream = null;
             boolean flag;
 
             try
             {
-                template.write(nbttagcompound);
+                NBTTagCompound nbttagcompound = template.writeToNBT(new NBTTagCompound());
                 outputstream = new FileOutputStream(file2);
                 CompressedStreamTools.writeCompressed(nbttagcompound, outputstream);
                 return true;
             }
-            catch (Throwable var14)
+            catch (Throwable var13)
             {
                 flag = false;
             }

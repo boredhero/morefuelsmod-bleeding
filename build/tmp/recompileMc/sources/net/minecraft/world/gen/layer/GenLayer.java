@@ -2,7 +2,7 @@ package net.minecraft.world.gen.layer;
 
 import net.minecraft.init.Biomes;
 import net.minecraft.world.WorldType;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkProviderSettings;
 
 public abstract class GenLayer
@@ -46,7 +46,7 @@ public abstract class GenLayer
 
         if (p_180781_2_ == WorldType.CUSTOMIZED && !p_180781_3_.isEmpty())
         {
-            chunkprovidersettings = ChunkProviderSettings.Factory.jsonToFactory(p_180781_3_).func_177864_b();
+            chunkprovidersettings = ChunkProviderSettings.Factory.jsonToFactory(p_180781_3_).build();
             i = chunkprovidersettings.biomeSize;
             j = chunkprovidersettings.riverSize;
         }
@@ -141,7 +141,7 @@ public abstract class GenLayer
     }
 
     /**
-     * returns a LCG pseudo random number from [0, x). Args: int x
+     * Generates a pseudo random number between 0 and another integer.
      */
     protected int nextInt(int p_75902_1_)
     {
@@ -171,9 +171,9 @@ public abstract class GenLayer
         }
         else
         {
-            BiomeGenBase biomegenbase = BiomeGenBase.getBiome(biomeIDA);
-            BiomeGenBase biomegenbase1 = BiomeGenBase.getBiome(biomeIDB);
-            return biomegenbase != null && biomegenbase1 != null ? (biomegenbase != Biomes.mesaPlateau_F && biomegenbase != Biomes.mesaPlateau ? biomegenbase == biomegenbase1 || biomegenbase.getBiomeClass() == biomegenbase1.getBiomeClass() : biomegenbase1 == Biomes.mesaPlateau_F || biomegenbase1 == Biomes.mesaPlateau) : false;
+            Biome biome = Biome.getBiome(biomeIDA);
+            Biome biome1 = Biome.getBiome(biomeIDB);
+            return biome != null && biome1 != null ? (biome != Biomes.MESA_ROCK && biome != Biomes.MESA_CLEAR_ROCK ? biome == biome1 || biome.getBiomeClass() == biome1.getBiomeClass() : biome1 == Biomes.MESA_ROCK || biome1 == Biomes.MESA_CLEAR_ROCK) : false;
         }
     }
 
@@ -182,7 +182,7 @@ public abstract class GenLayer
      */
     protected static boolean isBiomeOceanic(int p_151618_0_)
     {
-        return net.minecraftforge.common.BiomeManager.oceanBiomes.contains(BiomeGenBase.getBiome(p_151618_0_));
+        return net.minecraftforge.common.BiomeManager.oceanBiomes.contains(Biome.getBiome(p_151618_0_));
     }
 
     /**

@@ -1,8 +1,9 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -10,8 +11,8 @@ import net.minecraft.world.gen.feature.WorldGenEndPodium;
 
 public class PhaseLandingApproach extends PhaseBase
 {
-    private PathEntity field_188683_b;
-    private Vec3d field_188684_c;
+    private Path currentPath;
+    private Vec3d targetLocation;
 
     public PhaseLandingApproach(EntityDragon dragonIn)
     {
@@ -28,8 +29,8 @@ public class PhaseLandingApproach extends PhaseBase
      */
     public void initPhase()
     {
-        this.field_188683_b = null;
-        this.field_188684_c = null;
+        this.currentPath = null;
+        this.targetLocation = null;
     }
 
     /**
@@ -38,29 +39,30 @@ public class PhaseLandingApproach extends PhaseBase
      */
     public void doLocalUpdate()
     {
-        double d0 = this.field_188684_c == null ? 0.0D : this.field_188684_c.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
+        double d0 = this.targetLocation == null ? 0.0D : this.targetLocation.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
 
         if (d0 < 100.0D || d0 > 22500.0D || this.dragon.isCollidedHorizontally || this.dragon.isCollidedVertically)
         {
-            this.func_188681_j();
+            this.findNewTarget();
         }
     }
 
     /**
      * Returns the location the dragon is flying toward
      */
+    @Nullable
     public Vec3d getTargetLocation()
     {
-        return this.field_188684_c;
+        return this.targetLocation;
     }
 
-    private void func_188681_j()
+    private void findNewTarget()
     {
-        if (this.field_188683_b == null || this.field_188683_b.isFinished())
+        if (this.currentPath == null || this.currentPath.isFinished())
         {
             int i = this.dragon.initPathPoints();
-            BlockPos blockpos = this.dragon.worldObj.getTopSolidOrLiquidBlock(WorldGenEndPodium.field_186139_a);
-            EntityPlayer entityplayer = this.dragon.worldObj.func_184139_a(blockpos, 128.0D, 128.0D);
+            BlockPos blockpos = this.dragon.worldObj.getTopSolidOrLiquidBlock(WorldGenEndPodium.END_PODIUM_LOCATION);
+            EntityPlayer entityplayer = this.dragon.worldObj.getNearestAttackablePlayer(blockpos, 128.0D, 128.0D);
             int j;
 
             if (entityplayer != null)
@@ -74,28 +76,28 @@ public class PhaseLandingApproach extends PhaseBase
             }
 
             PathPoint pathpoint = new PathPoint(blockpos.getX(), blockpos.getY(), blockpos.getZ());
-            this.field_188683_b = this.dragon.findPath(i, j, pathpoint);
+            this.currentPath = this.dragon.findPath(i, j, pathpoint);
 
-            if (this.field_188683_b != null)
+            if (this.currentPath != null)
             {
-                this.field_188683_b.incrementPathIndex();
+                this.currentPath.incrementPathIndex();
             }
         }
 
-        this.func_188682_k();
+        this.navigateToNextPathNode();
 
-        if (this.field_188683_b != null && this.field_188683_b.isFinished())
+        if (this.currentPath != null && this.currentPath.isFinished())
         {
             this.dragon.getPhaseManager().setPhase(PhaseList.LANDING);
         }
     }
 
-    private void func_188682_k()
+    private void navigateToNextPathNode()
     {
-        if (this.field_188683_b != null && !this.field_188683_b.isFinished())
+        if (this.currentPath != null && !this.currentPath.isFinished())
         {
-            Vec3d vec3d = this.field_188683_b.func_186310_f();
-            this.field_188683_b.incrementPathIndex();
+            Vec3d vec3d = this.currentPath.getCurrentPos();
+            this.currentPath.incrementPathIndex();
             double d0 = vec3d.xCoord;
             double d1 = vec3d.zCoord;
             double d2;
@@ -110,7 +112,7 @@ public class PhaseLandingApproach extends PhaseBase
                 }
             }
 
-            this.field_188684_c = new Vec3d(d0, d2, d1);
+            this.targetLocation = new Vec3d(d0, d2, d1);
         }
     }
 }

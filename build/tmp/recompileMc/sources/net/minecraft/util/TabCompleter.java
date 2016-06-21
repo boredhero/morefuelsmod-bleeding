@@ -2,6 +2,7 @@ package net.minecraft.util;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.network.play.client.CPacketTabComplete;
@@ -66,11 +67,12 @@ public abstract class TabCompleter
         if (prefix.length() >= 1)
         {
             net.minecraftforge.client.ClientCommandHandler.instance.autoComplete(prefix);
-            Minecraft.getMinecraft().thePlayer.sendQueue.addToSendQueue(new CPacketTabComplete(prefix, this.getTargetBlockPos(), this.hasTargetBlock));
+            Minecraft.getMinecraft().thePlayer.connection.sendPacket(new CPacketTabComplete(prefix, this.getTargetBlockPos(), this.hasTargetBlock));
             this.requestedCompletions = true;
         }
     }
 
+    @Nullable
     public abstract BlockPos getTargetBlockPos();
 
     /**

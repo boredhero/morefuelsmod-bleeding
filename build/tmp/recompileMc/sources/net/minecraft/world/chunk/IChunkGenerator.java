@@ -1,10 +1,11 @@
 package net.minecraft.world.chunk;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public interface IChunkGenerator
 {
@@ -14,8 +15,9 @@ public interface IChunkGenerator
 
     boolean generateStructures(Chunk chunkIn, int x, int z);
 
-    List<BiomeGenBase.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos);
+    List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos);
 
+    @Nullable
     BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position);
 
     void recreateStructures(Chunk chunkIn, int x, int z);

@@ -2,6 +2,7 @@ package net.minecraft.client.renderer.entity.layers;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
@@ -46,23 +47,23 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
         return false;
     }
 
-    private void renderArmorLayer(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot p_188361_9_)
+    private void renderArmorLayer(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot slotIn)
     {
-        ItemStack itemstack = this.getItemStackFromSlot(entityLivingBaseIn, p_188361_9_);
+        ItemStack itemstack = this.getItemStackFromSlot(entityLivingBaseIn, slotIn);
 
         if (itemstack != null && itemstack.getItem() instanceof ItemArmor)
         {
             ItemArmor itemarmor = (ItemArmor)itemstack.getItem();
 
-            if (itemarmor.getEquipmentSlot() == p_188361_9_)
+            if (itemarmor.getEquipmentSlot() == slotIn)
             {
-                T t = this.getModelFromSlot(p_188361_9_);
+                T t = this.getModelFromSlot(slotIn);
+                t = getArmorModelHook(entityLivingBaseIn, itemstack, slotIn, t);
                 t.setModelAttributes(this.renderer.getMainModel());
                 t.setLivingAnimations(entityLivingBaseIn, limbSwing, limbSwingAmount, partialTicks);
-                t = getArmorModelHook(entityLivingBaseIn, itemstack, p_188361_9_, t);
-                this.setModelSlotVisible(t, p_188361_9_);
-                boolean flag = this.isLegSlot(p_188361_9_);
-                this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, p_188361_9_, null));
+                this.setModelSlotVisible(t, slotIn);
+                boolean flag = this.isLegSlot(slotIn);
+                this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, null));
 
                         int i = itemarmor.getColor(itemstack);
                 {
@@ -73,7 +74,7 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
                         float f2 = (float)(i & 255) / 255.0F;
                         GlStateManager.color(this.colorR * f, this.colorG * f1, this.colorB * f2, this.alpha);
                         t.render(entityLivingBaseIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
-                        this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, p_188361_9_, "overlay"));
+                        this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, "overlay"));
                     }
                     { // Non-colored
                         GlStateManager.color(this.colorR, this.colorG, this.colorB, this.alpha);
@@ -88,19 +89,20 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
         }
     }
 
-    public ItemStack getItemStackFromSlot(EntityLivingBase p_188362_1_, EntityEquipmentSlot p_188362_2_)
+    @Nullable
+    public ItemStack getItemStackFromSlot(EntityLivingBase living, EntityEquipmentSlot slotIn)
     {
-        return p_188362_1_.getItemStackFromSlot(p_188362_2_);
+        return living.getItemStackFromSlot(slotIn);
     }
 
-    public T getModelFromSlot(EntityEquipmentSlot p_188360_1_)
+    public T getModelFromSlot(EntityEquipmentSlot slotIn)
     {
-        return (T)(this.isLegSlot(p_188360_1_) ? this.modelLeggings : this.modelArmor);
+        return (T)(this.isLegSlot(slotIn) ? this.modelLeggings : this.modelArmor);
     }
 
-    private boolean isLegSlot(EntityEquipmentSlot p_188363_1_)
+    private boolean isLegSlot(EntityEquipmentSlot slotIn)
     {
-        return p_188363_1_ == EntityEquipmentSlot.LEGS;
+        return slotIn == EntityEquipmentSlot.LEGS;
     }
 
     public static void renderEnchantedGlint(RenderLivingBase<?> p_188364_0_, EntityLivingBase p_188364_1_, ModelBase model, float p_188364_3_, float p_188364_4_, float p_188364_5_, float p_188364_6_, float p_188364_7_, float p_188364_8_, float p_188364_9_)
@@ -161,7 +163,7 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
 
     protected abstract void initArmor();
 
-    protected abstract void setModelSlotVisible(T p_188359_1_, EntityEquipmentSlot p_188359_2_);
+    protected abstract void setModelSlotVisible(T p_188359_1_, EntityEquipmentSlot slotIn);
 
     /*=================================== FORGE START =========================================*/
 

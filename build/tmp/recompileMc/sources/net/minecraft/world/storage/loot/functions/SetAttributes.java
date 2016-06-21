@@ -9,6 +9,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import java.util.Random;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -23,17 +24,17 @@ import org.apache.logging.log4j.Logger;
 public class SetAttributes extends LootFunction
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private final SetAttributes.Modifier[] field_186561_b;
+    private final SetAttributes.Modifier[] modifiers;
 
-    public SetAttributes(LootCondition[] conditionsIn, SetAttributes.Modifier[] p_i46624_2_)
+    public SetAttributes(LootCondition[] conditionsIn, SetAttributes.Modifier[] modifiersIn)
     {
         super(conditionsIn);
-        this.field_186561_b = p_i46624_2_;
+        this.modifiers = modifiersIn;
     }
 
     public ItemStack apply(ItemStack stack, Random rand, LootContext context)
     {
-        for (SetAttributes.Modifier setattributes$modifier : this.field_186561_b)
+        for (SetAttributes.Modifier setattributes$modifier : this.modifiers)
         {
             UUID uuid = setattributes$modifier.uuid;
 
@@ -55,10 +56,11 @@ public class SetAttributes extends LootFunction
             private final String attributeName;
             private final int operation;
             private final RandomValueRange amount;
+            @Nullable
             private final UUID uuid;
             private final EntityEquipmentSlot[] slots;
 
-            private Modifier(String modifName, String attrName, int operationIn, RandomValueRange randomAmount, EntityEquipmentSlot[] slotsIn, UUID uuidIn)
+            private Modifier(String modifName, String attrName, int operationIn, RandomValueRange randomAmount, EntityEquipmentSlot[] slotsIn, @Nullable UUID uuidIn)
             {
                 this.modifierName = modifName;
                 this.attributeName = attrName;
@@ -199,7 +201,7 @@ public class SetAttributes extends LootFunction
             {
                 JsonArray jsonarray = new JsonArray();
 
-                for (SetAttributes.Modifier setattributes$modifier : functionClazz.field_186561_b)
+                for (SetAttributes.Modifier setattributes$modifier : functionClazz.modifiers)
                 {
                     jsonarray.add(setattributes$modifier.serialize(serializationContext));
                 }

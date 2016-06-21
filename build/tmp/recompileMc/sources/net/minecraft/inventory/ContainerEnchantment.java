@@ -2,6 +2,7 @@ package net.minecraft.inventory;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -28,8 +29,8 @@ public class ContainerEnchantment extends Container
     public int xpSeed;
     /** 3-member array storing the enchantment levels of each slot */
     public int[] enchantLevels;
-    public int[] field_185001_h;
-    public int[] field_185002_i;
+    public int[] enchantClue;
+    public int[] worldClue;
 
     @SideOnly(Side.CLIENT)
     public ContainerEnchantment(InventoryPlayer playerInv, World worldIn)
@@ -60,8 +61,8 @@ public class ContainerEnchantment extends Container
         };
         this.rand = new Random();
         this.enchantLevels = new int[3];
-        this.field_185001_h = new int[] { -1, -1, -1};
-        this.field_185002_i = new int[] { -1, -1, -1};
+        this.enchantClue = new int[] { -1, -1, -1};
+        this.worldClue = new int[] { -1, -1, -1};
         this.worldPointer = worldIn;
         this.position = pos;
         this.xpSeed = playerInv.player.getXPSeed();
@@ -70,7 +71,7 @@ public class ContainerEnchantment extends Container
             /**
              * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
              */
-            public boolean isItemValid(ItemStack stack)
+            public boolean isItemValid(@Nullable ItemStack stack)
             {
                 return true;
             }
@@ -89,7 +90,7 @@ public class ContainerEnchantment extends Container
             /**
              * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
              */
-            public boolean isItemValid(ItemStack stack)
+            public boolean isItemValid(@Nullable ItemStack stack)
             {
                 for (ItemStack ore : ores)
                     if (net.minecraftforge.oredict.OreDictionary.itemMatches(ore, stack, false)) return true;
@@ -111,24 +112,24 @@ public class ContainerEnchantment extends Container
         }
     }
 
-    protected void func_185000_c(ICrafting p_185000_1_)
+    protected void broadcastData(IContainerListener crafting)
     {
-        p_185000_1_.sendProgressBarUpdate(this, 0, this.enchantLevels[0]);
-        p_185000_1_.sendProgressBarUpdate(this, 1, this.enchantLevels[1]);
-        p_185000_1_.sendProgressBarUpdate(this, 2, this.enchantLevels[2]);
-        p_185000_1_.sendProgressBarUpdate(this, 3, this.xpSeed & -16);
-        p_185000_1_.sendProgressBarUpdate(this, 4, this.field_185001_h[0]);
-        p_185000_1_.sendProgressBarUpdate(this, 5, this.field_185001_h[1]);
-        p_185000_1_.sendProgressBarUpdate(this, 6, this.field_185001_h[2]);
-        p_185000_1_.sendProgressBarUpdate(this, 7, this.field_185002_i[0]);
-        p_185000_1_.sendProgressBarUpdate(this, 8, this.field_185002_i[1]);
-        p_185000_1_.sendProgressBarUpdate(this, 9, this.field_185002_i[2]);
+        crafting.sendProgressBarUpdate(this, 0, this.enchantLevels[0]);
+        crafting.sendProgressBarUpdate(this, 1, this.enchantLevels[1]);
+        crafting.sendProgressBarUpdate(this, 2, this.enchantLevels[2]);
+        crafting.sendProgressBarUpdate(this, 3, this.xpSeed & -16);
+        crafting.sendProgressBarUpdate(this, 4, this.enchantClue[0]);
+        crafting.sendProgressBarUpdate(this, 5, this.enchantClue[1]);
+        crafting.sendProgressBarUpdate(this, 6, this.enchantClue[2]);
+        crafting.sendProgressBarUpdate(this, 7, this.worldClue[0]);
+        crafting.sendProgressBarUpdate(this, 8, this.worldClue[1]);
+        crafting.sendProgressBarUpdate(this, 9, this.worldClue[2]);
     }
 
-    public void onCraftGuiOpened(ICrafting listener)
+    public void addListener(IContainerListener listener)
     {
-        super.onCraftGuiOpened(listener);
-        this.func_185000_c(listener);
+        super.addListener(listener);
+        this.broadcastData(listener);
     }
 
     /**
@@ -138,10 +139,10 @@ public class ContainerEnchantment extends Container
     {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < this.crafters.size(); ++i)
+        for (int i = 0; i < this.listeners.size(); ++i)
         {
-            ICrafting icrafting = (ICrafting)this.crafters.get(i);
-            this.func_185000_c(icrafting);
+            IContainerListener icontainerlistener = (IContainerListener)this.listeners.get(i);
+            this.broadcastData(icontainerlistener);
         }
     }
 
@@ -158,11 +159,11 @@ public class ContainerEnchantment extends Container
         }
         else if (id >= 4 && id <= 6)
         {
-            this.field_185001_h[id - 4] = data;
+            this.enchantClue[id - 4] = data;
         }
         else if (id >= 7 && id <= 9)
         {
-            this.field_185002_i[id - 7] = data;
+            this.worldClue[id - 7] = data;
         }
         else
         {
@@ -210,8 +211,8 @@ public class ContainerEnchantment extends Container
                     for (int i1 = 0; i1 < 3; ++i1)
                     {
                         this.enchantLevels[i1] = EnchantmentHelper.calcItemStackEnchantability(this.rand, i1, (int)power, itemstack);
-                        this.field_185001_h[i1] = -1;
-                        this.field_185002_i[i1] = -1;
+                        this.enchantClue[i1] = -1;
+                        this.worldClue[i1] = -1;
 
                         if (this.enchantLevels[i1] < i1 + 1)
                         {
@@ -223,13 +224,13 @@ public class ContainerEnchantment extends Container
                     {
                         if (this.enchantLevels[j1] > 0)
                         {
-                            List<EnchantmentData> list = this.func_178148_a(itemstack, j1, this.enchantLevels[j1]);
+                            List<EnchantmentData> list = this.getEnchantmentList(itemstack, j1, this.enchantLevels[j1]);
 
                             if (list != null && !list.isEmpty())
                             {
                                 EnchantmentData enchantmentdata = (EnchantmentData)list.get(this.rand.nextInt(list.size()));
-                                this.field_185001_h[j1] = Enchantment.getEnchantmentID(enchantmentdata.enchantmentobj);
-                                this.field_185002_i[j1] = enchantmentdata.enchantmentLevel;
+                                this.enchantClue[j1] = Enchantment.getEnchantmentID(enchantmentdata.enchantmentobj);
+                                this.worldClue[j1] = enchantmentdata.enchantmentLevel;
                             }
                         }
                     }
@@ -242,8 +243,8 @@ public class ContainerEnchantment extends Container
                 for (int i = 0; i < 3; ++i)
                 {
                     this.enchantLevels[i] = 0;
-                    this.field_185001_h[i] = -1;
-                    this.field_185002_i[i] = -1;
+                    this.enchantClue[i] = -1;
+                    this.worldClue[i] = -1;
                 }
             }
         }
@@ -266,8 +267,8 @@ public class ContainerEnchantment extends Container
         {
             if (!this.worldPointer.isRemote)
             {
-                List<EnchantmentData> list = this.func_178148_a(itemstack, id, this.enchantLevels[id]);
-                boolean flag = itemstack.getItem() == Items.book;
+                List<EnchantmentData> list = this.getEnchantmentList(itemstack, id, this.enchantLevels[id]);
+                boolean flag = itemstack.getItem() == Items.BOOK;
 
                 if (list != null)
                 {
@@ -275,7 +276,7 @@ public class ContainerEnchantment extends Container
 
                     if (flag)
                     {
-                        itemstack.setItem(Items.enchanted_book);
+                        itemstack.setItem(Items.ENCHANTED_BOOK);
                     }
 
                     for (int j = 0; j < list.size(); ++j)
@@ -284,7 +285,7 @@ public class ContainerEnchantment extends Container
 
                         if (flag)
                         {
-                            Items.enchanted_book.addEnchantment(itemstack, enchantmentdata);
+                            Items.ENCHANTED_BOOK.addEnchantment(itemstack, enchantmentdata);
                         }
                         else
                         {
@@ -302,7 +303,7 @@ public class ContainerEnchantment extends Container
                         }
                     }
 
-                    playerIn.addStat(StatList.itemEnchanted);
+                    playerIn.addStat(StatList.ITEM_ENCHANTED);
                     this.tableInventory.markDirty();
                     this.xpSeed = playerIn.getXPSeed();
                     this.onCraftMatrixChanged(this.tableInventory);
@@ -317,12 +318,12 @@ public class ContainerEnchantment extends Container
         }
     }
 
-    private List<EnchantmentData> func_178148_a(ItemStack stack, int p_178148_2_, int p_178148_3_)
+    private List<EnchantmentData> getEnchantmentList(ItemStack stack, int p_178148_2_, int p_178148_3_)
     {
         this.rand.setSeed((long)(this.xpSeed + p_178148_2_));
         List<EnchantmentData> list = EnchantmentHelper.buildEnchantmentList(this.rand, stack, p_178148_3_, false);
 
-        if (stack.getItem() == Items.book && list.size() > 1)
+        if (stack.getItem() == Items.BOOK && list.size() > 1)
         {
             list.remove(this.rand.nextInt(list.size()));
         }
@@ -352,7 +353,7 @@ public class ContainerEnchantment extends Container
 
                 if (itemstack != null)
                 {
-                    playerIn.dropPlayerItemWithRandomChoice(itemstack, false);
+                    playerIn.dropItem(itemstack, false);
                 }
             }
         }
@@ -360,12 +361,13 @@ public class ContainerEnchantment extends Container
 
     public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return this.worldPointer.getBlockState(this.position).getBlock() != Blocks.enchanting_table ? false : playerIn.getDistanceSq((double)this.position.getX() + 0.5D, (double)this.position.getY() + 0.5D, (double)this.position.getZ() + 0.5D) <= 64.0D;
+        return this.worldPointer.getBlockState(this.position).getBlock() != Blocks.ENCHANTING_TABLE ? false : playerIn.getDistanceSq((double)this.position.getX() + 0.5D, (double)this.position.getY() + 0.5D, (double)this.position.getZ() + 0.5D) <= 64.0D;
     }
 
     /**
      * Take a stack from the specified inventory slot.
      */
+    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
         ItemStack itemstack = null;
@@ -390,7 +392,7 @@ public class ContainerEnchantment extends Container
                     return null;
                 }
             }
-            else if (itemstack1.getItem() == Items.dye && EnumDyeColor.byDyeDamage(itemstack1.getMetadata()) == EnumDyeColor.BLUE)
+            else if (itemstack1.getItem() == Items.DYE && EnumDyeColor.byDyeDamage(itemstack1.getMetadata()) == EnumDyeColor.BLUE)
             {
                 if (!this.mergeItemStack(itemstack1, 1, 2, true))
                 {

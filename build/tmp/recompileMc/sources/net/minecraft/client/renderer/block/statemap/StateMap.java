@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.IBlockState;
@@ -20,7 +21,7 @@ public class StateMap extends StateMapperBase
     private final String suffix;
     private final List < IProperty<? >> ignored;
 
-    private StateMap(IProperty<?> name, String suffix, List < IProperty<? >> ignored)
+    private StateMap(@Nullable IProperty<?> name, @Nullable String suffix, List < IProperty<? >> ignored)
     {
         this.name = name;
         this.suffix = suffix;
@@ -34,11 +35,11 @@ public class StateMap extends StateMapperBase
 
         if (this.name == null)
         {
-            s = ((ResourceLocation)Block.blockRegistry.getNameForObject(state.getBlock())).toString();
+            s = ((ResourceLocation)Block.REGISTRY.getNameForObject(state.getBlock())).toString();
         }
         else
         {
-            s = String.format("%s:%s", Block.blockRegistry.getNameForObject(state.getBlock()).getResourceDomain(), this.removeName(this.name, map));
+            s = String.format("%s:%s", Block.REGISTRY.getNameForObject(state.getBlock()).getResourceDomain(), this.removeName(this.name, map));
         }
 
         if (this.suffix != null)

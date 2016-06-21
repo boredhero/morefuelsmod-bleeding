@@ -3,6 +3,7 @@ package net.minecraft.entity.boss;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -56,18 +57,18 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
     private static final DataParameter<Integer> THIRD_HEAD_TARGET = EntityDataManager.<Integer>createKey(EntityWither.class, DataSerializers.VARINT);
     private static final DataParameter<Integer>[] HEAD_TARGETS = new DataParameter[] {FIRST_HEAD_TARGET, SECOND_HEAD_TARGET, THIRD_HEAD_TARGET};
     private static final DataParameter<Integer> INVULNERABILITY_TIME = EntityDataManager.<Integer>createKey(EntityWither.class, DataSerializers.VARINT);
-    private float[] field_82220_d = new float[2];
-    private float[] field_82221_e = new float[2];
-    private float[] field_82217_f = new float[2];
-    private float[] field_82218_g = new float[2];
-    private int[] field_82223_h = new int[2];
-    private int[] field_82224_i = new int[2];
+    private float[] xRotationHeads = new float[2];
+    private float[] yRotationHeads = new float[2];
+    private float[] xRotOHeads = new float[2];
+    private float[] yRotOHeads = new float[2];
+    private int[] nextHeadUpdate = new int[2];
+    private int[] idleHeadUpdates = new int[2];
     /** Time before the Wither tries to break blocks */
     private int blockBreakCounter;
     private final BossInfoServer bossInfo = (BossInfoServer)(new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
-    private static final Predicate<Entity> attackEntitySelector = new Predicate<Entity>()
+    private static final Predicate<Entity> NOT_UNDEAD = new Predicate<Entity>()
     {
-        public boolean apply(Entity p_apply_1_)
+        public boolean apply(@Nullable Entity p_apply_1_)
         {
             return p_apply_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_apply_1_).getCreatureAttribute() != EnumCreatureAttribute.UNDEAD;
         }
@@ -92,49 +93,49 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(7, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
-        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityLiving.class, 0, false, false, attackEntitySelector));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityLiving.class, 0, false, false, NOT_UNDEAD));
     }
 
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(FIRST_HEAD_TARGET, Integer.valueOf(0));
-        this.dataWatcher.register(SECOND_HEAD_TARGET, Integer.valueOf(0));
-        this.dataWatcher.register(THIRD_HEAD_TARGET, Integer.valueOf(0));
-        this.dataWatcher.register(INVULNERABILITY_TIME, Integer.valueOf(0));
+        this.dataManager.register(FIRST_HEAD_TARGET, Integer.valueOf(0));
+        this.dataManager.register(SECOND_HEAD_TARGET, Integer.valueOf(0));
+        this.dataManager.register(THIRD_HEAD_TARGET, Integer.valueOf(0));
+        this.dataManager.register(INVULNERABILITY_TIME, Integer.valueOf(0));
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setInteger("Invul", this.getInvulTime());
+        super.writeEntityToNBT(compound);
+        compound.setInteger("Invul", this.getInvulTime());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.setInvulTime(tagCompund.getInteger("Invul"));
+        super.readEntityFromNBT(compound);
+        this.setInvulTime(compound.getInteger("Invul"));
     }
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_wither_ambient;
+        return SoundEvents.ENTITY_WITHER_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_wither_hurt;
+        return SoundEvents.ENTITY_WITHER_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_wither_death;
+        return SoundEvents.ENTITY_WITHER_DEATH;
     }
 
     /**
@@ -183,8 +184,8 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
 
         for (int i = 0; i < 2; ++i)
         {
-            this.field_82218_g[i] = this.field_82221_e[i];
-            this.field_82217_f[i] = this.field_82220_d[i];
+            this.yRotOHeads[i] = this.yRotationHeads[i];
+            this.xRotOHeads[i] = this.xRotationHeads[i];
         }
 
         for (int j = 0; j < 2; ++j)
@@ -199,21 +200,21 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
 
             if (entity1 != null)
             {
-                double d11 = this.func_82214_u(j + 1);
-                double d12 = this.func_82208_v(j + 1);
-                double d13 = this.func_82213_w(j + 1);
+                double d11 = this.getHeadX(j + 1);
+                double d12 = this.getHeadY(j + 1);
+                double d13 = this.getHeadZ(j + 1);
                 double d6 = entity1.posX - d11;
                 double d7 = entity1.posY + (double)entity1.getEyeHeight() - d12;
                 double d8 = entity1.posZ - d13;
                 double d9 = (double)MathHelper.sqrt_double(d6 * d6 + d8 * d8);
                 float f = (float)(MathHelper.atan2(d8, d6) * (180D / Math.PI)) - 90.0F;
                 float f1 = (float)(-(MathHelper.atan2(d7, d9) * (180D / Math.PI)));
-                this.field_82220_d[j] = this.func_82204_b(this.field_82220_d[j], f1, 40.0F);
-                this.field_82221_e[j] = this.func_82204_b(this.field_82221_e[j], f, 10.0F);
+                this.xRotationHeads[j] = this.rotlerp(this.xRotationHeads[j], f1, 40.0F);
+                this.yRotationHeads[j] = this.rotlerp(this.yRotationHeads[j], f, 10.0F);
             }
             else
             {
-                this.field_82221_e[j] = this.func_82204_b(this.field_82221_e[j], this.renderYawOffset, 10.0F);
+                this.yRotationHeads[j] = this.rotlerp(this.yRotationHeads[j], this.renderYawOffset, 10.0F);
             }
         }
 
@@ -221,9 +222,9 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
 
         for (int l = 0; l < 3; ++l)
         {
-            double d10 = this.func_82214_u(l);
-            double d2 = this.func_82208_v(l);
-            double d4 = this.func_82213_w(l);
+            double d10 = this.getHeadX(l);
+            double d2 = this.getHeadY(l);
+            double d4 = this.getHeadZ(l);
             this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d10 + this.rand.nextGaussian() * 0.30000001192092896D, d2 + this.rand.nextGaussian() * 0.30000001192092896D, d4 + this.rand.nextGaussian() * 0.30000001192092896D, 0.0D, 0.0D, 0.0D, new int[0]);
 
             if (flag && this.worldObj.rand.nextInt(4) == 0)
@@ -266,15 +267,15 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
 
             for (int i = 1; i < 3; ++i)
             {
-                if (this.ticksExisted >= this.field_82223_h[i - 1])
+                if (this.ticksExisted >= this.nextHeadUpdate[i - 1])
                 {
-                    this.field_82223_h[i - 1] = this.ticksExisted + 10 + this.rand.nextInt(10);
+                    this.nextHeadUpdate[i - 1] = this.ticksExisted + 10 + this.rand.nextInt(10);
 
                     if (this.worldObj.getDifficulty() == EnumDifficulty.NORMAL || this.worldObj.getDifficulty() == EnumDifficulty.HARD)
                     {
                         int j3 = i - 1;
-                        int k3 = this.field_82224_i[i - 1];
-                        this.field_82224_i[j3] = this.field_82224_i[i - 1] + 1;
+                        int k3 = this.idleHeadUpdates[i - 1];
+                        this.idleHeadUpdates[j3] = this.idleHeadUpdates[i - 1] + 1;
 
                         if (k3 > 15)
                         {
@@ -284,7 +285,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
                             double d1 = MathHelper.getRandomDoubleInRange(this.rand, this.posY - (double)f1, this.posY + (double)f1);
                             double d2 = MathHelper.getRandomDoubleInRange(this.rand, this.posZ - (double)f, this.posZ + (double)f);
                             this.launchWitherSkullToCoords(i + 1, d0, d1, d2, true);
-                            this.field_82224_i[i - 1] = 0;
+                            this.idleHeadUpdates[i - 1] = 0;
                         }
                     }
 
@@ -303,8 +304,8 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
                             else
                             {
                                 this.launchWitherSkullToEntity(i + 1, (EntityLivingBase)entity);
-                                this.field_82223_h[i - 1] = this.ticksExisted + 40 + this.rand.nextInt(20);
-                                this.field_82224_i[i - 1] = 0;
+                                this.nextHeadUpdate[i - 1] = this.ticksExisted + 40 + this.rand.nextInt(20);
+                                this.idleHeadUpdates[i - 1] = 0;
                             }
                         }
                         else
@@ -314,7 +315,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
                     }
                     else
                     {
-                        List<EntityLivingBase> list = this.worldObj.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().expand(20.0D, 8.0D, 20.0D), Predicates.<EntityLivingBase>and(attackEntitySelector, EntitySelectors.NOT_SPECTATING));
+                        List<EntityLivingBase> list = this.worldObj.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, this.getEntityBoundingBox().expand(20.0D, 8.0D, 20.0D), Predicates.<EntityLivingBase>and(NOT_UNDEAD, EntitySelectors.NOT_SPECTATING));
 
                         for (int j2 = 0; j2 < 10 && !list.isEmpty(); ++j2)
                         {
@@ -376,7 +377,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
                                 IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
                                 Block block = iblockstate.getBlock();
 
-                                if (!block.isAir(iblockstate, this.worldObj, blockpos))
+                                if (!block.isAir(iblockstate, this.worldObj, blockpos) && block.canEntityDestroy(iblockstate, worldObj, blockpos, this))
                                 {
                                     flag = this.worldObj.destroyBlock(blockpos, true) || flag;
                                 }
@@ -386,7 +387,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
 
                     if (flag)
                     {
-                        this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1022, new BlockPos(this), 0);
+                        this.worldObj.playEvent((EntityPlayer)null, 1022, new BlockPos(this), 0);
                     }
                 }
             }
@@ -400,12 +401,15 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
         }
     }
 
-    public static boolean canDestroyBlock(Block p_181033_0_)
+    public static boolean canDestroyBlock(Block blockIn)
     {
-        return p_181033_0_ != Blocks.bedrock && p_181033_0_ != Blocks.end_portal && p_181033_0_ != Blocks.end_portal_frame && p_181033_0_ != Blocks.command_block && p_181033_0_ != Blocks.repeating_command_block && p_181033_0_ != Blocks.chain_command_block && p_181033_0_ != Blocks.barrier;
+        return blockIn != Blocks.BEDROCK && blockIn != Blocks.END_PORTAL && blockIn != Blocks.END_PORTAL_FRAME && blockIn != Blocks.COMMAND_BLOCK && blockIn != Blocks.REPEATING_COMMAND_BLOCK && blockIn != Blocks.CHAIN_COMMAND_BLOCK && blockIn != Blocks.BARRIER;
     }
 
-    public void func_82206_m()
+    /**
+     * Initializes this Wither's explosion sequence and makes it invulnerable. Called immediately after spawning.
+     */
+    public void ignite()
     {
         this.setInvulTime(220);
         this.setHealth(this.getMaxHealth() / 3.0F);
@@ -419,24 +423,26 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
     }
 
     /**
-     * Makes this boss Entity visible to the given player. Has no effect if this Entity is not a boss.
+     * Add the given player to the list of players tracking this entity. For instance, a player may track a boss in
+     * order to view its associated boss bar.
      */
-    public void setBossVisibleTo(EntityPlayerMP player)
+    public void addTrackingPlayer(EntityPlayerMP player)
     {
-        super.setBossVisibleTo(player);
+        super.addTrackingPlayer(player);
         this.bossInfo.addPlayer(player);
     }
 
     /**
-     * Makes this boss Entity non-visible to the given player. Has no effect if this Entity is not a boss.
+     * Removes the given player from the list of players tracking this entity. See {@link Entity#addTrackingPlayer} for
+     * more information on tracking.
      */
-    public void setBossNonVisibleTo(EntityPlayerMP player)
+    public void removeTrackingPlayer(EntityPlayerMP player)
     {
-        super.setBossNonVisibleTo(player);
+        super.removeTrackingPlayer(player);
         this.bossInfo.removePlayer(player);
     }
 
-    private double func_82214_u(int p_82214_1_)
+    private double getHeadX(int p_82214_1_)
     {
         if (p_82214_1_ <= 0)
         {
@@ -450,12 +456,12 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
         }
     }
 
-    private double func_82208_v(int p_82208_1_)
+    private double getHeadY(int p_82208_1_)
     {
         return p_82208_1_ <= 0 ? this.posY + 3.0D : this.posY + 2.2D;
     }
 
-    private double func_82213_w(int p_82213_1_)
+    private double getHeadZ(int p_82213_1_)
     {
         if (p_82213_1_ <= 0)
         {
@@ -469,9 +475,9 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
         }
     }
 
-    private float func_82204_b(float p_82204_1_, float p_82204_2_, float p_82204_3_)
+    private float rotlerp(float p_82204_1_, float p_82204_2_, float p_82204_3_)
     {
-        float f = MathHelper.wrapAngleTo180_float(p_82204_2_ - p_82204_1_);
+        float f = MathHelper.wrapDegrees(p_82204_2_ - p_82204_1_);
 
         if (f > p_82204_3_)
         {
@@ -496,10 +502,10 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
      */
     private void launchWitherSkullToCoords(int p_82209_1_, double x, double y, double z, boolean invulnerable)
     {
-        this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1024, new BlockPos(this), 0);
-        double d0 = this.func_82214_u(p_82209_1_);
-        double d1 = this.func_82208_v(p_82209_1_);
-        double d2 = this.func_82213_w(p_82209_1_);
+        this.worldObj.playEvent((EntityPlayer)null, 1024, new BlockPos(this), 0);
+        double d0 = this.getHeadX(p_82209_1_);
+        double d1 = this.getHeadY(p_82209_1_);
+        double d2 = this.getHeadZ(p_82209_1_);
         double d3 = x - d0;
         double d4 = y - d1;
         double d5 = z - d2;
@@ -564,9 +570,9 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
                         this.blockBreakCounter = 20;
                     }
 
-                    for (int i = 0; i < this.field_82224_i.length; ++i)
+                    for (int i = 0; i < this.idleHeadUpdates.length; ++i)
                     {
-                        this.field_82224_i[i] += 3;
+                        this.idleHeadUpdates[i] += 3;
                     }
 
                     return super.attackEntityFrom(source, amount);
@@ -584,7 +590,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
      */
     protected void dropFewItems(boolean wasRecentlyHit, int lootingModifier)
     {
-        EntityItem entityitem = this.dropItem(Items.nether_star, 1);
+        EntityItem entityitem = this.dropItem(Items.NETHER_STAR, 1);
 
         if (entityitem != null)
         {
@@ -595,7 +601,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
         {
             for (EntityPlayer entityplayer : this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, this.getEntityBoundingBox().expand(50.0D, 100.0D, 50.0D)))
             {
-                entityplayer.addStat(AchievementList.killWither);
+                entityplayer.addStat(AchievementList.KILL_WITHER);
             }
         }
     }
@@ -635,33 +641,33 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
     }
 
     @SideOnly(Side.CLIENT)
-    public float func_82207_a(int p_82207_1_)
+    public float getHeadYRotation(int p_82207_1_)
     {
-        return this.field_82221_e[p_82207_1_];
+        return this.yRotationHeads[p_82207_1_];
     }
 
     @SideOnly(Side.CLIENT)
-    public float func_82210_r(int p_82210_1_)
+    public float getHeadXRotation(int p_82210_1_)
     {
-        return this.field_82220_d[p_82210_1_];
+        return this.xRotationHeads[p_82210_1_];
     }
 
     public int getInvulTime()
     {
-        return ((Integer)this.dataWatcher.get(INVULNERABILITY_TIME)).intValue();
+        return ((Integer)this.dataManager.get(INVULNERABILITY_TIME)).intValue();
     }
 
-    public void setInvulTime(int p_82215_1_)
+    public void setInvulTime(int time)
     {
-        this.dataWatcher.set(INVULNERABILITY_TIME, Integer.valueOf(p_82215_1_));
+        this.dataManager.set(INVULNERABILITY_TIME, Integer.valueOf(time));
     }
 
     /**
      * Returns the target entity ID if present, or -1 if not @param par1 The target offset, should be from 0-2
      */
-    public int getWatchedTargetId(int p_82203_1_)
+    public int getWatchedTargetId(int head)
     {
-        return ((Integer)this.dataWatcher.get(HEAD_TARGETS[p_82203_1_])).intValue();
+        return ((Integer)this.dataManager.get(HEAD_TARGETS[head])).intValue();
     }
 
     /**
@@ -669,7 +675,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
      */
     public void updateWatchedTargetId(int targetOffset, int newId)
     {
-        this.dataWatcher.set(HEAD_TARGETS[targetOffset], Integer.valueOf(newId));
+        this.dataManager.set(HEAD_TARGETS[targetOffset], Integer.valueOf(newId));
     }
 
     /**

@@ -12,10 +12,10 @@ public class RenderPotion extends RenderSnowball<EntityPotion>
 {
     public RenderPotion(RenderManager renderManagerIn, RenderItem itemRendererIn)
     {
-        super(renderManagerIn, Items.potionitem, itemRendererIn);
+        super(renderManagerIn, Items.POTIONITEM, itemRendererIn);
     }
 
-    public ItemStack getPotion(EntityPotion entityIn)
+    public ItemStack getStackToRender(EntityPotion entityIn)
     {
         return entityIn.getPotion();
     }

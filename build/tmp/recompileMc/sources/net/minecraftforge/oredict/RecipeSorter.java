@@ -30,8 +30,6 @@ import net.minecraft.item.crafting.RecipesBanners.RecipeAddPattern;
 import net.minecraft.item.crafting.RecipesBanners.RecipeDuplicatePattern;
 import static net.minecraftforge.oredict.RecipeSorter.Category.*;
 
-import net.minecraft.item.crafting.RecipesBanners.RecipeAddPattern;
-import net.minecraft.item.crafting.RecipesBanners.RecipeDuplicatePattern;
 public class RecipeSorter implements Comparator<IRecipe>
 {
     public enum Category

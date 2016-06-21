@@ -5,6 +5,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -45,10 +46,6 @@ public class CommandAchievement extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -77,7 +74,7 @@ public class CommandAchievement extends CommandBase
                                 entityplayermp.addStat(achievement4);
                             }
 
-                            notifyOperators(sender, this, "commands.achievement.give.success.all", new Object[] {entityplayermp.getName()});
+                            notifyCommandListener(sender, this, "commands.achievement.give.success.all", new Object[] {entityplayermp.getName()});
                         }
                         else if (flag1)
                         {
@@ -86,7 +83,7 @@ public class CommandAchievement extends CommandBase
                                 entityplayermp.takeStat(achievement5);
                             }
 
-                            notifyOperators(sender, this, "commands.achievement.take.success.all", new Object[] {entityplayermp.getName()});
+                            notifyCommandListener(sender, this, "commands.achievement.take.success.all", new Object[] {entityplayermp.getName()});
                         }
                     }
                     else
@@ -123,7 +120,7 @@ public class CommandAchievement extends CommandBase
 
                                 List<Achievement> list1 = Lists.newArrayList(Iterators.filter(AchievementList.ACHIEVEMENTS.iterator(), new Predicate<Achievement>()
                                 {
-                                    public boolean apply(Achievement p_apply_1_)
+                                    public boolean apply(@Nullable Achievement p_apply_1_)
                                     {
                                         return entityplayermp.getStatFile().hasAchievementUnlocked(p_apply_1_) && p_apply_1_ != statbase;
                                     }
@@ -162,12 +159,12 @@ public class CommandAchievement extends CommandBase
                         if (flag)
                         {
                             entityplayermp.addStat(statbase);
-                            notifyOperators(sender, this, "commands.achievement.give.success.one", new Object[] {entityplayermp.getName(), statbase.createChatComponent()});
+                            notifyCommandListener(sender, this, "commands.achievement.give.success.one", new Object[] {entityplayermp.getName(), statbase.createChatComponent()});
                         }
                         else if (flag1)
                         {
                             entityplayermp.takeStat(statbase);
-                            notifyOperators(sender, this, "commands.achievement.take.success.one", new Object[] {statbase.createChatComponent(), entityplayermp.getName()});
+                            notifyCommandListener(sender, this, "commands.achievement.take.success.one", new Object[] {statbase.createChatComponent(), entityplayermp.getName()});
                         }
                     }
                 }
@@ -179,7 +176,7 @@ public class CommandAchievement extends CommandBase
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         if (args.length == 1)
         {

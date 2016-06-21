@@ -14,35 +14,35 @@ public class SPacketMaps implements Packet<INetHandlerPlayClient>
 {
     private int mapId;
     private byte mapScale;
-    private boolean field_186950_c;
-    private Vec4b[] mapVisiblePlayersVec4b;
-    private int mapMinX;
-    private int mapMinY;
-    private int mapMaxX;
-    private int mapMaxY;
+    private boolean trackingPosition;
+    private Vec4b[] icons;
+    private int minX;
+    private int minZ;
+    private int columns;
+    private int rows;
     private byte[] mapDataBytes;
 
     public SPacketMaps()
     {
     }
 
-    public SPacketMaps(int p_i46937_1_, byte p_i46937_2_, boolean p_i46937_3_, Collection<Vec4b> p_i46937_4_, byte[] p_i46937_5_, int p_i46937_6_, int p_i46937_7_, int p_i46937_8_, int p_i46937_9_)
+    public SPacketMaps(int mapIdIn, byte mapScaleIn, boolean trackingPositionIn, Collection<Vec4b> iconsIn, byte[] p_i46937_5_, int minXIn, int minZIn, int columnsIn, int rowsIn)
     {
-        this.mapId = p_i46937_1_;
-        this.mapScale = p_i46937_2_;
-        this.field_186950_c = p_i46937_3_;
-        this.mapVisiblePlayersVec4b = (Vec4b[])p_i46937_4_.toArray(new Vec4b[p_i46937_4_.size()]);
-        this.mapMinX = p_i46937_6_;
-        this.mapMinY = p_i46937_7_;
-        this.mapMaxX = p_i46937_8_;
-        this.mapMaxY = p_i46937_9_;
-        this.mapDataBytes = new byte[p_i46937_8_ * p_i46937_9_];
+        this.mapId = mapIdIn;
+        this.mapScale = mapScaleIn;
+        this.trackingPosition = trackingPositionIn;
+        this.icons = (Vec4b[])iconsIn.toArray(new Vec4b[iconsIn.size()]);
+        this.minX = minXIn;
+        this.minZ = minZIn;
+        this.columns = columnsIn;
+        this.rows = rowsIn;
+        this.mapDataBytes = new byte[columnsIn * rowsIn];
 
-        for (int i = 0; i < p_i46937_8_; ++i)
+        for (int i = 0; i < columnsIn; ++i)
         {
-            for (int j = 0; j < p_i46937_9_; ++j)
+            for (int j = 0; j < rowsIn; ++j)
             {
-                this.mapDataBytes[i + j * p_i46937_8_] = p_i46937_5_[p_i46937_6_ + i + (p_i46937_7_ + j) * 128];
+                this.mapDataBytes[i + j * columnsIn] = p_i46937_5_[minXIn + i + (minZIn + j) * 128];
             }
         }
     }
@@ -54,22 +54,22 @@ public class SPacketMaps implements Packet<INetHandlerPlayClient>
     {
         this.mapId = buf.readVarIntFromBuffer();
         this.mapScale = buf.readByte();
-        this.field_186950_c = buf.readBoolean();
-        this.mapVisiblePlayersVec4b = new Vec4b[buf.readVarIntFromBuffer()];
+        this.trackingPosition = buf.readBoolean();
+        this.icons = new Vec4b[buf.readVarIntFromBuffer()];
 
-        for (int i = 0; i < this.mapVisiblePlayersVec4b.length; ++i)
+        for (int i = 0; i < this.icons.length; ++i)
         {
             short short1 = (short)buf.readByte();
-            this.mapVisiblePlayersVec4b[i] = new Vec4b((byte)(short1 >> 4 & 15), buf.readByte(), buf.readByte(), (byte)(short1 & 15));
+            this.icons[i] = new Vec4b((byte)(short1 >> 4 & 15), buf.readByte(), buf.readByte(), (byte)(short1 & 15));
         }
 
-        this.mapMaxX = buf.readUnsignedByte();
+        this.columns = buf.readUnsignedByte();
 
-        if (this.mapMaxX > 0)
+        if (this.columns > 0)
         {
-            this.mapMaxY = buf.readUnsignedByte();
-            this.mapMinX = buf.readUnsignedByte();
-            this.mapMinY = buf.readUnsignedByte();
+            this.rows = buf.readUnsignedByte();
+            this.minX = buf.readUnsignedByte();
+            this.minZ = buf.readUnsignedByte();
             this.mapDataBytes = buf.readByteArray();
         }
     }
@@ -81,23 +81,23 @@ public class SPacketMaps implements Packet<INetHandlerPlayClient>
     {
         buf.writeVarIntToBuffer(this.mapId);
         buf.writeByte(this.mapScale);
-        buf.writeBoolean(this.field_186950_c);
-        buf.writeVarIntToBuffer(this.mapVisiblePlayersVec4b.length);
+        buf.writeBoolean(this.trackingPosition);
+        buf.writeVarIntToBuffer(this.icons.length);
 
-        for (Vec4b vec4b : this.mapVisiblePlayersVec4b)
+        for (Vec4b vec4b : this.icons)
         {
-            buf.writeByte((vec4b.getX() & 15) << 4 | vec4b.getW() & 15);
+            buf.writeByte((vec4b.getType() & 15) << 4 | vec4b.getRotation() & 15);
+            buf.writeByte(vec4b.getX());
             buf.writeByte(vec4b.getY());
-            buf.writeByte(vec4b.getZ());
         }
 
-        buf.writeByte(this.mapMaxX);
+        buf.writeByte(this.columns);
 
-        if (this.mapMaxX > 0)
+        if (this.columns > 0)
         {
-            buf.writeByte(this.mapMaxY);
-            buf.writeByte(this.mapMinX);
-            buf.writeByte(this.mapMinY);
+            buf.writeByte(this.rows);
+            buf.writeByte(this.minX);
+            buf.writeByte(this.minZ);
             buf.writeByteArray(this.mapDataBytes);
         }
     }
@@ -123,20 +123,20 @@ public class SPacketMaps implements Packet<INetHandlerPlayClient>
     public void setMapdataTo(MapData mapdataIn)
     {
         mapdataIn.scale = this.mapScale;
-        mapdataIn.trackingPosition = this.field_186950_c;
+        mapdataIn.trackingPosition = this.trackingPosition;
         mapdataIn.mapDecorations.clear();
 
-        for (int i = 0; i < this.mapVisiblePlayersVec4b.length; ++i)
+        for (int i = 0; i < this.icons.length; ++i)
         {
-            Vec4b vec4b = this.mapVisiblePlayersVec4b[i];
+            Vec4b vec4b = this.icons[i];
             mapdataIn.mapDecorations.put("icon-" + i, vec4b);
         }
 
-        for (int j = 0; j < this.mapMaxX; ++j)
+        for (int j = 0; j < this.columns; ++j)
         {
-            for (int k = 0; k < this.mapMaxY; ++k)
+            for (int k = 0; k < this.rows; ++k)
             {
-                mapdataIn.colors[this.mapMinX + j + (this.mapMinY + k) * 128] = this.mapDataBytes[j + k * this.mapMaxX];
+                mapdataIn.colors[this.minX + j + (this.minZ + k) * 128] = this.mapDataBytes[j + k * this.columns];
             }
         }
     }

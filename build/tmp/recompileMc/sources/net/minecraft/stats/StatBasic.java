@@ -20,7 +20,7 @@ public class StatBasic extends StatBase
     public StatBase registerStat()
     {
         super.registerStat();
-        StatList.field_188094_c.add(this);
+        StatList.BASIC_STATS.add(this);
         return this;
     }
 }

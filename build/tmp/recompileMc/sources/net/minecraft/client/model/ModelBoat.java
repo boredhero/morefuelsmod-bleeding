@@ -15,7 +15,7 @@ public class ModelBoat extends ModelBase implements IMultipassModel
     public ModelRenderer[] paddles = new ModelRenderer[2];
     /** Part of the model rendered to make it seem like there's no water in the boat */
     public ModelRenderer noWater;
-    private int field_187059_d = GLAllocation.generateDisplayLists(1);
+    private int patchList = GLAllocation.generateDisplayLists(1);
 
     public ModelBoat()
     {
@@ -43,9 +43,9 @@ public class ModelBoat extends ModelBase implements IMultipassModel
         this.boatSides[1].rotateAngleY = ((float)Math.PI * 3F / 2F);
         this.boatSides[2].rotateAngleY = ((float)Math.PI / 2F);
         this.boatSides[3].rotateAngleY = (float)Math.PI;
-        this.paddles[0] = this.func_187056_a(true);
+        this.paddles[0] = this.makePaddle(true);
         this.paddles[0].setRotationPoint(3.0F, -5.0F, 9.0F);
-        this.paddles[1] = this.func_187056_a(false);
+        this.paddles[1] = this.makePaddle(false);
         this.paddles[1].setRotationPoint(3.0F, -5.0F, -9.0F);
         this.paddles[1].rotateAngleY = (float)Math.PI;
         this.paddles[0].rotateAngleZ = this.paddles[1].rotateAngleZ = 0.19634955F;
@@ -58,19 +58,19 @@ public class ModelBoat extends ModelBase implements IMultipassModel
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float p_78088_2_, float limbSwing, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
         GlStateManager.rotate(90.0F, 0.0F, 1.0F, 0.0F);
         EntityBoat entityboat = (EntityBoat)entityIn;
-        this.setRotationAngles(p_78088_2_, limbSwing, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
 
         for (int i = 0; i < 5; ++i)
         {
             this.boatSides[i].render(scale);
         }
 
-        this.renderPaddle(entityboat, 0, scale, p_78088_2_);
-        this.renderPaddle(entityboat, 1, scale, p_78088_2_);
+        this.renderPaddle(entityboat, 0, scale, limbSwing);
+        this.renderPaddle(entityboat, 1, scale, limbSwing);
     }
 
     public void renderMultipass(Entity p_187054_1_, float p_187054_2_, float p_187054_3_, float p_187054_4_, float p_187054_5_, float p_187054_6_, float scale)
@@ -90,7 +90,7 @@ public class ModelBoat extends ModelBase implements IMultipassModel
     {
     }
 
-    ModelRenderer func_187056_a(boolean p_187056_1_)
+    ModelRenderer makePaddle(boolean p_187056_1_)
     {
         ModelRenderer modelrenderer = (new ModelRenderer(this, 62, p_187056_1_ ? 0 : 20)).setTextureSize(128, 64);
         int i = 20;
@@ -105,7 +105,7 @@ public class ModelBoat extends ModelBase implements IMultipassModel
     void renderPaddle(EntityBoat boat, int paddle, float scale, float limbSwing)
     {
         float f = 40.0F;
-        float f1 = boat.func_184448_a(paddle, limbSwing) * f;
+        float f1 = boat.getRowingTime(paddle, limbSwing) * f;
         ModelRenderer modelrenderer = this.paddles[paddle];
         modelrenderer.rotateAngleX = (float)MathHelper.denormalizeClamp(-1.0471975803375244D, -0.2617993950843811D, (double)((MathHelper.sin(-f1) + 1.0F) / 2.0F));
         modelrenderer.rotateAngleY = (float)MathHelper.denormalizeClamp(-(Math.PI / 4D), (Math.PI / 4D), (double)((MathHelper.sin(-f1 + 1.0F) + 1.0F) / 2.0F));

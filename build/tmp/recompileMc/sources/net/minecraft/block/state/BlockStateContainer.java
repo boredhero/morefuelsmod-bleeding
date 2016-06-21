@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
@@ -44,7 +45,8 @@ public class BlockStateContainer
     private static final Pattern NAME_PATTERN = Pattern.compile("^[a-z0-9_]+$");
     private static final Function < IProperty<?>, String > GET_NAME_FUNC = new Function < IProperty<?>, String > ()
     {
-        public String apply(IProperty<?> p_apply_1_)
+        @Nullable
+        public String apply(@Nullable IProperty<?> p_apply_1_)
         {
             return p_apply_1_ == null ? "<NULL>" : p_apply_1_.getName();
         }
@@ -152,9 +154,10 @@ public class BlockStateContainer
 
     public String toString()
     {
-        return Objects.toStringHelper(this).add("block", Block.blockRegistry.getNameForObject(this.block)).add("properties", Iterables.transform(this.properties.values(), GET_NAME_FUNC)).toString();
+        return Objects.toStringHelper(this).add("block", Block.REGISTRY.getNameForObject(this.block)).add("properties", Iterables.transform(this.properties.values(), GET_NAME_FUNC)).toString();
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
     public IProperty<?> getProperty(String propertyName)
     {
@@ -187,29 +190,42 @@ public class BlockStateContainer
 
             public <T extends Comparable<T>> T getValue(IProperty<T> property)
             {
-                if (!this.properties.containsKey(property))
+                Comparable<?> comparable = (Comparable)this.properties.get(property);
+
+                if (comparable == null)
                 {
                     throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.block.getBlockState());
                 }
                 else
                 {
-                    return (T)((Comparable)property.getValueClass().cast(this.properties.get(property)));
+                    return (T)((Comparable)property.getValueClass().cast(comparable));
                 }
             }
 
             public <T extends Comparable<T>, V extends T> IBlockState withProperty(IProperty<T> property, V value)
             {
-                if (!this.properties.containsKey(property))
+                Comparable<?> comparable = (Comparable)this.properties.get(property);
+
+                if (comparable == null)
                 {
                     throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + this.block.getBlockState());
                 }
-                else if (!property.getAllowedValues().contains(value))
+                else if (comparable == value)
                 {
-                    throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on block " + Block.blockRegistry.getNameForObject(this.block) + ", it is not an allowed value");
+                    return this;
                 }
                 else
                 {
-                    return (IBlockState)(this.properties.get(property) == value ? this : (IBlockState)this.propertyValueTable.get(property, value));
+                    IBlockState iblockstate = (IBlockState)this.propertyValueTable.get(property, value);
+
+                    if (iblockstate == null)
+                    {
+                        throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on block " + Block.REGISTRY.getNameForObject(this.block) + ", it is not an allowed value");
+                    }
+                    else
+                    {
+                        return iblockstate;
+                    }
                 }
             }
 
@@ -282,7 +298,7 @@ public class BlockStateContainer
                 return this.block.getLightOpacity(this);
             }
 
-            public int getlightValue()
+            public int getLightValue()
             {
                 return this.block.getLightValue(this);
             }
@@ -397,9 +413,9 @@ public class BlockStateContainer
             }
 
             @SideOnly(Side.CLIENT)
-            public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos)
+            public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
             {
-                return this.block.getCollisionBoundingBox(this, worldIn, pos);
+                return this.block.getSelectedBoundingBox(this, worldIn, pos);
             }
 
             @SideOnly(Side.CLIENT)
@@ -413,12 +429,13 @@ public class BlockStateContainer
                 return this.block.isOpaqueCube(this);
             }
 
-            public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos)
+            @Nullable
+            public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos)
             {
-                return this.block.getSelectedBoundingBox(this, worldIn, pos);
+                return this.block.getCollisionBoundingBox(this, worldIn, pos);
             }
 
-            public void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, Entity p_185908_5_)
+            public void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_)
             {
                 this.block.addCollisionBoxToList(this, worldIn, pos, p_185908_3_, p_185908_4_, p_185908_5_);
             }
@@ -436,6 +453,30 @@ public class BlockStateContainer
             public boolean isFullyOpaque()
             {
                 return this.block.isFullyOpaque(this);
+            }
+
+            /**
+             * Called on both Client and Server when World#addBlockEvent is called. On the Server, this may perform
+             * additional changes to the world, like pistons replacing the block with an extended base. On the client,
+             * the update may involve replacing tile entities, playing sounds, or performing other visual actions to
+             * reflect the server side changes.
+             *  
+             * @param worldIn The world the block event is taking place in
+             * @param pos The position of the block event taking place
+             */
+            public boolean onBlockEventReceived(World worldIn, BlockPos pos, int id, int param)
+            {
+                return this.block.eventReceived(this, worldIn, pos, id, param);
+            }
+
+            /**
+             * Called when a neighboring block was changed and marks that this state should perform any checks during a
+             * neighbor change. Cases may include when redstone power is updated, cactus blocks popping off due to a
+             * neighboring solid block, etc.
+             */
+            public void neighborChanged(World worldIn, BlockPos pos, Block p_189546_3_)
+            {
+                this.block.neighborChanged(this, worldIn, pos, p_189546_3_);
             }
 
             //Forge Start

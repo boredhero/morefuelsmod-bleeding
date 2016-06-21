@@ -9,8 +9,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import net.minecraftforge.fml.client.config.GuiConfig;
+import net.minecraftforge.fml.client.config.GuiConfigEntries;
 import net.minecraftforge.fml.client.config.GuiConfigEntries.IConfigEntry;
+import net.minecraftforge.fml.client.config.GuiEditArray;
+import net.minecraftforge.fml.client.config.GuiEditArrayEntries;
 import net.minecraftforge.fml.client.config.GuiEditArrayEntries.IArrayEntry;
+import net.minecraftforge.fml.client.config.IConfigElement;
 
 public class Property
 {
@@ -383,9 +388,15 @@ public class Property
 
     /**
      * Sets a custom IConfigEntry class that should be used in place of the standard entry class for this Property type. This class
-     * MUST provide a constructor with the following parameter types: {@code GuiConfig} (the owning GuiConfig screen will be provided),
-     * {@code GuiConfigEntries} (the owning GuiConfigEntries will be provided), {@code IConfigElement} (the IConfigElement for this Property
+     * MUST provide a constructor with the following parameter types: {@link GuiConfig} (the owning GuiConfig screen will be provided),
+     * {@link GuiConfigEntries} (the owning GuiConfigEntries will be provided), {@link IConfigElement} (the IConfigElement for this Property
      * will be provided).
+     *
+     * @see GuiConfigEntries.ListEntryBase
+     * @see GuiConfigEntries.StringEntry
+     * @see GuiConfigEntries.BooleanEntry
+     * @see GuiConfigEntries.DoubleEntry
+     * @see GuiConfigEntries.IntegerEntry
      */
     public Property setConfigEntryClass(Class<? extends IConfigEntry> clazz)
     {
@@ -406,11 +417,15 @@ public class Property
 
     /**
      * Sets a custom IGuiEditListEntry class that should be used in place of the standard entry class for this Property type. This class
-     * MUST provide a constructor with the following parameter types: {@code GuiEditList} (the owning GuiEditList screen will be provided),
-     * {@code GuiPropertyList} (the parent GuiPropertyList will be provided), {@code IConfigProperty} (the IConfigProperty for this Property
-     * will be provided).
+     * MUST provide a constructor with the following parameter types: {@link GuiEditArray} (the owning GuiEditArray screen will be provided),
+     * {@link GuiEditArrayEntries} (the parent GuiEditArrayEntries will be provided), {@link IConfigElement} (the IConfigElement for this Property
+     * will be provided), and {@link Object} for the property's value.
      *
-     * @param clazz a class that implements IConfigEntry
+     * @see GuiEditArrayEntries.BaseEntry
+     * @see GuiEditArrayEntries.StringEntry
+     * @see GuiEditArrayEntries.BooleanEntry
+     * @see GuiEditArrayEntries.DoubleEntry
+     * @see GuiEditArrayEntries.IntegerEntry
      */
     public Property setArrayEntryClass(Class<? extends IArrayEntry> clazz)
     {
@@ -680,14 +695,7 @@ public class Property
      */
     public int getInt()
     {
-        try
-        {
-            return Integer.parseInt(value);
-        }
-        catch (NumberFormatException e)
-        {
-            return Integer.parseInt(defaultValue);
-        }
+        return getInt(Integer.parseInt(defaultValue));
     }
 
     /**
@@ -719,6 +727,54 @@ public class Property
         try
         {
             Integer.parseInt(value);
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Returns the value in this property as a long,
+     * if the value is not a valid long, it will return the initially provided default.
+     *
+     * @return The value
+     */
+    public long getLong()
+    {
+        return getLong(Long.parseLong(defaultValue));
+    }
+
+    /**
+     * Returns the value in this property as a long,
+     * if the value is not a valid long, it will return the
+     * provided default.
+     *
+     * @param _default The default to provide if the current value is not a validlong
+     * @return The value
+     */
+    public long getLong(long _default)
+    {
+        try
+        {
+            return Long.parseLong(value);
+        }
+        catch (NumberFormatException e)
+        {
+            return _default;
+        }
+    }
+
+    /**
+     * Checks if the current value stored in this property can be converted to a long.
+     * @return True if the type of the Property is an Long
+     */
+    public boolean isLongValue()
+    {
+        try
+        {
+            Long.parseLong(value);
             return true;
         }
         catch (NumberFormatException e)
@@ -814,7 +870,6 @@ public class Property
     /**
      * Returns the value in this property as a double, if the value is not a valid double, it will return the provided default.
      *
-     * @param _default The default to provide if the current value is not a valid double
      * @return The value
      */
     public double getDouble()
@@ -1148,6 +1203,7 @@ public class Property
         this.setValues(values);
     }
     public void set(int     value){ set(Integer.toString(value)); }
+    public void set(long    value){ set(Long.toString(value));    }
     public void set(boolean value){ set(Boolean.toString(value)); }
     public void set(double  value){ set(Double.toString(value));  }
 }

@@ -5,7 +5,7 @@ import java.util.Collection;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 
-public interface IBlockState extends IBlockProperties
+public interface IBlockState extends IBlockBehaviors, IBlockProperties
 {
     Collection < IProperty<? >> getPropertyNames();
 

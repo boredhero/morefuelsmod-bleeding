@@ -14,18 +14,18 @@ public class ItemEmptyMap extends ItemMapBase
 {
     protected ItemEmptyMap()
     {
-        this.setCreativeTab(CreativeTabs.tabMisc);
+        this.setCreativeTab(CreativeTabs.MISC);
     }
 
     public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
-        ItemStack itemstack = new ItemStack(Items.filled_map, 1, worldIn.getUniqueDataId("map"));
+        ItemStack itemstack = new ItemStack(Items.FILLED_MAP, 1, worldIn.getUniqueDataId("map"));
         String s = "map_" + itemstack.getMetadata();
         MapData mapdata = new MapData(s);
         worldIn.setItemData(s, mapdata);
         mapdata.scale = 0;
         mapdata.calculateMapCenter(playerIn.posX, playerIn.posZ, mapdata.scale);
-        mapdata.dimension = worldIn.provider.getDimensionType().getId();
+        mapdata.dimension = worldIn.provider.getDimension();
         mapdata.trackingPosition = true;
         mapdata.markDirty();
         --itemStackIn.stackSize;
@@ -38,10 +38,10 @@ public class ItemEmptyMap extends ItemMapBase
         {
             if (!playerIn.inventory.addItemStackToInventory(itemstack.copy()))
             {
-                playerIn.dropPlayerItemWithRandomChoice(itemstack, false);
+                playerIn.dropItem(itemstack, false);
             }
 
-            playerIn.addStat(StatList.func_188057_b(this));
+            playerIn.addStat(StatList.getObjectUseStats(this));
             return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
         }
     }

@@ -18,7 +18,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class MapItemRenderer
 {
-    private static final ResourceLocation mapIcons = new ResourceLocation("textures/map/map_icons.png");
+    private static final ResourceLocation TEXTURE_MAP_ICONS = new ResourceLocation("textures/map/map_icons.png");
     private final TextureManager textureManager;
     private final Map<String, MapItemRenderer.Instance> loadedMaps = Maps.<String, MapItemRenderer.Instance>newHashMap();
 
@@ -105,7 +105,7 @@ public class MapItemRenderer
                 }
                 else
                 {
-                    this.mapTextureData[i] = MapColor.mapColorArray[j / 4].getMapColor(j & 3);
+                    this.mapTextureData[i] = MapColor.COLORS[j / 4].getMapColor(j & 3);
                 }
             }
 
@@ -134,19 +134,19 @@ public class MapItemRenderer
             tessellator.draw();
             GlStateManager.enableAlpha();
             GlStateManager.disableBlend();
-            MapItemRenderer.this.textureManager.bindTexture(MapItemRenderer.mapIcons);
+            MapItemRenderer.this.textureManager.bindTexture(MapItemRenderer.TEXTURE_MAP_ICONS);
             int k = 0;
 
             for (Vec4b vec4b : this.mapData.mapDecorations.values())
             {
-                if (!noOverlayRendering || vec4b.getX() == 1)
+                if (!noOverlayRendering || vec4b.getType() == 1)
                 {
                     GlStateManager.pushMatrix();
-                    GlStateManager.translate((float)i + (float)vec4b.getY() / 2.0F + 64.0F, (float)j + (float)vec4b.getZ() / 2.0F + 64.0F, -0.02F);
-                    GlStateManager.rotate((float)(vec4b.getW() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
+                    GlStateManager.translate((float)i + (float)vec4b.getX() / 2.0F + 64.0F, (float)j + (float)vec4b.getY() / 2.0F + 64.0F, -0.02F);
+                    GlStateManager.rotate((float)(vec4b.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
                     GlStateManager.scale(4.0F, 4.0F, 3.0F);
                     GlStateManager.translate(-0.125F, 0.125F, 0.0F);
-                    byte b0 = vec4b.getX();
+                    byte b0 = vec4b.getType();
                     float f1 = (float)(b0 % 4 + 0) / 4.0F;
                     float f2 = (float)(b0 / 4 + 0) / 4.0F;
                     float f3 = (float)(b0 % 4 + 1) / 4.0F;

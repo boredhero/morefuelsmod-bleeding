@@ -49,7 +49,8 @@ public class NBTTagString extends NBTBase
 
     public String toString()
     {
-        return "\"" + this.data.replace("\"", "\\\"") + "\"";
+        // Forge: BugFix: Vanilla does a normal " -> \" conversion but doesn't escape \
+        return "\"" + org.apache.commons.lang3.StringUtils.replaceEach(this.data, new String[]{"\\","\""}, new String[]{"\\\\","\\\""}) + "\"";
     }
 
     /**

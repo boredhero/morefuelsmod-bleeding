@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 
 public class WorldGenClay extends WorldGenerator
 {
-    private Block field_150546_a = Blocks.clay;
+    private Block block = Blocks.CLAY;
     /** The number of blocks to generate. */
     private int numberOfBlocks;
 
@@ -20,7 +20,7 @@ public class WorldGenClay extends WorldGenerator
 
     public boolean generate(World worldIn, Random rand, BlockPos position)
     {
-        if (worldIn.getBlockState(position).getMaterial() != Material.water)
+        if (worldIn.getBlockState(position).getMaterial() != Material.WATER)
         {
             return false;
         }
@@ -43,9 +43,9 @@ public class WorldGenClay extends WorldGenerator
                             BlockPos blockpos = new BlockPos(k, k1, l);
                             Block block = worldIn.getBlockState(blockpos).getBlock();
 
-                            if (block == Blocks.dirt || block == Blocks.clay)
+                            if (block == Blocks.DIRT || block == Blocks.CLAY)
                             {
-                                worldIn.setBlockState(blockpos, this.field_150546_a.getDefaultState(), 2);
+                                worldIn.setBlockState(blockpos, this.block.getDefaultState(), 2);
                             }
                         }
                     }

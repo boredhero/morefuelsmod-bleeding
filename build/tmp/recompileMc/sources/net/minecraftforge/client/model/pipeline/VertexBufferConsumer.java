@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.vertex.VertexFormatElement.EnumUsage;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 
-import net.minecraft.client.renderer.vertex.VertexFormatElement.EnumUsage;
 /**
  * Assumes VertexFormatElement is present in the VertexBuffer's vertex format.
  */

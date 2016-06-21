@@ -4,6 +4,7 @@ import com.google.common.collect.AbstractIterator;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.concurrent.Immutable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.fml.relauncher.Side;
@@ -11,6 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@Immutable
 public class BlockPos extends Vec3i
 {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -274,6 +276,12 @@ public class BlockPos extends Vec3i
         };
     }
 
+    /**
+     * Returns a version of this BlockPos that is guaranteed to be immutable.
+     *  
+     * <p>When storing a BlockPos given to you for an extended period of time, make sure you
+     * use this in case the value is changed internally.</p>
+     */
     public BlockPos toImmutable()
     {
         return this;
@@ -334,29 +342,14 @@ public class BlockPos extends Vec3i
         };
     }
 
-    /**
-     * Returns a version of this BlockPos that is guaranteed to be Immutable.
-     * In most cases this will return 'this', but if 'this' is an instance of
-     * MutableBlockPos it will return a new instance of BlockPos with the same values.
-     *
-     * When storing a parameter given to you for an extended period of time, make sure you
-     * use this in case the value is changed internally.
-     *
-     * @return An immutable BlockPos.
-     */
-    public BlockPos getImmutable()
-    {
-        return this;
-    }
-
-    public static final class MutableBlockPos extends BlockPos
+    public static class MutableBlockPos extends BlockPos
         {
             /** Mutable X Coordinate */
-            private int x;
+            protected int x;
             /** Mutable Y Coordinate */
-            private int y;
+            protected int y;
             /** Mutable Z Coordinate */
-            private int z;
+            protected int z;
 
             public MutableBlockPos()
             {
@@ -377,7 +370,7 @@ public class BlockPos extends Vec3i
             }
 
             /**
-             * Get the X coordinate
+             * Gets the X coordinate.
              */
             public int getX()
             {
@@ -385,7 +378,7 @@ public class BlockPos extends Vec3i
             }
 
             /**
-             * Get the Y coordinate
+             * Gets the Y coordinate.
              */
             public int getY()
             {
@@ -393,7 +386,7 @@ public class BlockPos extends Vec3i
             }
 
             /**
-             * Get the Z coordinate
+             * Gets the Z coordinate.
              */
             public int getZ()
             {
@@ -401,9 +394,9 @@ public class BlockPos extends Vec3i
             }
 
             /**
-             * Set the values
+             * Sets the position, MUST not be name 'set' as that causes obfusication conflicts with func_185343_d
              */
-            public BlockPos.MutableBlockPos set(int xIn, int yIn, int zIn)
+            public BlockPos.MutableBlockPos setPos(int xIn, int yIn, int zIn)
             {
                 this.x = xIn;
                 this.y = yIn;
@@ -411,11 +404,30 @@ public class BlockPos extends Vec3i
                 return this;
             }
 
-            public void offsetMutable(EnumFacing facing)
+            public BlockPos.MutableBlockPos setPos(double p_189532_1_, double p_189532_3_, double p_189532_5_)
             {
-                this.x += facing.getFrontOffsetX();
-                this.y += facing.getFrontOffsetY();
-                this.z += facing.getFrontOffsetZ();
+                return this.setPos(MathHelper.floor_double(p_189532_1_), MathHelper.floor_double(p_189532_3_), MathHelper.floor_double(p_189532_5_));
+            }
+
+            @SideOnly(Side.CLIENT)
+            public BlockPos.MutableBlockPos setPos(Entity p_189535_1_)
+            {
+                return this.setPos(p_189535_1_.posX, p_189535_1_.posY, p_189535_1_.posZ);
+            }
+
+            public BlockPos.MutableBlockPos setPos(Vec3i p_189533_1_)
+            {
+                return this.setPos(p_189533_1_.getX(), p_189533_1_.getY(), p_189533_1_.getZ());
+            }
+
+            public BlockPos.MutableBlockPos move(EnumFacing p_189536_1_)
+            {
+                return this.move(p_189536_1_, 1);
+            }
+
+            public BlockPos.MutableBlockPos move(EnumFacing p_189534_1_, int p_189534_2_)
+            {
+                return this.setPos(this.x + p_189534_1_.getFrontOffsetX() * p_189534_2_, this.y + p_189534_1_.getFrontOffsetY() * p_189534_2_, this.z + p_189534_1_.getFrontOffsetZ() * p_189534_2_);
             }
 
             public void setY(int yIn)
@@ -423,28 +435,26 @@ public class BlockPos extends Vec3i
                 this.y = yIn;
             }
 
+            /**
+             * Returns a version of this BlockPos that is guaranteed to be immutable.
+             *  
+             * <p>When storing a BlockPos given to you for an extended period of time, make sure you
+             * use this in case the value is changed internally.</p>
+             */
             public BlockPos toImmutable()
             {
                 return new BlockPos(this);
             }
-
-            @Override public BlockPos getImmutable() { return new BlockPos(this); }
         }
 
-    public static final class PooledMutableBlockPos extends BlockPos
+    public static final class PooledMutableBlockPos extends BlockPos.MutableBlockPos
         {
-            private int x;
-            private int y;
-            private int z;
             private boolean released;
             private static final List<BlockPos.PooledMutableBlockPos> POOL = Lists.<BlockPos.PooledMutableBlockPos>newArrayList();
 
             private PooledMutableBlockPos(int xIn, int yIn, int zIn)
             {
-                super(0, 0, 0);
-                this.x = xIn;
-                this.y = yIn;
-                this.z = zIn;
+                super(xIn, yIn, zIn);
             }
 
             public static BlockPos.PooledMutableBlockPos retain()
@@ -455,6 +465,12 @@ public class BlockPos extends Vec3i
             public static BlockPos.PooledMutableBlockPos retain(double xIn, double yIn, double zIn)
             {
                 return retain(MathHelper.floor_double(xIn), MathHelper.floor_double(yIn), MathHelper.floor_double(zIn));
+            }
+
+            @SideOnly(Side.CLIENT)
+            public static BlockPos.PooledMutableBlockPos retain(Vec3i vec)
+            {
+                return retain(vec.getX(), vec.getY(), vec.getZ());
             }
 
             public static BlockPos.PooledMutableBlockPos retain(int xIn, int yIn, int zIn)
@@ -477,12 +493,6 @@ public class BlockPos extends Vec3i
                 return new BlockPos.PooledMutableBlockPos(xIn, yIn, zIn);
             }
 
-            @SideOnly(Side.CLIENT)
-            public static BlockPos.PooledMutableBlockPos retain(Vec3i vec)
-            {
-                return retain(vec.getX(), vec.getY(), vec.getZ());
-            }
-
             public void release()
             {
                 synchronized (POOL)
@@ -496,30 +506,6 @@ public class BlockPos extends Vec3i
                 }
             }
 
-            /**
-             * Get the X coordinate
-             */
-            public int getX()
-            {
-                return this.x;
-            }
-
-            /**
-             * Get the Y coordinate
-             */
-            public int getY()
-            {
-                return this.y;
-            }
-
-            /**
-             * Get the Z coordinate
-             */
-            public int getZ()
-            {
-                return this.z;
-            }
-
             public BlockPos.PooledMutableBlockPos set(int xIn, int yIn, int zIn)
             {
                 if (this.released)
@@ -528,27 +514,33 @@ public class BlockPos extends Vec3i
                     this.released = false;
                 }
 
-                this.x = xIn;
-                this.y = yIn;
-                this.z = zIn;
-                return this;
+                return (BlockPos.PooledMutableBlockPos)super.setPos(xIn, yIn, zIn);
+            }
+
+            @SideOnly(Side.CLIENT)
+            public BlockPos.PooledMutableBlockPos set(Entity p_189537_1_)
+            {
+                return (BlockPos.PooledMutableBlockPos)super.setPos(p_189537_1_);
             }
 
             public BlockPos.PooledMutableBlockPos set(double xIn, double yIn, double zIn)
             {
-                return this.set(MathHelper.floor_double(xIn), MathHelper.floor_double(yIn), MathHelper.floor_double(zIn));
+                return (BlockPos.PooledMutableBlockPos)super.setPos(xIn, yIn, zIn);
             }
 
             public BlockPos.PooledMutableBlockPos set(Vec3i vec)
             {
-                return this.set(vec.getX(), vec.getY(), vec.getZ());
+                return (BlockPos.PooledMutableBlockPos)super.setPos(vec);
             }
 
             public BlockPos.PooledMutableBlockPos offsetMutable(EnumFacing facing)
             {
-                return this.set(this.x + facing.getFrontOffsetX(), this.y + facing.getFrontOffsetY(), this.z + facing.getFrontOffsetZ());
+                return (BlockPos.PooledMutableBlockPos)super.move(facing);
             }
 
-            @Override public BlockPos getImmutable() { return new BlockPos(this); }
+            public BlockPos.PooledMutableBlockPos movePos(EnumFacing p_189538_1_, int p_189538_2_)
+            {
+                return (BlockPos.PooledMutableBlockPos)super.move(p_189538_1_, p_189538_2_);
+            }
         }
 }

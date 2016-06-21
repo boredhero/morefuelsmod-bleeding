@@ -3,6 +3,7 @@ package net.minecraft.block;
 import com.google.common.base.Predicate;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
@@ -26,7 +27,7 @@ public class BlockRailDetector extends BlockRailBase
 {
     public static final PropertyEnum<BlockRailBase.EnumRailDirection> SHAPE = PropertyEnum.<BlockRailBase.EnumRailDirection>create("shape", BlockRailBase.EnumRailDirection.class, new Predicate<BlockRailBase.EnumRailDirection>()
     {
-        public boolean apply(BlockRailBase.EnumRailDirection p_apply_1_)
+        public boolean apply(@Nullable BlockRailBase.EnumRailDirection p_apply_1_)
         {
             return p_apply_1_ != BlockRailBase.EnumRailDirection.NORTH_EAST && p_apply_1_ != BlockRailBase.EnumRailDirection.NORTH_WEST && p_apply_1_ != BlockRailBase.EnumRailDirection.SOUTH_EAST && p_apply_1_ != BlockRailBase.EnumRailDirection.SOUTH_WEST;
         }
@@ -109,7 +110,7 @@ public class BlockRailDetector extends BlockRailBase
         if (flag1 && !flag)
         {
             worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(true)), 3);
-            this.func_185592_b(worldIn, pos, state, true);
+            this.updateConnectedRails(worldIn, pos, state, true);
             worldIn.notifyNeighborsOfStateChange(pos, this);
             worldIn.notifyNeighborsOfStateChange(pos.down(), this);
             worldIn.markBlockRangeForRenderUpdate(pos, pos);
@@ -118,7 +119,7 @@ public class BlockRailDetector extends BlockRailBase
         if (!flag1 && flag)
         {
             worldIn.setBlockState(pos, state.withProperty(POWERED, Boolean.valueOf(false)), 3);
-            this.func_185592_b(worldIn, pos, state, false);
+            this.updateConnectedRails(worldIn, pos, state, false);
             worldIn.notifyNeighborsOfStateChange(pos, this);
             worldIn.notifyNeighborsOfStateChange(pos.down(), this);
             worldIn.markBlockRangeForRenderUpdate(pos, pos);
@@ -132,17 +133,17 @@ public class BlockRailDetector extends BlockRailBase
         worldIn.updateComparatorOutputLevel(pos, this);
     }
 
-    protected void func_185592_b(World worldIn, BlockPos pos, IBlockState state, boolean p_185592_4_)
+    protected void updateConnectedRails(World worldIn, BlockPos pos, IBlockState state, boolean p_185592_4_)
     {
         BlockRailBase.Rail blockrailbase$rail = new BlockRailBase.Rail(worldIn, pos, state);
 
-        for (BlockPos blockpos : blockrailbase$rail.func_185763_a())
+        for (BlockPos blockpos : blockrailbase$rail.getConnectedRails())
         {
             IBlockState iblockstate = worldIn.getBlockState(blockpos);
 
             if (iblockstate != null)
             {
-                iblockstate.getBlock().onNeighborBlockChange(worldIn, blockpos, iblockstate, iblockstate.getBlock());
+                iblockstate.neighborChanged(worldIn, blockpos, iblockstate.getBlock());
             }
         }
     }

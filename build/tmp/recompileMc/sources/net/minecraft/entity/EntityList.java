@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -81,13 +82,13 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityList
 {
-    private static final Logger logger = LogManager.getLogger();
-    public static final Map < String, Class <? extends Entity >> stringToClassMapping = Maps. < String, Class <? extends Entity >> newHashMap();
-    public static final Map < Class <? extends Entity > , String > classToStringMapping = Maps. < Class <? extends Entity > , String > newHashMap();
-    public static final Map < Integer, Class <? extends Entity >> idToClassMapping = Maps. < Integer, Class <? extends Entity >> newHashMap();
-    private static final Map < Class <? extends Entity > , Integer > classToIDMapping = Maps. < Class <? extends Entity > , Integer > newHashMap();
-    private static final Map<String, Integer> stringToIDMapping = Maps.<String, Integer>newHashMap();
-    public static final Map<String, EntityList.EntityEggInfo> entityEggs = Maps.<String, EntityList.EntityEggInfo>newLinkedHashMap();
+    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Map < String, Class <? extends Entity >> NAME_TO_CLASS = Maps. < String, Class <? extends Entity >> newHashMap();
+    public static final Map < Class <? extends Entity > , String > CLASS_TO_NAME = Maps. < Class <? extends Entity > , String > newHashMap();
+    public static final Map < Integer, Class <? extends Entity >> ID_TO_CLASS = Maps. < Integer, Class <? extends Entity >> newHashMap();
+    private static final Map < Class <? extends Entity > , Integer > CLASS_TO_ID = Maps. < Class <? extends Entity > , Integer > newHashMap();
+    private static final Map<String, Integer> NAME_TO_ID = Maps.<String, Integer>newHashMap();
+    public static final Map<String, EntityList.EntityEggInfo> ENTITY_EGGS = Maps.<String, EntityList.EntityEggInfo>newLinkedHashMap();
 
     /**
      * adds a mapping between Entity classes and both a string representation and an ID
@@ -95,11 +96,11 @@ public class EntityList
     public static void addMapping(Class <? extends Entity > entityClass, String entityName, int id)
     {
         if (id < 0 || id > 255) throw new IllegalArgumentException("Attempted to register a entity with invalid ID: " + id + " Name: " + entityName + " Class: " + entityClass);
-        if (stringToClassMapping.containsKey(entityName))
+        if (NAME_TO_CLASS.containsKey(entityName))
         {
             throw new IllegalArgumentException("ID is already registered: " + entityName);
         }
-        else if (idToClassMapping.containsKey(Integer.valueOf(id)))
+        else if (ID_TO_CLASS.containsKey(Integer.valueOf(id)))
         {
             throw new IllegalArgumentException("ID is already registered: " + id);
         }
@@ -113,11 +114,11 @@ public class EntityList
         }
         else
         {
-            stringToClassMapping.put(entityName, entityClass);
-            classToStringMapping.put(entityClass, entityName);
-            idToClassMapping.put(Integer.valueOf(id), entityClass);
-            classToIDMapping.put(entityClass, Integer.valueOf(id));
-            stringToIDMapping.put(entityName, Integer.valueOf(id));
+            NAME_TO_CLASS.put(entityName, entityClass);
+            CLASS_TO_NAME.put(entityClass, entityName);
+            ID_TO_CLASS.put(Integer.valueOf(id), entityClass);
+            CLASS_TO_ID.put(entityClass, Integer.valueOf(id));
+            NAME_TO_ID.put(entityName, Integer.valueOf(id));
         }
     }
 
@@ -127,19 +128,20 @@ public class EntityList
     public static void addMapping(Class <? extends Entity > entityClass, String entityName, int entityID, int baseColor, int spotColor)
     {
         addMapping(entityClass, entityName, entityID);
-        entityEggs.put(entityName, new EntityList.EntityEggInfo(entityName, baseColor, spotColor));
+        ENTITY_EGGS.put(entityName, new EntityList.EntityEggInfo(entityName, baseColor, spotColor));
     }
 
     /**
      * Create a new instance of an entity in the world by using the entity name.
      */
+    @Nullable
     public static Entity createEntityByName(String entityName, World worldIn)
     {
         Entity entity = null;
 
         try
         {
-            Class <? extends Entity > oclass = (Class)stringToClassMapping.get(entityName);
+            Class <? extends Entity > oclass = (Class)NAME_TO_CLASS.get(entityName);
 
             if (oclass != null)
             {
@@ -157,6 +159,7 @@ public class EntityList
     /**
      * create a new instance of an entity from NBT store
      */
+    @Nullable
     public static Entity createEntityFromNBT(NBTTagCompound nbt, World worldIn)
     {
         Entity entity = null;
@@ -164,7 +167,7 @@ public class EntityList
         Class <? extends Entity > oclass = null;
         try
         {
-            oclass = stringToClassMapping.get(nbt.getString("id"));
+            oclass = NAME_TO_CLASS.get(nbt.getString("id"));
 
             if (oclass != null)
             {
@@ -192,7 +195,7 @@ public class EntityList
         }
         else
         {
-            logger.warn("Skipping Entity with id " + nbt.getString("id"));
+            LOGGER.warn("Skipping Entity with id " + nbt.getString("id"));
         }
 
         return entity;
@@ -201,6 +204,7 @@ public class EntityList
     /**
      * Create a new instance of an entity in the world by using an entity ID.
      */
+    @Nullable
     public static Entity createEntityByID(int entityID, World worldIn)
     {
         Entity entity = null;
@@ -221,16 +225,17 @@ public class EntityList
 
         if (entity == null)
         {
-            logger.warn("Skipping Entity with id " + entityID);
+            LOGGER.warn("Skipping Entity with id " + entityID);
         }
 
         return entity;
     }
 
-    public static Entity func_188429_b(String p_188429_0_, World p_188429_1_)
+    @Nullable
+    public static Entity createEntityByIDFromName(String name, World worldIn)
     {
-        Entity e = createEntityByName(p_188429_0_, p_188429_1_); // Forge: Support entities without global ID
-        return e == null ? createEntityByName("Pig", p_188429_1_) : e;
+        Entity e = createEntityByName(name, worldIn); // Forge: Support entities without global ID
+        return e == null ? createEntityByName("Pig", worldIn) : e;
     }
 
     /**
@@ -238,13 +243,14 @@ public class EntityList
      */
     public static int getEntityID(Entity entityIn)
     {
-        Integer integer = (Integer)classToIDMapping.get(entityIn.getClass());
+        Integer integer = (Integer)CLASS_TO_ID.get(entityIn.getClass());
         return integer == null ? 0 : integer.intValue();
     }
 
+    @Nullable
     public static Class <? extends Entity > getClassFromID(int entityID)
     {
-        return (Class)idToClassMapping.get(Integer.valueOf(entityID));
+        return (Class)ID_TO_CLASS.get(Integer.valueOf(entityID));
     }
 
     /**
@@ -252,12 +258,12 @@ public class EntityList
      */
     public static String getEntityString(Entity entityIn)
     {
-        return func_188430_a(entityIn.getClass());
+        return getEntityStringFromClass(entityIn.getClass());
     }
 
-    public static String func_188430_a(Class <? extends Entity > p_188430_0_)
+    public static String getEntityStringFromClass(Class <? extends Entity > entityClass)
     {
-        return (String)classToStringMapping.get(p_188430_0_);
+        return (String)CLASS_TO_NAME.get(entityClass);
     }
 
     /**
@@ -265,22 +271,22 @@ public class EntityList
      */
     public static int getIDFromString(String entityName)
     {
-        Integer integer = (Integer)stringToIDMapping.get(entityName);
+        Integer integer = (Integer)NAME_TO_ID.get(entityName);
         return integer == null ? 90 : integer.intValue();
     }
 
-    public static void func_151514_a()
+    public static void init()
     {
     }
 
     public static List<String> getEntityNameList()
     {
-        Set<String> set = stringToClassMapping.keySet();
+        Set<String> set = NAME_TO_CLASS.keySet();
         List<String> list = Lists.<String>newArrayList();
 
         for (String s : set)
         {
-            Class <? extends Entity > oclass = (Class)stringToClassMapping.get(s);
+            Class <? extends Entity > oclass = (Class)NAME_TO_CLASS.get(s);
 
             if ((oclass.getModifiers() & 1024) != 1024)
             {
@@ -392,16 +398,16 @@ public class EntityList
             public final int primaryColor;
             /** Color of the egg spots */
             public final int secondaryColor;
-            public final StatBase field_151512_d;
-            public final StatBase field_151513_e;
+            public final StatBase killEntityStat;
+            public final StatBase entityKilledByStat;
 
-            public EntityEggInfo(String p_i47076_1_, int p_i47076_2_, int p_i47076_3_)
+            public EntityEggInfo(String spawnedIDIn, int primColor, int secondColor)
             {
-                this.spawnedID = p_i47076_1_;
-                this.primaryColor = p_i47076_2_;
-                this.secondaryColor = p_i47076_3_;
-                this.field_151512_d = StatList.getStatKillEntity(this);
-                this.field_151513_e = StatList.getStatEntityKilledBy(this);
+                this.spawnedID = spawnedIDIn;
+                this.primaryColor = primColor;
+                this.secondaryColor = secondColor;
+                this.killEntityStat = StatList.getStatKillEntity(this);
+                this.entityKilledByStat = StatList.getStatEntityKilledBy(this);
             }
         }
 }

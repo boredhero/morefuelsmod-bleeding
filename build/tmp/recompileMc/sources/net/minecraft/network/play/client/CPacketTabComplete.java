@@ -1,6 +1,7 @@
 package net.minecraft.network.play.client;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayServer;
@@ -13,6 +14,7 @@ public class CPacketTabComplete implements Packet<INetHandlerPlayServer>
 {
     private String message;
     private boolean hasTargetBlock;
+    @Nullable
     private BlockPos targetBlock;
 
     public CPacketTabComplete()
@@ -20,7 +22,7 @@ public class CPacketTabComplete implements Packet<INetHandlerPlayServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketTabComplete(String messageIn, BlockPos targetBlockIn, boolean hasTargetBlockIn)
+    public CPacketTabComplete(String messageIn, @Nullable BlockPos targetBlockIn, boolean hasTargetBlockIn)
     {
         this.message = messageIn;
         this.targetBlock = targetBlockIn;
@@ -71,12 +73,13 @@ public class CPacketTabComplete implements Packet<INetHandlerPlayServer>
         return this.message;
     }
 
+    @Nullable
     public BlockPos getTargetBlock()
     {
         return this.targetBlock;
     }
 
-    public boolean func_186989_c()
+    public boolean hasTargetBlock()
     {
         return this.hasTargetBlock;
     }

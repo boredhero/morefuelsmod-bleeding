@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ScoreboardSaveData extends WorldSavedData
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private Scoreboard theScoreboard;
     private NBTTagCompound delayedInitNbt;
 
@@ -60,11 +60,11 @@ public class ScoreboardSaveData extends WorldSavedData
         }
     }
 
-    protected void readTeams(NBTTagList p_96498_1_)
+    protected void readTeams(NBTTagList tagList)
     {
-        for (int i = 0; i < p_96498_1_.tagCount(); ++i)
+        for (int i = 0; i < tagList.tagCount(); ++i)
         {
-            NBTTagCompound nbttagcompound = p_96498_1_.getCompoundTagAt(i);
+            NBTTagCompound nbttagcompound = tagList.getCompoundTagAt(i);
             String s = nbttagcompound.getString("Name");
 
             if (s.length() > 16)
@@ -130,25 +130,25 @@ public class ScoreboardSaveData extends WorldSavedData
                 }
             }
 
-            this.func_96502_a(scoreplayerteam, nbttagcompound.getTagList("Players", 8));
+            this.loadTeamPlayers(scoreplayerteam, nbttagcompound.getTagList("Players", 8));
         }
     }
 
-    protected void func_96502_a(ScorePlayerTeam p_96502_1_, NBTTagList p_96502_2_)
+    protected void loadTeamPlayers(ScorePlayerTeam playerTeam, NBTTagList tagList)
     {
-        for (int i = 0; i < p_96502_2_.tagCount(); ++i)
+        for (int i = 0; i < tagList.tagCount(); ++i)
         {
-            this.theScoreboard.addPlayerToTeam(p_96502_2_.getStringTagAt(i), p_96502_1_.getRegisteredName());
+            this.theScoreboard.addPlayerToTeam(tagList.getStringTagAt(i), playerTeam.getRegisteredName());
         }
     }
 
-    protected void readDisplayConfig(NBTTagCompound p_96504_1_)
+    protected void readDisplayConfig(NBTTagCompound compound)
     {
         for (int i = 0; i < 19; ++i)
         {
-            if (p_96504_1_.hasKey("slot_" + i, 8))
+            if (compound.hasKey("slot_" + i, 8))
             {
-                String s = p_96504_1_.getString("slot_" + i);
+                String s = compound.getString("slot_" + i);
                 ScoreObjective scoreobjective = this.theScoreboard.getObjective(s);
                 this.theScoreboard.setObjectiveInDisplaySlot(i, scoreobjective);
             }
@@ -173,7 +173,7 @@ public class ScoreboardSaveData extends WorldSavedData
 
                 ScoreObjective scoreobjective = this.theScoreboard.addScoreObjective(s, iscorecriteria);
                 scoreobjective.setDisplayName(nbttagcompound.getString("DisplayName"));
-                scoreobjective.setRenderType(IScoreCriteria.EnumRenderType.func_178795_a(nbttagcompound.getString("RenderType")));
+                scoreobjective.setRenderType(IScoreCriteria.EnumRenderType.getByName(nbttagcompound.getString("RenderType")));
             }
         }
     }
@@ -201,25 +201,24 @@ public class ScoreboardSaveData extends WorldSavedData
         }
     }
 
-    /**
-     * write data to NBTTagCompound from this MapDataBase, similar to Entities and TileEntities
-     */
-    public void writeToNBT(NBTTagCompound nbt)
+    public NBTTagCompound writeToNBT(NBTTagCompound p_189551_1_)
     {
         if (this.theScoreboard == null)
         {
-            logger.warn("Tried to save scoreboard without having a scoreboard...");
+            LOGGER.warn("Tried to save scoreboard without having a scoreboard...");
+            return p_189551_1_;
         }
         else
         {
-            nbt.setTag("Objectives", this.objectivesToNbt());
-            nbt.setTag("PlayerScores", this.scoresToNbt());
-            nbt.setTag("Teams", this.func_96496_a());
-            this.func_96497_d(nbt);
+            p_189551_1_.setTag("Objectives", this.objectivesToNbt());
+            p_189551_1_.setTag("PlayerScores", this.scoresToNbt());
+            p_189551_1_.setTag("Teams", this.teamsToNbt());
+            this.fillInDisplaySlots(p_189551_1_);
+            return p_189551_1_;
         }
     }
 
-    protected NBTTagList func_96496_a()
+    protected NBTTagList teamsToNbt()
     {
         NBTTagList nbttaglist = new NBTTagList();
 
@@ -255,7 +254,7 @@ public class ScoreboardSaveData extends WorldSavedData
         return nbttaglist;
     }
 
-    protected void func_96497_d(NBTTagCompound p_96497_1_)
+    protected void fillInDisplaySlots(NBTTagCompound compound)
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
         boolean flag = false;
@@ -273,7 +272,7 @@ public class ScoreboardSaveData extends WorldSavedData
 
         if (flag)
         {
-            p_96497_1_.setTag("DisplaySlots", nbttagcompound);
+            compound.setTag("DisplaySlots", nbttagcompound);
         }
     }
 

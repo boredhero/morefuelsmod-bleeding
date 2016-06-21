@@ -41,7 +41,7 @@ public class EntityTNTPrimed extends Entity
 
     protected void entityInit()
     {
-        this.dataWatcher.register(FUSE, Integer.valueOf(80));
+        this.dataManager.register(FUSE, Integer.valueOf(80));
     }
 
     /**
@@ -109,17 +109,17 @@ public class EntityTNTPrimed extends Entity
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    protected void writeEntityToNBT(NBTTagCompound tagCompound)
+    protected void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setShort("Fuse", (short)this.getFuse());
+        compound.setShort("Fuse", (short)this.getFuse());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    protected void readEntityFromNBT(NBTTagCompound tagCompund)
+    protected void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.setFuse(tagCompund.getShort("Fuse"));
+        this.setFuse(compound.getShort("Fuse"));
     }
 
     /**
@@ -137,7 +137,7 @@ public class EntityTNTPrimed extends Entity
 
     public void setFuse(int fuseIn)
     {
-        this.dataWatcher.set(FUSE, Integer.valueOf(fuseIn));
+        this.dataManager.set(FUSE, Integer.valueOf(fuseIn));
         this.fuse = fuseIn;
     }
 
@@ -154,7 +154,7 @@ public class EntityTNTPrimed extends Entity
      */
     public int getFuseDataManager()
     {
-        return ((Integer)this.dataWatcher.get(FUSE)).intValue();
+        return ((Integer)this.dataManager.get(FUSE)).intValue();
     }
 
     public int getFuse()

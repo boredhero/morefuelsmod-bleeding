@@ -29,14 +29,14 @@ public class CPacketClickWindow implements Packet<INetHandlerPlayServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketClickWindow(int p_i46882_1_, int p_i46882_2_, int p_i46882_3_, ClickType p_i46882_4_, ItemStack p_i46882_5_, short p_i46882_6_)
+    public CPacketClickWindow(int windowIdIn, int slotIdIn, int usedButtonIn, ClickType modeIn, ItemStack clickedItemIn, short actionNumberIn)
     {
-        this.windowId = p_i46882_1_;
-        this.slotId = p_i46882_2_;
-        this.usedButton = p_i46882_3_;
-        this.clickedItem = p_i46882_5_ != null ? p_i46882_5_.copy() : null;
-        this.actionNumber = p_i46882_6_;
-        this.mode = p_i46882_4_;
+        this.windowId = windowIdIn;
+        this.slotId = slotIdIn;
+        this.usedButton = usedButtonIn;
+        this.clickedItem = clickedItemIn != null ? clickedItemIn.copy() : null;
+        this.actionNumber = actionNumberIn;
+        this.mode = modeIn;
     }
 
     /**

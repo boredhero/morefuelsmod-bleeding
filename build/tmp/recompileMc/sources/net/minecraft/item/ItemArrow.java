@@ -10,13 +10,19 @@ public class ItemArrow extends Item
 {
     public ItemArrow()
     {
-        this.setCreativeTab(CreativeTabs.tabCombat);
+        this.setCreativeTab(CreativeTabs.COMBAT);
     }
 
-    public EntityArrow makeTippedArrow(World worldIn, ItemStack p_185052_2_, EntityLivingBase shooter)
+    public EntityArrow createArrow(World worldIn, ItemStack stack, EntityLivingBase shooter)
     {
         EntityTippedArrow entitytippedarrow = new EntityTippedArrow(worldIn, shooter);
-        entitytippedarrow.setPotionEffect(p_185052_2_);
+        entitytippedarrow.setPotionEffect(stack);
         return entitytippedarrow;
+    }
+
+    public boolean isInfinite(ItemStack stack, ItemStack bow, net.minecraft.entity.player.EntityPlayer player)
+    {
+        int enchant = net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.INFINITY, bow);
+        return enchant <= 0 ? false : this.getClass() == ItemArrow.class;
     }
 }

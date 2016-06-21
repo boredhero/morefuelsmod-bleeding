@@ -18,10 +18,10 @@ public class CPacketCreativeInventoryAction implements Packet<INetHandlerPlaySer
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketCreativeInventoryAction(int p_i46862_1_, ItemStack p_i46862_2_)
+    public CPacketCreativeInventoryAction(int slotIdIn, ItemStack stackIn)
     {
-        this.slotId = p_i46862_1_;
-        this.stack = p_i46862_2_ != null ? p_i46862_2_.copy() : null;
+        this.slotId = slotIdIn;
+        this.stack = stackIn != null ? stackIn.copy() : null;
     }
 
     /**

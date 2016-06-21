@@ -7,14 +7,14 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class SPacketMultiBlockChange implements Packet<INetHandlerPlayClient>
 {
-    private ChunkCoordIntPair chunkPosCoord;
+    private ChunkPos chunkPos;
     private SPacketMultiBlockChange.BlockUpdateData[] changedBlocks;
 
     public SPacketMultiBlockChange()
@@ -23,7 +23,7 @@ public class SPacketMultiBlockChange implements Packet<INetHandlerPlayClient>
 
     public SPacketMultiBlockChange(int p_i46959_1_, short[] p_i46959_2_, Chunk p_i46959_3_)
     {
-        this.chunkPosCoord = new ChunkCoordIntPair(p_i46959_3_.xPosition, p_i46959_3_.zPosition);
+        this.chunkPos = new ChunkPos(p_i46959_3_.xPosition, p_i46959_3_.zPosition);
         this.changedBlocks = new SPacketMultiBlockChange.BlockUpdateData[p_i46959_1_];
 
         for (int i = 0; i < this.changedBlocks.length; ++i)
@@ -37,7 +37,7 @@ public class SPacketMultiBlockChange implements Packet<INetHandlerPlayClient>
      */
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.chunkPosCoord = new ChunkCoordIntPair(buf.readInt(), buf.readInt());
+        this.chunkPos = new ChunkPos(buf.readInt(), buf.readInt());
         this.changedBlocks = new SPacketMultiBlockChange.BlockUpdateData[buf.readVarIntFromBuffer()];
 
         for (int i = 0; i < this.changedBlocks.length; ++i)
@@ -51,13 +51,13 @@ public class SPacketMultiBlockChange implements Packet<INetHandlerPlayClient>
      */
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeInt(this.chunkPosCoord.chunkXPos);
-        buf.writeInt(this.chunkPosCoord.chunkZPos);
+        buf.writeInt(this.chunkPos.chunkXPos);
+        buf.writeInt(this.chunkPos.chunkZPos);
         buf.writeVarIntToBuffer(this.changedBlocks.length);
 
         for (SPacketMultiBlockChange.BlockUpdateData spacketmultiblockchange$blockupdatedata : this.changedBlocks)
         {
-            buf.writeShort(spacketmultiblockchange$blockupdatedata.func_180089_b());
+            buf.writeShort(spacketmultiblockchange$blockupdatedata.getOffset());
             buf.writeVarIntToBuffer(Block.BLOCK_STATE_IDS.get(spacketmultiblockchange$blockupdatedata.getBlockState()));
         }
     }
@@ -79,29 +79,29 @@ public class SPacketMultiBlockChange implements Packet<INetHandlerPlayClient>
     public class BlockUpdateData
     {
         /** contains the bitshifted location of the block in the chunk */
-        private final short chunkPosCrammed;
+        private final short offset;
         private final IBlockState blockState;
 
         public BlockUpdateData(short p_i46544_2_, IBlockState p_i46544_3_)
         {
-            this.chunkPosCrammed = p_i46544_2_;
+            this.offset = p_i46544_2_;
             this.blockState = p_i46544_3_;
         }
 
         public BlockUpdateData(short p_i46545_2_, Chunk p_i46545_3_)
         {
-            this.chunkPosCrammed = p_i46545_2_;
+            this.offset = p_i46545_2_;
             this.blockState = p_i46545_3_.getBlockState(this.getPos());
         }
 
         public BlockPos getPos()
         {
-            return new BlockPos(SPacketMultiBlockChange.this.chunkPosCoord.getBlock(this.chunkPosCrammed >> 12 & 15, this.chunkPosCrammed & 255, this.chunkPosCrammed >> 8 & 15));
+            return new BlockPos(SPacketMultiBlockChange.this.chunkPos.getBlock(this.offset >> 12 & 15, this.offset & 255, this.offset >> 8 & 15));
         }
 
-        public short func_180089_b()
+        public short getOffset()
         {
-            return this.chunkPosCrammed;
+            return this.offset;
         }
 
         public IBlockState getBlockState()

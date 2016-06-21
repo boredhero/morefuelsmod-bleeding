@@ -1,15 +1,15 @@
 package net.minecraft.realms;
 
-import net.minecraft.world.storage.SaveFormatComparator;
+import net.minecraft.world.storage.WorldSummary;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class RealmsLevelSummary implements Comparable<RealmsLevelSummary>
 {
-    private SaveFormatComparator levelSummary;
+    private WorldSummary levelSummary;
 
-    public RealmsLevelSummary(SaveFormatComparator levelSummaryIn)
+    public RealmsLevelSummary(WorldSummary levelSummaryIn)
     {
         this.levelSummary = levelSummaryIn;
     }
@@ -49,7 +49,7 @@ public class RealmsLevelSummary implements Comparable<RealmsLevelSummary>
         return this.levelSummary.getLastTimePlayed();
     }
 
-    public int compareTo(SaveFormatComparator p_compareTo_1_)
+    public int compareTo(WorldSummary p_compareTo_1_)
     {
         return this.levelSummary.compareTo(p_compareTo_1_);
     }

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -42,7 +43,7 @@ public class PreYggdrasilConverter
     {
         String[] astring = (String[])Iterators.toArray(Iterators.filter(names.iterator(), new Predicate<String>()
         {
-            public boolean apply(String p_apply_1_)
+            public boolean apply(@Nullable String p_apply_1_)
             {
                 return !StringUtils.isNullOrEmpty(p_apply_1_);
             }
@@ -63,11 +64,11 @@ public class PreYggdrasilConverter
         }
     }
 
-    public static String func_187473_a(final MinecraftServer server, String p_187473_1_)
+    public static String convertMobOwnerIfNeeded(final MinecraftServer server, String username)
     {
-        if (!StringUtils.isNullOrEmpty(p_187473_1_) && p_187473_1_.length() <= 16)
+        if (!StringUtils.isNullOrEmpty(username) && username.length() <= 16)
         {
-            GameProfile gameprofile = server.getPlayerProfileCache().getGameProfileForUsername(p_187473_1_);
+            GameProfile gameprofile = server.getPlayerProfileCache().getGameProfileForUsername(username);
 
             if (gameprofile != null && gameprofile.getId() != null)
             {
@@ -88,17 +89,17 @@ public class PreYggdrasilConverter
                         PreYggdrasilConverter.LOGGER.warn((String)("Could not lookup user whitelist entry for " + p_onProfileLookupFailed_1_.getName()), (Throwable)p_onProfileLookupFailed_2_);
                     }
                 };
-                lookupNames(server, Lists.newArrayList(new String[] {p_187473_1_}), profilelookupcallback);
+                lookupNames(server, Lists.newArrayList(new String[] {username}), profilelookupcallback);
                 return !list.isEmpty() && ((GameProfile)list.get(0)).getId() != null ? ((GameProfile)list.get(0)).getId().toString() : "";
             }
             else
             {
-                return EntityPlayer.getUUID(new GameProfile((UUID)null, p_187473_1_)).toString();
+                return EntityPlayer.getUUID(new GameProfile((UUID)null, username)).toString();
             }
         }
         else
         {
-            return p_187473_1_;
+            return username;
         }
     }
 
@@ -412,7 +413,7 @@ public class PreYggdrasilConverter
                         }
                         else
                         {
-                            this.func_152743_a(file2, this.func_152744_a(p_onProfileLookupSucceeded_1_), uuid.toString());
+                            this.renamePlayerFile(file2, this.getFileNameForProfile(p_onProfileLookupSucceeded_1_), uuid.toString());
                         }
                     }
                     public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_, Exception p_onProfileLookupFailed_2_)
@@ -421,15 +422,15 @@ public class PreYggdrasilConverter
 
                         if (p_onProfileLookupFailed_2_ instanceof ProfileNotFoundException)
                         {
-                            String s2 = this.func_152744_a(p_onProfileLookupFailed_1_);
-                            this.func_152743_a(file3, s2, s2);
+                            String s2 = this.getFileNameForProfile(p_onProfileLookupFailed_1_);
+                            this.renamePlayerFile(file3, s2, s2);
                         }
                         else
                         {
                             throw new PreYggdrasilConverter.ConversionError("Could not request user " + p_onProfileLookupFailed_1_.getName() + " from backend systems", p_onProfileLookupFailed_2_);
                         }
                     }
-                    private void func_152743_a(File p_152743_1_, String p_152743_2_, String p_152743_3_)
+                    private void renamePlayerFile(File p_152743_1_, String p_152743_2_, String p_152743_3_)
                     {
                         File file5 = new File(file1, p_152743_2_ + ".dat");
                         File file6 = new File(p_152743_1_, p_152743_3_ + ".dat");
@@ -440,7 +441,7 @@ public class PreYggdrasilConverter
                             throw new PreYggdrasilConverter.ConversionError("Could not convert file for " + p_152743_2_);
                         }
                     }
-                    private String func_152744_a(GameProfile p_152744_1_)
+                    private String getFileNameForProfile(GameProfile p_152744_1_)
                     {
                         String s2 = null;
 
@@ -606,7 +607,7 @@ public class PreYggdrasilConverter
 
         try
         {
-            date = UserListEntryBan.dateFormat.parse(input);
+            date = UserListEntryBan.DATE_FORMAT.parse(input);
         }
         catch (ParseException var4)
         {

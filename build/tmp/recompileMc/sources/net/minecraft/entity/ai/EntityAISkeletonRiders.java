@@ -5,7 +5,7 @@ import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.passive.EntityHorse;
-import net.minecraft.entity.passive.HorseArmorType;
+import net.minecraft.entity.passive.HorseType;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -36,37 +36,37 @@ public class EntityAISkeletonRiders extends EntityAIBase
     {
         DifficultyInstance difficultyinstance = this.horse.worldObj.getDifficultyForLocation(new BlockPos(this.horse));
         this.horse.setSkeletonTrap(false);
-        this.horse.setType(HorseArmorType.SKELETON);
+        this.horse.setType(HorseType.SKELETON);
         this.horse.setHorseTamed(true);
         this.horse.setGrowingAge(0);
         this.horse.worldObj.addWeatherEffect(new EntityLightningBolt(this.horse.worldObj, this.horse.posX, this.horse.posY, this.horse.posZ, true));
-        EntitySkeleton entityskeleton = this.func_188514_a(difficultyinstance, this.horse);
+        EntitySkeleton entityskeleton = this.createSkeleton(difficultyinstance, this.horse);
         entityskeleton.startRiding(this.horse);
 
         for (int i = 0; i < 3; ++i)
         {
-            EntityHorse entityhorse = this.func_188515_a(difficultyinstance);
-            EntitySkeleton entityskeleton1 = this.func_188514_a(difficultyinstance, entityhorse);
+            EntityHorse entityhorse = this.createHorse(difficultyinstance);
+            EntitySkeleton entityskeleton1 = this.createSkeleton(difficultyinstance, entityhorse);
             entityskeleton1.startRiding(entityhorse);
             entityhorse.addVelocity(this.horse.getRNG().nextGaussian() * 0.5D, 0.0D, this.horse.getRNG().nextGaussian() * 0.5D);
         }
     }
 
-    private EntityHorse func_188515_a(DifficultyInstance p_188515_1_)
+    private EntityHorse createHorse(DifficultyInstance p_188515_1_)
     {
         EntityHorse entityhorse = new EntityHorse(this.horse.worldObj);
         entityhorse.onInitialSpawn(p_188515_1_, (IEntityLivingData)null);
         entityhorse.setPosition(this.horse.posX, this.horse.posY, this.horse.posZ);
         entityhorse.hurtResistantTime = 60;
         entityhorse.enablePersistence();
-        entityhorse.setType(HorseArmorType.SKELETON);
+        entityhorse.setType(HorseType.SKELETON);
         entityhorse.setHorseTamed(true);
         entityhorse.setGrowingAge(0);
         entityhorse.worldObj.spawnEntityInWorld(entityhorse);
         return entityhorse;
     }
 
-    private EntitySkeleton func_188514_a(DifficultyInstance p_188514_1_, EntityHorse p_188514_2_)
+    private EntitySkeleton createSkeleton(DifficultyInstance p_188514_1_, EntityHorse p_188514_2_)
     {
         EntitySkeleton entityskeleton = new EntitySkeleton(p_188514_2_.worldObj);
         entityskeleton.onInitialSpawn(p_188514_1_, (IEntityLivingData)null);
@@ -76,7 +76,7 @@ public class EntityAISkeletonRiders extends EntityAIBase
 
         if (entityskeleton.getItemStackFromSlot(EntityEquipmentSlot.HEAD) == null)
         {
-            entityskeleton.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(Items.iron_helmet));
+            entityskeleton.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
         }
 
         EnchantmentHelper.addRandomEnchantment(entityskeleton.getRNG(), entityskeleton.getHeldItemMainhand(), (int)(5.0F + p_188514_1_.getClampedAdditionalDifficulty() * (float)entityskeleton.getRNG().nextInt(18)), false);

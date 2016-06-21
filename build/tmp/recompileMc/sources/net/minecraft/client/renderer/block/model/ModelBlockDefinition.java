@@ -1,5 +1,6 @@
 package net.minecraft.client.renderer.block.model;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.client.renderer.block.model.multipart.Multipart;
 import net.minecraft.client.renderer.block.model.multipart.Selector;
 import net.minecraft.util.JsonUtils;
@@ -25,6 +27,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelBlockDefinition
 {
+    @VisibleForTesting
     static final Gson GSON = (new GsonBuilder()).registerTypeAdapter(ModelBlockDefinition.class, new ModelBlockDefinition.Deserializer()).registerTypeAdapter(Variant.class, new Variant.Deserializer()).registerTypeAdapter(VariantList.class, new VariantList.Deserializer()).registerTypeAdapter(Multipart.class, new Multipart.Deserializer()).registerTypeAdapter(Selector.class, new Selector.Deserializer()).create();
     private final Map<String, VariantList> mapVariants = Maps.<String, VariantList>newHashMap();
     private Multipart multipart;
@@ -165,6 +168,7 @@ public class ModelBlockDefinition
                 return map;
             }
 
+            @Nullable
             protected Multipart parseMultipart(JsonDeserializationContext deserializationContext, JsonObject object)
             {
                 if (!object.has("multipart"))

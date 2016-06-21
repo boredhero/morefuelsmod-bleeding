@@ -38,16 +38,16 @@ public class ItemAppleGold extends ItemFood
         {
             if (stack.getMetadata() > 0)
             {
-                player.addStat(AchievementList.overpowered);
-                player.addPotionEffect(new PotionEffect(MobEffects.regeneration, 400, 1));
-                player.addPotionEffect(new PotionEffect(MobEffects.resistance, 6000, 0));
-                player.addPotionEffect(new PotionEffect(MobEffects.fireResistance, 6000, 0));
-                player.addPotionEffect(new PotionEffect(MobEffects.absorption, 2400, 3));
+                player.addStat(AchievementList.OVERPOWERED);
+                player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 400, 1));
+                player.addPotionEffect(new PotionEffect(MobEffects.RESISTANCE, 6000, 0));
+                player.addPotionEffect(new PotionEffect(MobEffects.FIRE_RESISTANCE, 6000, 0));
+                player.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION, 2400, 3));
             }
             else
             {
-                player.addPotionEffect(new PotionEffect(MobEffects.regeneration, 100, 1));
-                player.addPotionEffect(new PotionEffect(MobEffects.absorption, 2400, 0));
+                player.addPotionEffect(new PotionEffect(MobEffects.REGENERATION, 100, 1));
+                player.addPotionEffect(new PotionEffect(MobEffects.ABSORPTION, 2400, 0));
             }
         }
     }

@@ -16,7 +16,7 @@ public class ItemCarrotOnAStick extends Item
 {
     public ItemCarrotOnAStick()
     {
-        this.setCreativeTab(CreativeTabs.tabTransport);
+        this.setCreativeTab(CreativeTabs.TRANSPORTATION);
         this.setMaxStackSize(1);
         this.setMaxDamage(25);
     }
@@ -46,13 +46,13 @@ public class ItemCarrotOnAStick extends Item
         {
             EntityPig entitypig = (EntityPig)playerIn.getRidingEntity();
 
-            if (itemStackIn.getMaxDamage() - itemStackIn.getMetadata() >= 7 && entitypig.func_184762_da())
+            if (itemStackIn.getMaxDamage() - itemStackIn.getMetadata() >= 7 && entitypig.boost())
             {
                 itemStackIn.damageItem(7, playerIn);
 
                 if (itemStackIn.stackSize == 0)
                 {
-                    ItemStack itemstack = new ItemStack(Items.fishing_rod);
+                    ItemStack itemstack = new ItemStack(Items.FISHING_ROD);
                     itemstack.setTagCompound(itemStackIn.getTagCompound());
                     return new ActionResult(EnumActionResult.SUCCESS, itemstack);
                 }
@@ -61,7 +61,7 @@ public class ItemCarrotOnAStick extends Item
             }
         }
 
-        playerIn.addStat(StatList.func_188057_b(this));
+        playerIn.addStat(StatList.getObjectUseStats(this));
         return new ActionResult(EnumActionResult.PASS, itemStackIn);
     }
 }

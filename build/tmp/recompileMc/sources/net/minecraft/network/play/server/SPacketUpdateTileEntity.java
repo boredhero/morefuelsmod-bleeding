@@ -20,10 +20,10 @@ public class SPacketUpdateTileEntity implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketUpdateTileEntity(BlockPos p_i46967_1_, int p_i46967_2_, NBTTagCompound compoundIn)
+    public SPacketUpdateTileEntity(BlockPos blockPosIn, int metadataIn, NBTTagCompound compoundIn)
     {
-        this.blockPos = p_i46967_1_;
-        this.metadata = p_i46967_2_;
+        this.blockPos = blockPosIn;
+        this.metadata = metadataIn;
         this.nbt = compoundIn;
     }
 

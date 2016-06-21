@@ -5,7 +5,7 @@ import net.minecraft.init.SoundEvents;
 
 public class PhaseSittingAttacking extends PhaseSittingBase
 {
-    private int field_188662_b;
+    private int attackingTicks;
 
     public PhaseSittingAttacking(EntityDragon dragonIn)
     {
@@ -18,7 +18,7 @@ public class PhaseSittingAttacking extends PhaseSittingBase
      */
     public void doClientRenderEffects()
     {
-        this.dragon.worldObj.playSound(this.dragon.posX, this.dragon.posY, this.dragon.posZ, SoundEvents.entity_enderdragon_growl, this.dragon.getSoundCategory(), 2.5F, 0.8F + this.dragon.getRNG().nextFloat() * 0.3F, false);
+        this.dragon.worldObj.playSound(this.dragon.posX, this.dragon.posY, this.dragon.posZ, SoundEvents.ENTITY_ENDERDRAGON_GROWL, this.dragon.getSoundCategory(), 2.5F, 0.8F + this.dragon.getRNG().nextFloat() * 0.3F, false);
     }
 
     /**
@@ -27,7 +27,7 @@ public class PhaseSittingAttacking extends PhaseSittingBase
      */
     public void doLocalUpdate()
     {
-        if (this.field_188662_b++ >= 40)
+        if (this.attackingTicks++ >= 40)
         {
             this.dragon.getPhaseManager().setPhase(PhaseList.SITTING_FLAMING);
         }
@@ -38,7 +38,7 @@ public class PhaseSittingAttacking extends PhaseSittingBase
      */
     public void initPhase()
     {
-        this.field_188662_b = 0;
+        this.attackingTicks = 0;
     }
 
     public PhaseList<PhaseSittingAttacking> getPhaseList()

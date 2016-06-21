@@ -1,9 +1,10 @@
 package net.minecraft.entity.boss.dragon.phase;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
@@ -13,9 +14,9 @@ import net.minecraft.world.gen.feature.WorldGenEndPodium;
 
 public class PhaseHoldingPattern extends PhaseBase
 {
-    private PathEntity field_188677_b;
-    private Vec3d field_188678_c;
-    private boolean field_188679_d;
+    private Path currentPath;
+    private Vec3d targetLocation;
+    private boolean clockwise;
 
     public PhaseHoldingPattern(EntityDragon dragonIn)
     {
@@ -33,11 +34,11 @@ public class PhaseHoldingPattern extends PhaseBase
      */
     public void doLocalUpdate()
     {
-        double d0 = this.field_188678_c == null ? 0.0D : this.field_188678_c.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
+        double d0 = this.targetLocation == null ? 0.0D : this.targetLocation.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
 
         if (d0 < 100.0D || d0 > 22500.0D || this.dragon.isCollidedHorizontally || this.dragon.isCollidedVertically)
         {
-            this.func_188675_j();
+            this.findNewTarget();
         }
     }
 
@@ -46,23 +47,24 @@ public class PhaseHoldingPattern extends PhaseBase
      */
     public void initPhase()
     {
-        this.field_188677_b = null;
-        this.field_188678_c = null;
+        this.currentPath = null;
+        this.targetLocation = null;
     }
 
     /**
      * Returns the location the dragon is flying toward
      */
+    @Nullable
     public Vec3d getTargetLocation()
     {
-        return this.field_188678_c;
+        return this.targetLocation;
     }
 
-    private void func_188675_j()
+    private void findNewTarget()
     {
-        if (this.field_188677_b != null && this.field_188677_b.isFinished())
+        if (this.currentPath != null && this.currentPath.isFinished())
         {
-            BlockPos blockpos = this.dragon.worldObj.getTopSolidOrLiquidBlock(new BlockPos(WorldGenEndPodium.field_186139_a));
+            BlockPos blockpos = this.dragon.worldObj.getTopSolidOrLiquidBlock(new BlockPos(WorldGenEndPodium.END_PODIUM_LOCATION));
             int i = this.dragon.getFightManager() == null ? 0 : this.dragon.getFightManager().getNumAliveCrystals();
 
             if (this.dragon.getRNG().nextInt(i + 3) == 0)
@@ -72,7 +74,7 @@ public class PhaseHoldingPattern extends PhaseBase
             }
 
             double d0 = 64.0D;
-            EntityPlayer entityplayer = this.dragon.worldObj.func_184139_a(blockpos, d0, d0);
+            EntityPlayer entityplayer = this.dragon.worldObj.getNearestAttackablePlayer(blockpos, d0, d0);
 
             if (entityplayer != null)
             {
@@ -81,23 +83,23 @@ public class PhaseHoldingPattern extends PhaseBase
 
             if (entityplayer != null && (this.dragon.getRNG().nextInt(MathHelper.abs_int((int)d0) + 2) == 0 || this.dragon.getRNG().nextInt(i + 2) == 0))
             {
-                this.func_188674_a(entityplayer);
+                this.strafePlayer(entityplayer);
                 return;
             }
         }
 
-        if (this.field_188677_b == null || this.field_188677_b.isFinished())
+        if (this.currentPath == null || this.currentPath.isFinished())
         {
             int j = this.dragon.initPathPoints();
             int k = j;
 
             if (this.dragon.getRNG().nextInt(8) == 0)
             {
-                this.field_188679_d = !this.field_188679_d;
+                this.clockwise = !this.clockwise;
                 k = j + 6;
             }
 
-            if (this.field_188679_d)
+            if (this.clockwise)
             {
                 ++k;
             }
@@ -122,29 +124,29 @@ public class PhaseHoldingPattern extends PhaseBase
                 k = k + 12;
             }
 
-            this.field_188677_b = this.dragon.findPath(j, k, (PathPoint)null);
+            this.currentPath = this.dragon.findPath(j, k, (PathPoint)null);
 
-            if (this.field_188677_b != null)
+            if (this.currentPath != null)
             {
-                this.field_188677_b.incrementPathIndex();
+                this.currentPath.incrementPathIndex();
             }
         }
 
-        this.func_188676_k();
+        this.navigateToNextPathNode();
     }
 
-    private void func_188674_a(EntityPlayer p_188674_1_)
+    private void strafePlayer(EntityPlayer player)
     {
         this.dragon.getPhaseManager().setPhase(PhaseList.STRAFE_PLAYER);
-        ((PhaseStrafePlayer)this.dragon.getPhaseManager().getPhase(PhaseList.STRAFE_PLAYER)).func_188686_a(p_188674_1_);
+        ((PhaseStrafePlayer)this.dragon.getPhaseManager().getPhase(PhaseList.STRAFE_PLAYER)).setTarget(player);
     }
 
-    private void func_188676_k()
+    private void navigateToNextPathNode()
     {
-        if (this.field_188677_b != null && !this.field_188677_b.isFinished())
+        if (this.currentPath != null && !this.currentPath.isFinished())
         {
-            Vec3d vec3d = this.field_188677_b.func_186310_f();
-            this.field_188677_b.incrementPathIndex();
+            Vec3d vec3d = this.currentPath.getCurrentPos();
+            this.currentPath.incrementPathIndex();
             double d0 = vec3d.xCoord;
             double d1 = vec3d.zCoord;
             double d2;
@@ -159,15 +161,15 @@ public class PhaseHoldingPattern extends PhaseBase
                 }
             }
 
-            this.field_188678_c = new Vec3d(d0, d2, d1);
+            this.targetLocation = new Vec3d(d0, d2, d1);
         }
     }
 
-    public void onCrystalDestroyed(EntityEnderCrystal crystal, BlockPos pos, DamageSource dmgSrc, EntityPlayer plyr)
+    public void onCrystalDestroyed(EntityEnderCrystal crystal, BlockPos pos, DamageSource dmgSrc, @Nullable EntityPlayer plyr)
     {
         if (plyr != null)
         {
-            this.func_188674_a(plyr);
+            this.strafePlayer(plyr);
         }
     }
 }

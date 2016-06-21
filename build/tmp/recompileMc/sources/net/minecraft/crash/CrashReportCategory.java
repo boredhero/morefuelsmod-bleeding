@@ -2,7 +2,6 @@ package net.minecraft.crash;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.concurrent.Callable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
@@ -90,18 +89,15 @@ public class CrashReportCategory
         return stringbuilder.toString();
     }
 
-    /**
-     * Adds a Crashreport section with the given name with the value set to the result of the given Callable;
-     */
-    public void addCrashSectionCallable(String sectionName, Callable<String> callable)
+    public void setDetail(String nameIn, ICrashReportDetail<String> detail)
     {
         try
         {
-            this.addCrashSection(sectionName, callable.call());
+            this.addCrashSection(nameIn, detail.call());
         }
         catch (Throwable throwable)
         {
-            this.addCrashSectionThrowable(sectionName, throwable);
+            this.addCrashSectionThrowable(nameIn, throwable);
         }
     }
 
@@ -223,7 +219,7 @@ public class CrashReportCategory
     public static void addBlockInfo(CrashReportCategory category, final BlockPos pos, final Block blockIn, final int blockData)
     {
         final int i = Block.getIdFromBlock(blockIn);
-        category.addCrashSectionCallable("Block type", new Callable<String>()
+        category.setDetail("Block type", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -237,7 +233,7 @@ public class CrashReportCategory
                 }
             }
         });
-        category.addCrashSectionCallable("Block data value", new Callable<String>()
+        category.setDetail("Block data value", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -252,7 +248,7 @@ public class CrashReportCategory
                 }
             }
         });
-        category.addCrashSectionCallable("Block location", new Callable<String>()
+        category.setDetail("Block location", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -263,14 +259,14 @@ public class CrashReportCategory
 
     public static void addBlockInfo(CrashReportCategory category, final BlockPos pos, final IBlockState state)
     {
-        category.addCrashSectionCallable("Block", new Callable<String>()
+        category.setDetail("Block", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
                 return state.toString();
             }
         });
-        category.addCrashSectionCallable("Block location", new Callable<String>()
+        category.setDetail("Block location", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {

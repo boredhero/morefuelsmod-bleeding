@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderEnderman extends RenderLiving<EntityEnderman>
 {
-    private static final ResourceLocation endermanTextures = new ResourceLocation("textures/entity/enderman/enderman.png");
+    private static final ResourceLocation ENDERMAN_TEXTURES = new ResourceLocation("textures/entity/enderman/enderman.png");
     /** The model of the enderman */
     private ModelEnderman endermanModel;
     private Random rnd = new Random();
@@ -50,6 +50,6 @@ public class RenderEnderman extends RenderLiving<EntityEnderman>
      */
     protected ResourceLocation getEntityTexture(EntityEnderman entity)
     {
-        return endermanTextures;
+        return ENDERMAN_TEXTURES;
     }
 }

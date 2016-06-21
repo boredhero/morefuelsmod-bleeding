@@ -16,7 +16,7 @@ public class MovingSoundMinecartRiding extends MovingSound
 
     public MovingSoundMinecartRiding(EntityPlayer playerRiding, EntityMinecart minecart)
     {
-        super(SoundEvents.entity_minecart_inside, SoundCategory.NEUTRAL);
+        super(SoundEvents.ENTITY_MINECART_INSIDE, SoundCategory.NEUTRAL);
         this.player = playerRiding;
         this.minecart = minecart;
         this.attenuationType = ISound.AttenuationType.NONE;

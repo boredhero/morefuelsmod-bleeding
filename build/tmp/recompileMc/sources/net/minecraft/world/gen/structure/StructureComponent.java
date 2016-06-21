@@ -2,6 +2,7 @@ package net.minecraft.world.gen.structure;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
@@ -15,7 +16,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -23,9 +23,10 @@ public abstract class StructureComponent
 {
     protected StructureBoundingBox boundingBox;
     /** switches the Coordinate System base off the Bounding Box */
+    @Nullable
     private EnumFacing coordBaseMode;
-    private Mirror field_186168_b;
-    private Rotation field_186169_c;
+    private Mirror mirror;
+    private Rotation rotation;
     /** The type ID of this component. */
     protected int componentType;
 
@@ -53,7 +54,7 @@ public abstract class StructureComponent
         NBTTagCompound nbttagcompound = new NBTTagCompound();
         nbttagcompound.setString("id", MapGenStructureIO.getStructureComponentName(this));
         nbttagcompound.setTag("BB", this.boundingBox.toNBTTagIntArray());
-        EnumFacing enumfacing = this.func_186165_e();
+        EnumFacing enumfacing = this.getCoordBaseMode();
         nbttagcompound.setInteger("O", enumfacing == null ? -1 : enumfacing.getHorizontalIndex());
         nbttagcompound.setInteger("GD", this.componentType);
         this.writeStructureToNBT(nbttagcompound);
@@ -78,7 +79,7 @@ public abstract class StructureComponent
         }
 
         int i = tagCompound.getInteger("O");
-        this.func_186164_a(i == -1 ? null : EnumFacing.getHorizontal(i));
+        this.setCoordBaseMode(i == -1 ? null : EnumFacing.getHorizontal(i));
         this.componentType = tagCompound.getInteger("GD");
         this.readStructureFromNBT(tagCompound);
     }
@@ -152,12 +153,12 @@ public abstract class StructureComponent
         {
             for (int l1 = k; l1 <= j1; ++l1)
             {
-                if (worldIn.getBlockState(blockpos$mutableblockpos.set(k1, j, l1)).getMaterial().isLiquid())
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, j, l1)).getMaterial().isLiquid())
                 {
                     return true;
                 }
 
-                if (worldIn.getBlockState(blockpos$mutableblockpos.set(k1, i1, l1)).getMaterial().isLiquid())
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(k1, i1, l1)).getMaterial().isLiquid())
                 {
                     return true;
                 }
@@ -168,12 +169,12 @@ public abstract class StructureComponent
         {
             for (int k2 = j; k2 <= i1; ++k2)
             {
-                if (worldIn.getBlockState(blockpos$mutableblockpos.set(i2, k2, k)).getMaterial().isLiquid())
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i2, k2, k)).getMaterial().isLiquid())
                 {
                     return true;
                 }
 
-                if (worldIn.getBlockState(blockpos$mutableblockpos.set(i2, k2, j1)).getMaterial().isLiquid())
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i2, k2, j1)).getMaterial().isLiquid())
                 {
                     return true;
                 }
@@ -184,12 +185,12 @@ public abstract class StructureComponent
         {
             for (int l2 = j; l2 <= i1; ++l2)
             {
-                if (worldIn.getBlockState(blockpos$mutableblockpos.set(i, l2, j2)).getMaterial().isLiquid())
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(i, l2, j2)).getMaterial().isLiquid())
                 {
                     return true;
                 }
 
-                if (worldIn.getBlockState(blockpos$mutableblockpos.set(l, l2, j2)).getMaterial().isLiquid())
+                if (worldIn.getBlockState(blockpos$mutableblockpos.setPos(l, l2, j2)).getMaterial().isLiquid())
                 {
                     return true;
                 }
@@ -201,7 +202,7 @@ public abstract class StructureComponent
 
     protected int getXWithOffset(int x, int z)
     {
-        EnumFacing enumfacing = this.func_186165_e();
+        EnumFacing enumfacing = this.getCoordBaseMode();
 
         if (enumfacing == null)
         {
@@ -226,12 +227,12 @@ public abstract class StructureComponent
 
     protected int getYWithOffset(int y)
     {
-        return this.func_186165_e() == null ? y : y + this.boundingBox.minY;
+        return this.getCoordBaseMode() == null ? y : y + this.boundingBox.minY;
     }
 
     protected int getZWithOffset(int x, int z)
     {
-        EnumFacing enumfacing = this.func_186165_e();
+        EnumFacing enumfacing = this.getCoordBaseMode();
 
         if (enumfacing == null)
         {
@@ -260,14 +261,14 @@ public abstract class StructureComponent
 
         if (boundingboxIn.isVecInside(blockpos))
         {
-            if (this.field_186168_b != Mirror.NONE)
+            if (this.mirror != Mirror.NONE)
             {
-                blockstateIn = blockstateIn.withMirror(this.field_186168_b);
+                blockstateIn = blockstateIn.withMirror(this.mirror);
             }
 
-            if (this.field_186169_c != Rotation.NONE)
+            if (this.rotation != Rotation.NONE)
             {
-                blockstateIn = blockstateIn.withRotation(this.field_186169_c);
+                blockstateIn = blockstateIn.withRotation(this.rotation);
             }
 
             worldIn.setBlockState(blockpos, blockstateIn, 2);
@@ -280,7 +281,7 @@ public abstract class StructureComponent
         int j = this.getYWithOffset(y);
         int k = this.getZWithOffset(x, z);
         BlockPos blockpos = new BlockPos(i, j, k);
-        return !boundingboxIn.isVecInside(blockpos) ? Blocks.air.getDefaultState() : worldIn.getBlockState(blockpos);
+        return !boundingboxIn.isVecInside(blockpos) ? Blocks.AIR.getDefaultState() : worldIn.getBlockState(blockpos);
     }
 
     /**
@@ -295,7 +296,7 @@ public abstract class StructureComponent
             {
                 for (int k = minZ; k <= maxZ; ++k)
                 {
-                    this.setBlockState(worldIn, Blocks.air.getDefaultState(), j, i, k, structurebb);
+                    this.setBlockState(worldIn, Blocks.AIR.getDefaultState(), j, i, k, structurebb);
                 }
             }
         }
@@ -312,7 +313,7 @@ public abstract class StructureComponent
             {
                 for (int k = zMin; k <= zMax; ++k)
                 {
-                    if (!existingOnly || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.air)
+                    if (!existingOnly || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
                     {
                         if (i != yMin && i != yMax && j != xMin && j != xMax && k != zMin && k != zMax)
                         {
@@ -340,7 +341,7 @@ public abstract class StructureComponent
             {
                 for (int k = minZ; k <= maxZ; ++k)
                 {
-                    if (!alwaysReplace || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.air)
+                    if (!alwaysReplace || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
                     {
                         blockselector.selectBlocks(rand, j, i, k, i == minY || i == maxY || j == minX || j == maxX || k == minZ || k == maxZ);
                         this.setBlockState(worldIn, blockselector.getBlockState(), j, i, k, boundingboxIn);
@@ -350,7 +351,10 @@ public abstract class StructureComponent
         }
     }
 
-    protected void func_175805_a(World worldIn, StructureBoundingBox boundingboxIn, Random rand, float chance, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstate1, IBlockState blockstate2, boolean p_175805_13_)
+    /**
+     * Randomly fill the given area with the blockstate2 and cover them with blockstate1
+     */
+    protected void fillWithBlocksRandomly(World worldIn, StructureBoundingBox boundingboxIn, Random rand, float chance, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstate1, IBlockState blockstate2, boolean excludeAir)
     {
         for (int i = minY; i <= maxY; ++i)
         {
@@ -358,7 +362,7 @@ public abstract class StructureComponent
             {
                 for (int k = minZ; k <= maxZ; ++k)
                 {
-                    if (rand.nextFloat() <= chance && (!p_175805_13_ || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.air))
+                    if (rand.nextFloat() <= chance && (!excludeAir || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR))
                     {
                         if (i != minY && i != maxY && j != minX && j != maxX && k != minZ && k != maxZ)
                         {
@@ -382,7 +386,7 @@ public abstract class StructureComponent
         }
     }
 
-    protected void randomlyRareFillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstateIn, boolean p_180777_10_)
+    protected void randomlyRareFillWithBlocks(World worldIn, StructureBoundingBox boundingboxIn, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstateIn, boolean excludeAir)
     {
         float f = (float)(maxX - minX + 1);
         float f1 = (float)(maxY - minY + 1);
@@ -402,7 +406,7 @@ public abstract class StructureComponent
                 {
                     float f7 = ((float)k - f4) / (f2 * 0.5F);
 
-                    if (!p_180777_10_ || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.air)
+                    if (!excludeAir || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR)
                     {
                         float f8 = f6 * f6 + f5 * f5 + f7 * f7;
 
@@ -427,7 +431,7 @@ public abstract class StructureComponent
         {
             while (!worldIn.isAirBlock(blockpos) && blockpos.getY() < 255)
             {
-                worldIn.setBlockState(blockpos, Blocks.air.getDefaultState(), 2);
+                worldIn.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 2);
                 blockpos = blockpos.up();
             }
         }
@@ -452,19 +456,22 @@ public abstract class StructureComponent
         }
     }
 
-    protected boolean func_186167_a(World p_186167_1_, StructureBoundingBox p_186167_2_, Random p_186167_3_, int p_186167_4_, int p_186167_5_, int p_186167_6_, ResourceLocation p_186167_7_)
+    /**
+     * Adds chest to the structure and sets its contents
+     */
+    protected boolean generateChest(World worldIn, StructureBoundingBox structurebb, Random randomIn, int x, int y, int z, ResourceLocation loot)
     {
-        BlockPos blockpos = new BlockPos(this.getXWithOffset(p_186167_4_, p_186167_6_), this.getYWithOffset(p_186167_5_), this.getZWithOffset(p_186167_4_, p_186167_6_));
+        BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
 
-        if (p_186167_2_.isVecInside(blockpos) && p_186167_1_.getBlockState(blockpos).getBlock() != Blocks.chest)
+        if (structurebb.isVecInside(blockpos) && worldIn.getBlockState(blockpos).getBlock() != Blocks.CHEST)
         {
-            IBlockState iblockstate = Blocks.chest.getDefaultState();
-            p_186167_1_.setBlockState(blockpos, Blocks.chest.correctFacing(p_186167_1_, blockpos, iblockstate), 2);
-            TileEntity tileentity = p_186167_1_.getTileEntity(blockpos);
+            IBlockState iblockstate = Blocks.CHEST.getDefaultState();
+            worldIn.setBlockState(blockpos, Blocks.CHEST.correctFacing(worldIn, blockpos, iblockstate), 2);
+            TileEntity tileentity = worldIn.getTileEntity(blockpos);
 
             if (tileentity instanceof TileEntityChest)
             {
-                ((TileEntityChest)tileentity).setLoot(p_186167_7_, p_186167_3_.nextLong());
+                ((TileEntityChest)tileentity).setLootTable(loot, randomIn.nextLong());
             }
 
             return true;
@@ -475,18 +482,18 @@ public abstract class StructureComponent
         }
     }
 
-    protected boolean func_186166_a(World p_186166_1_, StructureBoundingBox p_186166_2_, Random p_186166_3_, int p_186166_4_, int p_186166_5_, int p_186166_6_, EnumFacing p_186166_7_, List<WeightedRandomChestContent> p_186166_8_, int p_186166_9_)
+    protected boolean createDispenser(World p_189419_1_, StructureBoundingBox p_189419_2_, Random p_189419_3_, int p_189419_4_, int p_189419_5_, int p_189419_6_, EnumFacing p_189419_7_, ResourceLocation p_189419_8_)
     {
-        BlockPos blockpos = new BlockPos(this.getXWithOffset(p_186166_4_, p_186166_6_), this.getYWithOffset(p_186166_5_), this.getZWithOffset(p_186166_4_, p_186166_6_));
+        BlockPos blockpos = new BlockPos(this.getXWithOffset(p_189419_4_, p_189419_6_), this.getYWithOffset(p_189419_5_), this.getZWithOffset(p_189419_4_, p_189419_6_));
 
-        if (p_186166_2_.isVecInside(blockpos) && p_186166_1_.getBlockState(blockpos).getBlock() != Blocks.dispenser)
+        if (p_189419_2_.isVecInside(blockpos) && p_189419_1_.getBlockState(blockpos).getBlock() != Blocks.DISPENSER)
         {
-            this.setBlockState(p_186166_1_, Blocks.dispenser.getDefaultState().withProperty(BlockDispenser.FACING, p_186166_7_), p_186166_4_, p_186166_5_, p_186166_6_, p_186166_2_);
-            TileEntity tileentity = p_186166_1_.getTileEntity(blockpos);
+            this.setBlockState(p_189419_1_, Blocks.DISPENSER.getDefaultState().withProperty(BlockDispenser.FACING, p_189419_7_), p_189419_4_, p_189419_5_, p_189419_6_, p_189419_2_);
+            TileEntity tileentity = p_189419_1_.getTileEntity(blockpos);
 
             if (tileentity instanceof TileEntityDispenser)
             {
-                WeightedRandomChestContent.generateDispenserContents(p_186166_3_, p_186166_8_, (TileEntityDispenser)tileentity, p_186166_9_);
+                ((TileEntityDispenser)tileentity).setLootTable(p_189419_8_, p_189419_3_.nextLong());
             }
 
             return true;
@@ -502,55 +509,56 @@ public abstract class StructureComponent
      */
     protected void placeDoorCurrentPosition(World worldIn, StructureBoundingBox boundingBoxIn, Random rand, int x, int y, int z, EnumFacing facing)
     {
-        this.setBlockState(worldIn, Blocks.oak_door.getDefaultState().withProperty(BlockDoor.FACING, facing), x, y, z, boundingBoxIn);
-        this.setBlockState(worldIn, Blocks.oak_door.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), x, y + 1, z, boundingBoxIn);
+        this.setBlockState(worldIn, Blocks.OAK_DOOR.getDefaultState().withProperty(BlockDoor.FACING, facing), x, y, z, boundingBoxIn);
+        this.setBlockState(worldIn, Blocks.OAK_DOOR.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), x, y + 1, z, boundingBoxIn);
     }
 
-    public void func_181138_a(int p_181138_1_, int p_181138_2_, int p_181138_3_)
+    public void offset(int x, int y, int z)
     {
-        this.boundingBox.offset(p_181138_1_, p_181138_2_, p_181138_3_);
+        this.boundingBox.offset(x, y, z);
     }
 
-    public EnumFacing func_186165_e()
+    @Nullable
+    public EnumFacing getCoordBaseMode()
     {
         return this.coordBaseMode;
     }
 
-    public void func_186164_a(EnumFacing p_186164_1_)
+    public void setCoordBaseMode(@Nullable EnumFacing facing)
     {
-        this.coordBaseMode = p_186164_1_;
+        this.coordBaseMode = facing;
 
-        if (p_186164_1_ == null)
+        if (facing == null)
         {
-            this.field_186169_c = Rotation.NONE;
-            this.field_186168_b = Mirror.NONE;
+            this.rotation = Rotation.NONE;
+            this.mirror = Mirror.NONE;
         }
         else
         {
-            switch (p_186164_1_)
+            switch (facing)
             {
                 case SOUTH:
-                    this.field_186168_b = Mirror.LEFT_RIGHT;
-                    this.field_186169_c = Rotation.NONE;
+                    this.mirror = Mirror.LEFT_RIGHT;
+                    this.rotation = Rotation.NONE;
                     break;
                 case WEST:
-                    this.field_186168_b = Mirror.LEFT_RIGHT;
-                    this.field_186169_c = Rotation.CLOCKWISE_90;
+                    this.mirror = Mirror.LEFT_RIGHT;
+                    this.rotation = Rotation.CLOCKWISE_90;
                     break;
                 case EAST:
-                    this.field_186168_b = Mirror.NONE;
-                    this.field_186169_c = Rotation.CLOCKWISE_90;
+                    this.mirror = Mirror.NONE;
+                    this.rotation = Rotation.CLOCKWISE_90;
                     break;
                 default:
-                    this.field_186168_b = Mirror.NONE;
-                    this.field_186169_c = Rotation.NONE;
+                    this.mirror = Mirror.NONE;
+                    this.rotation = Rotation.NONE;
             }
         }
     }
 
     public abstract static class BlockSelector
         {
-            protected IBlockState blockstate = Blocks.air.getDefaultState();
+            protected IBlockState blockstate = Blocks.AIR.getDefaultState();
 
             /**
              * picks Block Ids and Metadata (Silverfish)

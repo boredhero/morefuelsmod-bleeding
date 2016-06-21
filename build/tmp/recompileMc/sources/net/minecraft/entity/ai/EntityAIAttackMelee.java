@@ -3,7 +3,7 @@ package net.minecraft.entity.ai;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -19,12 +19,12 @@ public class EntityAIAttackMelee extends EntityAIBase
     /** When true, the mob will continue chasing its target, even if it can't find a path to them right now. */
     boolean longMemory;
     /** The PathEntity of our entity. */
-    PathEntity entityPathEntity;
+    Path entityPathEntity;
     private int delayCounter;
     private double targetX;
     private double targetY;
     private double targetZ;
-    protected final int field_188493_g = 20;
+    protected final int attackInterval = 20;
     private int failedPathFindingPenalty = 0;
     private boolean canPenalize = false;
 
@@ -113,7 +113,7 @@ public class EntityAIAttackMelee extends EntityAIBase
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
         this.attacker.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
         double d0 = this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
-        double d1 = this.func_179512_a(entitylivingbase);
+        double d1 = this.getAttackReachSqr(entitylivingbase);
         --this.delayCounter;
 
         if ((this.longMemory || this.attacker.getEntitySenses().canSee(entitylivingbase)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || entitylivingbase.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F))
@@ -165,7 +165,7 @@ public class EntityAIAttackMelee extends EntityAIBase
         }
     }
 
-    protected double func_179512_a(EntityLivingBase attackTarget)
+    protected double getAttackReachSqr(EntityLivingBase attackTarget)
     {
         return (double)(this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width);
     }

@@ -26,7 +26,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public abstract class Render<T extends Entity>
 {
-    private static final ResourceLocation shadowTextures = new ResourceLocation("textures/misc/shadow.png");
+    private static final ResourceLocation SHADOW_TEXTURES = new ResourceLocation("textures/misc/shadow.png");
     protected final RenderManager renderManager;
     protected float shadowSize;
     /** Determines the darkness of the object's shadow. Higher value makes a darker shadow. */
@@ -66,10 +66,10 @@ public abstract class Render<T extends Entity>
         }
     }
 
-    protected int getTeamColor(T p_188298_1_)
+    protected int getTeamColor(T entityIn)
     {
         int i = 16777215;
-        ScorePlayerTeam scoreplayerteam = (ScorePlayerTeam)p_188298_1_.getTeam();
+        ScorePlayerTeam scoreplayerteam = (ScorePlayerTeam)entityIn.getTeam();
 
         if (scoreplayerteam != null)
         {
@@ -97,9 +97,9 @@ public abstract class Render<T extends Entity>
         return entity.getAlwaysRenderNameTagForRender() && entity.hasCustomName();
     }
 
-    protected void renderEntityName(T p_188296_1_, double p_188296_2_, double p_188296_4_, double p_188296_6_, String p_188296_8_, double p_188296_9_)
+    protected void renderEntityName(T entityIn, double x, double y, double z, String name, double p_188296_9_)
     {
-        this.renderLivingLabel(p_188296_1_, p_188296_8_, p_188296_2_, p_188296_4_, p_188296_6_, 64);
+        this.renderLivingLabel(entityIn, name, x, y, z, 64);
     }
 
     /**
@@ -128,7 +128,7 @@ public abstract class Render<T extends Entity>
     }
 
     /**
-     * Renders fire on top of the entity. Args: entity, x, y, z, partialTickTime
+     * Renders a layer of fire on top of an entity.
      */
     private void renderEntityOnFire(Entity entity, double x, double y, double z, float partialTicks)
     {
@@ -156,7 +156,7 @@ public abstract class Render<T extends Entity>
         while (f3 > 0.0F)
         {
             TextureAtlasSprite textureatlassprite2 = i % 2 == 0 ? textureatlassprite : textureatlassprite1;
-            this.bindTexture(TextureMap.locationBlocksTexture);
+            this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             float f6 = textureatlassprite2.getMinU();
             float f7 = textureatlassprite2.getMinV();
             float f8 = textureatlassprite2.getMaxU();
@@ -186,14 +186,13 @@ public abstract class Render<T extends Entity>
     }
 
     /**
-     * Renders the entity shadows at the position, shadow alpha and partialTickTime. Args: entity, x, y, z, shadowAlpha,
-     * partialTickTime
+     * Renders the entities shadow.
      */
     private void renderShadow(Entity entityIn, double x, double y, double z, float shadowAlpha, float partialTicks)
     {
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-        this.renderManager.renderEngine.bindTexture(shadowTextures);
+        this.renderManager.renderEngine.bindTexture(SHADOW_TEXTURES);
         World world = this.getWorldFromRenderManager();
         GlStateManager.depthMask(false);
         float f = this.shadowSize;
@@ -283,7 +282,7 @@ public abstract class Render<T extends Entity>
     }
 
     /**
-     * Renders a white box with the bounds of the AABB translated by the offset. Args: aabb, x, y, z
+     * Renders a white box with the bounds of the AABB trasnlated by an offset.
      */
     public static void renderOffsetAABB(AxisAlignedBB boundingBox, double x, double y, double z)
     {
@@ -360,7 +359,7 @@ public abstract class Render<T extends Entity>
      */
     protected void renderLivingLabel(T entityIn, String str, double x, double y, double z, int maxDistance)
     {
-        double d0 = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
+        double d0 = entityIn.getDistanceSqToEntity(this.renderManager.renderViewEntity);
 
         if (d0 <= (double)(maxDistance * maxDistance))
         {

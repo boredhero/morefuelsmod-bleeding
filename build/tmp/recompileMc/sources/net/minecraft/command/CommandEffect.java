@@ -2,6 +2,7 @@ package net.minecraft.command;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -37,10 +38,6 @@ public class CommandEffect extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -61,7 +58,7 @@ public class CommandEffect extends CommandBase
                 else
                 {
                     entitylivingbase.clearActivePotions();
-                    notifyOperators(sender, this, "commands.effect.success.removed.all", new Object[] {entitylivingbase.getName()});
+                    notifyCommandListener(sender, this, "commands.effect.success.removed.all", new Object[] {entitylivingbase.getName()});
                 }
             }
             else
@@ -121,12 +118,12 @@ public class CommandEffect extends CommandBase
                     {
                         PotionEffect potioneffect = new PotionEffect(potion, i, k, false, flag);
                         entitylivingbase.addPotionEffect(potioneffect);
-                        notifyOperators(sender, this, "commands.effect.success", new Object[] {new TextComponentTranslation(potioneffect.getEffectName(), new Object[0]), Integer.valueOf(Potion.getIdFromPotion(potion)), Integer.valueOf(k), entitylivingbase.getName(), Integer.valueOf(j)});
+                        notifyCommandListener(sender, this, "commands.effect.success", new Object[] {new TextComponentTranslation(potioneffect.getEffectName(), new Object[0]), Integer.valueOf(Potion.getIdFromPotion(potion)), Integer.valueOf(k), entitylivingbase.getName(), Integer.valueOf(j)});
                     }
                     else if (entitylivingbase.isPotionActive(potion))
                     {
                         entitylivingbase.removePotionEffect(potion);
-                        notifyOperators(sender, this, "commands.effect.success.removed", new Object[] {new TextComponentTranslation(potion.getName(), new Object[0]), entitylivingbase.getName()});
+                        notifyCommandListener(sender, this, "commands.effect.success.removed", new Object[] {new TextComponentTranslation(potion.getName(), new Object[0]), entitylivingbase.getName()});
                     }
                     else
                     {
@@ -137,9 +134,9 @@ public class CommandEffect extends CommandBase
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, Potion.potionRegistry.getKeys()) : (args.length == 5 ? getListOfStringsMatchingLastWord(args, new String[] {"true", "false"}): Collections.<String>emptyList()));
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, Potion.REGISTRY.getKeys()) : (args.length == 5 ? getListOfStringsMatchingLastWord(args, new String[] {"true", "false"}): Collections.<String>emptyList()));
     }
 
     /**

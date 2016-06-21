@@ -34,7 +34,7 @@ public class SPacketSoundEffect implements Packet<INetHandlerPlayClient>
         this.posY = (int)(yIn * 8.0D);
         this.posZ = (int)(zIn * 8.0D);
         this.soundVolume = volumeIn;
-        this.soundPitch = (int)(pitchIn * 63.5F);
+        this.soundPitch = (int)(pitchIn * 63.0F);
         pitchIn = MathHelper.clamp_float(pitchIn, 0.0F, 255.0F);
     }
 
@@ -43,7 +43,7 @@ public class SPacketSoundEffect implements Packet<INetHandlerPlayClient>
      */
     public void readPacketData(PacketBuffer buf) throws IOException
     {
-        this.sound = (SoundEvent)SoundEvent.soundEventRegistry.getObjectById(buf.readVarIntFromBuffer());
+        this.sound = (SoundEvent)SoundEvent.REGISTRY.getObjectById(buf.readVarIntFromBuffer());
         this.category = (SoundCategory)buf.readEnumValue(SoundCategory.class);
         this.posX = buf.readInt();
         this.posY = buf.readInt();
@@ -57,7 +57,7 @@ public class SPacketSoundEffect implements Packet<INetHandlerPlayClient>
      */
     public void writePacketData(PacketBuffer buf) throws IOException
     {
-        buf.writeVarIntToBuffer(SoundEvent.soundEventRegistry.getIDForObject(this.sound));
+        buf.writeVarIntToBuffer(SoundEvent.REGISTRY.getIDForObject(this.sound));
         buf.writeEnumValue(this.category);
         buf.writeInt(this.posX);
         buf.writeInt(this.posY);
@@ -113,6 +113,6 @@ public class SPacketSoundEffect implements Packet<INetHandlerPlayClient>
     @SideOnly(Side.CLIENT)
     public float getPitch()
     {
-        return (float)this.soundPitch / 63.5F;
+        return (float)this.soundPitch / 63.0F;
     }
 }

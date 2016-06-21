@@ -35,12 +35,12 @@ public class WorldGeneratorBonusChest extends WorldGenerator
 
                 if (worldIn.isAirBlock(blockpos) && worldIn.getBlockState(blockpos.down()).isSideSolid(worldIn, blockpos.down(), net.minecraft.util.EnumFacing.UP))
                 {
-                    worldIn.setBlockState(blockpos, Blocks.chest.getDefaultState(), 2);
+                    worldIn.setBlockState(blockpos, Blocks.CHEST.getDefaultState(), 2);
                     TileEntity tileentity = worldIn.getTileEntity(blockpos);
 
                     if (tileentity instanceof TileEntityChest)
                     {
-                        ((TileEntityChest)tileentity).setLoot(LootTableList.CHESTS_SPAWN_BONUS_CHEST, rand.nextLong());
+                        ((TileEntityChest)tileentity).setLootTable(LootTableList.CHESTS_SPAWN_BONUS_CHEST, rand.nextLong());
                     }
 
                     BlockPos blockpos1 = blockpos.east();
@@ -50,22 +50,22 @@ public class WorldGeneratorBonusChest extends WorldGenerator
 
                     if (worldIn.isAirBlock(blockpos2) && worldIn.getBlockState(blockpos2.down()).isSideSolid(worldIn, blockpos2.down(), net.minecraft.util.EnumFacing.UP))
                     {
-                        worldIn.setBlockState(blockpos2, Blocks.torch.getDefaultState(), 2);
+                        worldIn.setBlockState(blockpos2, Blocks.TORCH.getDefaultState(), 2);
                     }
 
                     if (worldIn.isAirBlock(blockpos1) && worldIn.getBlockState(blockpos1.down()).isSideSolid(worldIn, blockpos1.down(), net.minecraft.util.EnumFacing.UP))
                     {
-                        worldIn.setBlockState(blockpos1, Blocks.torch.getDefaultState(), 2);
+                        worldIn.setBlockState(blockpos1, Blocks.TORCH.getDefaultState(), 2);
                     }
 
                     if (worldIn.isAirBlock(blockpos3) && worldIn.getBlockState(blockpos3.down()).isSideSolid(worldIn, blockpos3.down(), net.minecraft.util.EnumFacing.UP))
                     {
-                        worldIn.setBlockState(blockpos3, Blocks.torch.getDefaultState(), 2);
+                        worldIn.setBlockState(blockpos3, Blocks.TORCH.getDefaultState(), 2);
                     }
 
                     if (worldIn.isAirBlock(blockpos4) && worldIn.getBlockState(blockpos4.down()).isSideSolid(worldIn, blockpos4.down(), net.minecraft.util.EnumFacing.UP))
                     {
-                        worldIn.setBlockState(blockpos4, Blocks.torch.getDefaultState(), 2);
+                        worldIn.setBlockState(blockpos4, Blocks.TORCH.getDefaultState(), 2);
                     }
 
                     return true;

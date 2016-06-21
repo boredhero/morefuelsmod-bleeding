@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -23,7 +24,7 @@ public class BlockDragonEgg extends Block
 
     public BlockDragonEgg()
     {
-        super(Material.dragonEgg, MapColor.blackColor);
+        super(Material.DRAGON_EGG, MapColor.BLACK);
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -37,9 +38,11 @@ public class BlockDragonEgg extends Block
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
     }
@@ -51,7 +54,7 @@ public class BlockDragonEgg extends Block
 
     private void checkFall(World worldIn, BlockPos pos)
     {
-        if (worldIn.isAirBlock(pos.down()) && BlockFalling.func_185759_i(worldIn.getBlockState(pos.down())) && pos.getY() >= 0)
+        if (worldIn.isAirBlock(pos.down()) && BlockFalling.canFallThrough(worldIn.getBlockState(pos.down())) && pos.getY() >= 0)
         {
             int i = 32;
 
@@ -64,7 +67,7 @@ public class BlockDragonEgg extends Block
                 worldIn.setBlockToAir(pos);
                 BlockPos blockpos;
 
-                for (blockpos = pos; worldIn.isAirBlock(blockpos) && BlockFalling.func_185759_i(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0; blockpos = blockpos.down())
+                for (blockpos = pos; worldIn.isAirBlock(blockpos) && BlockFalling.canFallThrough(worldIn.getBlockState(blockpos)) && blockpos.getY() > 0; blockpos = blockpos.down())
                 {
                     ;
                 }
@@ -77,7 +80,7 @@ public class BlockDragonEgg extends Block
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         this.teleport(worldIn, pos);
         return true;
@@ -98,7 +101,7 @@ public class BlockDragonEgg extends Block
             {
                 BlockPos blockpos = pos.add(worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16), worldIn.rand.nextInt(8) - worldIn.rand.nextInt(8), worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16));
 
-                if (worldIn.getBlockState(blockpos).getBlock().blockMaterial == Material.air)
+                if (worldIn.getBlockState(blockpos).getBlock().blockMaterial == Material.AIR)
                 {
                     if (worldIn.isRemote)
                     {

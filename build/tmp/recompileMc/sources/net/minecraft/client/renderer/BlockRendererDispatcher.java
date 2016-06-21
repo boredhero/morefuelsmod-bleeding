@@ -102,9 +102,9 @@ public class BlockRendererDispatcher implements IResourceManagerReloadListener
         return this.blockModelRenderer;
     }
 
-    public IBakedModel getModelForState(IBlockState p_184389_1_)
+    public IBakedModel getModelForState(IBlockState state)
     {
-        return this.blockModelShapes.getModelForState(p_184389_1_);
+        return this.blockModelShapes.getModelForState(state);
     }
 
     @SuppressWarnings("incomplete-switch")
@@ -127,15 +127,15 @@ public class BlockRendererDispatcher implements IResourceManagerReloadListener
         }
     }
 
-    public boolean isEntityBlockAnimated(Block p_184388_1_)
+    public boolean isEntityBlockAnimated(Block blockIn)
     {
-        if (p_184388_1_ == null)
+        if (blockIn == null)
         {
             return false;
         }
         else
         {
-            EnumBlockRenderType enumblockrendertype = p_184388_1_.getDefaultState().getRenderType();
+            EnumBlockRenderType enumblockrendertype = blockIn.getDefaultState().getRenderType();
             return enumblockrendertype == EnumBlockRenderType.MODEL ? false : enumblockrendertype == EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
         }
     }

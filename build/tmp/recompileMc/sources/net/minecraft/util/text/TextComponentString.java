@@ -13,7 +13,7 @@ public class TextComponentString extends TextComponentBase
      * Gets the text value of this ChatComponentText.  TODO: what are getUnformattedText and getUnformattedTextForChat
      * missing that made someone decide to create a third equivalent method that only ChatComponentText can implement?
      */
-    public String getChatComponentText_TextValue()
+    public String getText()
     {
         return this.text;
     }
@@ -22,7 +22,7 @@ public class TextComponentString extends TextComponentBase
      * Gets the text of this component, without any special formatting codes added, for chat.  TODO: why is this two
      * different methods?
      */
-    public String getUnformattedTextForChat()
+    public String getUnformattedComponentText()
     {
         return this.text;
     }
@@ -33,7 +33,7 @@ public class TextComponentString extends TextComponentBase
     public TextComponentString createCopy()
     {
         TextComponentString textcomponentstring = new TextComponentString(this.text);
-        textcomponentstring.setChatStyle(this.getChatStyle().createShallowCopy());
+        textcomponentstring.setStyle(this.getStyle().createShallowCopy());
 
         for (ITextComponent itextcomponent : this.getSiblings())
         {
@@ -56,12 +56,12 @@ public class TextComponentString extends TextComponentBase
         else
         {
             TextComponentString textcomponentstring = (TextComponentString)p_equals_1_;
-            return this.text.equals(textcomponentstring.getChatComponentText_TextValue()) && super.equals(p_equals_1_);
+            return this.text.equals(textcomponentstring.getText()) && super.equals(p_equals_1_);
         }
     }
 
     public String toString()
     {
-        return "TextComponent{text=\'" + this.text + '\'' + ", siblings=" + this.siblings + ", style=" + this.getChatStyle() + '}';
+        return "TextComponent{text=\'" + this.text + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
     }
 }

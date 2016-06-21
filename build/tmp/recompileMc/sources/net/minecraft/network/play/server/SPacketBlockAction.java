@@ -20,12 +20,12 @@ public class SPacketBlockAction implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketBlockAction(BlockPos p_i46966_1_, Block p_i46966_2_, int p_i46966_3_, int p_i46966_4_)
+    public SPacketBlockAction(BlockPos pos, Block blockIn, int instrumentIn, int pitchIn)
     {
-        this.blockPosition = p_i46966_1_;
-        this.instrument = p_i46966_3_;
-        this.pitch = p_i46966_4_;
-        this.block = p_i46966_2_;
+        this.blockPosition = pos;
+        this.instrument = instrumentIn;
+        this.pitch = pitchIn;
+        this.block = blockIn;
     }
 
     /**

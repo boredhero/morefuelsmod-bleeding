@@ -43,35 +43,35 @@ public class EntitySpectralArrow extends EntityArrow
 
     protected ItemStack getArrowStack()
     {
-        return new ItemStack(Items.spectral_arrow);
+        return new ItemStack(Items.SPECTRAL_ARROW);
     }
 
     protected void arrowHit(EntityLivingBase living)
     {
         super.arrowHit(living);
-        PotionEffect potioneffect = new PotionEffect(MobEffects.glowing, this.duration, 0);
+        PotionEffect potioneffect = new PotionEffect(MobEffects.GLOWING, this.duration, 0);
         living.addPotionEffect(potioneffect);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
+        super.readEntityFromNBT(compound);
 
-        if (tagCompund.hasKey("Duration"))
+        if (compound.hasKey("Duration"))
         {
-            this.duration = tagCompund.getInteger("Duration");
+            this.duration = compound.getInteger("Duration");
         }
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
-        tagCompound.setInteger("Duration", this.duration);
+        super.writeEntityToNBT(compound);
+        compound.setInteger("Duration", this.duration);
     }
 }

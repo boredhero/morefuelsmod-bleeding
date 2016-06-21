@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -18,14 +19,14 @@ public class BlockLilyPad extends BlockBush
 
     protected BlockLilyPad()
     {
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, Entity p_185477_6_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
     {
-        if (!(p_185477_6_ instanceof EntityBoat))
+        if (!(entityIn instanceof EntityBoat))
         {
-            addCollisionBoxToList(pos, p_185477_4_, p_185477_5_, LILY_PAD_AABB);
+            addCollisionBoxToList(pos, entityBox, collidingBoxes, LILY_PAD_AABB);
         }
     }
 
@@ -47,9 +48,12 @@ public class BlockLilyPad extends BlockBush
         return LILY_PAD_AABB;
     }
 
-    protected boolean func_185514_i(IBlockState state)
+    /**
+     * Return true if the block can sustain a Bush
+     */
+    protected boolean canSustainBush(IBlockState state)
     {
-        return state.getBlock() == Blocks.water || state.getMaterial() == Material.ice;
+        return state.getBlock() == Blocks.WATER || state.getMaterial() == Material.ICE;
     }
 
     public boolean canBlockStay(World worldIn, BlockPos pos, IBlockState state)
@@ -58,7 +62,7 @@ public class BlockLilyPad extends BlockBush
         {
             IBlockState iblockstate = worldIn.getBlockState(pos.down());
             Material material = iblockstate.getMaterial();
-            return material == Material.water && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 || material == Material.ice;
+            return material == Material.WATER && ((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() == 0 || material == Material.ICE;
         }
         else
         {

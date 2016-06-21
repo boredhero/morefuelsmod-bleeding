@@ -39,6 +39,9 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 import static net.minecraftforge.common.ForgeModContainer.VERSION_CHECK_CAT;
 
+import net.minecraftforge.fml.client.IModGuiFactory.RuntimeOptionCategoryElement;
+import net.minecraftforge.fml.client.IModGuiFactory.RuntimeOptionGuiHandler;
+
 /**
  * This is the base GuiConfig screen class that all the other Forge-specific config screens will be called from.
  * Since Forge has multiple config files I thought I would use that opportunity to show some of the ways

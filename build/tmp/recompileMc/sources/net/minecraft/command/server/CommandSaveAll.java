@@ -29,10 +29,6 @@ public class CommandSaveAll extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -78,10 +74,10 @@ public class CommandSaveAll extends CommandBase
         }
         catch (MinecraftException minecraftexception)
         {
-            notifyOperators(sender, this, "commands.save.failed", new Object[] {minecraftexception.getMessage()});
+            notifyCommandListener(sender, this, "commands.save.failed", new Object[] {minecraftexception.getMessage()});
             return;
         }
 
-        notifyOperators(sender, this, "commands.save.success", new Object[0]);
+        notifyCommandListener(sender, this, "commands.save.success", new Object[0]);
     }
 }

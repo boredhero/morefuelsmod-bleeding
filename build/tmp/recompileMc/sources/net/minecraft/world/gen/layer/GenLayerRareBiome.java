@@ -1,7 +1,7 @@
 package net.minecraft.world.gen.layer;
 
 import net.minecraft.init.Biomes;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 public class GenLayerRareBiome extends GenLayer
 {
@@ -29,9 +29,9 @@ public class GenLayerRareBiome extends GenLayer
 
                 if (this.nextInt(57) == 0)
                 {
-                    if (k == BiomeGenBase.getIdForBiome(Biomes.plains))
+                    if (k == Biome.getIdForBiome(Biomes.PLAINS))
                     {
-                        aint1[j + i * areaWidth] = BiomeGenBase.getIdForBiome(Biomes.mutated_plains);
+                        aint1[j + i * areaWidth] = Biome.getIdForBiome(Biomes.MUTATED_PLAINS);
                     }
                     else
                     {

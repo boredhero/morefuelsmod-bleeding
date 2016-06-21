@@ -34,17 +34,17 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.CLIENT)
 public class NetHandlerLoginClient implements INetHandlerLoginClient
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private final Minecraft mc;
     private final GuiScreen previousGuiScreen;
     private final NetworkManager networkManager;
     private GameProfile gameProfile;
 
-    public NetHandlerLoginClient(NetworkManager networkManagerIn, Minecraft mcIn, GuiScreen p_i45059_3_)
+    public NetHandlerLoginClient(NetworkManager networkManagerIn, Minecraft mcIn, GuiScreen previousScreenIn)
     {
         this.networkManager = networkManagerIn;
         this.mc = mcIn;
-        this.previousGuiScreen = p_i45059_3_;
+        this.previousGuiScreen = previousScreenIn;
     }
 
     public void handleEncryptionRequest(SPacketEncryptionRequest packetIn)
@@ -62,7 +62,7 @@ public class NetHandlerLoginClient implements INetHandlerLoginClient
             }
             catch (AuthenticationException var10)
             {
-                logger.warn("Couldn\'t connect to auth servers but will continue to join LAN");
+                LOGGER.warn("Couldn\'t connect to auth servers but will continue to join LAN");
             }
         }
         else

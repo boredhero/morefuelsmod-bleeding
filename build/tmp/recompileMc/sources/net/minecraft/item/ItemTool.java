@@ -24,17 +24,17 @@ public class ItemTool extends Item
     /** The material this tool is made from. */
     protected Item.ToolMaterial toolMaterial;
 
-    protected ItemTool(float p_i46745_1_, float p_i46745_2_, Item.ToolMaterial p_i46745_3_, Set<Block> p_i46745_4_)
+    protected ItemTool(float attackDamageIn, float attackSpeedIn, Item.ToolMaterial materialIn, Set<Block> effectiveBlocksIn)
     {
         this.efficiencyOnProperMaterial = 4.0F;
-        this.toolMaterial = p_i46745_3_;
-        this.effectiveBlocks = p_i46745_4_;
+        this.toolMaterial = materialIn;
+        this.effectiveBlocks = effectiveBlocksIn;
         this.maxStackSize = 1;
-        this.setMaxDamage(p_i46745_3_.getMaxUses());
-        this.efficiencyOnProperMaterial = p_i46745_3_.getEfficiencyOnProperMaterial();
-        this.damageVsEntity = p_i46745_1_ + p_i46745_3_.getDamageVsEntity();
-        this.attackSpeed = p_i46745_2_;
-        this.setCreativeTab(CreativeTabs.tabTools);
+        this.setMaxDamage(materialIn.getMaxUses());
+        this.efficiencyOnProperMaterial = materialIn.getEfficiencyOnProperMaterial();
+        this.damageVsEntity = attackDamageIn + materialIn.getDamageVsEntity();
+        this.attackSpeed = attackSpeedIn;
+        this.setCreativeTab(CreativeTabs.TOOLS);
         if (this instanceof ItemPickaxe)
         {
             toolClass = "pickaxe";
@@ -49,9 +49,9 @@ public class ItemTool extends Item
         }
     }
 
-    protected ItemTool(Item.ToolMaterial p_i46746_1_, Set<Block> p_i46746_2_)
+    protected ItemTool(Item.ToolMaterial materialIn, Set<Block> effectiveBlocksIn)
     {
-        this(0.0F, 0.0F, p_i46746_1_, p_i46746_2_);
+        this(0.0F, 0.0F, materialIn, effectiveBlocksIn);
     }
 
     public float getStrVsBlock(ItemStack stack, IBlockState state)
@@ -77,9 +77,9 @@ public class ItemTool extends Item
     /**
      * Called when a Block is destroyed using this Item. Return true to trigger the "Use Item" statistic.
      */
-    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState blockIn, BlockPos pos, EntityLivingBase entityLiving)
+    public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving)
     {
-        if ((double)blockIn.getBlockHardness(worldIn, pos) != 0.0D)
+        if ((double)state.getBlockHardness(worldIn, pos) != 0.0D)
         {
             stack.damageItem(1, entityLiving);
         }

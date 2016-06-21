@@ -12,7 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderCreeper extends RenderLiving<EntityCreeper>
 {
-    private static final ResourceLocation creeperTextures = new ResourceLocation("textures/entity/creeper/creeper.png");
+    private static final ResourceLocation CREEPER_TEXTURES = new ResourceLocation("textures/entity/creeper/creeper.png");
 
     public RenderCreeper(RenderManager renderManagerIn)
     {
@@ -21,8 +21,7 @@ public class RenderCreeper extends RenderLiving<EntityCreeper>
     }
 
     /**
-     * Allows the render to do any OpenGL state modifications necessary before the model is rendered. Args:
-     * entityLiving, partialTickTime
+     * Allows the render to do state modifications necessary before the model is rendered.
      */
     protected void preRenderCallback(EntityCreeper entitylivingbaseIn, float partialTickTime)
     {
@@ -37,7 +36,7 @@ public class RenderCreeper extends RenderLiving<EntityCreeper>
     }
 
     /**
-     * Returns an ARGB int color back. Args: entityLiving, lightBrightness, partialTickTime
+     * Gets an RGBA int color multiplier to apply.
      */
     protected int getColorMultiplier(EntityCreeper entitylivingbaseIn, float lightBrightness, float partialTickTime)
     {
@@ -60,6 +59,6 @@ public class RenderCreeper extends RenderLiving<EntityCreeper>
      */
     protected ResourceLocation getEntityTexture(EntityCreeper entity)
     {
-        return creeperTextures;
+        return CREEPER_TEXTURES;
     }
 }

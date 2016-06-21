@@ -24,7 +24,7 @@ public abstract class BlockContainer extends Block implements ITileEntityProvide
 
     protected boolean isInvalidNeighbor(World worldIn, BlockPos pos, EnumFacing facing)
     {
-        return worldIn.getBlockState(pos.offset(facing)).getMaterial() == Material.cactus;
+        return worldIn.getBlockState(pos.offset(facing)).getMaterial() == Material.CACTUS;
     }
 
     protected boolean hasInvalidNeighbor(World worldIn, BlockPos pos)
@@ -47,12 +47,18 @@ public abstract class BlockContainer extends Block implements ITileEntityProvide
     }
 
     /**
-     * Called on both Client and Server when World#addBlockEvent is called
+     * Called on both Client and Server when World#addBlockEvent is called. On the Server, this may perform additional
+     * changes to the world, like pistons replacing the block with an extended base. On the client, the update may
+     * involve replacing tile entities, playing sounds, or performing other visual actions to reflect the server side
+     * changes.
+     *  
+     * @param state The block state retrieved from the block position prior to this method being invoked
+     * @param pos The position of the block event. Can be used to retrieve tile entities.
      */
-    public boolean onBlockEventReceived(World worldIn, BlockPos pos, IBlockState state, int eventID, int eventParam)
+    public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param)
     {
-        super.onBlockEventReceived(worldIn, pos, state, eventID, eventParam);
+        super.eventReceived(state, worldIn, pos, id, param);
         TileEntity tileentity = worldIn.getTileEntity(pos);
-        return tileentity == null ? false : tileentity.receiveClientEvent(eventID, eventParam);
+        return tileentity == null ? false : tileentity.receiveClientEvent(id, param);
     }
 }

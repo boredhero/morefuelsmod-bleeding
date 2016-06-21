@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -30,7 +31,7 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
 
     protected BlockTallGrass()
     {
-        super(Material.vine);
+        super(Material.VINE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, BlockTallGrass.EnumType.DEAD_BUSH));
     }
 
@@ -55,6 +56,7 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
@@ -68,12 +70,12 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
         return 1 + random.nextInt(fortune * 2 + 1);
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
     {
-        if (false && !worldIn.isRemote && stack != null && stack.getItem() == Items.shears) // Forge: Noop Taken care of by IShearable
+        if (false && !worldIn.isRemote && stack != null && stack.getItem() == Items.SHEARS) // Forge: Noop Taken care of by IShearable
         {
-            player.addStat(StatList.func_188055_a(this));
-            spawnAsEntity(worldIn, pos, new ItemStack(Blocks.tallgrass, 1, ((BlockTallGrass.EnumType)state.getValue(TYPE)).getMeta()));
+            player.addStat(StatList.getBlockStats(this));
+            spawnAsEntity(worldIn, pos, new ItemStack(Blocks.TALLGRASS, 1, ((BlockTallGrass.EnumType)state.getValue(TYPE)).getMeta()));
         }
         else
         {
@@ -120,9 +122,9 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
             blockdoubleplant$enumplanttype = BlockDoublePlant.EnumPlantType.FERN;
         }
 
-        if (Blocks.double_plant.canPlaceBlockAt(worldIn, pos))
+        if (Blocks.DOUBLE_PLANT.canPlaceBlockAt(worldIn, pos))
         {
-            Blocks.double_plant.placeAt(worldIn, pos, blockdoubleplant$enumplanttype, 2);
+            Blocks.DOUBLE_PLANT.placeAt(worldIn, pos, blockdoubleplant$enumplanttype, 2);
         }
     }
 
@@ -211,7 +213,7 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
     public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune)
     {
         List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
-        ret.add(new ItemStack(Blocks.tallgrass, 1, ((BlockTallGrass.EnumType)world.getBlockState(pos).getValue(TYPE)).getMeta()));
+        ret.add(new ItemStack(Blocks.TALLGRASS, 1, ((BlockTallGrass.EnumType)world.getBlockState(pos).getValue(TYPE)).getMeta()));
         return ret;
     }
     @Override

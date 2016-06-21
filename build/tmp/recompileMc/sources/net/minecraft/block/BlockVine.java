@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -34,21 +35,22 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
     public static final PropertyBool SOUTH = PropertyBool.create("south");
     public static final PropertyBool WEST = PropertyBool.create("west");
     public static final PropertyBool[] ALL_FACES = new PropertyBool[] {UP, NORTH, SOUTH, WEST, EAST};
-    protected static final AxisAlignedBB field_185757_g = new AxisAlignedBB(0.0D, 0.9375D, 0.0D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB field_185753_B = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0625D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB field_185754_C = new AxisAlignedBB(0.9375D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
-    protected static final AxisAlignedBB field_185755_D = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.0625D);
-    protected static final AxisAlignedBB field_185756_E = new AxisAlignedBB(0.0D, 0.0D, 0.9375D, 1.0D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB UP_AABB = new AxisAlignedBB(0.0D, 0.9375D, 0.0D, 1.0D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB WEST_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 0.0625D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB EAST_AABB = new AxisAlignedBB(0.9375D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
+    protected static final AxisAlignedBB NORTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 0.0625D);
+    protected static final AxisAlignedBB SOUTH_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.9375D, 1.0D, 1.0D, 1.0D);
 
     public BlockVine()
     {
-        super(Material.vine);
+        super(Material.VINE);
         this.setDefaultState(this.blockState.getBaseState().withProperty(UP, Boolean.valueOf(false)).withProperty(NORTH, Boolean.valueOf(false)).withProperty(EAST, Boolean.valueOf(false)).withProperty(SOUTH, Boolean.valueOf(false)).withProperty(WEST, Boolean.valueOf(false)));
         this.setTickRandomly(true);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -61,31 +63,31 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
 
         if (((Boolean)state.getValue(UP)).booleanValue())
         {
-            axisalignedbb = field_185757_g;
+            axisalignedbb = UP_AABB;
             ++i;
         }
 
         if (((Boolean)state.getValue(NORTH)).booleanValue())
         {
-            axisalignedbb = field_185755_D;
+            axisalignedbb = NORTH_AABB;
             ++i;
         }
 
         if (((Boolean)state.getValue(EAST)).booleanValue())
         {
-            axisalignedbb = field_185754_C;
+            axisalignedbb = EAST_AABB;
             ++i;
         }
 
         if (((Boolean)state.getValue(SOUTH)).booleanValue())
         {
-            axisalignedbb = field_185756_E;
+            axisalignedbb = SOUTH_AABB;
             ++i;
         }
 
         if (((Boolean)state.getValue(WEST)).booleanValue())
         {
-            axisalignedbb = field_185753_B;
+            axisalignedbb = WEST_AABB;
             ++i;
         }
 
@@ -144,9 +146,9 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
     /**
      * Determines whether you can place a vine block on this kind of block.
      */
-    private boolean canAttachVineOn(IBlockState p_185752_1_)
+    private boolean canAttachVineOn(IBlockState state)
     {
-        return p_185752_1_.isFullCube() && p_185752_1_.getMaterial().blocksMovement();
+        return state.isFullCube() && state.getMaterial().blocksMovement();
     }
 
     private boolean recheckGrownSides(World worldIn, BlockPos pos, IBlockState state)
@@ -184,9 +186,11 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (!worldIn.isRemote && !this.recheckGrownSides(worldIn, pos, state))
         {
@@ -257,7 +261,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
                         IBlockState iblockstate3 = worldIn.getBlockState(blockpos4);
                         Block block1 = iblockstate3.getBlock();
 
-                        if (block1.blockMaterial == Material.air)
+                        if (block1.blockMaterial == Material.AIR)
                         {
                             EnumFacing enumfacing3 = enumfacing1.rotateY();
                             EnumFacing enumfacing4 = enumfacing1.rotateYCCW();
@@ -301,7 +305,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
                         IBlockState iblockstate = worldIn.getBlockState(blockpos3);
                         Block block = iblockstate.getBlock();
 
-                        if (block.blockMaterial == Material.air)
+                        if (block.blockMaterial == Material.AIR)
                         {
                             IBlockState iblockstate1 = state;
 
@@ -356,6 +360,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
@@ -369,12 +374,12 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
         return 0;
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te, ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
     {
-        if (false && !worldIn.isRemote && stack != null && stack.getItem() == Items.shears) // Forge: Noop, Covered by IShearable
+        if (false && !worldIn.isRemote && stack != null && stack.getItem() == Items.SHEARS) // Forge: Noop, Covered by IShearable
         {
-            player.addStat(StatList.func_188055_a(this));
-            spawnAsEntity(worldIn, pos, new ItemStack(Blocks.vine, 1, 0));
+            player.addStat(StatList.getBlockStats(this));
+            spawnAsEntity(worldIn, pos, new ItemStack(Blocks.VINE, 1, 0));
         }
         else
         {

@@ -19,13 +19,13 @@ public class NpcMerchant implements IMerchant
     private EntityPlayer customer;
     /** The MerchantRecipeList instance. */
     private MerchantRecipeList recipeList;
-    private ITextComponent field_175548_d;
+    private ITextComponent name;
 
-    public NpcMerchant(EntityPlayer p_i45817_1_, ITextComponent p_i45817_2_)
+    public NpcMerchant(EntityPlayer customerIn, ITextComponent nameIn)
     {
-        this.customer = p_i45817_1_;
-        this.field_175548_d = p_i45817_2_;
-        this.theMerchantInventory = new InventoryMerchant(p_i45817_1_, this);
+        this.customer = customerIn;
+        this.name = nameIn;
+        this.theMerchantInventory = new InventoryMerchant(customerIn, this);
     }
 
     public EntityPlayer getCustomer()
@@ -33,11 +33,11 @@ public class NpcMerchant implements IMerchant
         return this.customer;
     }
 
-    public void setCustomer(EntityPlayer p_70932_1_)
+    public void setCustomer(EntityPlayer player)
     {
     }
 
-    public MerchantRecipeList getRecipes(EntityPlayer p_70934_1_)
+    public MerchantRecipeList getRecipes(EntityPlayer player)
     {
         return this.recipeList;
     }
@@ -65,6 +65,6 @@ public class NpcMerchant implements IMerchant
      */
     public ITextComponent getDisplayName()
     {
-        return (ITextComponent)(this.field_175548_d != null ? this.field_175548_d : new TextComponentTranslation("entity.Villager.name", new Object[0]));
+        return (ITextComponent)(this.name != null ? this.name : new TextComponentTranslation("entity.Villager.name", new Object[0]));
     }
 }

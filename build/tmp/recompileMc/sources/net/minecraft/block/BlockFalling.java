@@ -15,8 +15,8 @@ public class BlockFalling extends Block
 
     public BlockFalling()
     {
-        super(Material.sand);
-        this.setCreativeTab(CreativeTabs.tabBlock);
+        super(Material.SAND);
+        this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
 
     public BlockFalling(Material materialIn)
@@ -30,9 +30,11 @@ public class BlockFalling extends Block
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
     }
@@ -47,7 +49,7 @@ public class BlockFalling extends Block
 
     private void checkFallable(World worldIn, BlockPos pos)
     {
-        if ((worldIn.isAirBlock(pos.down()) || func_185759_i(worldIn.getBlockState(pos.down()))) && pos.getY() >= 0)
+        if ((worldIn.isAirBlock(pos.down()) || canFallThrough(worldIn.getBlockState(pos.down()))) && pos.getY() >= 0)
         {
             int i = 32;
 
@@ -65,7 +67,7 @@ public class BlockFalling extends Block
                 worldIn.setBlockToAir(pos);
                 BlockPos blockpos;
 
-                for (blockpos = pos.down(); (worldIn.isAirBlock(blockpos) || func_185759_i(worldIn.getBlockState(blockpos))) && blockpos.getY() > 0; blockpos = blockpos.down())
+                for (blockpos = pos.down(); (worldIn.isAirBlock(blockpos) || canFallThrough(worldIn.getBlockState(blockpos))) && blockpos.getY() > 0; blockpos = blockpos.down())
                 {
                     ;
                 }
@@ -90,11 +92,11 @@ public class BlockFalling extends Block
         return 2;
     }
 
-    public static boolean func_185759_i(IBlockState p_185759_0_)
+    public static boolean canFallThrough(IBlockState state)
     {
-        Block block = p_185759_0_.getBlock();
-        Material material = p_185759_0_.getMaterial();
-        return block == Blocks.fire || material == Material.air || material == Material.water || material == Material.lava;
+        Block block = state.getBlock();
+        Material material = state.getMaterial();
+        return block == Blocks.FIRE || material == Material.AIR || material == Material.WATER || material == Material.LAVA;
     }
 
     public void onEndFalling(World worldIn, BlockPos pos)

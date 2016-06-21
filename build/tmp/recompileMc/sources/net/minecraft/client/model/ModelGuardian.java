@@ -51,7 +51,7 @@ public class ModelGuardian extends ModelBase
         this.guardianTail[1].addChild(this.guardianTail[2]);
     }
 
-    public int func_178706_a()
+    public int getModelVersion()
     {
         return 54;
     }
@@ -59,9 +59,9 @@ public class ModelGuardian extends ModelBase
     /**
      * Sets the models various rotation angles then renders the model.
      */
-    public void render(Entity entityIn, float p_78088_2_, float limbSwing, float ageInTicks, float netHeadYaw, float headPitch, float scale)
+    public void render(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale)
     {
-        this.setRotationAngles(p_78088_2_, limbSwing, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+        this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.guardianBody.render(scale);
     }
 
@@ -82,7 +82,7 @@ public class ModelGuardian extends ModelBase
         float[] afloat3 = new float[] {0.0F, 0.0F, 8.0F, -8.0F, -8.0F, 8.0F, 8.0F, -8.0F, 0.0F, 0.0F, 8.0F, -8.0F};
         float[] afloat4 = new float[] { -8.0F, -8.0F, -8.0F, -8.0F, 0.0F, 0.0F, 0.0F, 0.0F, 8.0F, 8.0F, 8.0F, 8.0F};
         float[] afloat5 = new float[] {8.0F, -8.0F, 0.0F, 0.0F, -8.0F, -8.0F, 8.0F, 8.0F, 8.0F, -8.0F, 0.0F, 0.0F};
-        float f1 = (1.0F - entityguardian.func_175469_o(f)) * 0.55F;
+        float f1 = (1.0F - entityguardian.getSpikesAnimation(f)) * 0.55F;
 
         for (int i = 0; i < 12; ++i)
         {
@@ -125,7 +125,7 @@ public class ModelGuardian extends ModelBase
         }
 
         this.guardianEye.showModel = true;
-        float f2 = entityguardian.func_175471_a(f);
+        float f2 = entityguardian.getTailAnimation(f);
         this.guardianTail[0].rotateAngleY = MathHelper.sin(f2) * (float)Math.PI * 0.05F;
         this.guardianTail[1].rotateAngleY = MathHelper.sin(f2) * (float)Math.PI * 0.1F;
         this.guardianTail[1].rotationPointX = -1.5F;

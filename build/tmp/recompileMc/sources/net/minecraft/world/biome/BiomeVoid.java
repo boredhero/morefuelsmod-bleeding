@@ -1,8 +1,8 @@
 package net.minecraft.world.biome;
 
-public class BiomeVoid extends BiomeGenBase
+public class BiomeVoid extends Biome
 {
-    public BiomeVoid(BiomeGenBase.BiomeProperties properties)
+    public BiomeVoid(Biome.BiomeProperties properties)
     {
         super(properties);
         this.spawnableMonsterList.clear();

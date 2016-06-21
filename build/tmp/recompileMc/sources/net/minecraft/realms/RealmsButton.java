@@ -87,6 +87,6 @@ public class RealmsButton
 
     public int getYImage(boolean p_getYImage_1_)
     {
-        return this.proxy.func_154312_c(p_getYImage_1_);
+        return this.proxy.getYImage(p_getYImage_1_);
     }
 }

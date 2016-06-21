@@ -1,34 +1,104 @@
 package net.minecraft.entity.passive;
 
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public enum HorseType
 {
-    NONE(0),
-    IRON(5, "iron", "meo"),
-    GOLD(7, "gold", "goo"),
-    DIAMOND(11, "diamond", "dio");
+    HORSE("horse", "horse_white", SoundEvents.ENTITY_HORSE_AMBIENT, SoundEvents.ENTITY_HORSE_HURT, SoundEvents.ENTITY_HORSE_DEATH, LootTableList.ENTITIES_HORSE),
+    DONKEY("donkey", "donkey", SoundEvents.ENTITY_DONKEY_AMBIENT, SoundEvents.ENTITY_DONKEY_HURT, SoundEvents.ENTITY_DONKEY_DEATH, LootTableList.ENTITIES_HORSE),
+    MULE("mule", "mule", SoundEvents.ENTITY_MULE_AMBIENT, SoundEvents.ENTITY_MULE_HURT, SoundEvents.ENTITY_MULE_DEATH, LootTableList.ENTITIES_HORSE),
+    ZOMBIE("zombiehorse", "horse_zombie", SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT, SoundEvents.ENTITY_ZOMBIE_HORSE_HURT, SoundEvents.ENTITY_ZOMBIE_HORSE_DEATH, LootTableList.ENTITIES_ZOMBIE_HORSE),
+    SKELETON("skeletonhorse", "horse_skeleton", SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT, SoundEvents.ENTITY_SKELETON_HORSE_HURT, SoundEvents.ENTITY_SKELETON_HORSE_DEATH, LootTableList.ENTITIES_SKELETON_HORSE);
 
-    private final String textureName;
-    private final String field_188587_f;
-    private final int armorStrength;
+    /** The default name for this type of horse */
+    private final TextComponentTranslation name;
+    /** The default texture used by this type of horse */
+    private final ResourceLocation texture;
+    private final SoundEvent hurtSound;
+    private final SoundEvent ambientSound;
+    private final SoundEvent deathSound;
+    private ResourceLocation lootTable;
 
-    private HorseType(int armorStrengthIn)
+    private HorseType(String p_i46798_3_, String textureName, SoundEvent ambientSound, SoundEvent hurtSoundIn, SoundEvent deathSoundIn, ResourceLocation lootTableIn)
     {
-        this.armorStrength = armorStrengthIn;
-        this.textureName = null;
-        this.field_188587_f = "";
+        this.lootTable = lootTableIn;
+        this.name = new TextComponentTranslation("entity." + p_i46798_3_ + ".name", new Object[0]);
+        this.texture = new ResourceLocation("textures/entity/horse/" + textureName + ".png");
+        this.hurtSound = hurtSoundIn;
+        this.ambientSound = ambientSound;
+        this.deathSound = deathSoundIn;
     }
 
-    private HorseType(int armorStrengthIn, String p_i46800_4_, String p_i46800_5_)
+    public SoundEvent getAmbientSound()
     {
-        this.armorStrength = armorStrengthIn;
-        this.textureName = "textures/entity/horse/armor/horse_armor_" + p_i46800_4_ + ".png";
-        this.field_188587_f = p_i46800_5_;
+        return this.ambientSound;
+    }
+
+    public SoundEvent getHurtSound()
+    {
+        return this.hurtSound;
+    }
+
+    public SoundEvent getDeathSound()
+    {
+        return this.deathSound;
+    }
+
+    /**
+     * Gets the default name for horses of this type
+     */
+    public TextComponentTranslation getDefaultName()
+    {
+        return this.name;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public ResourceLocation getTexture()
+    {
+        return this.texture;
+    }
+
+    /**
+     * Can this type of horse wear chests?
+     */
+    public boolean canBeChested()
+    {
+        return this == DONKEY || this == MULE;
+    }
+
+    /**
+     * Should this type of horse be rendered with mule ears (true) or horse ears (false)?
+     */
+    public boolean hasMuleEars()
+    {
+        return this == DONKEY || this == MULE;
+    }
+
+    /**
+     * Is this an undead (zombie or skeleton) horse?
+     */
+    public boolean isUndead()
+    {
+        return this == ZOMBIE || this == SKELETON;
+    }
+
+    /**
+     * Can this type of horse be bred?
+     */
+    public boolean canMate()
+    {
+        return !this.isUndead() && this != MULE;
+    }
+
+    public boolean isHorse()
+    {
+        return this == HORSE;
     }
 
     public int getOrdinal()
@@ -36,40 +106,13 @@ public enum HorseType
         return this.ordinal();
     }
 
-    @SideOnly(Side.CLIENT)
-    public String func_188573_b()
+    public static HorseType getArmorType(int armorID)
     {
-        return this.field_188587_f;
+        return values()[armorID];
     }
 
-    public int func_188578_c()
+    public ResourceLocation getLootTable()
     {
-        return this.armorStrength;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public String func_188574_d()
-    {
-        return this.textureName;
-    }
-
-    public static HorseType func_188575_a(int p_188575_0_)
-    {
-        return values()[p_188575_0_];
-    }
-
-    public static HorseType func_188580_a(ItemStack p_188580_0_)
-    {
-        return p_188580_0_ == null ? NONE : func_188576_a(p_188580_0_.getItem());
-    }
-
-    public static HorseType func_188576_a(Item p_188576_0_)
-    {
-        return p_188576_0_ == Items.iron_horse_armor ? IRON : (p_188576_0_ == Items.golden_horse_armor ? GOLD : (p_188576_0_ == Items.diamond_horse_armor ? DIAMOND : NONE));
-    }
-
-    public static boolean func_188577_b(Item p_188577_0_)
-    {
-        return func_188576_a(p_188577_0_) != NONE;
+        return this.lootTable;
     }
 }

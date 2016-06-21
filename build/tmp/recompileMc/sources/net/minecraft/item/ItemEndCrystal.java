@@ -23,7 +23,7 @@ public class ItemEndCrystal extends Item
     public ItemEndCrystal()
     {
         this.setUnlocalizedName("end_crystal");
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
     /**
@@ -33,7 +33,7 @@ public class ItemEndCrystal extends Item
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
 
-        if (iblockstate.getBlock() != Blocks.obsidian && iblockstate.getBlock() != Blocks.bedrock)
+        if (iblockstate.getBlock() != Blocks.OBSIDIAN && iblockstate.getBlock() != Blocks.BEDROCK)
         {
             return EnumActionResult.FAIL;
         }

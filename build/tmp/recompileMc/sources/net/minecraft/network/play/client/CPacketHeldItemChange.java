@@ -16,9 +16,9 @@ public class CPacketHeldItemChange implements Packet<INetHandlerPlayServer>
     }
 
     @SideOnly(Side.CLIENT)
-    public CPacketHeldItemChange(int p_i46864_1_)
+    public CPacketHeldItemChange(int slotIdIn)
     {
-        this.slotId = p_i46864_1_;
+        this.slotId = slotIdIn;
     }
 
     /**

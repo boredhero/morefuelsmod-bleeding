@@ -21,9 +21,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface ITextComponent extends Iterable<ITextComponent>
 {
-    ITextComponent setChatStyle(Style style);
+    ITextComponent setStyle(Style style);
 
-    Style getChatStyle();
+    Style getStyle();
 
     /**
      * Appends the given text to the end of this component.
@@ -39,7 +39,7 @@ public interface ITextComponent extends Iterable<ITextComponent>
      * Gets the text of this component, without any special formatting codes added, for chat.  TODO: why is this two
      * different methods?
      */
-    String getUnformattedTextForChat();
+    String getUnformattedComponentText();
 
     /**
      * Get the text of this component, <em>and all child components</em>, with all special formatting codes removed.
@@ -122,9 +122,9 @@ public interface ITextComponent extends Iterable<ITextComponent>
                                 {
                                     TextComponentString textcomponentstring = (TextComponentString)aobject[i];
 
-                                    if (textcomponentstring.getChatStyle().isEmpty() && textcomponentstring.getSiblings().isEmpty())
+                                    if (textcomponentstring.getStyle().isEmpty() && textcomponentstring.getSiblings().isEmpty())
                                     {
-                                        aobject[i] = textcomponentstring.getChatComponentText_TextValue();
+                                        aobject[i] = textcomponentstring.getText();
                                     }
                                 }
                             }
@@ -177,7 +177,7 @@ public interface ITextComponent extends Iterable<ITextComponent>
                         }
                     }
 
-                    itextcomponent.setChatStyle((Style)p_deserialize_3_.deserialize(p_deserialize_1_, Style.class));
+                    itextcomponent.setStyle((Style)p_deserialize_3_.deserialize(p_deserialize_1_, Style.class));
                     return itextcomponent;
                 }
             }
@@ -201,9 +201,9 @@ public interface ITextComponent extends Iterable<ITextComponent>
             {
                 JsonObject jsonobject = new JsonObject();
 
-                if (!p_serialize_1_.getChatStyle().isEmpty())
+                if (!p_serialize_1_.getStyle().isEmpty())
                 {
-                    this.serializeChatStyle(p_serialize_1_.getChatStyle(), jsonobject, p_serialize_3_);
+                    this.serializeChatStyle(p_serialize_1_.getStyle(), jsonobject, p_serialize_3_);
                 }
 
                 if (!p_serialize_1_.getSiblings().isEmpty())
@@ -220,7 +220,7 @@ public interface ITextComponent extends Iterable<ITextComponent>
 
                 if (p_serialize_1_ instanceof TextComponentString)
                 {
-                    jsonobject.addProperty("text", ((TextComponentString)p_serialize_1_).getChatComponentText_TextValue());
+                    jsonobject.addProperty("text", ((TextComponentString)p_serialize_1_).getText());
                 }
                 else if (p_serialize_1_ instanceof TextComponentTranslation)
                 {
@@ -252,7 +252,7 @@ public interface ITextComponent extends Iterable<ITextComponent>
                     JsonObject jsonobject1 = new JsonObject();
                     jsonobject1.addProperty("name", textcomponentscore.getName());
                     jsonobject1.addProperty("objective", textcomponentscore.getObjective());
-                    jsonobject1.addProperty("value", textcomponentscore.getUnformattedTextForChat());
+                    jsonobject1.addProperty("value", textcomponentscore.getUnformattedComponentText());
                     jsonobject.add("score", jsonobject1);
                 }
                 else

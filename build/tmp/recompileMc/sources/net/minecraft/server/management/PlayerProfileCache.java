@@ -37,12 +37,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import org.apache.commons.io.IOUtils;
 
 public class PlayerProfileCache
 {
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
     private static boolean onlineMode;
     private final Map<String, PlayerProfileCache.ProfileEntry> usernameToProfileEntryMap = Maps.<String, PlayerProfileCache.ProfileEntry>newHashMap();
     private final Map<UUID, PlayerProfileCache.ProfileEntry> uuidToProfileEntryMap = Maps.<UUID, PlayerProfileCache.ProfileEntry>newHashMap();
@@ -76,7 +77,7 @@ public class PlayerProfileCache
         this.load();
     }
 
-    private static GameProfile func_187319_a(GameProfileRepository profileRepoIn, String name)
+    private static GameProfile lookupProfile(GameProfileRepository profileRepoIn, String name)
     {
         final GameProfile[] agameprofile = new GameProfile[1];
         ProfileLookupCallback profilelookupcallback = new ProfileLookupCallback()
@@ -155,6 +156,7 @@ public class PlayerProfileCache
      * Get a player's GameProfile given their username. Mojang's server's will be contacted if the entry is not cached
      * locally.
      */
+    @Nullable
     public GameProfile getGameProfileForUsername(String username)
     {
         String s = username.toLowerCase(Locale.ROOT);
@@ -176,7 +178,7 @@ public class PlayerProfileCache
         }
         else
         {
-            GameProfile gameprofile1 = func_187319_a(this.profileRepo, s);
+            GameProfile gameprofile1 = lookupProfile(this.profileRepo, s);
 
             if (gameprofile1 != null)
             {
@@ -201,6 +203,7 @@ public class PlayerProfileCache
     /**
      * Get a player's {@link GameProfile} given their UUID
      */
+    @Nullable
     public GameProfile getProfileByUUID(UUID uuid)
     {
         PlayerProfileCache.ProfileEntry playerprofilecache$profileentry = (PlayerProfileCache.ProfileEntry)this.uuidToProfileEntryMap.get(uuid);
@@ -351,7 +354,7 @@ public class PlayerProfileCache
             jsonobject.addProperty("name", p_serialize_1_.getGameProfile().getName());
             UUID uuid = p_serialize_1_.getGameProfile().getId();
             jsonobject.addProperty("uuid", uuid == null ? "" : uuid.toString());
-            jsonobject.addProperty("expiresOn", PlayerProfileCache.dateFormat.format(p_serialize_1_.getExpirationDate()));
+            jsonobject.addProperty("expiresOn", PlayerProfileCache.DATE_FORMAT.format(p_serialize_1_.getExpirationDate()));
             return jsonobject;
         }
 
@@ -374,7 +377,7 @@ public class PlayerProfileCache
                     {
                         try
                         {
-                            date = PlayerProfileCache.dateFormat.parse(jsonelement2.getAsString());
+                            date = PlayerProfileCache.DATE_FORMAT.parse(jsonelement2.getAsString());
                         }
                         catch (ParseException var14)
                         {
@@ -395,8 +398,7 @@ public class PlayerProfileCache
                             return null;
                         }
 
-                        PlayerProfileCache.ProfileEntry playerprofilecache$profileentry = PlayerProfileCache.this.new ProfileEntry(new GameProfile(uuid, s1), date);
-                        return playerprofilecache$profileentry;
+                        return PlayerProfileCache.this.new ProfileEntry(new GameProfile(uuid, s1), date);
                     }
                     else
                     {

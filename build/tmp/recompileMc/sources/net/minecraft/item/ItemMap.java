@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockDirt;
 import net.minecraft.block.BlockStone;
 import net.minecraft.block.material.MapColor;
@@ -57,7 +58,7 @@ public class ItemMap extends ItemMapBase
             mapdata = new MapData(s);
             mapdata.scale = 3;
             mapdata.calculateMapCenter((double)worldIn.getWorldInfo().getSpawnX(), (double)worldIn.getWorldInfo().getSpawnZ(), mapdata.scale);
-            mapdata.dimension = worldIn.provider.getDimensionType().getId();
+            mapdata.dimension = worldIn.provider.getDimension();
             mapdata.markDirty();
             worldIn.setItemData(s, mapdata);
         }
@@ -67,7 +68,7 @@ public class ItemMap extends ItemMapBase
 
     public void updateMapData(World worldIn, Entity viewer, MapData data)
     {
-        if (worldIn.provider.getDimensionType().getId() == data.dimension && viewer instanceof EntityPlayer)
+        if (worldIn.provider.getDimension() == data.dimension && viewer instanceof EntityPlayer)
         {
             int i = 1 << data.scale;
             int j = data.xCenter;
@@ -82,12 +83,12 @@ public class ItemMap extends ItemMapBase
             }
 
             MapData.MapInfo mapdata$mapinfo = data.getMapInfo((EntityPlayer)viewer);
-            ++mapdata$mapinfo.field_82569_d;
+            ++mapdata$mapinfo.step;
             boolean flag = false;
 
             for (int k1 = l - j1 + 1; k1 < l + j1; ++k1)
             {
-                if ((k1 & 15) == (mapdata$mapinfo.field_82569_d & 15) || flag)
+                if ((k1 & 15) == (mapdata$mapinfo.step & 15) || flag)
                 {
                     flag = false;
                     double d0 = 0.0D;
@@ -118,11 +119,11 @@ public class ItemMap extends ItemMapBase
 
                                     if ((l3 >> 20 & 1) == 0)
                                     {
-                                        multiset.add(Blocks.dirt.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT).getMapColor(), 10);
+                                        multiset.add(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT).getMapColor(), 10);
                                     }
                                     else
                                     {
-                                        multiset.add(Blocks.stone.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.STONE).getMapColor(), 100);
+                                        multiset.add(Blocks.STONE.getDefaultState().withProperty(BlockStone.VARIANT, BlockStone.EnumType.STONE).getMapColor(), 100);
                                     }
 
                                     d1 = 100.0D;
@@ -136,7 +137,7 @@ public class ItemMap extends ItemMapBase
                                         for (int j4 = 0; j4 < i; ++j4)
                                         {
                                             int k4 = chunk.getHeightValue(i4 + i3, j4 + j3) + 1;
-                                            IBlockState iblockstate = Blocks.air.getDefaultState();
+                                            IBlockState iblockstate = Blocks.AIR.getDefaultState();
 
                                             if (k4 > 1)
                                             {
@@ -145,9 +146,9 @@ public class ItemMap extends ItemMapBase
                                                     while (true)
                                                     {
                                                         --k4;
-                                                        iblockstate = chunk.getBlockState(blockpos$mutableblockpos.set(i4 + i3, k4, j4 + j3));
+                                                        iblockstate = chunk.getBlockState(blockpos$mutableblockpos.setPos(i4 + i3, k4, j4 + j3));
 
-                                                        if (iblockstate.getMapColor() != MapColor.airColor || k4 <= 0)
+                                                        if (iblockstate.getMapColor() != MapColor.AIR || k4 <= 0)
                                                         {
                                                             break;
                                                         }
@@ -191,9 +192,9 @@ public class ItemMap extends ItemMapBase
                                     i5 = 0;
                                 }
 
-                                MapColor mapcolor = (MapColor)Iterables.getFirst(Multisets.<MapColor>copyHighestCountFirst(multiset), MapColor.airColor);
+                                MapColor mapcolor = (MapColor)Iterables.getFirst(Multisets.<MapColor>copyHighestCountFirst(multiset), MapColor.AIR);
 
-                                if (mapcolor == MapColor.waterColor)
+                                if (mapcolor == MapColor.WATER)
                                 {
                                     d2 = (double)k3 * 0.1D + (double)(k1 + l1 & 1) * 0.2D;
                                     i5 = 1;
@@ -254,6 +255,7 @@ public class ItemMap extends ItemMapBase
         }
     }
 
+    @Nullable
     public Packet<?> createMapDataPacket(ItemStack stack, World worldIn, EntityPlayer player)
     {
         return this.getMapData(stack, worldIn).getMapPacket(stack, worldIn, player);
@@ -270,20 +272,20 @@ public class ItemMap extends ItemMapBase
         {
             if (nbttagcompound.hasKey("map_scale_direction", 99))
             {
-                func_185063_a(stack, worldIn, nbttagcompound.getInteger("map_scale_direction"));
+                scaleMap(stack, worldIn, nbttagcompound.getInteger("map_scale_direction"));
                 nbttagcompound.removeTag("map_scale_direction");
             }
             else if (nbttagcompound.getBoolean("map_tracking_position"))
             {
-                func_185064_b(stack, worldIn);
+                enableMapTracking(stack, worldIn);
                 nbttagcompound.removeTag("map_tracking_position");
             }
         }
     }
 
-    protected static void func_185063_a(ItemStack p_185063_0_, World p_185063_1_, int p_185063_2_)
+    protected static void scaleMap(ItemStack p_185063_0_, World p_185063_1_, int p_185063_2_)
     {
-        MapData mapdata = Items.filled_map.getMapData(p_185063_0_, p_185063_1_);
+        MapData mapdata = Items.FILLED_MAP.getMapData(p_185063_0_, p_185063_1_);
         p_185063_0_.setItemDamage(p_185063_1_.getUniqueDataId("map"));
         MapData mapdata1 = new MapData("map_" + p_185063_0_.getMetadata());
         mapdata1.scale = (byte)MathHelper.clamp_int(mapdata.scale + p_185063_2_, 0, 4);
@@ -294,9 +296,9 @@ public class ItemMap extends ItemMapBase
         p_185063_1_.setItemData("map_" + p_185063_0_.getMetadata(), mapdata1);
     }
 
-    protected static void func_185064_b(ItemStack p_185064_0_, World p_185064_1_)
+    protected static void enableMapTracking(ItemStack p_185064_0_, World p_185064_1_)
     {
-        MapData mapdata = Items.filled_map.getMapData(p_185064_0_, p_185064_1_);
+        MapData mapdata = Items.FILLED_MAP.getMapData(p_185064_0_, p_185064_1_);
         p_185064_0_.setItemDamage(p_185064_1_.getUniqueDataId("map"));
         MapData mapdata1 = new MapData("map_" + p_185064_0_.getMetadata());
         mapdata1.trackingPosition = true;

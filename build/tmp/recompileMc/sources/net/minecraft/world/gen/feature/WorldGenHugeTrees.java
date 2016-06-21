@@ -44,9 +44,6 @@ public abstract class WorldGenHugeTrees extends WorldGenAbstractTree
 
     /**
      * returns whether or not there is space for a tree to grow at a certain position
-     *  
-     * @param leavesPos the bottom of the leaves
-     * @param height the height of the leaves
      */
     private boolean isSpaceAt(World worldIn, BlockPos leavesPos, int height)
     {
@@ -95,7 +92,7 @@ public abstract class WorldGenHugeTrees extends WorldGenAbstractTree
     {
         BlockPos blockpos = pos.down();
         IBlockState state = worldIn.getBlockState(blockpos);
-        boolean isSoil = state.getBlock().canSustainPlant(state, worldIn, blockpos, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.sapling));
+        boolean isSoil = state.getBlock().canSustainPlant(state, worldIn, blockpos, net.minecraft.util.EnumFacing.UP, ((net.minecraft.block.BlockSapling)Blocks.SAPLING));
 
         if (isSoil && pos.getY() >= 2)
         {
@@ -114,8 +111,6 @@ public abstract class WorldGenHugeTrees extends WorldGenAbstractTree
     /**
      * returns whether or not a tree can grow at a specific position.
      * If it can, it generates surrounding dirt underneath.
-     *  
-     * @param treePos the bottom corner of the trunk
      */
     protected boolean ensureGrowable(World worldIn, Random rand, BlockPos treePos, int p_175929_4_)
     {
@@ -124,9 +119,6 @@ public abstract class WorldGenHugeTrees extends WorldGenAbstractTree
 
     /**
      * grow leaves in a circle with the outsides being within the circle
-     *  
-     * @param layerCenter the center of the circle
-     * @param width the width of the circle
      */
     protected void growLeavesLayerStrict(World worldIn, BlockPos layerCenter, int width)
     {
@@ -155,9 +147,6 @@ public abstract class WorldGenHugeTrees extends WorldGenAbstractTree
 
     /**
      * grow leaves in a circle
-     *  
-     * @param layerCenter the center of the circle
-     * @param width the width of the circle
      */
     protected void growLeavesLayer(World worldIn, BlockPos layerCenter, int width)
     {

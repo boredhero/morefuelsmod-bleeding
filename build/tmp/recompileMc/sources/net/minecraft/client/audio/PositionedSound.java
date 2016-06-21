@@ -1,5 +1,6 @@
 package net.minecraft.client.audio;
 
+import javax.annotation.Nullable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -9,8 +10,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public abstract class PositionedSound implements ISound
 {
-    protected Sound field_184367_a;
-    private SoundEventAccessor field_184369_l;
+    protected Sound sound;
+    @Nullable
+    private SoundEventAccessor soundEvent;
     protected SoundCategory category;
     protected ResourceLocation positionedSoundLocation;
     protected float volume;
@@ -42,25 +44,25 @@ public abstract class PositionedSound implements ISound
         return this.positionedSoundLocation;
     }
 
-    public SoundEventAccessor func_184366_a(SoundHandler p_184366_1_)
+    public SoundEventAccessor createAccessor(SoundHandler handler)
     {
-        this.field_184369_l = p_184366_1_.func_184398_a(this.positionedSoundLocation);
+        this.soundEvent = handler.getAccessor(this.positionedSoundLocation);
 
-        if (this.field_184369_l == null)
+        if (this.soundEvent == null)
         {
-            this.field_184367_a = SoundHandler.missing_sound;
+            this.sound = SoundHandler.MISSING_SOUND;
         }
         else
         {
-            this.field_184367_a = this.field_184369_l.cloneEntry();
+            this.sound = this.soundEvent.cloneEntry();
         }
 
-        return this.field_184369_l;
+        return this.soundEvent;
     }
 
     public Sound getSound()
     {
-        return this.field_184367_a;
+        return this.sound;
     }
 
     public SoundCategory getCategory()
@@ -80,12 +82,12 @@ public abstract class PositionedSound implements ISound
 
     public float getVolume()
     {
-        return this.volume * this.field_184367_a.getVolume();
+        return this.volume * this.sound.getVolume();
     }
 
     public float getPitch()
     {
-        return this.pitch * this.field_184367_a.getPitch();
+        return this.pitch * this.sound.getPitch();
     }
 
     public float getXPosF()

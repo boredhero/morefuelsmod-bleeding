@@ -52,7 +52,7 @@ public class ModelSkeleton extends ModelBiped
         this.leftArmPose = ModelBiped.ArmPose.EMPTY;
         ItemStack itemstack = entitylivingbaseIn.getHeldItem(EnumHand.MAIN_HAND);
 
-        if (itemstack != null && itemstack.getItem() == Items.bow && ((EntitySkeleton)entitylivingbaseIn).func_184725_db())
+        if (itemstack != null && itemstack.getItem() == Items.BOW && ((EntitySkeleton)entitylivingbaseIn).isSwingingArms())
         {
             if (entitylivingbaseIn.getPrimaryHand() == EnumHandSide.RIGHT)
             {
@@ -78,7 +78,7 @@ public class ModelSkeleton extends ModelBiped
         ItemStack itemstack = ((EntityLivingBase)entityIn).getHeldItemMainhand();
         EntitySkeleton entityskeleton = (EntitySkeleton)entityIn;
 
-        if (entityskeleton.func_184725_db() && (itemstack == null || itemstack.getItem() != Items.bow))
+        if (entityskeleton.isSwingingArms() && (itemstack == null || itemstack.getItem() != Items.BOW))
         {
             float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
             float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);

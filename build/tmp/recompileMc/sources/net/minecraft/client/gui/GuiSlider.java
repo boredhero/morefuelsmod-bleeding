@@ -41,7 +41,7 @@ public class GuiSlider extends GuiButton
 
         if (p_175218_2_)
         {
-            this.responder.onTick(this.id, this.getSliderValue());
+            this.responder.setEntryValue(this.id, this.getSliderValue());
         }
     }
 
@@ -86,7 +86,7 @@ public class GuiSlider extends GuiButton
                 }
 
                 this.displayString = this.getDisplayString();
-                this.responder.onTick(this.id, this.getSliderValue());
+                this.responder.setEntryValue(this.id, this.getSliderValue());
             }
 
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -99,7 +99,7 @@ public class GuiSlider extends GuiButton
     {
         this.sliderPosition = p_175219_1_;
         this.displayString = this.getDisplayString();
-        this.responder.onTick(this.id, this.getSliderValue());
+        this.responder.setEntryValue(this.id, this.getSliderValue());
     }
 
     /**
@@ -123,7 +123,7 @@ public class GuiSlider extends GuiButton
             }
 
             this.displayString = this.getDisplayString();
-            this.responder.onTick(this.id, this.getSliderValue());
+            this.responder.setEntryValue(this.id, this.getSliderValue());
             this.isMouseDown = true;
             return true;
         }

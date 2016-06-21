@@ -2,6 +2,7 @@ package net.minecraft.command.server;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -49,10 +50,6 @@ public class CommandSummon extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -86,7 +83,7 @@ public class CommandSummon extends CommandBase
             else if ("LightningBolt".equals(s))
             {
                 world.addWeatherEffect(new EntityLightningBolt(world, d0, d1, d2, false));
-                notifyOperators(sender, this, "commands.summon.success", new Object[0]);
+                notifyCommandListener(sender, this, "commands.summon.success", new Object[0]);
             }
             else
             {
@@ -124,13 +121,13 @@ public class CommandSummon extends CommandBase
                         ((EntityLiving)entity).onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData)null);
                     }
 
-                    notifyOperators(sender, this, "commands.summon.success", new Object[0]);
+                    notifyCommandListener(sender, this, "commands.summon.success", new Object[0]);
                 }
             }
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, EntityList.getEntityNameList()) : (args.length > 1 && args.length <= 4 ? getTabCompletionCoordinate(args, 1, pos) : Collections.<String>emptyList());
     }

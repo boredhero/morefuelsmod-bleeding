@@ -3,6 +3,7 @@ package net.minecraft.command;
 import com.google.gson.JsonParseException;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.SPacketTitle;
 import net.minecraft.server.MinecraftServer;
@@ -42,10 +43,6 @@ public class CommandTitle extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
@@ -85,8 +82,8 @@ public class CommandTitle extends CommandBase
                         int j = parseInt(args[3]);
                         int k = parseInt(args[4]);
                         SPacketTitle spackettitle2 = new SPacketTitle(i, j, k);
-                        entityplayermp.playerNetServerHandler.sendPacket(spackettitle2);
-                        notifyOperators(sender, this, "commands.title.success", new Object[0]);
+                        entityplayermp.connection.sendPacket(spackettitle2);
+                        notifyCommandListener(sender, this, "commands.title.success", new Object[0]);
                     }
                 }
                 else if (args.length < 3)
@@ -111,8 +108,8 @@ public class CommandTitle extends CommandBase
                     }
 
                     SPacketTitle spackettitle1 = new SPacketTitle(spackettitle$type, TextComponentUtils.processComponent(sender, itextcomponent, entityplayermp));
-                    entityplayermp.playerNetServerHandler.sendPacket(spackettitle1);
-                    notifyOperators(sender, this, "commands.title.success", new Object[0]);
+                    entityplayermp.connection.sendPacket(spackettitle1);
+                    notifyCommandListener(sender, this, "commands.title.success", new Object[0]);
                 }
             }
             else if (args.length != 2)
@@ -122,13 +119,13 @@ public class CommandTitle extends CommandBase
             else
             {
                 SPacketTitle spackettitle = new SPacketTitle(spackettitle$type, (ITextComponent)null);
-                entityplayermp.playerNetServerHandler.sendPacket(spackettitle);
-                notifyOperators(sender, this, "commands.title.success", new Object[0]);
+                entityplayermp.connection.sendPacket(spackettitle);
+                notifyCommandListener(sender, this, "commands.title.success", new Object[0]);
             }
         }
     }
 
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
+    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
         return args.length == 1 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, SPacketTitle.Type.getNames()) : Collections.<String>emptyList());
     }

@@ -118,11 +118,11 @@ public class EntityAIMate extends EntityAIBase
 
             if (entityplayer != null)
             {
-                entityplayer.addStat(StatList.animalsBred);
+                entityplayer.addStat(StatList.ANIMALS_BRED);
 
                 if (this.theAnimal instanceof EntityCow)
                 {
-                    entityplayer.addStat(AchievementList.breedCow);
+                    entityplayer.addStat(AchievementList.BREED_COW);
                 }
             }
 

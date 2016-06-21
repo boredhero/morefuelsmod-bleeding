@@ -13,17 +13,17 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
 {
-    private final RealmsSimpleScrolledSelectionList field_178050_u;
+    private final RealmsSimpleScrolledSelectionList realmsScrolledSelectionList;
 
     public GuiSimpleScrolledSelectionListProxy(RealmsSimpleScrolledSelectionList p_i45525_1_, int widthIn, int heightIn, int topIn, int bottomIn, int slotHeightIn)
     {
         super(Minecraft.getMinecraft(), widthIn, heightIn, topIn, bottomIn, slotHeightIn);
-        this.field_178050_u = p_i45525_1_;
+        this.realmsScrolledSelectionList = p_i45525_1_;
     }
 
     protected int getSize()
     {
-        return this.field_178050_u.getItemCount();
+        return this.realmsScrolledSelectionList.getItemCount();
     }
 
     /**
@@ -31,7 +31,7 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
      */
     protected void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY)
     {
-        this.field_178050_u.selectItem(slotIndex, isDoubleClick, mouseX, mouseY);
+        this.realmsScrolledSelectionList.selectItem(slotIndex, isDoubleClick, mouseX, mouseY);
     }
 
     /**
@@ -39,17 +39,17 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
      */
     protected boolean isSelected(int slotIndex)
     {
-        return this.field_178050_u.isSelectedItem(slotIndex);
+        return this.realmsScrolledSelectionList.isSelectedItem(slotIndex);
     }
 
     protected void drawBackground()
     {
-        this.field_178050_u.renderBackground();
+        this.realmsScrolledSelectionList.renderBackground();
     }
 
-    protected void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn)
+    protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn)
     {
-        this.field_178050_u.renderItem(entryID, p_180791_2_, p_180791_3_, p_180791_4_, mouseXIn, mouseYIn);
+        this.realmsScrolledSelectionList.renderItem(entryID, insideLeft, yPos, insideSlotHeight, mouseXIn, mouseYIn);
     }
 
     public int getWidth()
@@ -72,12 +72,12 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
      */
     protected int getContentHeight()
     {
-        return this.field_178050_u.getMaxPosition();
+        return this.realmsScrolledSelectionList.getMaxPosition();
     }
 
     protected int getScrollBarX()
     {
-        return this.field_178050_u.getScrollbarPosition();
+        return this.realmsScrolledSelectionList.getScrollbarPosition();
     }
 
     public void handleMouseInput()
@@ -85,9 +85,9 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
         super.handleMouseInput();
     }
 
-    public void drawScreen(int mouseXIn, int mouseYIn, float p_148128_3_)
+    public void drawScreen(int mouseXIn, int mouseYIn, float partialTicks)
     {
-        if (this.field_178041_q)
+        if (this.visible)
         {
             this.mouseX = mouseXIn;
             this.mouseY = mouseYIn;
@@ -117,7 +117,7 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
             GlStateManager.disableAlpha();
             GlStateManager.shadeModel(7425);
             GlStateManager.disableTexture2D();
-            int j1 = this.func_148135_f();
+            int j1 = this.getMaxScroll();
 
             if (j1 > 0)
             {
@@ -150,7 +150,7 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
                 tessellator.draw();
             }
 
-            this.func_148142_b(mouseXIn, mouseYIn);
+            this.renderDecorations(mouseXIn, mouseYIn);
             GlStateManager.enableTexture2D();
             GlStateManager.shadeModel(7424);
             GlStateManager.enableAlpha();

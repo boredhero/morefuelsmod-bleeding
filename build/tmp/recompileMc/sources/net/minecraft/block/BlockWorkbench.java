@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
@@ -22,11 +23,11 @@ public class BlockWorkbench extends Block
 {
     protected BlockWorkbench()
     {
-        super(Material.wood);
-        this.setCreativeTab(CreativeTabs.tabDecorations);
+        super(Material.WOOD);
+        this.setCreativeTab(CreativeTabs.DECORATIONS);
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (worldIn.isRemote)
         {
@@ -35,7 +36,7 @@ public class BlockWorkbench extends Block
         else
         {
             playerIn.displayGui(new BlockWorkbench.InterfaceCraftingTable(worldIn, pos));
-            playerIn.addStat(StatList.craftingTableInteraction);
+            playerIn.addStat(StatList.CRAFTING_TABLE_INTERACTION);
             return true;
         }
     }
@@ -72,7 +73,7 @@ public class BlockWorkbench extends Block
              */
             public ITextComponent getDisplayName()
             {
-                return new TextComponentTranslation(Blocks.crafting_table.getUnlocalizedName() + ".name", new Object[0]);
+                return new TextComponentTranslation(Blocks.CRAFTING_TABLE.getUnlocalizedName() + ".name", new Object[0]);
             }
 
             public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn)

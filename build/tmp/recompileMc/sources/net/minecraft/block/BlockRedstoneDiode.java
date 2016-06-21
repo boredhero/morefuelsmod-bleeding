@@ -23,7 +23,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
 
     protected BlockRedstoneDiode(boolean powered)
     {
-        super(Material.circuits);
+        super(Material.CIRCUITS);
         this.isRepeaterPowered = powered;
     }
 
@@ -98,9 +98,11 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
         if (this.canBlockStay(worldIn, pos))
         {
@@ -165,7 +167,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         else
         {
             IBlockState iblockstate = worldIn.getBlockState(blockpos);
-            return Math.max(i, iblockstate.getBlock() == Blocks.redstone_wire ? ((Integer)iblockstate.getValue(BlockRedstoneWire.POWER)).intValue() : 0);
+            return Math.max(i, iblockstate.getBlock() == Blocks.REDSTONE_WIRE ? ((Integer)iblockstate.getValue(BlockRedstoneWire.POWER)).intValue() : 0);
         }
     }
 
@@ -181,7 +183,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
     {
         IBlockState iblockstate = worldIn.getBlockState(pos);
         Block block = iblockstate.getBlock();
-        return this.func_185545_A(iblockstate) ? (block == Blocks.redstone_block ? 15 : (block == Blocks.redstone_wire ? ((Integer)iblockstate.getValue(BlockRedstoneWire.POWER)).intValue() : worldIn.getStrongPower(pos, side))) : 0;
+        return this.isAlternateInput(iblockstate) ? (block == Blocks.REDSTONE_BLOCK ? 15 : (block == Blocks.REDSTONE_WIRE ? ((Integer)iblockstate.getValue(BlockRedstoneWire.POWER)).intValue() : worldIn.getStrongPower(pos, side))) : 0;
     }
 
     /**
@@ -251,9 +253,9 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         return false;
     }
 
-    protected boolean func_185545_A(IBlockState p_185545_1_)
+    protected boolean isAlternateInput(IBlockState state)
     {
-        return p_185545_1_.canProvidePower();
+        return state.canProvidePower();
     }
 
     protected int getActiveSignal(IBlockAccess worldIn, BlockPos pos, IBlockState state)
@@ -261,14 +263,14 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         return 15;
     }
 
-    public static boolean func_185546_B(IBlockState p_185546_0_)
+    public static boolean isDiode(IBlockState state)
     {
-        return Blocks.unpowered_repeater.func_185547_C(p_185546_0_) || Blocks.unpowered_comparator.func_185547_C(p_185546_0_);
+        return Blocks.UNPOWERED_REPEATER.isSameDiode(state) || Blocks.UNPOWERED_COMPARATOR.isSameDiode(state);
     }
 
-    public boolean func_185547_C(IBlockState p_185547_1_)
+    public boolean isSameDiode(IBlockState state)
     {
-        Block block = p_185547_1_.getBlock();
+        Block block = state.getBlock();
         return block == this.getPoweredState(this.getDefaultState()).getBlock() || block == this.getUnpoweredState(this.getDefaultState()).getBlock();
     }
 
@@ -276,7 +278,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
     {
         EnumFacing enumfacing = ((EnumFacing)state.getValue(FACING)).getOpposite();
         BlockPos blockpos = pos.offset(enumfacing);
-        return func_185546_B(worldIn.getBlockState(blockpos)) ? worldIn.getBlockState(blockpos).getValue(FACING) != enumfacing : false;
+        return isDiode(worldIn.getBlockState(blockpos)) ? worldIn.getBlockState(blockpos).getValue(FACING) != enumfacing : false;
     }
 
     protected int getTickDelay(IBlockState state)
@@ -292,7 +294,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
 
     public boolean isAssociatedBlock(Block other)
     {
-        return this.func_185547_C(other.getDefaultState());
+        return this.isSameDiode(other.getDefaultState());
     }
 
     @SideOnly(Side.CLIENT)

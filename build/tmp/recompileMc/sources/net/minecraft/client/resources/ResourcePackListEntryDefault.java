@@ -18,7 +18,7 @@ public class ResourcePackListEntryDefault extends ResourcePackListEntryServer
         return "Default";
     }
 
-    public boolean func_186768_j()
+    public boolean isServerPack()
     {
         return false;
     }

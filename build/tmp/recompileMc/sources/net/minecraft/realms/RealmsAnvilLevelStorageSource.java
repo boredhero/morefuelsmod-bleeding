@@ -5,7 +5,7 @@ import java.util.List;
 import net.minecraft.client.AnvilConverterException;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.world.storage.ISaveFormat;
-import net.minecraft.world.storage.SaveFormatComparator;
+import net.minecraft.world.storage.WorldSummary;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -68,9 +68,9 @@ public class RealmsAnvilLevelStorageSource
     {
         List<RealmsLevelSummary> list = Lists.<RealmsLevelSummary>newArrayList();
 
-        for (SaveFormatComparator saveformatcomparator : this.levelStorageSource.getSaveList())
+        for (WorldSummary worldsummary : this.levelStorageSource.getSaveList())
         {
-            list.add(new RealmsLevelSummary(saveformatcomparator));
+            list.add(new RealmsLevelSummary(worldsummary));
         }
 
         return list;

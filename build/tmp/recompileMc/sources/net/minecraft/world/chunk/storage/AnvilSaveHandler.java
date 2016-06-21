@@ -1,6 +1,7 @@
 package net.minecraft.world.chunk.storage;
 
 import java.io.File;
+import javax.annotation.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.WorldProvider;
@@ -39,7 +40,7 @@ public class AnvilSaveHandler extends SaveHandler
     /**
      * Saves the given World Info with the given NBTTagCompound as the Player.
      */
-    public void saveWorldInfoWithPlayer(WorldInfo worldInformation, NBTTagCompound tagCompound)
+    public void saveWorldInfoWithPlayer(WorldInfo worldInformation, @Nullable NBTTagCompound tagCompound)
     {
         worldInformation.setSaveVersion(19133);
         super.saveWorldInfoWithPlayer(worldInformation, tagCompound);

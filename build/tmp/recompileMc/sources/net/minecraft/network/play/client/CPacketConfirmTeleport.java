@@ -42,7 +42,7 @@ public class CPacketConfirmTeleport implements Packet<INetHandlerPlayServer>
      */
     public void processPacket(INetHandlerPlayServer handler)
     {
-        handler.func_184339_a(this);
+        handler.processConfirmTeleport(this);
     }
 
     public int getTeleportId()

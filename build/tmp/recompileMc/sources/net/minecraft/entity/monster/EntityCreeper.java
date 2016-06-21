@@ -1,5 +1,6 @@
 package net.minecraft.entity.monster;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
@@ -46,7 +47,7 @@ public class EntityCreeper extends EntityMob
     private int fuseTime = 30;
     /** Explosion radius for this creeper. */
     private int explosionRadius = 3;
-    private int field_175494_bm = 0;
+    private int droppedSkulls = 0;
 
     public EntityCreeper(World worldIn)
     {
@@ -95,47 +96,47 @@ public class EntityCreeper extends EntityMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(STATE, Integer.valueOf(-1));
-        this.dataWatcher.register(POWERED, Boolean.valueOf(false));
-        this.dataWatcher.register(IGNITED, Boolean.valueOf(false));
+        this.dataManager.register(STATE, Integer.valueOf(-1));
+        this.dataManager.register(POWERED, Boolean.valueOf(false));
+        this.dataManager.register(IGNITED, Boolean.valueOf(false));
     }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        super.writeEntityToNBT(tagCompound);
+        super.writeEntityToNBT(compound);
 
-        if (((Boolean)this.dataWatcher.get(POWERED)).booleanValue())
+        if (((Boolean)this.dataManager.get(POWERED)).booleanValue())
         {
-            tagCompound.setBoolean("powered", true);
+            compound.setBoolean("powered", true);
         }
 
-        tagCompound.setShort("Fuse", (short)this.fuseTime);
-        tagCompound.setByte("ExplosionRadius", (byte)this.explosionRadius);
-        tagCompound.setBoolean("ignited", this.hasIgnited());
+        compound.setShort("Fuse", (short)this.fuseTime);
+        compound.setByte("ExplosionRadius", (byte)this.explosionRadius);
+        compound.setBoolean("ignited", this.hasIgnited());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        super.readEntityFromNBT(tagCompund);
-        this.dataWatcher.set(POWERED, Boolean.valueOf(tagCompund.getBoolean("powered")));
+        super.readEntityFromNBT(compound);
+        this.dataManager.set(POWERED, Boolean.valueOf(compound.getBoolean("powered")));
 
-        if (tagCompund.hasKey("Fuse", 99))
+        if (compound.hasKey("Fuse", 99))
         {
-            this.fuseTime = tagCompund.getShort("Fuse");
+            this.fuseTime = compound.getShort("Fuse");
         }
 
-        if (tagCompund.hasKey("ExplosionRadius", 99))
+        if (compound.hasKey("ExplosionRadius", 99))
         {
-            this.explosionRadius = tagCompund.getByte("ExplosionRadius");
+            this.explosionRadius = compound.getByte("ExplosionRadius");
         }
 
-        if (tagCompund.getBoolean("ignited"))
+        if (compound.getBoolean("ignited"))
         {
             this.ignite();
         }
@@ -159,7 +160,7 @@ public class EntityCreeper extends EntityMob
 
             if (i > 0 && this.timeSinceIgnited == 0)
             {
-                this.playSound(SoundEvents.entity_creeper_primed, 1.0F, 0.5F);
+                this.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, 1.0F, 0.5F);
             }
 
             this.timeSinceIgnited += i;
@@ -181,12 +182,12 @@ public class EntityCreeper extends EntityMob
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_creeper_hurt;
+        return SoundEvents.ENTITY_CREEPER_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_creeper_death;
+        return SoundEvents.ENTITY_CREEPER_DEATH;
     }
 
     /**
@@ -200,15 +201,15 @@ public class EntityCreeper extends EntityMob
         {
             if (cause.getEntity() instanceof EntitySkeleton)
             {
-                int i = Item.getIdFromItem(Items.record_13);
-                int j = Item.getIdFromItem(Items.record_wait);
+                int i = Item.getIdFromItem(Items.RECORD_13);
+                int j = Item.getIdFromItem(Items.RECORD_WAIT);
                 int k = i + this.rand.nextInt(j - i + 1);
                 this.dropItem(Item.getItemById(k), 1);
             }
             else if (cause.getEntity() instanceof EntityCreeper && cause.getEntity() != this && ((EntityCreeper)cause.getEntity()).getPowered() && ((EntityCreeper)cause.getEntity()).isAIEnabled())
             {
-                ((EntityCreeper)cause.getEntity()).func_175493_co();
-                this.entityDropItem(new ItemStack(Items.skull, 1, 4), 0.0F);
+                ((EntityCreeper)cause.getEntity()).incrementDroppedSkulls();
+                this.entityDropItem(new ItemStack(Items.SKULL, 1, 4), 0.0F);
             }
         }
     }
@@ -223,7 +224,7 @@ public class EntityCreeper extends EntityMob
      */
     public boolean getPowered()
     {
-        return ((Boolean)this.dataWatcher.get(POWERED)).booleanValue();
+        return ((Boolean)this.dataManager.get(POWERED)).booleanValue();
     }
 
     /**
@@ -235,6 +236,7 @@ public class EntityCreeper extends EntityMob
         return ((float)this.lastActiveTime + (float)(this.timeSinceIgnited - this.lastActiveTime) * p_70831_1_) / (float)(this.fuseTime - 2);
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_CREEPER;
@@ -245,7 +247,7 @@ public class EntityCreeper extends EntityMob
      */
     public int getCreeperState()
     {
-        return ((Integer)this.dataWatcher.get(STATE)).intValue();
+        return ((Integer)this.dataManager.get(STATE)).intValue();
     }
 
     /**
@@ -253,7 +255,7 @@ public class EntityCreeper extends EntityMob
      */
     public void setCreeperState(int state)
     {
-        this.dataWatcher.set(STATE, Integer.valueOf(state));
+        this.dataManager.set(STATE, Integer.valueOf(state));
     }
 
     /**
@@ -262,15 +264,15 @@ public class EntityCreeper extends EntityMob
     public void onStruckByLightning(EntityLightningBolt lightningBolt)
     {
         super.onStruckByLightning(lightningBolt);
-        this.dataWatcher.set(POWERED, Boolean.valueOf(true));
+        this.dataManager.set(POWERED, Boolean.valueOf(true));
     }
 
-    protected boolean processInteract(EntityPlayer player, EnumHand p_184645_2_, ItemStack stack)
+    protected boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
     {
-        if (stack != null && stack.getItem() == Items.flint_and_steel)
+        if (stack != null && stack.getItem() == Items.FLINT_AND_STEEL)
         {
-            this.worldObj.playSound(player, this.posX, this.posY, this.posZ, SoundEvents.item_flintandsteel_use, this.getSoundCategory(), 1.0F, this.rand.nextFloat() * 0.4F + 0.8F);
-            player.swingArm(p_184645_2_);
+            this.worldObj.playSound(player, this.posX, this.posY, this.posZ, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.rand.nextFloat() * 0.4F + 0.8F);
+            player.swingArm(hand);
 
             if (!this.worldObj.isRemote)
             {
@@ -280,7 +282,7 @@ public class EntityCreeper extends EntityMob
             }
         }
 
-        return super.processInteract(player, p_184645_2_, stack);
+        return super.processInteract(player, hand, stack);
     }
 
     /**
@@ -300,12 +302,12 @@ public class EntityCreeper extends EntityMob
 
     public boolean hasIgnited()
     {
-        return ((Boolean)this.dataWatcher.get(IGNITED)).booleanValue();
+        return ((Boolean)this.dataManager.get(IGNITED)).booleanValue();
     }
 
     public void ignite()
     {
-        this.dataWatcher.set(IGNITED, Boolean.valueOf(true));
+        this.dataManager.set(IGNITED, Boolean.valueOf(true));
     }
 
     /**
@@ -313,11 +315,11 @@ public class EntityCreeper extends EntityMob
      */
     public boolean isAIEnabled()
     {
-        return this.field_175494_bm < 1 && this.worldObj.getGameRules().getBoolean("doMobLoot");
+        return this.droppedSkulls < 1 && this.worldObj.getGameRules().getBoolean("doMobLoot");
     }
 
-    public void func_175493_co()
+    public void incrementDroppedSkulls()
     {
-        ++this.field_175494_bm;
+        ++this.droppedSkulls;
     }
 }

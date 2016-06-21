@@ -38,14 +38,14 @@ public class ItemColors
             {
                 return tintIndex > 0 ? -1 : ((ItemArmor)stack.getItem()).getColor(stack);
             }
-        }, new Item[] {Items.leather_helmet, Items.leather_chestplate, Items.leather_leggings, Items.leather_boots});
+        }, new Item[] {Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
             {
                 return tintIndex > 0 ? -1 : ItemBanner.getBaseColor(stack).getMapColor().colorValue;
             }
-        }, new Item[] {Items.banner, Items.shield});
+        }, new Item[] {Items.BANNER, Items.SHIELD});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
@@ -53,7 +53,7 @@ public class ItemColors
                 BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = BlockDoublePlant.EnumPlantType.byMetadata(stack.getMetadata());
                 return blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.GRASS && blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.FERN ? -1 : ColorizerGrass.getGrassColor(0.5D, 1.0D);
             }
-        }, new Block[] {Blocks.double_plant});
+        }, new Block[] {Blocks.DOUBLE_PLANT});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
@@ -101,22 +101,22 @@ public class ItemColors
                     }
                 }
             }
-        }, new Item[] {Items.firework_charge});
+        }, new Item[] {Items.FIREWORK_CHARGE});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
             {
                 return tintIndex > 0 ? -1 : PotionUtils.getPotionColorFromEffectList(PotionUtils.getEffectsFromStack(stack));
             }
-        }, new Item[] {Items.potionitem, Items.splash_potion, Items.lingering_potion});
+        }, new Item[] {Items.POTIONITEM, Items.SPLASH_POTION, Items.LINGERING_POTION});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
             {
-                EntityList.EntityEggInfo entitylist$entityegginfo = (EntityList.EntityEggInfo)EntityList.entityEggs.get(ItemMonsterPlacer.getEntityIdFromItem(stack));
+                EntityList.EntityEggInfo entitylist$entityegginfo = (EntityList.EntityEggInfo)EntityList.ENTITY_EGGS.get(ItemMonsterPlacer.getEntityIdFromItem(stack));
                 return entitylist$entityegginfo == null ? -1 : (tintIndex == 0 ? entitylist$entityegginfo.primaryColor : entitylist$entityegginfo.secondaryColor);
             }
-        }, new Item[] {Items.spawn_egg});
+        }, new Item[] {Items.SPAWN_EGG});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
@@ -124,44 +124,44 @@ public class ItemColors
                 IBlockState iblockstate = ((ItemBlock)stack.getItem()).getBlock().getStateFromMeta(stack.getMetadata());
                 return p_186729_0_.colorMultiplier(iblockstate, (IBlockAccess)null, (BlockPos)null, tintIndex);
             }
-        }, new Block[] {Blocks.grass, Blocks.tallgrass, Blocks.vine, Blocks.leaves, Blocks.leaves2, Blocks.waterlily});
+        }, new Block[] {Blocks.GRASS, Blocks.TALLGRASS, Blocks.VINE, Blocks.LEAVES, Blocks.LEAVES2, Blocks.WATERLILY});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
             {
                 return tintIndex == 0 ? PotionUtils.getPotionColorFromEffectList(PotionUtils.getEffectsFromStack(stack)) : -1;
             }
-        }, new Item[] {Items.tipped_arrow});
+        }, new Item[] {Items.TIPPED_ARROW});
         return itemcolors;
     }
 
-    public int getColorFromItemstack(ItemStack p_186728_1_, int p_186728_2_)
+    public int getColorFromItemstack(ItemStack stack, int tintIndex)
     {
-        IItemColor iitemcolor = (IItemColor)this.itemColorMap.get(p_186728_1_.getItem().delegate);
-        return iitemcolor == null ? -1 : iitemcolor.getColorFromItemstack(p_186728_1_, p_186728_2_);
+        IItemColor iitemcolor = (IItemColor)this.itemColorMap.get(stack.getItem().delegate);
+        return iitemcolor == null ? -1 : iitemcolor.getColorFromItemstack(stack, tintIndex);
     }
 
-    public void registerItemColorHandler(IItemColor p_186731_1_, Block... p_186731_2_)
+    public void registerItemColorHandler(IItemColor itemColor, Block... blocksIn)
     {
         int i = 0;
 
-        for (int j = p_186731_2_.length; i < j; ++i)
+        for (int j = blocksIn.length; i < j; ++i)
         {
-            if (p_186731_2_[i] == null) throw new IllegalArgumentException("Block registered to item color handler cannot be null!");
-            if (p_186731_2_[i].getRegistryName() == null) throw new IllegalArgumentException("Block must be registered before assigning color handler.");
-            this.itemColorMap.put(Item.getItemFromBlock(p_186731_2_[i]).delegate, p_186731_1_);
+            if (blocksIn[i] == null) throw new IllegalArgumentException("Block registered to item color handler cannot be null!");
+            if (blocksIn[i].getRegistryName() == null) throw new IllegalArgumentException("Block must be registered before assigning color handler.");
+            this.itemColorMap.put(Item.getItemFromBlock(blocksIn[i]).delegate, itemColor);
         }
     }
 
-    public void registerItemColorHandler(IItemColor p_186730_1_, Item... p_186730_2_)
+    public void registerItemColorHandler(IItemColor itemColor, Item... itemsIn)
     {
         int i = 0;
 
-        for (int j = p_186730_2_.length; i < j; ++i)
+        for (int j = itemsIn.length; i < j; ++i)
         {
-            if (p_186730_2_[i] == null) throw new IllegalArgumentException("Item registered to item color handler cannot be null!");
-            if (p_186730_2_[i].getRegistryName() == null) throw new IllegalArgumentException("Item must be registered before assigning color handler.");
-            this.itemColorMap.put(p_186730_2_[i].delegate, p_186730_1_);
+            if (itemsIn[i] == null) throw new IllegalArgumentException("Item registered to item color handler cannot be null!");
+            if (itemsIn[i].getRegistryName() == null) throw new IllegalArgumentException("Item must be registered before assigning color handler.");
+            this.itemColorMap.put(itemsIn[i].delegate, itemColor);
         }
     }
 }

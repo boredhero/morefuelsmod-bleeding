@@ -140,11 +140,12 @@ public class FMLCommonHandler
         return eventBus;
     }
 
-    public void beginLoading(IFMLSidedHandler handler)
+    public List<String> beginLoading(IFMLSidedHandler handler)
     {
         sidedDelegate = handler;
         MinecraftForge.initialize();
 //        MinecraftForge.registerCrashCallable();
+        return ImmutableList.<String>of();
     }
 
     /**
@@ -366,7 +367,7 @@ public class FMLCommonHandler
     {
         for (ICrashCallable call: crashCallables)
         {
-            category.addCrashSectionCallable(call.getLabel(), call);
+            category.setDetail(call.getLabel(), call);
         }
     }
 

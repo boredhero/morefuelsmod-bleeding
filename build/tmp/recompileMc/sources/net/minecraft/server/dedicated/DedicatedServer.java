@@ -13,11 +13,10 @@ import java.net.Proxy;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.ServerCommand;
 import net.minecraft.crash.CrashReport;
+import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.rcon.IServer;
 import net.minecraft.network.rcon.RConConsoleSource;
@@ -46,8 +45,8 @@ import org.apache.logging.log4j.Logger;
 @SideOnly(Side.SERVER)
 public class DedicatedServer extends MinecraftServer implements IServer
 {
-    private static final Logger logger = LogManager.getLogger();
-    public final List<ServerCommand> pendingCommandList = Collections.<ServerCommand>synchronizedList(Lists.<ServerCommand>newArrayList());
+    private static final Logger LOGGER = LogManager.getLogger();
+    public final List<PendingCommand> pendingCommandList = Collections.<PendingCommand>synchronizedList(Lists.<PendingCommand>newArrayList());
     private RConThreadQuery theRConThreadQuery;
     private final RConConsoleSource rconConsoleSource = new RConConsoleSource(this);
     private RConThreadMain theRConThreadMain;
@@ -106,28 +105,28 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 }
                 catch (IOException ioexception1)
                 {
-                    DedicatedServer.logger.error((String)"Exception handling console input", (Throwable)ioexception1);
+                    DedicatedServer.LOGGER.error((String)"Exception handling console input", (Throwable)ioexception1);
                 }
             }
         };
         thread.setDaemon(true);
         thread.start();
-        logger.info("Starting minecraft server version 1.9");
+        LOGGER.info("Starting minecraft server version 1.9.4");
 
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
         {
-            logger.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+            LOGGER.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
         }
 
         net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStart(this);
 
-        logger.info("Loading properties");
+        LOGGER.info("Loading properties");
         this.settings = new PropertyManager(new File("server.properties"));
         this.eula = new ServerEula(new File("eula.txt"));
 
         if (!this.eula.hasAcceptedEULA())
         {
-            logger.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
+            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
             this.eula.createEULAFile();
             return false;
         }
@@ -164,7 +163,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
             this.canSpawnStructures = this.settings.getBooleanProperty("generate-structures", true);
             int i = this.settings.getIntProperty("gamemode", WorldSettings.GameType.SURVIVAL.getID());
             this.gameType = WorldSettings.getGameTypeById(i);
-            logger.info("Default game type: " + this.gameType);
+            LOGGER.info("Default game type: " + this.gameType);
             InetAddress inetaddress = null;
 
             if (!this.getServerHostname().isEmpty())
@@ -177,9 +176,9 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 this.setServerPort(this.settings.getIntProperty("server-port", 25565));
             }
 
-            logger.info("Generating keypair");
+            LOGGER.info("Generating keypair");
             this.setKeyPair(CryptManager.generateKeyPair());
-            logger.info("Starting Minecraft server on " + (this.getServerHostname().isEmpty() ? "*" : this.getServerHostname()) + ":" + this.getServerPort());
+            LOGGER.info("Starting Minecraft server on " + (this.getServerHostname().isEmpty() ? "*" : this.getServerHostname()) + ":" + this.getServerPort());
 
             try
             {
@@ -187,18 +186,18 @@ public class DedicatedServer extends MinecraftServer implements IServer
             }
             catch (IOException ioexception)
             {
-                logger.warn("**** FAILED TO BIND TO PORT!");
-                logger.warn("The exception was: {}", new Object[] {ioexception.toString()});
-                logger.warn("Perhaps a server is already running on that port?");
+                LOGGER.warn("**** FAILED TO BIND TO PORT!");
+                LOGGER.warn("The exception was: {}", new Object[] {ioexception.toString()});
+                LOGGER.warn("Perhaps a server is already running on that port?");
                 return false;
             }
 
             if (!this.isServerInOnlineMode())
             {
-                logger.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
-                logger.warn("The server will make no attempt to authenticate usernames. Beware.");
-                logger.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
-                logger.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
+                LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+                LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
+                LOGGER.warn("While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.");
+                LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
             }
 
             if (this.convertFiles())
@@ -263,22 +262,22 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 TileEntitySkull.setSessionService(this.getMinecraftSessionService());
                 PlayerProfileCache.setOnlineMode(this.isServerInOnlineMode());
                 if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerAboutToStart(this)) return false;
-                logger.info("Preparing level \"" + this.getFolderName() + "\"");
+                LOGGER.info("Preparing level \"" + this.getFolderName() + "\"");
                 this.loadAllWorlds(this.getFolderName(), this.getFolderName(), k, worldtype, s2);
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", new Object[] {Double.valueOf((double)i1 / 1.0E9D)});
-                logger.info("Done (" + s3 + ")! For help, type \"help\" or \"?\"");
+                LOGGER.info("Done (" + s3 + ")! For help, type \"help\" or \"?\"");
 
                 if (this.settings.getBooleanProperty("enable-query", false))
                 {
-                    logger.info("Starting GS4 status listener");
+                    LOGGER.info("Starting GS4 status listener");
                     this.theRConThreadQuery = new RConThreadQuery(this);
                     this.theRConThreadQuery.startThread();
                 }
 
                 if (this.settings.getBooleanProperty("enable-rcon", false))
                 {
-                    logger.info("Starting remote control listener");
+                    LOGGER.info("Starting remote control listener");
                     this.theRConThreadMain = new RConThreadMain(this);
                     this.theRConThreadMain.startThread();
                 }
@@ -302,7 +301,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
         if (this.settings.hasProperty("resource-pack-hash") && !this.settings.hasProperty("resource-pack-sha1"))
         {
-            logger.warn("ressource-pack-hash is depricated. Please use ressource-pack-sha1 instead.");
+            LOGGER.warn("ressource-pack-hash is depricated. Please use ressource-pack-sha1 instead.");
             s = this.settings.getStringProperty("resource-pack-hash", "");
             this.settings.getStringProperty("resource-pack-sha1", s);
             this.settings.removeProperty("resource-pack-hash");
@@ -310,19 +309,19 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
         if (this.settings.hasProperty("resource-pack-hash") && this.settings.hasProperty("resource-pack-sha1"))
         {
-            logger.warn("ressource-pack-hash is depricated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
+            LOGGER.warn("ressource-pack-hash is depricated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
         }
 
         s = this.settings.getStringProperty("resource-pack-sha1", "");
 
         if (!s.equals("") && !s.matches("^[a-f0-9]{40}$"))
         {
-            logger.warn("Invalid sha1 for ressource-pack-sha1");
+            LOGGER.warn("Invalid sha1 for ressource-pack-sha1");
         }
 
         if (!this.settings.getStringProperty("resource-pack", "").equals("") && s.equals(""))
         {
-            logger.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
+            LOGGER.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
         }
 
         return s;
@@ -376,7 +375,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     public CrashReport addServerInfoToCrashReport(CrashReport report)
     {
         report = super.addServerInfoToCrashReport(report);
-        report.getCategory().addCrashSectionCallable("Is Modded", new Callable<String>()
+        report.getCategory().setDetail("Is Modded", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -384,7 +383,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 return !s.equals("vanilla") ? "Definitely; Server brand changed to \'" + s + "\'" : "Unknown (can\'t tell)";
             }
         });
-        report.getCategory().addCrashSectionCallable("Type", new Callable<String>()
+        report.getCategory().setDetail("Type", new ICrashReportDetail<String>()
         {
             public String call() throws Exception
             {
@@ -435,15 +434,15 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public void addPendingCommand(String input, ICommandSender sender)
     {
-        this.pendingCommandList.add(new ServerCommand(input, sender));
+        this.pendingCommandList.add(new PendingCommand(input, sender));
     }
 
     public void executePendingCommands()
     {
         while (!this.pendingCommandList.isEmpty())
         {
-            ServerCommand servercommand = (ServerCommand)this.pendingCommandList.remove(0);
-            this.getCommandManager().executeCommand(servercommand.sender, servercommand.command);
+            PendingCommand pendingcommand = (PendingCommand)this.pendingCommandList.remove(0);
+            this.getCommandManager().executeCommand(pendingcommand.sender, pendingcommand.command);
         }
     }
 
@@ -576,7 +575,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public boolean isBlockProtected(World worldIn, BlockPos pos, EntityPlayer playerIn)
     {
-        if (worldIn.provider.getDimensionType().getId() != 0)
+        if (worldIn.provider.getDimension() != 0)
         {
             return false;
         }
@@ -660,7 +659,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     }
 
     //Forge: Enable formated text for colors in console.
-    @Override public void addChatMessage(net.minecraft.util.text.ITextComponent message) { logger.info(message.getFormattedText()); }
+    @Override public void addChatMessage(net.minecraft.util.text.ITextComponent message) { LOGGER.info(message.getFormattedText()); }
 
     protected boolean convertFiles() throws IOException
     {
@@ -670,7 +669,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             if (i > 0)
             {
-                logger.warn("Encountered a problem while converting the user banlist, retrying in a few seconds");
+                LOGGER.warn("Encountered a problem while converting the user banlist, retrying in a few seconds");
                 this.sleepFiveSeconds();
             }
 
@@ -683,7 +682,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             if (j > 0)
             {
-                logger.warn("Encountered a problem while converting the ip banlist, retrying in a few seconds");
+                LOGGER.warn("Encountered a problem while converting the ip banlist, retrying in a few seconds");
                 this.sleepFiveSeconds();
             }
 
@@ -696,7 +695,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             if (k > 0)
             {
-                logger.warn("Encountered a problem while converting the op list, retrying in a few seconds");
+                LOGGER.warn("Encountered a problem while converting the op list, retrying in a few seconds");
                 this.sleepFiveSeconds();
             }
 
@@ -709,7 +708,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             if (l > 0)
             {
-                logger.warn("Encountered a problem while converting the whitelist, retrying in a few seconds");
+                LOGGER.warn("Encountered a problem while converting the whitelist, retrying in a few seconds");
                 this.sleepFiveSeconds();
             }
 
@@ -722,7 +721,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         {
             if (i1 > 0)
             {
-                logger.warn("Encountered a problem while converting the player save files, retrying in a few seconds");
+                LOGGER.warn("Encountered a problem while converting the player save files, retrying in a few seconds");
                 this.sleepFiveSeconds();
             }
 

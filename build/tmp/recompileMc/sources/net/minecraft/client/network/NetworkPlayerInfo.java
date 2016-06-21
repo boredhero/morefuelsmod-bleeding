@@ -6,6 +6,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.resources.SkinManager;
@@ -30,11 +31,11 @@ public class NetworkPlayerInfo
     private String skinType;
     /** When this is non-null, it is displayed instead of the player's real name */
     private ITextComponent displayName;
-    private int field_178873_i;
-    private int field_178870_j;
-    private long field_178871_k;
-    private long field_178868_l;
-    private long field_178869_m;
+    private int lastHealth;
+    private int displayHealth;
+    private long lastHealthTime;
+    private long healthBlinkTime;
+    private long renderVisibilityId;
 
     public NetworkPlayerInfo(GameProfile profile)
     {
@@ -93,6 +94,7 @@ public class NetworkPlayerInfo
         return (ResourceLocation)Objects.firstNonNull(this.playerTextures.get(Type.SKIN), DefaultPlayerSkin.getDefaultSkin(this.gameProfile.getId()));
     }
 
+    @Nullable
     public ResourceLocation getLocationCape()
     {
         this.loadPlayerTextures();
@@ -102,12 +104,14 @@ public class NetworkPlayerInfo
     /**
      * Gets the special Elytra texture for the player.
      */
+    @Nullable
     public ResourceLocation getLocationElytra()
     {
         this.loadPlayerTextures();
         return (ResourceLocation)this.playerTextures.get(Type.ELYTRA);
     }
 
+    @Nullable
     public ScorePlayerTeam getPlayerTeam()
     {
         return Minecraft.getMinecraft().theWorld.getScoreboard().getPlayersTeam(this.getGameProfile().getName());
@@ -148,63 +152,64 @@ public class NetworkPlayerInfo
         }
     }
 
-    public void setDisplayName(ITextComponent displayNameIn)
+    public void setDisplayName(@Nullable ITextComponent displayNameIn)
     {
         this.displayName = displayNameIn;
     }
 
+    @Nullable
     public ITextComponent getDisplayName()
     {
         return this.displayName;
     }
 
-    public int func_178835_l()
+    public int getLastHealth()
     {
-        return this.field_178873_i;
+        return this.lastHealth;
     }
 
-    public void func_178836_b(int p_178836_1_)
+    public void setLastHealth(int p_178836_1_)
     {
-        this.field_178873_i = p_178836_1_;
+        this.lastHealth = p_178836_1_;
     }
 
-    public int func_178860_m()
+    public int getDisplayHealth()
     {
-        return this.field_178870_j;
+        return this.displayHealth;
     }
 
-    public void func_178857_c(int p_178857_1_)
+    public void setDisplayHealth(int p_178857_1_)
     {
-        this.field_178870_j = p_178857_1_;
+        this.displayHealth = p_178857_1_;
     }
 
-    public long func_178847_n()
+    public long getLastHealthTime()
     {
-        return this.field_178871_k;
+        return this.lastHealthTime;
     }
 
-    public void func_178846_a(long p_178846_1_)
+    public void setLastHealthTime(long p_178846_1_)
     {
-        this.field_178871_k = p_178846_1_;
+        this.lastHealthTime = p_178846_1_;
     }
 
-    public long func_178858_o()
+    public long getHealthBlinkTime()
     {
-        return this.field_178868_l;
+        return this.healthBlinkTime;
     }
 
-    public void func_178844_b(long p_178844_1_)
+    public void setHealthBlinkTime(long p_178844_1_)
     {
-        this.field_178868_l = p_178844_1_;
+        this.healthBlinkTime = p_178844_1_;
     }
 
-    public long func_178855_p()
+    public long getRenderVisibilityId()
     {
-        return this.field_178869_m;
+        return this.renderVisibilityId;
     }
 
-    public void func_178843_c(long p_178843_1_)
+    public void setRenderVisibilityId(long p_178843_1_)
     {
-        this.field_178869_m = p_178843_1_;
+        this.renderVisibilityId = p_178843_1_;
     }
 }

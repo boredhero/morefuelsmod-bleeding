@@ -31,14 +31,14 @@ public abstract class GuiListExtended extends GuiSlot
     {
     }
 
-    protected void drawSlot(int entryID, int p_180791_2_, int p_180791_3_, int p_180791_4_, int mouseXIn, int mouseYIn)
+    protected void drawSlot(int entryID, int insideLeft, int yPos, int insideSlotHeight, int mouseXIn, int mouseYIn)
     {
-        this.getListEntry(entryID).drawEntry(entryID, p_180791_2_, p_180791_3_, this.getListWidth(), p_180791_4_, mouseXIn, mouseYIn, this.isMouseYWithinSlotBounds(mouseYIn) && this.getSlotIndexFromScreenCoords(mouseXIn, mouseYIn) == entryID);
+        this.getListEntry(entryID).drawEntry(entryID, insideLeft, yPos, this.getListWidth(), insideSlotHeight, mouseXIn, mouseYIn, this.isMouseYWithinSlotBounds(mouseYIn) && this.getSlotIndexFromScreenCoords(mouseXIn, mouseYIn) == entryID);
     }
 
-    protected void func_178040_a(int p_178040_1_, int p_178040_2_, int p_178040_3_)
+    protected void updateItemPos(int entryID, int insideLeft, int yPos)
     {
-        this.getListEntry(p_178040_1_).setSelected(p_178040_1_, p_178040_2_, p_178040_3_);
+        this.getListEntry(entryID).setSelected(entryID, insideLeft, yPos);
     }
 
     public boolean mouseClicked(int mouseX, int mouseY, int mouseEvent)
@@ -95,12 +95,6 @@ public abstract class GuiListExtended extends GuiSlot
         /**
          * Called when the mouse is clicked within this entry. Returning true means that something within this entry was
          * clicked and the list should not be dragged.
-         *  
-         * @param mouseX Scaled X coordinate of the mouse on the entire screen
-         * @param mouseY Scaled Y coordinate of the mouse on the entire screen
-         * @param mouseEvent The button on the mouse that was pressed
-         * @param relativeX Relative X coordinate of the mouse within this entry.
-         * @param relativeY Relative Y coordinate of the mouse within this entry.
          */
         boolean mousePressed(int slotIndex, int mouseX, int mouseY, int mouseEvent, int relativeX, int relativeY);
 

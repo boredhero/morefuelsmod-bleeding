@@ -65,8 +65,7 @@ public class PathNavigateSwimmer extends PathNavigate
     }
 
     /**
-     * Returns true when an entity of specified size could safely walk in a straight line between the two points. Args:
-     * pos1, pos2, entityXSize, entityYSize, entityZSize
+     * Checks if the specified entity can safely walk to the specified location.
      */
     protected boolean isDirectPathBetweenPoints(Vec3d posVec31, Vec3d posVec32, int sizeX, int sizeY, int sizeZ)
     {
@@ -74,8 +73,8 @@ public class PathNavigateSwimmer extends PathNavigate
         return raytraceresult == null || raytraceresult.typeOfHit == RayTraceResult.Type.MISS;
     }
 
-    public boolean func_188555_b(BlockPos p_188555_1_)
+    public boolean canEntityStandOnPos(BlockPos pos)
     {
-        return !this.worldObj.getBlockState(p_188555_1_).isFullBlock();
+        return !this.worldObj.getBlockState(pos).isFullBlock();
     }
 }

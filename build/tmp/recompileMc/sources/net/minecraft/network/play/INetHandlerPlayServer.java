@@ -18,9 +18,9 @@ import net.minecraft.network.play.client.CPacketInput;
 import net.minecraft.network.play.client.CPacketKeepAlive;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerAbilities;
-import net.minecraft.network.play.client.CPacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketResourcePackStatus;
 import net.minecraft.network.play.client.CPacketSpectate;
 import net.minecraft.network.play.client.CPacketSteerBoat;
@@ -83,7 +83,7 @@ public interface INetHandlerPlayServer extends INetHandler
     /**
      * Synchronizes serverside and clientside book contents and signing
      */
-    void processVanilla250Packet(CPacketCustomPayload packetIn);
+    void processCustomPayload(CPacketCustomPayload packetIn);
 
     /**
      * Processes interactions ((un)leashing, opening command block GUI) and attacks on an entity with players currently
@@ -137,20 +137,20 @@ public interface INetHandlerPlayServer extends INetHandler
 
     void processUpdateSign(CPacketUpdateSign packetIn);
 
-    void processRightClickBlock(CPacketPlayerTryUseItem packetIn);
+    void processRightClickBlock(CPacketPlayerTryUseItemOnBlock packetIn);
 
     /**
      * Processes block placement and block activation (anvil, furnace, etc.)
      */
-    void processPlayerBlockPlacement(CPacketPlayerBlockPlacement packetIn);
+    void processPlayerBlockPlacement(CPacketPlayerTryUseItem packetIn);
 
     void handleSpectate(CPacketSpectate packetIn);
 
     void handleResourcePackStatus(CPacketResourcePackStatus packetIn);
 
-    void func_184340_a(CPacketSteerBoat packetIn);
+    void processSteerBoat(CPacketSteerBoat packetIn);
 
     void processVehicleMove(CPacketVehicleMove packetIn);
 
-    void func_184339_a(CPacketConfirmTeleport packetIn);
+    void processConfirmTeleport(CPacketConfirmTeleport packetIn);
 }

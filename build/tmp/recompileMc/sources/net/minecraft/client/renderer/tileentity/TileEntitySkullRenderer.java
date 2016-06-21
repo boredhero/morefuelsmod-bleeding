@@ -5,6 +5,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelDragonHead;
@@ -46,7 +47,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<TileEntit
         instance = this;
     }
 
-    public void renderSkull(float x, float y, float z, EnumFacing p_188190_4_, float p_188190_5_, int skullType, GameProfile p_188190_7_, int destroyStage, float p_188190_9_)
+    public void renderSkull(float x, float y, float z, EnumFacing facing, float p_188190_5_, int skullType, @Nullable GameProfile profile, int destroyStage, float animateTicks)
     {
         ModelBase modelbase = this.skeletonHead;
 
@@ -78,10 +79,10 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<TileEntit
                     modelbase = this.humanoidHead;
                     ResourceLocation resourcelocation = DefaultPlayerSkin.getDefaultSkinLegacy();
 
-                    if (p_188190_7_ != null)
+                    if (profile != null)
                     {
                         Minecraft minecraft = Minecraft.getMinecraft();
-                        Map<Type, MinecraftProfileTexture> map = minecraft.getSkinManager().loadSkinFromCache(p_188190_7_);
+                        Map<Type, MinecraftProfileTexture> map = minecraft.getSkinManager().loadSkinFromCache(profile);
 
                         if (map.containsKey(Type.SKIN))
                         {
@@ -89,7 +90,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<TileEntit
                         }
                         else
                         {
-                            UUID uuid = EntityPlayer.getUUID(p_188190_7_);
+                            UUID uuid = EntityPlayer.getUUID(profile);
                             resourcelocation = DefaultPlayerSkin.getDefaultSkin(uuid);
                         }
                     }
@@ -108,9 +109,9 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<TileEntit
         GlStateManager.pushMatrix();
         GlStateManager.disableCull();
 
-        if (p_188190_4_ != EnumFacing.UP)
+        if (facing != EnumFacing.UP)
         {
-            switch (p_188190_4_)
+            switch (facing)
             {
                 case NORTH:
                     GlStateManager.translate(x + 0.5F, y + 0.25F, z + 0.74F);
@@ -144,7 +145,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<TileEntit
             GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
         }
 
-        modelbase.render((Entity)null, p_188190_9_, 0.0F, 0.0F, p_188190_5_, 0.0F, f);
+        modelbase.render((Entity)null, animateTicks, 0.0F, 0.0F, p_188190_5_, 0.0F, f);
 
         if (skullType == 3)
         {

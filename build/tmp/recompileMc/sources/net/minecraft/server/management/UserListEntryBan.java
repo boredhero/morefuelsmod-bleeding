@@ -7,7 +7,7 @@ import java.util.Date;
 
 public abstract class UserListEntryBan<T> extends UserListEntry<T>
 {
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
     protected final Date banStartDate;
     protected final String bannedBy;
     protected final Date banEndDate;
@@ -29,7 +29,7 @@ public abstract class UserListEntryBan<T> extends UserListEntry<T>
 
         try
         {
-            date = json.has("created") ? dateFormat.parse(json.get("created").getAsString()) : new Date();
+            date = json.has("created") ? DATE_FORMAT.parse(json.get("created").getAsString()) : new Date();
         }
         catch (ParseException var7)
         {
@@ -42,7 +42,7 @@ public abstract class UserListEntryBan<T> extends UserListEntry<T>
 
         try
         {
-            date1 = json.has("expires") ? dateFormat.parse(json.get("expires").getAsString()) : null;
+            date1 = json.has("expires") ? DATE_FORMAT.parse(json.get("expires").getAsString()) : null;
         }
         catch (ParseException var6)
         {
@@ -70,9 +70,9 @@ public abstract class UserListEntryBan<T> extends UserListEntry<T>
 
     protected void onSerialization(JsonObject data)
     {
-        data.addProperty("created", dateFormat.format(this.banStartDate));
+        data.addProperty("created", DATE_FORMAT.format(this.banStartDate));
         data.addProperty("source", this.bannedBy);
-        data.addProperty("expires", this.banEndDate == null ? "forever" : dateFormat.format(this.banEndDate));
+        data.addProperty("expires", this.banEndDate == null ? "forever" : DATE_FORMAT.format(this.banEndDate));
         data.addProperty("reason", this.reason);
     }
 }

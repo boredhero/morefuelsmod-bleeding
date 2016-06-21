@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -27,7 +28,7 @@ public class BlockFarmland extends Block
 
     protected BlockFarmland()
     {
-        super(Material.ground);
+        super(Material.GROUND);
         this.setDefaultState(this.blockState.getBaseState().withProperty(MOISTURE, Integer.valueOf(0)));
         this.setTickRandomly(true);
         this.setLightOpacity(255);
@@ -38,7 +39,8 @@ public class BlockFarmland extends Block
         return FARMLAND_AABB;
     }
 
-    public AxisAlignedBB getSelectedBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    @Nullable
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return FULL_BLOCK_AABB;
     }
@@ -68,7 +70,7 @@ public class BlockFarmland extends Block
             }
             else if (!this.hasCrops(worldIn, pos))
             {
-                worldIn.setBlockState(pos, Blocks.dirt.getDefaultState());
+                worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
             }
         }
         else if (i < 7)
@@ -84,7 +86,7 @@ public class BlockFarmland extends Block
     {
         if (!worldIn.isRemote && worldIn.rand.nextFloat() < fallDistance - 0.5F && entityIn instanceof EntityLivingBase && (entityIn instanceof EntityPlayer || worldIn.getGameRules().getBoolean("mobGriefing")) && entityIn.width * entityIn.width * entityIn.height > 0.512F)
         {
-            worldIn.setBlockState(pos, Blocks.dirt.getDefaultState());
+            worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
         }
 
         super.onFallenUpon(worldIn, pos, entityIn, fallDistance);
@@ -100,7 +102,7 @@ public class BlockFarmland extends Block
     {
         for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(pos.add(-4, 0, -4), pos.add(4, 1, 4)))
         {
-            if (worldIn.getBlockState(blockpos$mutableblockpos).getMaterial() == Material.water)
+            if (worldIn.getBlockState(blockpos$mutableblockpos).getMaterial() == Material.WATER)
             {
                 return true;
             }
@@ -110,15 +112,17 @@ public class BlockFarmland extends Block
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
-        super.onNeighborBlockChange(worldIn, pos, state, neighborBlock);
+        super.neighborChanged(state, worldIn, pos, blockIn);
 
         if (worldIn.getBlockState(pos.up()).getMaterial().isSolid())
         {
-            worldIn.setBlockState(pos, Blocks.dirt.getDefaultState());
+            worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
         }
     }
 
@@ -135,7 +139,7 @@ public class BlockFarmland extends Block
             case EAST:
                 IBlockState iblockstate = blockAccess.getBlockState(pos.offset(side));
                 Block block = iblockstate.getBlock();
-                return !iblockstate.isOpaqueCube() && block != Blocks.farmland && block != Blocks.grass_path;
+                return !iblockstate.isOpaqueCube() && block != Blocks.FARMLAND && block != Blocks.GRASS_PATH;
             default:
                 return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
         }
@@ -144,14 +148,15 @@ public class BlockFarmland extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
+    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Blocks.dirt.getItemDropped(Blocks.dirt.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT), rand, fortune);
+        return Blocks.DIRT.getItemDropped(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT), rand, fortune);
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return new ItemStack(Blocks.dirt);
+        return new ItemStack(Blocks.DIRT);
     }
 
     /**

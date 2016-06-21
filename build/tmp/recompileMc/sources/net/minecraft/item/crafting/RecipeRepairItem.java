@@ -2,6 +2,7 @@ package net.minecraft.item.crafting;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,7 @@ public class RecipeRepairItem implements IRecipe
     /**
      * Returns an Item that is the result of this recipe
      */
+    @Nullable
     public ItemStack getCraftingResult(InventoryCrafting inv)
     {
         List<ItemStack> list = Lists.<ItemStack>newArrayList();
@@ -99,6 +101,7 @@ public class RecipeRepairItem implements IRecipe
         return 4;
     }
 
+    @Nullable
     public ItemStack getRecipeOutput()
     {
         return null;

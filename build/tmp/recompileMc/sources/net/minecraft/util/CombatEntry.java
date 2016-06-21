@@ -1,12 +1,13 @@
 package net.minecraft.util;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.text.ITextComponent;
 
 public class CombatEntry
 {
     private final DamageSource damageSrc;
-    private final int field_94567_b;
+    private final int time;
     private final float damage;
     private final float health;
     private final String fallSuffix;
@@ -15,7 +16,7 @@ public class CombatEntry
     public CombatEntry(DamageSource damageSrcIn, int p_i1564_2_, float healthAmount, float damageAmount, String fallSuffixIn, float fallDistanceIn)
     {
         this.damageSrc = damageSrcIn;
-        this.field_94567_b = p_i1564_2_;
+        this.time = p_i1564_2_;
         this.damage = damageAmount;
         this.health = healthAmount;
         this.fallSuffix = fallSuffixIn;
@@ -43,11 +44,13 @@ public class CombatEntry
         return this.damageSrc.getEntity() instanceof EntityLivingBase;
     }
 
+    @Nullable
     public String getFallSuffix()
     {
         return this.fallSuffix;
     }
 
+    @Nullable
     public ITextComponent getDamageSrcDisplayName()
     {
         return this.getDamageSrc().getEntity() == null ? null : this.getDamageSrc().getEntity().getDisplayName();

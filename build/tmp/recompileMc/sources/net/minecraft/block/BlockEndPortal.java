@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -20,7 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockEndPortal extends BlockContainer
 {
-    protected static final AxisAlignedBB field_185568_a = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
+    protected static final AxisAlignedBB END_PORTAL_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.75D, 1.0D);
 
     protected BlockEndPortal(Material materialIn)
     {
@@ -38,7 +39,7 @@ public class BlockEndPortal extends BlockContainer
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
-        return field_185568_a;
+        return END_PORTAL_AABB;
     }
 
     @SideOnly(Side.CLIENT)
@@ -47,7 +48,7 @@ public class BlockEndPortal extends BlockContainer
         return side == EnumFacing.DOWN ? super.shouldSideBeRendered(blockState, blockAccess, pos, side) : false;
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB p_185477_4_, List<AxisAlignedBB> p_185477_5_, Entity p_185477_6_)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
     {
     }
 
@@ -84,17 +85,18 @@ public class BlockEndPortal extends BlockContainer
     }
 
     @SideOnly(Side.CLIENT)
-    public void randomDisplayTick(IBlockState worldIn, World pos, BlockPos state, Random rand)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
-        double d0 = (double)((float)state.getX() + rand.nextFloat());
-        double d1 = (double)((float)state.getY() + 0.8F);
-        double d2 = (double)((float)state.getZ() + rand.nextFloat());
+        double d0 = (double)((float)pos.getX() + rand.nextFloat());
+        double d1 = (double)((float)pos.getY() + 0.8F);
+        double d2 = (double)((float)pos.getZ() + rand.nextFloat());
         double d3 = 0.0D;
         double d4 = 0.0D;
         double d5 = 0.0D;
-        pos.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5, new int[0]);
+        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5, new int[0]);
     }
 
+    @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         return null;
@@ -105,6 +107,6 @@ public class BlockEndPortal extends BlockContainer
      */
     public MapColor getMapColor(IBlockState state)
     {
-        return MapColor.blackColor;
+        return MapColor.BLACK;
     }
 }

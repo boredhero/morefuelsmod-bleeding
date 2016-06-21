@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
@@ -38,9 +39,9 @@ public class BlockFrostedIce extends BlockIce
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if ((rand.nextInt(3) == 0 || this.func_185680_c(worldIn, pos) < 4) && worldIn.getLightFromNeighbors(pos) > 11 - ((Integer)state.getValue(AGE)).intValue() - state.getLightOpacity())
+        if ((rand.nextInt(3) == 0 || this.countNeighbors(worldIn, pos) < 4) && worldIn.getLightFromNeighbors(pos) > 11 - ((Integer)state.getValue(AGE)).intValue() - state.getLightOpacity())
         {
-            this.func_185681_a(worldIn, pos, state, rand, true);
+            this.slightlyMelt(worldIn, pos, state, rand, true);
         }
         else
         {
@@ -49,22 +50,24 @@ public class BlockFrostedIce extends BlockIce
     }
 
     /**
-     * Called when a neighboring block changes.
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
      */
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
     {
-        if (neighborBlock == this)
+        if (blockIn == this)
         {
-            int i = this.func_185680_c(worldIn, pos);
+            int i = this.countNeighbors(worldIn, pos);
 
             if (i < 2)
             {
-                this.func_185679_b(worldIn, pos);
+                this.turnIntoWater(worldIn, pos);
             }
         }
     }
 
-    private int func_185680_c(World p_185680_1_, BlockPos p_185680_2_)
+    private int countNeighbors(World p_185680_1_, BlockPos p_185680_2_)
     {
         int i = 0;
 
@@ -84,7 +87,7 @@ public class BlockFrostedIce extends BlockIce
         return i;
     }
 
-    protected void func_185681_a(World p_185681_1_, BlockPos p_185681_2_, IBlockState p_185681_3_, Random p_185681_4_, boolean p_185681_5_)
+    protected void slightlyMelt(World p_185681_1_, BlockPos p_185681_2_, IBlockState p_185681_3_, Random p_185681_4_, boolean p_185681_5_)
     {
         int i = ((Integer)p_185681_3_.getValue(AGE)).intValue();
 
@@ -95,7 +98,7 @@ public class BlockFrostedIce extends BlockIce
         }
         else
         {
-            this.func_185679_b(p_185681_1_, p_185681_2_);
+            this.turnIntoWater(p_185681_1_, p_185681_2_);
 
             if (p_185681_5_)
             {
@@ -106,7 +109,7 @@ public class BlockFrostedIce extends BlockIce
 
                     if (iblockstate.getBlock() == this)
                     {
-                        this.func_185681_a(p_185681_1_, blockpos, iblockstate, p_185681_4_, false);
+                        this.slightlyMelt(p_185681_1_, blockpos, iblockstate, p_185681_4_, false);
                     }
                 }
             }
@@ -118,6 +121,7 @@ public class BlockFrostedIce extends BlockIce
         return new BlockStateContainer(this, new IProperty[] {AGE});
     }
 
+    @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         return null;

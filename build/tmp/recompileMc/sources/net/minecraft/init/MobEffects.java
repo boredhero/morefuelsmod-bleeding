@@ -1,54 +1,56 @@
 package net.minecraft.init;
 
+import javax.annotation.Nullable;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.ResourceLocation;
 
 public class MobEffects
 {
-    public static final Potion moveSpeed;
-    public static final Potion moveSlowdown;
-    public static final Potion digSpeed;
-    public static final Potion digSlowdown;
-    public static final Potion damageBoost;
-    public static final Potion heal;
-    public static final Potion harm;
-    public static final Potion jump;
-    public static final Potion confusion;
+    public static final Potion SPEED;
+    public static final Potion SLOWNESS;
+    public static final Potion HASTE;
+    public static final Potion MINING_FATIGUE;
+    public static final Potion STRENGTH;
+    public static final Potion INSTANT_HEALTH;
+    public static final Potion INSTANT_DAMAGE;
+    public static final Potion JUMP_BOOST;
+    public static final Potion NAUSEA;
     /** The regeneration Potion object. */
-    public static final Potion regeneration;
-    public static final Potion resistance;
+    public static final Potion REGENERATION;
+    public static final Potion RESISTANCE;
     /** The fire resistance Potion object. */
-    public static final Potion fireResistance;
+    public static final Potion FIRE_RESISTANCE;
     /** The water breathing Potion object. */
-    public static final Potion waterBreathing;
+    public static final Potion WATER_BREATHING;
     /** The invisibility Potion object. */
-    public static final Potion invisibility;
+    public static final Potion INVISIBILITY;
     /** The blindness Potion object. */
-    public static final Potion blindness;
+    public static final Potion BLINDNESS;
     /** The night vision Potion object. */
-    public static final Potion nightVision;
+    public static final Potion NIGHT_VISION;
     /** The hunger Potion object. */
-    public static final Potion hunger;
+    public static final Potion HUNGER;
     /** The weakness Potion object. */
-    public static final Potion weakness;
+    public static final Potion WEAKNESS;
     /** The poison Potion object. */
-    public static final Potion poison;
+    public static final Potion POISON;
     /** The wither Potion object. */
-    public static final Potion wither;
+    public static final Potion WITHER;
     /** The health boost Potion object. */
-    public static final Potion healthBoost;
+    public static final Potion HEALTH_BOOST;
     /** The absorption Potion object. */
-    public static final Potion absorption;
+    public static final Potion ABSORPTION;
     /** The saturation Potion object. */
-    public static final Potion saturation;
-    public static final Potion glowing;
-    public static final Potion levitation;
-    public static final Potion luck;
-    public static final Potion unluck;
+    public static final Potion SATURATION;
+    public static final Potion GLOWING;
+    public static final Potion LEVITATION;
+    public static final Potion LUCK;
+    public static final Potion UNLUCK;
 
+    @Nullable
     private static Potion getRegisteredMobEffect(String id)
     {
-        Potion potion = (Potion)Potion.potionRegistry.getObject(new ResourceLocation(id));
+        Potion potion = (Potion)Potion.REGISTRY.getObject(new ResourceLocation(id));
 
         if (potion == null)
         {
@@ -68,33 +70,33 @@ public class MobEffects
         }
         else
         {
-            moveSpeed = getRegisteredMobEffect("speed");
-            moveSlowdown = getRegisteredMobEffect("slowness");
-            digSpeed = getRegisteredMobEffect("haste");
-            digSlowdown = getRegisteredMobEffect("mining_fatigue");
-            damageBoost = getRegisteredMobEffect("strength");
-            heal = getRegisteredMobEffect("instant_health");
-            harm = getRegisteredMobEffect("instant_damage");
-            jump = getRegisteredMobEffect("jump_boost");
-            confusion = getRegisteredMobEffect("nausea");
-            regeneration = getRegisteredMobEffect("regeneration");
-            resistance = getRegisteredMobEffect("resistance");
-            fireResistance = getRegisteredMobEffect("fire_resistance");
-            waterBreathing = getRegisteredMobEffect("water_breathing");
-            invisibility = getRegisteredMobEffect("invisibility");
-            blindness = getRegisteredMobEffect("blindness");
-            nightVision = getRegisteredMobEffect("night_vision");
-            hunger = getRegisteredMobEffect("hunger");
-            weakness = getRegisteredMobEffect("weakness");
-            poison = getRegisteredMobEffect("poison");
-            wither = getRegisteredMobEffect("wither");
-            healthBoost = getRegisteredMobEffect("health_boost");
-            absorption = getRegisteredMobEffect("absorption");
-            saturation = getRegisteredMobEffect("saturation");
-            glowing = getRegisteredMobEffect("glowing");
-            levitation = getRegisteredMobEffect("levitation");
-            luck = getRegisteredMobEffect("luck");
-            unluck = getRegisteredMobEffect("unluck");
+            SPEED = getRegisteredMobEffect("speed");
+            SLOWNESS = getRegisteredMobEffect("slowness");
+            HASTE = getRegisteredMobEffect("haste");
+            MINING_FATIGUE = getRegisteredMobEffect("mining_fatigue");
+            STRENGTH = getRegisteredMobEffect("strength");
+            INSTANT_HEALTH = getRegisteredMobEffect("instant_health");
+            INSTANT_DAMAGE = getRegisteredMobEffect("instant_damage");
+            JUMP_BOOST = getRegisteredMobEffect("jump_boost");
+            NAUSEA = getRegisteredMobEffect("nausea");
+            REGENERATION = getRegisteredMobEffect("regeneration");
+            RESISTANCE = getRegisteredMobEffect("resistance");
+            FIRE_RESISTANCE = getRegisteredMobEffect("fire_resistance");
+            WATER_BREATHING = getRegisteredMobEffect("water_breathing");
+            INVISIBILITY = getRegisteredMobEffect("invisibility");
+            BLINDNESS = getRegisteredMobEffect("blindness");
+            NIGHT_VISION = getRegisteredMobEffect("night_vision");
+            HUNGER = getRegisteredMobEffect("hunger");
+            WEAKNESS = getRegisteredMobEffect("weakness");
+            POISON = getRegisteredMobEffect("poison");
+            WITHER = getRegisteredMobEffect("wither");
+            HEALTH_BOOST = getRegisteredMobEffect("health_boost");
+            ABSORPTION = getRegisteredMobEffect("absorption");
+            SATURATION = getRegisteredMobEffect("saturation");
+            GLOWING = getRegisteredMobEffect("glowing");
+            LEVITATION = getRegisteredMobEffect("levitation");
+            LUCK = getRegisteredMobEffect("luck");
+            UNLUCK = getRegisteredMobEffect("unluck");
         }
     }
 }

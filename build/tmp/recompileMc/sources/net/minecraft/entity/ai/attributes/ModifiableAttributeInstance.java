@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -77,6 +78,7 @@ public class ModifiableAttributeInstance implements IAttributeInstance
     /**
      * Returns attribute modifier, if any, by the given UUID
      */
+    @Nullable
     public AttributeModifier getModifier(UUID uuid)
     {
         return (AttributeModifier)this.mapByUUID.get(uuid);
@@ -113,7 +115,7 @@ public class ModifiableAttributeInstance implements IAttributeInstance
     protected void flagForUpdate()
     {
         this.needsUpdate = true;
-        this.attributeMap.func_180794_a(this);
+        this.attributeMap.onAttributeModified(this);
     }
 
     public void removeModifier(AttributeModifier modifier)
@@ -203,7 +205,7 @@ public class ModifiableAttributeInstance implements IAttributeInstance
     {
         Set<AttributeModifier> set = Sets.newHashSet(this.getModifiersByOperation(operation));
 
-        for (IAttribute iattribute = this.genericAttribute.func_180372_d(); iattribute != null; iattribute = iattribute.func_180372_d())
+        for (IAttribute iattribute = this.genericAttribute.getParent(); iattribute != null; iattribute = iattribute.getParent())
         {
             IAttributeInstance iattributeinstance = this.attributeMap.getAttributeInstance(iattribute);
 

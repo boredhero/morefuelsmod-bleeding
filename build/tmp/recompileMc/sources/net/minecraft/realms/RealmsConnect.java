@@ -22,9 +22,9 @@ public class RealmsConnect
     private volatile boolean aborted = false;
     private NetworkManager connection;
 
-    public RealmsConnect(RealmsScreen p_i1079_1_)
+    public RealmsConnect(RealmsScreen onlineScreenIn)
     {
-        this.onlineScreen = p_i1079_1_;
+        this.onlineScreen = onlineScreenIn;
     }
 
     public void connect(final String p_connect_1_, final int p_connect_2_)
@@ -60,7 +60,7 @@ public class RealmsConnect
                         return;
                     }
 
-                    RealmsConnect.this.connection.sendPacket(new C00Handshake(107, p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN, true));
+                    RealmsConnect.this.connection.sendPacket(new C00Handshake(110, p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN, true));
 
                     if (RealmsConnect.this.aborted)
                     {

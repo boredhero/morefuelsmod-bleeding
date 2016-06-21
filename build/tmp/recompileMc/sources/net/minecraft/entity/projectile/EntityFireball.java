@@ -41,8 +41,7 @@ public abstract class EntityFireball extends Entity
     }
 
     /**
-     * Checks if the entity is in range to render by using the past in distance and comparing it to its average edge
-     * length * 64 * renderDistanceWeight Args: distance
+     * Checks if the entity is in range to render.
      */
     @SideOnly(Side.CLIENT)
     public boolean isInRangeToRenderDist(double distance)
@@ -96,7 +95,7 @@ public abstract class EntityFireball extends Entity
         {
             super.onUpdate();
 
-            if (this.func_184564_k())
+            if (this.isFireballFiery())
             {
                 this.setFire(1);
             }
@@ -127,7 +126,7 @@ public abstract class EntityFireball extends Entity
                 ++this.ticksInAir;
             }
 
-            RayTraceResult raytraceresult = ProjectileHelper.func_188802_a(this, true, this.ticksInAir >= 25, this.shootingEntity);
+            RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
 
             if (raytraceresult != null)
             {
@@ -137,7 +136,7 @@ public abstract class EntityFireball extends Entity
             this.posX += this.motionX;
             this.posY += this.motionY;
             this.posZ += this.motionZ;
-            ProjectileHelper.func_188803_a(this, 0.2F);
+            ProjectileHelper.rotateTowardsMovement(this, 0.2F);
             float f = this.getMotionFactor();
 
             if (this.isInWater())
@@ -166,7 +165,7 @@ public abstract class EntityFireball extends Entity
         }
     }
 
-    protected boolean func_184564_k()
+    protected boolean isFireballFiery()
     {
         return true;
     }
@@ -187,47 +186,47 @@ public abstract class EntityFireball extends Entity
     /**
      * Called when this EntityFireball hits a block or entity.
      */
-    protected abstract void onImpact(RayTraceResult movingObject);
+    protected abstract void onImpact(RayTraceResult result);
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
-    public void writeEntityToNBT(NBTTagCompound tagCompound)
+    public void writeEntityToNBT(NBTTagCompound compound)
     {
-        tagCompound.setInteger("xTile", this.xTile);
-        tagCompound.setInteger("yTile", this.yTile);
-        tagCompound.setInteger("zTile", this.zTile);
-        ResourceLocation resourcelocation = (ResourceLocation)Block.blockRegistry.getNameForObject(this.inTile);
-        tagCompound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
-        tagCompound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
-        tagCompound.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
-        tagCompound.setTag("power", this.newDoubleNBTList(new double[] {this.accelerationX, this.accelerationY, this.accelerationZ}));
-        tagCompound.setInteger("life", this.ticksAlive);
+        compound.setInteger("xTile", this.xTile);
+        compound.setInteger("yTile", this.yTile);
+        compound.setInteger("zTile", this.zTile);
+        ResourceLocation resourcelocation = (ResourceLocation)Block.REGISTRY.getNameForObject(this.inTile);
+        compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
+        compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
+        compound.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
+        compound.setTag("power", this.newDoubleNBTList(new double[] {this.accelerationX, this.accelerationY, this.accelerationZ}));
+        compound.setInteger("life", this.ticksAlive);
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readEntityFromNBT(NBTTagCompound tagCompund)
+    public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.xTile = tagCompund.getInteger("xTile");
-        this.yTile = tagCompund.getInteger("yTile");
-        this.zTile = tagCompund.getInteger("zTile");
+        this.xTile = compound.getInteger("xTile");
+        this.yTile = compound.getInteger("yTile");
+        this.zTile = compound.getInteger("zTile");
 
-        if (tagCompund.hasKey("inTile", 8))
+        if (compound.hasKey("inTile", 8))
         {
-            this.inTile = Block.getBlockFromName(tagCompund.getString("inTile"));
+            this.inTile = Block.getBlockFromName(compound.getString("inTile"));
         }
         else
         {
-            this.inTile = Block.getBlockById(tagCompund.getByte("inTile") & 255);
+            this.inTile = Block.getBlockById(compound.getByte("inTile") & 255);
         }
 
-        this.inGround = tagCompund.getByte("inGround") == 1;
+        this.inGround = compound.getByte("inGround") == 1;
 
-        if (tagCompund.hasKey("power", 9))
+        if (compound.hasKey("power", 9))
         {
-            NBTTagList nbttaglist = tagCompund.getTagList("power", 6);
+            NBTTagList nbttaglist = compound.getTagList("power", 6);
 
             if (nbttaglist.tagCount() == 3)
             {
@@ -237,11 +236,11 @@ public abstract class EntityFireball extends Entity
             }
         }
 
-        this.ticksAlive = tagCompund.getInteger("life");
+        this.ticksAlive = compound.getInteger("life");
 
-        if (tagCompund.hasKey("direction", 9) && tagCompund.getTagList("direction", 6).tagCount() == 3)
+        if (compound.hasKey("direction", 9) && compound.getTagList("direction", 6).tagCount() == 3)
         {
-            NBTTagList nbttaglist1 = tagCompund.getTagList("direction", 6);
+            NBTTagList nbttaglist1 = compound.getTagList("direction", 6);
             this.motionX = nbttaglist1.getDoubleAt(0);
             this.motionY = nbttaglist1.getDoubleAt(1);
             this.motionZ = nbttaglist1.getDoubleAt(2);

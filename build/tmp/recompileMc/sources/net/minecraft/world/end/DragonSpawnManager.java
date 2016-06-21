@@ -31,7 +31,7 @@ public enum DragonSpawnManager
             {
                 if (ticks == 0 || ticks == 50 || ticks == 51 || ticks == 52 || ticks >= 95)
                 {
-                    worldIn.playAuxSFX(3001, new BlockPos(0, 128, 0), 0);
+                    worldIn.playEvent(3001, new BlockPos(0, 128, 0), 0);
                 }
             }
             else
@@ -49,7 +49,7 @@ public enum DragonSpawnManager
 
             if (flag || flag1)
             {
-                WorldGenSpikes.EndSpike[] aworldgenspikes$endspike = BiomeEndDecorator.func_185426_a(worldIn);
+                WorldGenSpikes.EndSpike[] aworldgenspikes$endspike = BiomeEndDecorator.getSpikesForWorld(worldIn);
                 int j = ticks / i;
 
                 if (j < aworldgenspikes$endspike.length)
@@ -60,24 +60,24 @@ public enum DragonSpawnManager
                     {
                         for (EntityEnderCrystal entityendercrystal : crystals)
                         {
-                            entityendercrystal.setBeamTarget(new BlockPos(worldgenspikes$endspike.func_186151_a(), worldgenspikes$endspike.func_186149_d() + 1, worldgenspikes$endspike.func_186152_b()));
+                            entityendercrystal.setBeamTarget(new BlockPos(worldgenspikes$endspike.getCenterX(), worldgenspikes$endspike.getHeight() + 1, worldgenspikes$endspike.getCenterZ()));
                         }
                     }
                     else
                     {
                         int k = 10;
 
-                        for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(new BlockPos(worldgenspikes$endspike.func_186151_a() - k, worldgenspikes$endspike.func_186149_d() - k, worldgenspikes$endspike.func_186152_b() - k), new BlockPos(worldgenspikes$endspike.func_186151_a() + k, worldgenspikes$endspike.func_186149_d() + k, worldgenspikes$endspike.func_186152_b() + k)))
+                        for (BlockPos.MutableBlockPos blockpos$mutableblockpos : BlockPos.getAllInBoxMutable(new BlockPos(worldgenspikes$endspike.getCenterX() - k, worldgenspikes$endspike.getHeight() - k, worldgenspikes$endspike.getCenterZ() - k), new BlockPos(worldgenspikes$endspike.getCenterX() + k, worldgenspikes$endspike.getHeight() + k, worldgenspikes$endspike.getCenterZ() + k)))
                         {
                             worldIn.setBlockToAir(blockpos$mutableblockpos);
                         }
 
-                        worldIn.createExplosion((Entity)null, (double)((float)worldgenspikes$endspike.func_186151_a() + 0.5F), (double)worldgenspikes$endspike.func_186149_d(), (double)((float)worldgenspikes$endspike.func_186152_b() + 0.5F), 5.0F, true);
+                        worldIn.createExplosion((Entity)null, (double)((float)worldgenspikes$endspike.getCenterX() + 0.5F), (double)worldgenspikes$endspike.getHeight(), (double)((float)worldgenspikes$endspike.getCenterZ() + 0.5F), 5.0F, true);
                         WorldGenSpikes worldgenspikes = new WorldGenSpikes();
-                        worldgenspikes.func_186143_a(worldgenspikes$endspike);
-                        worldgenspikes.func_186144_a(true);
+                        worldgenspikes.setSpike(worldgenspikes$endspike);
+                        worldgenspikes.setCrystalInvulnerable(true);
                         worldgenspikes.setBeamTarget(new BlockPos(0, 128, 0));
-                        worldgenspikes.generate(worldIn, new Random(), new BlockPos(worldgenspikes$endspike.func_186151_a(), 45, worldgenspikes$endspike.func_186152_b()));
+                        worldgenspikes.generate(worldIn, new Random(), new BlockPos(worldgenspikes$endspike.getCenterX(), 45, worldgenspikes$endspike.getCenterZ()));
                     }
                 }
                 else if (flag)
@@ -93,7 +93,7 @@ public enum DragonSpawnManager
             if (ticks >= 100)
             {
                 manager.setRespawnState(END);
-                manager.func_186087_f();
+                manager.resetSpikeCrystals();
 
                 for (EntityEnderCrystal entityendercrystal : crystals)
                 {
@@ -104,7 +104,7 @@ public enum DragonSpawnManager
             }
             else if (ticks >= 80)
             {
-                worldIn.playAuxSFX(3001, new BlockPos(0, 128, 0), 0);
+                worldIn.playEvent(3001, new BlockPos(0, 128, 0), 0);
             }
             else if (ticks == 0)
             {
@@ -115,7 +115,7 @@ public enum DragonSpawnManager
             }
             else if (ticks < 5)
             {
-                worldIn.playAuxSFX(3001, new BlockPos(0, 128, 0), 0);
+                worldIn.playEvent(3001, new BlockPos(0, 128, 0), 0);
             }
         }
     },

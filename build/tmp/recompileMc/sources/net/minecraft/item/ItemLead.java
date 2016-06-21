@@ -17,7 +17,7 @@ public class ItemLead extends Item
 {
     public ItemLead()
     {
-        this.setCreativeTab(CreativeTabs.tabTools);
+        this.setCreativeTab(CreativeTabs.TOOLS);
     }
 
     /**

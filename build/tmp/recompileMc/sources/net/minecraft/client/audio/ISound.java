@@ -1,5 +1,6 @@
 package net.minecraft.client.audio;
 
+import javax.annotation.Nullable;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.relauncher.Side;
@@ -10,7 +11,8 @@ public interface ISound
 {
     ResourceLocation getSoundLocation();
 
-    SoundEventAccessor func_184366_a(SoundHandler p_184366_1_);
+    @Nullable
+    SoundEventAccessor createAccessor(SoundHandler handler);
 
     Sound getSound();
 

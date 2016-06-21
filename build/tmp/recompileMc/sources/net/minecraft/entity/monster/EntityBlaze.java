@@ -1,5 +1,6 @@
 package net.minecraft.entity.monster;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -68,22 +69,22 @@ public class EntityBlaze extends EntityMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataWatcher.register(ON_FIRE, Byte.valueOf((byte)0));
+        this.dataManager.register(ON_FIRE, Byte.valueOf((byte)0));
     }
 
     protected SoundEvent getAmbientSound()
     {
-        return SoundEvents.entity_blaze_ambient;
+        return SoundEvents.ENTITY_BLAZE_AMBIENT;
     }
 
     protected SoundEvent getHurtSound()
     {
-        return SoundEvents.entity_blaze_hurt;
+        return SoundEvents.ENTITY_BLAZE_HURT;
     }
 
     protected SoundEvent getDeathSound()
     {
-        return SoundEvents.entity_blaze_death;
+        return SoundEvents.ENTITY_BLAZE_DEATH;
     }
 
     @SideOnly(Side.CLIENT)
@@ -115,7 +116,7 @@ public class EntityBlaze extends EntityMob
         {
             if (this.rand.nextInt(24) == 0 && !this.isSilent())
             {
-                this.worldObj.playSound(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, SoundEvents.entity_blaze_burn, this.getSoundCategory(), 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.7F + 0.3F, false);
+                this.worldObj.playSound(this.posX + 0.5D, this.posY + 0.5D, this.posZ + 0.5D, SoundEvents.ENTITY_BLAZE_BURN, this.getSoundCategory(), 1.0F + this.rand.nextFloat(), this.rand.nextFloat() * 0.7F + 0.3F, false);
             }
 
             for (int i = 0; i < 2; ++i)
@@ -162,22 +163,23 @@ public class EntityBlaze extends EntityMob
      */
     public boolean isBurning()
     {
-        return this.func_70845_n();
+        return this.isCharged();
     }
 
+    @Nullable
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_BLAZE;
     }
 
-    public boolean func_70845_n()
+    public boolean isCharged()
     {
-        return (((Byte)this.dataWatcher.get(ON_FIRE)).byteValue() & 1) != 0;
+        return (((Byte)this.dataManager.get(ON_FIRE)).byteValue() & 1) != 0;
     }
 
     public void setOnFire(boolean onFire)
     {
-        byte b0 = ((Byte)this.dataWatcher.get(ON_FIRE)).byteValue();
+        byte b0 = ((Byte)this.dataManager.get(ON_FIRE)).byteValue();
 
         if (onFire)
         {
@@ -188,7 +190,7 @@ public class EntityBlaze extends EntityMob
             b0 = (byte)(b0 & -2);
         }
 
-        this.dataWatcher.set(ON_FIRE, Byte.valueOf(b0));
+        this.dataManager.set(ON_FIRE, Byte.valueOf(b0));
     }
 
     /**
@@ -202,8 +204,8 @@ public class EntityBlaze extends EntityMob
     static class AIFireballAttack extends EntityAIBase
         {
             private EntityBlaze blaze;
-            private int field_179467_b;
-            private int field_179468_c;
+            private int attackStep;
+            private int attackTime;
 
             public AIFireballAttack(EntityBlaze blazeIn)
             {
@@ -225,7 +227,7 @@ public class EntityBlaze extends EntityMob
              */
             public void startExecuting()
             {
-                this.field_179467_b = 0;
+                this.attackStep = 0;
             }
 
             /**
@@ -241,15 +243,15 @@ public class EntityBlaze extends EntityMob
              */
             public void updateTask()
             {
-                --this.field_179468_c;
+                --this.attackTime;
                 EntityLivingBase entitylivingbase = this.blaze.getAttackTarget();
                 double d0 = this.blaze.getDistanceSqToEntity(entitylivingbase);
 
                 if (d0 < 4.0D)
                 {
-                    if (this.field_179468_c <= 0)
+                    if (this.attackTime <= 0)
                     {
-                        this.field_179468_c = 20;
+                        this.attackTime = 20;
                         this.blaze.attackEntityAsMob(entitylivingbase);
                     }
 
@@ -261,30 +263,30 @@ public class EntityBlaze extends EntityMob
                     double d2 = entitylivingbase.getEntityBoundingBox().minY + (double)(entitylivingbase.height / 2.0F) - (this.blaze.posY + (double)(this.blaze.height / 2.0F));
                     double d3 = entitylivingbase.posZ - this.blaze.posZ;
 
-                    if (this.field_179468_c <= 0)
+                    if (this.attackTime <= 0)
                     {
-                        ++this.field_179467_b;
+                        ++this.attackStep;
 
-                        if (this.field_179467_b == 1)
+                        if (this.attackStep == 1)
                         {
-                            this.field_179468_c = 60;
+                            this.attackTime = 60;
                             this.blaze.setOnFire(true);
                         }
-                        else if (this.field_179467_b <= 4)
+                        else if (this.attackStep <= 4)
                         {
-                            this.field_179468_c = 6;
+                            this.attackTime = 6;
                         }
                         else
                         {
-                            this.field_179468_c = 100;
-                            this.field_179467_b = 0;
+                            this.attackTime = 100;
+                            this.attackStep = 0;
                             this.blaze.setOnFire(false);
                         }
 
-                        if (this.field_179467_b > 1)
+                        if (this.attackStep > 1)
                         {
                             float f = MathHelper.sqrt_float(MathHelper.sqrt_double(d0)) * 0.5F;
-                            this.blaze.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1018, new BlockPos((int)this.blaze.posX, (int)this.blaze.posY, (int)this.blaze.posZ), 0);
+                            this.blaze.worldObj.playEvent((EntityPlayer)null, 1018, new BlockPos((int)this.blaze.posX, (int)this.blaze.posY, (int)this.blaze.posZ), 0);
 
                             for (int i = 0; i < 1; ++i)
                             {

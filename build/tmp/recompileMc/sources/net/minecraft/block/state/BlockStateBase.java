@@ -6,6 +6,7 @@ import com.google.common.collect.Iterables;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.properties.IProperty;
 
@@ -14,7 +15,8 @@ public abstract class BlockStateBase implements IBlockState
     private static final Joiner COMMA_JOINER = Joiner.on(',');
     private static final Function < Entry < IProperty<?>, Comparable<? >> , String > MAP_ENTRY_TO_STRING = new Function < Entry < IProperty<?>, Comparable<? >> , String > ()
     {
-        public String apply(Entry < IProperty<?>, Comparable<? >> p_apply_1_)
+        @Nullable
+        public String apply(@Nullable Entry < IProperty<?>, Comparable<? >> p_apply_1_)
         {
             if (p_apply_1_ == null)
             {
@@ -60,7 +62,7 @@ public abstract class BlockStateBase implements IBlockState
     public String toString()
     {
         StringBuilder stringbuilder = new StringBuilder();
-        stringbuilder.append(Block.blockRegistry.getNameForObject(this.getBlock()));
+        stringbuilder.append(Block.REGISTRY.getNameForObject(this.getBlock()));
 
         if (!this.getProperties().isEmpty())
         {

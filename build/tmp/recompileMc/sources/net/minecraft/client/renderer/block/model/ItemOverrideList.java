@@ -2,6 +2,7 @@ package net.minecraft.client.renderer.block.model;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -27,14 +28,15 @@ public class ItemOverrideList
         }
     }
 
+    @Nullable
     @Deprecated
-    public ResourceLocation applyOverride(ItemStack p_188021_1_, World p_188021_2_, EntityLivingBase p_188021_3_)
+    public ResourceLocation applyOverride(ItemStack stack, @Nullable World worldIn, @Nullable EntityLivingBase entityIn)
     {
         if (!this.overrides.isEmpty())
         {
             for (ItemOverride itemoverride : this.overrides)
             {
-                if (itemoverride.matchesItemStack(p_188021_1_, p_188021_2_, p_188021_3_))
+                if (itemoverride.matchesItemStack(stack, worldIn, entityIn))
                 {
                     return itemoverride.getLocation();
                 }

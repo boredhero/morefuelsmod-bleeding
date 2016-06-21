@@ -19,9 +19,9 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.biome.BiomeProviderSingle;
 import net.minecraft.world.storage.ISaveHandler;
-import net.minecraft.world.storage.SaveFormatComparator;
 import net.minecraft.world.storage.SaveFormatOld;
 import net.minecraft.world.storage.WorldInfo;
+import net.minecraft.world.storage.WorldSummary;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.StringUtils;
@@ -30,11 +30,11 @@ import org.apache.logging.log4j.Logger;
 
 public class AnvilSaveConverter extends SaveFormatOld
 {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
-    public AnvilSaveConverter(File p_i46649_1_, DataFixer dataFixerIn)
+    public AnvilSaveConverter(File dir, DataFixer dataFixerIn)
     {
-        super(p_i46649_1_, dataFixerIn);
+        super(dir, dataFixerIn);
     }
 
     /**
@@ -47,11 +47,11 @@ public class AnvilSaveConverter extends SaveFormatOld
     }
 
     @SideOnly(Side.CLIENT)
-    public List<SaveFormatComparator> getSaveList() throws AnvilConverterException
+    public List<WorldSummary> getSaveList() throws AnvilConverterException
     {
         if (this.savesDirectory != null && this.savesDirectory.exists() && this.savesDirectory.isDirectory())
         {
-            List<SaveFormatComparator> list = Lists.<SaveFormatComparator>newArrayList();
+            List<WorldSummary> list = Lists.<WorldSummary>newArrayList();
             File[] afile = this.savesDirectory.listFiles();
 
             for (File file1 : afile)
@@ -72,7 +72,7 @@ public class AnvilSaveConverter extends SaveFormatOld
                         }
 
                         long i = 0L;
-                        list.add(new SaveFormatComparator(worldinfo, s, s1, i, flag));
+                        list.add(new WorldSummary(worldinfo, s, s1, i, flag));
                     }
                 }
             }
@@ -132,7 +132,7 @@ public class AnvilSaveConverter extends SaveFormatOld
         File file1 = new File(this.savesDirectory, filename);
         File file2 = new File(file1, "DIM-1");
         File file3 = new File(file1, "DIM1");
-        logger.info("Scanning folders...");
+        LOGGER.info("Scanning folders...");
         this.addRegionFilesToCollection(file1, list);
 
         if (file2.exists())
@@ -146,13 +146,13 @@ public class AnvilSaveConverter extends SaveFormatOld
         }
 
         int i = list.size() + list1.size() + list2.size();
-        logger.info("Total conversion count is " + i);
+        LOGGER.info("Total conversion count is " + i);
         WorldInfo worldinfo = this.getWorldInfo(filename);
         BiomeProvider biomeprovider = null;
 
         if (worldinfo.getTerrainType() == WorldType.FLAT)
         {
-            biomeprovider = new BiomeProviderSingle(Biomes.plains);
+            biomeprovider = new BiomeProviderSingle(Biomes.PLAINS);
         }
         else
         {
@@ -160,8 +160,8 @@ public class AnvilSaveConverter extends SaveFormatOld
         }
 
         this.convertFile(new File(file1, "region"), list, biomeprovider, 0, i, progressCallback);
-        this.convertFile(new File(file2, "region"), list1, new BiomeProviderSingle(Biomes.hell), list.size(), i, progressCallback);
-        this.convertFile(new File(file3, "region"), list2, new BiomeProviderSingle(Biomes.sky), list.size() + list1.size(), i, progressCallback);
+        this.convertFile(new File(file2, "region"), list1, new BiomeProviderSingle(Biomes.HELL), list.size(), i, progressCallback);
+        this.convertFile(new File(file3, "region"), list2, new BiomeProviderSingle(Biomes.SKY), list.size() + list1.size(), i, progressCallback);
         worldinfo.setSaveVersion(19133);
 
         if (worldinfo.getTerrainType() == WorldType.DEFAULT_1_1)
@@ -184,7 +184,7 @@ public class AnvilSaveConverter extends SaveFormatOld
 
         if (!file1.exists())
         {
-            logger.warn("Unable to create level.dat_mcr backup");
+            LOGGER.warn("Unable to create level.dat_mcr backup");
         }
         else
         {
@@ -192,7 +192,7 @@ public class AnvilSaveConverter extends SaveFormatOld
 
             if (!file2.exists())
             {
-                logger.warn("Unable to create level.dat_mcr backup");
+                LOGGER.warn("Unable to create level.dat_mcr backup");
             }
             else
             {
@@ -200,33 +200,33 @@ public class AnvilSaveConverter extends SaveFormatOld
 
                 if (!file2.renameTo(file3))
                 {
-                    logger.warn("Unable to create level.dat_mcr backup");
+                    LOGGER.warn("Unable to create level.dat_mcr backup");
                 }
             }
         }
     }
 
-    private void convertFile(File p_75813_1_, Iterable<File> p_75813_2_, BiomeProvider p_75813_3_, int p_75813_4_, int p_75813_5_, IProgressUpdate p_75813_6_)
+    private void convertFile(File baseFolder, Iterable<File> regionFiles, BiomeProvider p_75813_3_, int p_75813_4_, int p_75813_5_, IProgressUpdate progress)
     {
-        for (File file1 : p_75813_2_)
+        for (File file1 : regionFiles)
         {
-            this.convertChunks(p_75813_1_, file1, p_75813_3_, p_75813_4_, p_75813_5_, p_75813_6_);
+            this.convertChunks(baseFolder, file1, p_75813_3_, p_75813_4_, p_75813_5_, progress);
             ++p_75813_4_;
             int i = (int)Math.round(100.0D * (double)p_75813_4_ / (double)p_75813_5_);
-            p_75813_6_.setLoadingProgress(i);
+            progress.setLoadingProgress(i);
         }
     }
 
     /**
      * copies a 32x32 chunk set from par2File to par1File, via AnvilConverterData
      */
-    private void convertChunks(File p_75811_1_, File p_75811_2_, BiomeProvider p_75811_3_, int p_75811_4_, int p_75811_5_, IProgressUpdate progressCallback)
+    private void convertChunks(File baseFolder, File p_75811_2_, BiomeProvider biomeSource, int p_75811_4_, int p_75811_5_, IProgressUpdate progressCallback)
     {
         try
         {
             String s = p_75811_2_.getName();
             RegionFile regionfile = new RegionFile(p_75811_2_);
-            RegionFile regionfile1 = new RegionFile(new File(p_75811_1_, s.substring(0, s.length() - ".mcr".length()) + ".mca"));
+            RegionFile regionfile1 = new RegionFile(new File(baseFolder, s.substring(0, s.length() - ".mcr".length()) + ".mca"));
 
             for (int i = 0; i < 32; ++i)
             {
@@ -238,7 +238,7 @@ public class AnvilSaveConverter extends SaveFormatOld
 
                         if (datainputstream == null)
                         {
-                            logger.warn("Failed to fetch input stream");
+                            LOGGER.warn("Failed to fetch input stream");
                         }
                         else
                         {
@@ -249,7 +249,7 @@ public class AnvilSaveConverter extends SaveFormatOld
                             NBTTagCompound nbttagcompound2 = new NBTTagCompound();
                             NBTTagCompound nbttagcompound3 = new NBTTagCompound();
                             nbttagcompound2.setTag("Level", nbttagcompound3);
-                            ChunkLoader.convertToAnvilFormat(chunkloader$anvilconverterdata, nbttagcompound3, p_75811_3_);
+                            ChunkLoader.convertToAnvilFormat(chunkloader$anvilconverterdata, nbttagcompound3, biomeSource);
                             DataOutputStream dataoutputstream = regionfile1.getChunkDataOutputStream(i, j);
                             CompressedStreamTools.write(nbttagcompound2, dataoutputstream);
                             dataoutputstream.close();

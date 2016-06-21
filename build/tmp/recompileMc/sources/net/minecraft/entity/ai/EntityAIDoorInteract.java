@@ -5,7 +5,7 @@ import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.pathfinding.PathEntity;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.BlockPos;
@@ -43,13 +43,13 @@ public abstract class EntityAIDoorInteract extends EntityAIBase
         else
         {
             PathNavigateGround pathnavigateground = (PathNavigateGround)this.theEntity.getNavigator();
-            PathEntity pathentity = pathnavigateground.getPath();
+            Path path = pathnavigateground.getPath();
 
-            if (pathentity != null && !pathentity.isFinished() && pathnavigateground.getEnterDoors())
+            if (path != null && !path.isFinished() && pathnavigateground.getEnterDoors())
             {
-                for (int i = 0; i < Math.min(pathentity.getCurrentPathIndex() + 2, pathentity.getCurrentPathLength()); ++i)
+                for (int i = 0; i < Math.min(path.getCurrentPathIndex() + 2, path.getCurrentPathLength()); ++i)
                 {
-                    PathPoint pathpoint = pathentity.getPathPointFromIndex(i);
+                    PathPoint pathpoint = path.getPathPointFromIndex(i);
                     this.doorPosition = new BlockPos(pathpoint.xCoord, pathpoint.yCoord + 1, pathpoint.zCoord);
 
                     if (this.theEntity.getDistanceSq((double)this.doorPosition.getX(), this.theEntity.posY, (double)this.doorPosition.getZ()) <= 2.25D)
@@ -111,6 +111,6 @@ public abstract class EntityAIDoorInteract extends EntityAIBase
     {
         IBlockState iblockstate = this.theEntity.worldObj.getBlockState(pos);
         Block block = iblockstate.getBlock();
-        return block instanceof BlockDoor && iblockstate.getMaterial() == Material.wood ? (BlockDoor)block : null;
+        return block instanceof BlockDoor && iblockstate.getMaterial() == Material.WOOD ? (BlockDoor)block : null;
     }
 }

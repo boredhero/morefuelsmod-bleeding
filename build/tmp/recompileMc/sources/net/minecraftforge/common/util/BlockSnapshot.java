@@ -38,7 +38,7 @@ public class BlockSnapshot implements Serializable
         this.dimId = world.provider.getDimension();
         this.pos = pos;
         this.setReplacedBlock(state);
-        this.registryName = new ResourceLocation(state.getBlock().getRegistryName());
+        this.registryName = state.getBlock().getRegistryName();
         this.meta = state.getBlock().getMetaFromState(state);
         this.setFlag(3);
         TileEntity te = world.getTileEntity(pos);
@@ -58,9 +58,9 @@ public class BlockSnapshot implements Serializable
     {
         this.setWorld(world);
         this.dimId = world.provider.getDimension();
-        this.pos = pos.getImmutable();
+        this.pos = pos.toImmutable();
         this.setReplacedBlock(state);
-        this.registryName = new ResourceLocation(state.getBlock().getRegistryName());
+        this.registryName = state.getBlock().getRegistryName();
         this.meta = state.getBlock().getMetaFromState(state);
         this.setFlag(3);
         this.nbt = nbt;
@@ -82,7 +82,7 @@ public class BlockSnapshot implements Serializable
     public BlockSnapshot(int dimension, BlockPos pos, String modId, String blockName, int meta, int flag, NBTTagCompound nbt)
     {
         this.dimId = dimension;
-        this.pos = pos.getImmutable();
+        this.pos = pos.toImmutable();
         this.setFlag(flag);
         this.registryName = new ResourceLocation(modId, blockName);
         this.meta = meta;
@@ -139,7 +139,7 @@ public class BlockSnapshot implements Serializable
     public TileEntity getTileEntity()
     {
         if (getNbt() != null)
-            return TileEntity.createTileEntity(getWorld().getMinecraftServer(), getNbt());
+            return TileEntity.create(getNbt());
         else return null;
     }
 
@@ -178,6 +178,7 @@ public class BlockSnapshot implements Serializable
             if (te != null)
             {
                 te.readFromNBT(getNbt());
+                te.markDirty();
             }
         }
 
@@ -213,6 +214,7 @@ public class BlockSnapshot implements Serializable
             if (te != null)
             {
                 te.readFromNBT(getNbt());
+                te.markDirty();
             }
         }
 

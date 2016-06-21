@@ -17,24 +17,24 @@ public class BlockBeetroot extends BlockCrops
     public static final PropertyInteger BEETROOT_AGE = PropertyInteger.create("age", 0, 3);
     private static final AxisAlignedBB[] BEETROOT_AABB = new AxisAlignedBB[] {new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.25D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.375D, 1.0D), new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D)};
 
-    protected PropertyInteger getAge()
+    protected PropertyInteger getAgeProperty()
     {
         return BEETROOT_AGE;
     }
 
-    public int func_185526_g()
+    public int getMaxAge()
     {
         return 3;
     }
 
     protected Item getSeed()
     {
-        return Items.beetroot_seeds;
+        return Items.BEETROOT_SEEDS;
     }
 
     protected Item getCrop()
     {
-        return Items.beetroot;
+        return Items.BEETROOT;
     }
 
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
@@ -49,9 +49,9 @@ public class BlockBeetroot extends BlockCrops
         }
     }
 
-    protected int func_185529_b(World worldIn)
+    protected int getBonemealAgeIncrease(World worldIn)
     {
-        return super.func_185529_b(worldIn) / 3;
+        return super.getBonemealAgeIncrease(worldIn) / 3;
     }
 
     protected BlockStateContainer createBlockState()
@@ -61,6 +61,6 @@ public class BlockBeetroot extends BlockCrops
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
-        return BEETROOT_AABB[((Integer)state.getValue(this.getAge())).intValue()];
+        return BEETROOT_AABB[((Integer)state.getValue(this.getAgeProperty())).intValue()];
     }
 }

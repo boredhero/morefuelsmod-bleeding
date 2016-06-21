@@ -88,7 +88,7 @@ public class ClickEvent
         SUGGEST_COMMAND("suggest_command", true),
         CHANGE_PAGE("change_page", true);
 
-        private static final Map<String, ClickEvent.Action> nameMapping = Maps.<String, ClickEvent.Action>newHashMap();
+        private static final Map<String, ClickEvent.Action> NAME_MAPPING = Maps.<String, ClickEvent.Action>newHashMap();
         private final boolean allowedInChat;
         /** The canonical name used to refer to this action. */
         private final String canonicalName;
@@ -120,14 +120,14 @@ public class ClickEvent
          */
         public static ClickEvent.Action getValueByCanonicalName(String canonicalNameIn)
         {
-            return (ClickEvent.Action)nameMapping.get(canonicalNameIn);
+            return (ClickEvent.Action)NAME_MAPPING.get(canonicalNameIn);
         }
 
         static
         {
             for (ClickEvent.Action clickevent$action : values())
             {
-                nameMapping.put(clickevent$action.getCanonicalName(), clickevent$action);
+                NAME_MAPPING.put(clickevent$action.getCanonicalName(), clickevent$action);
             }
         }
     }

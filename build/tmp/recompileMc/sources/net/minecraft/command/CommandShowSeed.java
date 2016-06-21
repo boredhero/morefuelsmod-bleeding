@@ -9,9 +9,6 @@ public class CommandShowSeed extends CommandBase
 {
     /**
      * Check if the given ICommandSender has permission to execute this command
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The command sender who we are checking permission on
      */
     public boolean checkPermission(MinecraftServer server, ICommandSender sender)
     {
@@ -44,10 +41,6 @@ public class CommandShowSeed extends CommandBase
 
     /**
      * Callback for when the command is executed
-     *  
-     * @param server The Minecraft server instance
-     * @param sender The source of the command invocation
-     * @param args The arguments that were passed
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {

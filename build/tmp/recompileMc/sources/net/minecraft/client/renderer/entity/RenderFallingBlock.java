@@ -41,7 +41,7 @@ public class RenderFallingBlock extends Render<EntityFallingBlock>
 
                 if (iblockstate != world.getBlockState(new BlockPos(entity)) && iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
                 {
-                    this.bindTexture(TextureMap.locationBlocksTexture);
+                    this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                     GlStateManager.pushMatrix();
                     GlStateManager.disableLighting();
                     Tessellator tessellator = Tessellator.getInstance();
@@ -57,7 +57,7 @@ public class RenderFallingBlock extends Render<EntityFallingBlock>
                     BlockPos blockpos = new BlockPos(entity.posX, entity.getEntityBoundingBox().maxY, entity.posZ);
                     GlStateManager.translate((float)(x - (double)blockpos.getX() - 0.5D), (float)(y - (double)blockpos.getY()), (float)(z - (double)blockpos.getZ() - 0.5D));
                     BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();
-                    blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(iblockstate), iblockstate, blockpos, vertexbuffer, false, MathHelper.getPositionRandom(entity.func_184531_j()));
+                    blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(iblockstate), iblockstate, blockpos, vertexbuffer, false, MathHelper.getPositionRandom(entity.getOrigin()));
                     tessellator.draw();
 
                     if (this.renderOutlines)
@@ -79,6 +79,6 @@ public class RenderFallingBlock extends Render<EntityFallingBlock>
      */
     protected ResourceLocation getEntityTexture(EntityFallingBlock entity)
     {
-        return TextureMap.locationBlocksTexture;
+        return TextureMap.LOCATION_BLOCKS_TEXTURE;
     }
 }

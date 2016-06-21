@@ -36,9 +36,9 @@ public class EntityAIHurtByTarget extends EntityAITarget
     public void startExecuting()
     {
         this.taskOwner.setAttackTarget(this.taskOwner.getAITarget());
-        this.field_188509_g = this.taskOwner.getAttackTarget();
+        this.target = this.taskOwner.getAttackTarget();
         this.revengeTimerOld = this.taskOwner.getRevengeTimer();
-        this.field_188510_h = 300;
+        this.unseenMemoryTicks = 300;
 
         if (this.entityCallsForHelp)
         {

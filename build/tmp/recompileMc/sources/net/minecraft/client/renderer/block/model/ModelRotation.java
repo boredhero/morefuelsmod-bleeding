@@ -29,7 +29,7 @@ public enum ModelRotation implements net.minecraftforge.common.model.IModelState
     X270_Y180(270, 180),
     X270_Y270(270, 270);
 
-    private static final Map<Integer, ModelRotation> mapRotations = Maps.<Integer, ModelRotation>newHashMap();
+    private static final Map<Integer, ModelRotation> MAP_ROTATIONS = Maps.<Integer, ModelRotation>newHashMap();
     private final int combinedXY;
     private final Matrix4f matrix4d;
     private final int quartersX;
@@ -104,16 +104,16 @@ public enum ModelRotation implements net.minecraftforge.common.model.IModelState
         return i;
     }
 
-    public static ModelRotation getModelRotation(int p_177524_0_, int p_177524_1_)
+    public static ModelRotation getModelRotation(int x, int y)
     {
-        return (ModelRotation)mapRotations.get(Integer.valueOf(combineXY(MathHelper.normalizeAngle(p_177524_0_, 360), MathHelper.normalizeAngle(p_177524_1_, 360))));
+        return (ModelRotation)MAP_ROTATIONS.get(Integer.valueOf(combineXY(MathHelper.normalizeAngle(x, 360), MathHelper.normalizeAngle(y, 360))));
     }
 
     static
     {
         for (ModelRotation modelrotation : values())
         {
-            mapRotations.put(Integer.valueOf(modelrotation.combinedXY), modelrotation);
+            MAP_ROTATIONS.put(Integer.valueOf(modelrotation.combinedXY), modelrotation);
         }
     }
 

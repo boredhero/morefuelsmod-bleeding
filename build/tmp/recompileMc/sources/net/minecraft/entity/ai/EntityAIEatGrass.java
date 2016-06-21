@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 public class EntityAIEatGrass extends EntityAIBase
 {
-    private static final Predicate<IBlockState> field_179505_b = BlockStateMatcher.forBlock(Blocks.tallgrass).where(BlockTallGrass.TYPE, Predicates.equalTo(BlockTallGrass.EnumType.GRASS));
+    private static final Predicate<IBlockState> IS_TALL_GRASS = BlockStateMatcher.forBlock(Blocks.TALLGRASS).where(BlockTallGrass.TYPE, Predicates.equalTo(BlockTallGrass.EnumType.GRASS));
     /** The entity owner of this AITask */
     private EntityLiving grassEaterEntity;
     /** The world the grass eater entity is eating from */
@@ -40,7 +40,7 @@ public class EntityAIEatGrass extends EntityAIBase
         else
         {
             BlockPos blockpos = new BlockPos(this.grassEaterEntity.posX, this.grassEaterEntity.posY, this.grassEaterEntity.posZ);
-            return field_179505_b.apply(this.entityWorld.getBlockState(blockpos)) ? true : this.entityWorld.getBlockState(blockpos.down()).getBlock() == Blocks.grass;
+            return IS_TALL_GRASS.apply(this.entityWorld.getBlockState(blockpos)) ? true : this.entityWorld.getBlockState(blockpos.down()).getBlock() == Blocks.GRASS;
         }
     }
 
@@ -89,7 +89,7 @@ public class EntityAIEatGrass extends EntityAIBase
         {
             BlockPos blockpos = new BlockPos(this.grassEaterEntity.posX, this.grassEaterEntity.posY, this.grassEaterEntity.posZ);
 
-            if (field_179505_b.apply(this.entityWorld.getBlockState(blockpos)))
+            if (IS_TALL_GRASS.apply(this.entityWorld.getBlockState(blockpos)))
             {
                 if (this.entityWorld.getGameRules().getBoolean("mobGriefing"))
                 {
@@ -102,12 +102,12 @@ public class EntityAIEatGrass extends EntityAIBase
             {
                 BlockPos blockpos1 = blockpos.down();
 
-                if (this.entityWorld.getBlockState(blockpos1).getBlock() == Blocks.grass)
+                if (this.entityWorld.getBlockState(blockpos1).getBlock() == Blocks.GRASS)
                 {
                     if (this.entityWorld.getGameRules().getBoolean("mobGriefing"))
                     {
-                        this.entityWorld.playAuxSFX(2001, blockpos1, Block.getIdFromBlock(Blocks.grass));
-                        this.entityWorld.setBlockState(blockpos1, Blocks.dirt.getDefaultState(), 2);
+                        this.entityWorld.playEvent(2001, blockpos1, Block.getIdFromBlock(Blocks.GRASS));
+                        this.entityWorld.setBlockState(blockpos1, Blocks.DIRT.getDefaultState(), 2);
                     }
 
                     this.grassEaterEntity.eatGrassBonus();

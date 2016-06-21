@@ -1,11 +1,17 @@
 package net.minecraft.network.play.server;
 
+import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map.Entry;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.fml.relauncher.Side;
@@ -15,22 +21,37 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
 {
     private int chunkX;
     private int chunkZ;
-    private int field_186948_c;
-    private byte[] field_186949_d;
-    private boolean field_149279_g;
+    private int availableSections;
+    private byte[] buffer;
+    private List<NBTTagCompound> tileEntityTags;
+    private boolean loadChunk;
 
     public SPacketChunkData()
     {
     }
 
-    public SPacketChunkData(Chunk chunkIn, boolean p_i46941_2_, int p_i46941_3_)
+    public SPacketChunkData(Chunk p_i47124_1_, int p_i47124_2_)
     {
-        this.chunkX = chunkIn.xPosition;
-        this.chunkZ = chunkIn.zPosition;
-        this.field_149279_g = p_i46941_2_;
-        boolean flag = !chunkIn.getWorld().provider.getHasNoSky();
-        this.field_186949_d = new byte[func_186944_a(chunkIn, p_i46941_2_, flag, p_i46941_3_)];
-        this.field_186948_c = func_186947_a(new PacketBuffer(this.func_186945_f()), chunkIn, p_i46941_2_, flag, p_i46941_3_);
+        this.chunkX = p_i47124_1_.xPosition;
+        this.chunkZ = p_i47124_1_.zPosition;
+        this.loadChunk = p_i47124_2_ == 65535;
+        boolean flag = !p_i47124_1_.getWorld().provider.getHasNoSky();
+        this.buffer = new byte[this.calculateChunkSize(p_i47124_1_, flag, p_i47124_2_)];
+        this.availableSections = this.extractChunkData(new PacketBuffer(this.getWriteBuffer()), p_i47124_1_, flag, p_i47124_2_);
+        this.tileEntityTags = Lists.<NBTTagCompound>newArrayList();
+
+        for (Entry<BlockPos, TileEntity> entry : p_i47124_1_.getTileEntityMap().entrySet())
+        {
+            BlockPos blockpos = (BlockPos)entry.getKey();
+            TileEntity tileentity = (TileEntity)entry.getValue();
+            int i = blockpos.getY() >> 4;
+
+            if (this.doChunkLoad() || (p_i47124_2_ & 1 << i) != 0)
+            {
+                NBTTagCompound nbttagcompound = tileentity.getUpdateTag();
+                this.tileEntityTags.add(nbttagcompound);
+            }
+        }
     }
 
     /**
@@ -40,8 +61,8 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
     {
         this.chunkX = buf.readInt();
         this.chunkZ = buf.readInt();
-        this.field_149279_g = buf.readBoolean();
-        this.field_186948_c = buf.readVarIntFromBuffer();
+        this.loadChunk = buf.readBoolean();
+        this.availableSections = buf.readVarIntFromBuffer();
         int i = buf.readVarIntFromBuffer();
 
         if (i > 2097152)
@@ -50,8 +71,15 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
         }
         else
         {
-            this.field_186949_d = new byte[i];
-            buf.readBytes(this.field_186949_d);
+            this.buffer = new byte[i];
+            buf.readBytes(this.buffer);
+            int j = buf.readVarIntFromBuffer();
+            this.tileEntityTags = Lists.<NBTTagCompound>newArrayList();
+
+            for (int k = 0; k < j; ++k)
+            {
+                this.tileEntityTags.add(buf.readNBTTagCompoundFromBuffer());
+            }
         }
     }
 
@@ -62,10 +90,16 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
     {
         buf.writeInt(this.chunkX);
         buf.writeInt(this.chunkZ);
-        buf.writeBoolean(this.field_149279_g);
-        buf.writeVarIntToBuffer(this.field_186948_c);
-        buf.writeVarIntToBuffer(this.field_186949_d.length);
-        buf.writeBytes(this.field_186949_d);
+        buf.writeBoolean(this.loadChunk);
+        buf.writeVarIntToBuffer(this.availableSections);
+        buf.writeVarIntToBuffer(this.buffer.length);
+        buf.writeBytes(this.buffer);
+        buf.writeVarIntToBuffer(this.tileEntityTags.size());
+
+        for (NBTTagCompound nbttagcompound : this.tileEntityTags)
+        {
+            buf.writeNBTTagCompoundToBuffer(nbttagcompound);
+        }
     }
 
     /**
@@ -77,74 +111,74 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public PacketBuffer func_186946_a()
+    public PacketBuffer getReadBuffer()
     {
-        return new PacketBuffer(Unpooled.wrappedBuffer(this.field_186949_d));
+        return new PacketBuffer(Unpooled.wrappedBuffer(this.buffer));
     }
 
-    private ByteBuf func_186945_f()
+    private ByteBuf getWriteBuffer()
     {
-        ByteBuf bytebuf = Unpooled.wrappedBuffer(this.field_186949_d);
+        ByteBuf bytebuf = Unpooled.wrappedBuffer(this.buffer);
         bytebuf.writerIndex(0);
         return bytebuf;
     }
 
-    public static int func_186947_a(PacketBuffer p_186947_0_, Chunk p_186947_1_, boolean p_186947_2_, boolean p_186947_3_, int p_186947_4_)
+    public int extractChunkData(PacketBuffer p_189555_1_, Chunk p_189555_2_, boolean p_189555_3_, int p_189555_4_)
     {
         int i = 0;
-        ExtendedBlockStorage[] aextendedblockstorage = p_186947_1_.getBlockStorageArray();
+        ExtendedBlockStorage[] aextendedblockstorage = p_189555_2_.getBlockStorageArray();
         int j = 0;
 
         for (int k = aextendedblockstorage.length; j < k; ++j)
         {
             ExtendedBlockStorage extendedblockstorage = aextendedblockstorage[j];
 
-            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE && (!p_186947_2_ || !extendedblockstorage.isEmpty()) && (p_186947_4_ & 1 << j) != 0)
+            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE && (!this.doChunkLoad() || !extendedblockstorage.isEmpty()) && (p_189555_4_ & 1 << j) != 0)
             {
                 i |= 1 << j;
-                extendedblockstorage.getData().write(p_186947_0_);
-                p_186947_0_.writeBytes(extendedblockstorage.getBlocklightArray().getData());
+                extendedblockstorage.getData().write(p_189555_1_);
+                p_189555_1_.writeBytes(extendedblockstorage.getBlocklightArray().getData());
 
-                if (p_186947_3_)
+                if (p_189555_3_)
                 {
-                    p_186947_0_.writeBytes(extendedblockstorage.getSkylightArray().getData());
+                    p_189555_1_.writeBytes(extendedblockstorage.getSkylightArray().getData());
                 }
             }
         }
 
-        if (p_186947_2_)
+        if (this.doChunkLoad())
         {
-            p_186947_0_.writeBytes(p_186947_1_.getBiomeArray());
+            p_189555_1_.writeBytes(p_189555_2_.getBiomeArray());
         }
 
         return i;
     }
 
-    protected static int func_186944_a(Chunk p_186944_0_, boolean p_186944_1_, boolean p_186944_2_, int p_186944_3_)
+    protected int calculateChunkSize(Chunk p_189556_1_, boolean p_189556_2_, int p_189556_3_)
     {
         int i = 0;
-        ExtendedBlockStorage[] aextendedblockstorage = p_186944_0_.getBlockStorageArray();
+        ExtendedBlockStorage[] aextendedblockstorage = p_189556_1_.getBlockStorageArray();
         int j = 0;
 
         for (int k = aextendedblockstorage.length; j < k; ++j)
         {
             ExtendedBlockStorage extendedblockstorage = aextendedblockstorage[j];
 
-            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE && (!p_186944_1_ || !extendedblockstorage.isEmpty()) && (p_186944_3_ & 1 << j) != 0)
+            if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE && (!this.doChunkLoad() || !extendedblockstorage.isEmpty()) && (p_189556_3_ & 1 << j) != 0)
             {
-                i = i + extendedblockstorage.getData().func_186018_a();
+                i = i + extendedblockstorage.getData().getSerializedSize();
                 i = i + extendedblockstorage.getBlocklightArray().getData().length;
 
-                if (p_186944_2_)
+                if (p_189556_2_)
                 {
                     i += extendedblockstorage.getSkylightArray().getData().length;
                 }
             }
         }
 
-        if (p_186944_1_)
+        if (this.doChunkLoad())
         {
-            i += p_186944_0_.getBiomeArray().length;
+            i += p_189556_1_.getBiomeArray().length;
         }
 
         return i;
@@ -165,12 +199,17 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
     @SideOnly(Side.CLIENT)
     public int getExtractedSize()
     {
-        return this.field_186948_c;
+        return this.availableSections;
+    }
+
+    public boolean doChunkLoad()
+    {
+        return this.loadChunk;
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean func_149274_i()
+    public List<NBTTagCompound> getTileEntityTags()
     {
-        return this.field_149279_g;
+        return this.tileEntityTags;
     }
 }
