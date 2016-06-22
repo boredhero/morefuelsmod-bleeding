@@ -7,6 +7,6 @@ import com.bored.morefuelsmod.Main;
 
 public class ClientProxy {
 	public void registerItemRenderer(Item item, int meta, String id) {
-		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(Main.modId + ":" + id, "inventory"));
+		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(Main.modid + ":" + id, "inventory"));
 	}
 }

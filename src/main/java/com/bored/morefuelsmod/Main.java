@@ -16,16 +16,18 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.IFuelHandler;
 import com.bored.morefuelsmod.Fuels;
+import com.bored.morefuelsmod.proxy.ClientProxy;
 import com.bored.morefuelsmod.proxy.CommonProxy;
+import com.bored.morefuelsmod.item.ModItems;
 
-@Mod(modid = Main.modId, name = Main.name, version = Main.version, acceptedMinecraftVersions = "[1.9.4]")
+@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = "[1.9.4]")
 public class Main {
 
-	public static final String modId = "morefuelsmod-1.9.4";
+	public static final String modid = "morefuelsmod-bleeding";
 	public static final String name = "More Fuels Mod";
 	public static final String version = "1.4.0.0";
 
-	@Mod.Instance(modId)
+	@Mod.Instance(modid)
 	public static Main instance;
 
 	@Mod.EventHandler
@@ -37,6 +39,7 @@ public class Main {
 		if(enableRFtLrecipe)
 			GameRegistry.addSmelting(Items.ROTTEN_FLESH, new ItemStack(Items.LEATHER), 0.3F);
 		config.save();
+		ModItems.init();
 	}
 
 	@Mod.EventHandler
@@ -50,7 +53,7 @@ public class Main {
 	}
 	
 	@SidedProxy(serverSide = "com.bored.morefuelsmod.proxy.CommonProxy", clientSide = "com.bored.morefuelsmod.proxy.ClientProxy")
-	public static CommonProxy proxy;
+	public static ClientProxy proxy;
 
 }
 
