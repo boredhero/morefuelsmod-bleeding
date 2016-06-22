@@ -345,8 +345,15 @@ public class Fuels implements IFuelHandler{
 					return 8180;
 				}
 				if (fuel.getItem() == ModItems.pelletsFuel){
-					return 1000;
+					return 2000;
 				}
+				if (fuel.getItem() == ModItems.concentratedPelletsFuel){
+					return 8000; //4 times the value of fuel pellets
+				}
+				if (fuel.getItem() == ModItems.coke){
+					return 3200; //twice the value of coal.
+				}
+				
 				return 0;
 	}
 }

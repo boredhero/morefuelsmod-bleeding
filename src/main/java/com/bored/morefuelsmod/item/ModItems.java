@@ -7,9 +7,13 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class ModItems {
 	
 	public static ItemBase pelletsFuel;
+	public static ItemBase concentratedPelletsFuel;
+	public static ItemBase coke;
 
 	public static void init() {
 		pelletsFuel = register(new ItemBase("pelletsFuel").setCreativeTab(CreativeTabs.MATERIALS));
+		concentratedPelletsFuel = register(new ItemBase("concentratedPelletsFuel").setCreativeTab(CreativeTabs.MATERIALS));
+		coke = register(new ItemBase("coke").setCreativeTab(CreativeTabs.MATERIALS));
 	}
 
 	private static <T extends Item> T register(T item) {
