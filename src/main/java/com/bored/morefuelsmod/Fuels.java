@@ -1,5 +1,7 @@
 package com.bored.morefuelsmod;
 
+import com.bored.morefuelsmod.item.ModItems;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -341,6 +343,9 @@ public class Fuels implements IFuelHandler{
 				//Adding Minecart with TNT
 				if (fuel.getItem() == Items.TNT_MINECART){
 					return 8180;
+				}
+				if (fuel.getItem() == ModItems.pelletsFuel){
+					return 1000;
 				}
 				return 0;
 	}
