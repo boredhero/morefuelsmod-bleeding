@@ -19,13 +19,15 @@ import com.bored.morefuelsmod.Fuels;
 import com.bored.morefuelsmod.proxy.ClientProxy;
 import com.bored.morefuelsmod.proxy.CommonProxy;
 import com.bored.morefuelsmod.item.ModItems;
+import com.bored.morefuelsmod.block.ModBlocks;
+import com.bored.morefuelsmod.client.MoreFuelsTab;
 
 @Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = "[1.9.4]")
 public class Main {
 
 	public static final String modid = "morefuelsmod-bleeding";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.4.0.0";
+	public static final String version = "1.4.0.2";
 
 	@Mod.Instance(modid)
 	public static Main instance;
@@ -37,9 +39,12 @@ public class Main {
 		config.load();
 		boolean enableRFtLrecipe = config.get(Configuration.CATEGORY_GENERAL, "enableRFtLrecipe", true).getBoolean(true);
 		if(enableRFtLrecipe)
-			GameRegistry.addSmelting(Items.ROTTEN_FLESH, new ItemStack(Items.LEATHER), 0.3F);
+			RFtL.init();
 		config.save();
+		ModSmelting.init();
 		ModItems.init();
+		ModBlocks.init();
+		ModCrafting.init();
 	}
 
 	@Mod.EventHandler
@@ -52,10 +57,9 @@ public class Main {
 
 	}
 	
-	@SidedProxy(serverSide = "com.bored.morefuelsmod.proxy.CommonProxy", clientSide = "com.bored.morefuelsmod.proxy.ClientProxy")
+	@SidedProxy(clientSide = "com.bored.morefuelsmod.proxy.ClientProxy")
 	public static ClientProxy proxy;
+	
+	public static final MoreFuelsTab creativeTab = new MoreFuelsTab();
 
 }
-
-
-//https://shadowfacts.net/tutorials/forge-modding-194/basic-items/ personal use for item making purposes. 

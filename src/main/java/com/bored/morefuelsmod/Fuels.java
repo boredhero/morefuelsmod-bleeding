@@ -1,5 +1,6 @@
 package com.bored.morefuelsmod;
 
+import com.bored.morefuelsmod.block.ModBlocks;
 import com.bored.morefuelsmod.item.ModItems;
 
 import net.minecraft.init.Blocks;
@@ -344,14 +345,24 @@ public class Fuels implements IFuelHandler{
 				if (fuel.getItem() == Items.TNT_MINECART){
 					return 8180;
 				}
+				//MOD ITEMS BELOW THIS POINT
 				if (fuel.getItem() == ModItems.pelletsFuel){
 					return 2000;
+				}
+				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.pelletBlock)){
+					return 18000; //9 times the value of fuel pellets
 				}
 				if (fuel.getItem() == ModItems.concentratedPelletsFuel){
 					return 8000; //4 times the value of fuel pellets
 				}
+				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.concentratedPelletBlock)){
+					return 72000; //9 times the value of concentrated fuel pellets...
+				}
 				if (fuel.getItem() == ModItems.coke){
 					return 3200; //twice the value of coal.
+				}
+				if (fuel.getItem() == ModItems.bituminousCoal){
+					return 1600; //Same as regular coal, it will function as this with the ability to make coke.
 				}
 				
 				return 0;

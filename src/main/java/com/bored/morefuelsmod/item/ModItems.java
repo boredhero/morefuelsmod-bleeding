@@ -9,11 +9,19 @@ public class ModItems {
 	public static ItemBase pelletsFuel;
 	public static ItemBase concentratedPelletsFuel;
 	public static ItemBase coke;
+	public static ItemBase bituminousCoal;
+	public static ItemBase canSlimoline;
+	public static ItemBase dustCoal;
+	public static ItemBase bitumen;
 
 	public static void init() {
-		pelletsFuel = register(new ItemBase("pelletsFuel").setCreativeTab(CreativeTabs.MATERIALS));
-		concentratedPelletsFuel = register(new ItemBase("concentratedPelletsFuel").setCreativeTab(CreativeTabs.MATERIALS));
-		coke = register(new ItemBase("coke").setCreativeTab(CreativeTabs.MATERIALS));
+		pelletsFuel = register(new ItemBase("pelletsFuel"));
+		concentratedPelletsFuel = register(new ItemBase("concentratedPelletsFuel"));
+		coke = register(new ItemBase("coke"));
+		bituminousCoal = register(new ItemBase("bituminousCoal"));
+		canSlimoline = register(new ItemBase("canSlimoline"));
+		dustCoal = register(new ItemBase("dustCoal"));
+		bitumen = register(new ItemBase("bitumen"));
 	}
 
 	private static <T extends Item> T register(T item) {
