@@ -11,3 +11,6 @@ item.bitumen.name=Bitumen
 tile.pelletBlock.name=Block of Pellet Fuel
 tile.concentratedPelletBlock.name=Block of Concentrated Pellet Fuel
 tile.cokeBlock.name=Block of Coke
+
+#Tabs
+itemGroup.morefuelsmod-bleeding=More Fuels Mod
