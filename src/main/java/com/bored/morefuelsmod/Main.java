@@ -27,7 +27,7 @@ public class Main {
 
 	public static final String modid = "morefuelsmod-bleeding";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.4.0.2";
+	public static final String version = "1.4.0.3";
 
 	@Mod.Instance(modid)
 	public static Main instance;
@@ -41,10 +41,10 @@ public class Main {
 		if(enableRFtLrecipe)
 			RFtL.init();
 		config.save();
-		ModSmelting.init();
 		ModItems.init();
 		ModBlocks.init();
 		ModCrafting.init();
+		ModSmelting.init();
 	}
 
 	@Mod.EventHandler

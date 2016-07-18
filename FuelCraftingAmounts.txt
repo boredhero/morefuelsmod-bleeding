@@ -1,0 +1,115 @@
+The purpose of this file is to explain how many of each burnable item in both Minecraft and this mod needs to be in a shapeless crafting recipe to make Fuel Pellets. This is calculated by dividing the burn time of the item in ticks by 2000 ticks. At this point, you will round up one number if there are any decimal places. This method will give you how many of an item you need to put in a crafting table to make the fuel pellets item. From there you may craft concentrated fuel pellets, or fuel pellet blocks, or concentrated fuel pellet blocks to further downsize fuel storage space. Without further ado, here are the amounts. 
+
+Part 1: Regular Cases
+Format: ITEM = NUMBER NECESSARY TO MAKE ONE FUEL PELLET ITEM
+
+Deadbush       = 10
+Cactus         = 7
+CobWeb         = 13
+Lever          = 17
+Grass          = 20
+Double Plants  = 10
+All Flowers    = 20
+Item Frame     = 3
+Bed            = 2
+Painting       = 2
+Sign           = 4
+Ladder         = 9
+Rail           = 100
+Activator Rail = 25
+Detector Rail  = 100
+Powered Rail   = 50
+Piston         = 3
+Sticky Piston  = 3
+Vine           = 20
+Water Lily     = 20
+Tripwire Hook  = 10
+Hay Block      = 3
+Carpet         = 15
+Wool           = 10
+Arrow          = 44
+Feather        = 20
+Wheat          = 20
+All Seeds      = 20
+Torch          = 50
+Redstone Torch = 17
+All Doors      = 4
+Wooden Button  = 7
+Bowl           = 9
+All Boats      = 2
+Sugarcane      = 7
+Paper          = 7
+Book           = 2
+Writable Book  = 2
+Written Book   = 2
+Minecart Chest = 5
+Fishing Rod    = 7
+Carrot Stick   = 6
+Mushroom Items = 20
+Mushroom Block = 10
+Armor Stand    = 4
+Fire Charge    = 2
+Gunpowder      = 2
+Blaze Powder   = 2
+Magma Creme    = 1
+Ghast Tear     = 1
+Poison Potato  = 20
+Rotten Flesh   = 20
+Spider Eye     = 20
+Ferm. Spider I = 10
+Rabbit Foot    = 10
+Leather        = 20
+Leather Boot   = 5
+Leather Chest  = 3
+Leather Helm   = 4
+Leather Legs   = 3
+Chorus Plant   = 4
+Chorus Flower  = 4
+Shield         = 2
+Coal           = 2
+Charcoal       = 2
+Wood Blocks    = 7
+Wood Pressure  = 7
+Wood Fence     = 7
+Wood Gate      = 7
+Wood Stairs    = 7
+Wood Trapdoor  = 7
+Crafting Table = 7
+Bookshelf      = 7
+All Chests     = 7
+Day Sensor     = 7
+Jukebox        = 7
+Noteblock      = 7
+Banners        = 7
+Wood Tools     = 10
+Wood Slabs     = 14
+Saplings       = 20
+Stick          = 20
+
+
+
+
+
+
+
+Part 2: Special Cases - The Item burn time of the item is MORE than 2000 ticks, in which case it outputs more than one fuel pellet per item. Again automatically round up 2000 if the item is not exact.
+Format: ITEM = NUMBER OF FUEL PELLETS OUTPUT
+
+All Maps          = 2
+Firework Charge   = 2
+Firework          = 3
+Spawn Eggs        = 3
+Dragon Breath     = 2
+TNT               = 5
+TNT Minecart      = 5
+Lava Bucket       = 10
+Coal Block        = 8
+Blaze Rod         = 2
+Can of Slimeoline = 10
+Coke              = 2
+Block of Coke     = 15 
+
+
+
+
+

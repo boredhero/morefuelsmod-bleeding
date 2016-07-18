@@ -1,6 +1,6 @@
 #Items
 item.pelletsFuel.name=Fuel Pellets
-item.concentratedPelletsFuel=Concentrated Fuel Pellets
+item.concentratedPelletsFuel.name=Concentrated Fuel Pellets
 item.coke.name=Coke
 item.bituminousCoal.name=Bituminous Coal
 item.canSlimoline.name=Can of Slimoline
@@ -8,6 +8,6 @@ item.dustCoal.name=Coal Dust
 item.bitumen.name=Bitumen
 
 #Blocks
-tile.oreBituminousCoal.name=Bituminous Coal Ore
 tile.pelletBlock.name=Block of Pellet Fuel
 tile.concentratedPelletBlock.name=Block of Concentrated Pellet Fuel
+tile.cokeBlock.name=Block of Coke

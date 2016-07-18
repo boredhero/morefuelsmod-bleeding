@@ -21,21 +21,20 @@ public class Fuels implements IFuelHandler{
 				//	return 50;
 				//}
 				//Note on timings, 20 = about 1 second in ticks.
+		        //As of v1.4.0, no timings may exist under 100 for compatibility with the fuel pellet systems.
+		        //All numbers will be rounded to the nearest 100 as well for compatibility with said system.
+		        //Numbers 40 or above will be rounded up to the nearest 100.
 				if(fuel.getItem() == Item.getItemFromBlock(Blocks.DEADBUSH)){
 					return 200;
 				}
 				if(fuel.getItem() == Item.getItemFromBlock(Blocks.CACTUS)){
 					return 300;
 				}
-				//Sponges. Wet sponge burns too, need to figure out how to disable that.
-				//if(fuel.getItem() == Item.getItemFromBlock(Blocks.sponge)){
-				//}
-				//Removed until further notice. Will be re added but must be enabled by config flag.
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.WEB)){
-					return 160;
+					return 200;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.LEVER)){
-					return 120;
+					return 100;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.GRASS)){
 					return 100;
@@ -63,35 +62,30 @@ public class Fuels implements IFuelHandler{
 					return 1000;
 				}
 				if (fuel.getItem() == Items.SIGN){
-				//Actual calculation here was 633.33~ but I rounded.
-					return 640;
+					return 700;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.LADDER)){
-				//Actual calculation here was 233.33~ but I rounded.
-					return 240;
+					return 300;
 				}
 				//Rails start here
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.RAIL)) {
-				//Actual calculation here was 13.75  but I rounded.
-					return 20;
+					return 100;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.ACTIVATOR_RAIL)){
-				//Actual calculation here was 73.33~ but I rounded.
-					return 80;
+					return 100;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.DETECTOR_RAIL)){
-				//Actual calculation here was 23.33~ but I rounded.
-					return 20;
+					return 100;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.GOLDEN_RAIL)){
-					return 40;
+					return 100;
 				}
 				//Pistons start here
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.PISTON)){
-					return 1020;
+					return 1000;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.STICKY_PISTON)){
-					return 1040;
+					return 1100;
 				}
 				//Pistons end here
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.VINE)){
@@ -101,24 +95,21 @@ public class Fuels implements IFuelHandler{
 					return 100;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.TRIPWIRE_HOOK)){
-				//Actual calculation here was 210 but I rounded.
-					return 220;
+					return 200;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.HAY_BLOCK)){
 					return 900;
 				}
 				//Wool and Carpet handled here
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.CARPET)){
-				//Actual calculation here was 133.33~ but I rounded.
-					return 140;
+					return 200;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.WOOL)){
 					return 200;
 				}
 				//Arrows handled here
 				if (fuel.getItem() == Items.ARROW){
-				//Actual calculation here was 55 but I rounded
-					return 60;
+					return 100;
 				}
 				if (fuel.getItem() == Items.FEATHER){
 					return 100;
@@ -126,7 +117,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.getItem() == Items.WHEAT){
 					return 100;
 				}
-				//Seeds handled here, all 60 tick burn times
 				if (fuel.getItem() == Items.WHEAT_SEEDS){
 					return 100;
 				}
@@ -136,16 +126,17 @@ public class Fuels implements IFuelHandler{
 				if (fuel.getItem() == Items.PUMPKIN_SEEDS){
 					return 100;
 				}
+				if (fuel.getItem() == Items.BEETROOT_SEEDS){
+					return 100;
+				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.TORCH)){
-				//Actual calculation here was 30 but I rounded.
-					return 40;
+					return 100;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.REDSTONE_TORCH)){
-					return 120;
+					return 100;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.UNLIT_REDSTONE_TORCH)){
-				//just in case someone gets one of these in their inventory..
-					return 120;
+					return 100;
 				}
 				//Doors! Try the back one ;)
 				if (fuel.getItem() == Items.OAK_DOOR){
@@ -172,8 +163,7 @@ public class Fuels implements IFuelHandler{
 					return 300;
 				}
 				if (fuel.getItem() == Items.BOWL){
-				//Actual calculation here was 225 but I rounded.
-					return 240;
+					return 300;
 				}
 				//Updated boat handler to 1.9 to include different woods.
 				if (fuel.getItem() == Items.BOAT){
@@ -206,17 +196,16 @@ public class Fuels implements IFuelHandler{
 				}
 				if (fuel.getItem() == Items.WRITABLE_BOOK){
 					//unwritten writable book
-					return 1120;
+					return 1100;
 				}
 				if (fuel.getItem() == Items.WRITTEN_BOOK){
 					//already written writable book
-					return 1120;
+					return 1100;
 				}
 				if (fuel.getItem() == Items.CHEST_MINECART){
 				//Vanilla chest only burns for 300 Ticks.
 					return 400;
 				}
-				//Maps, all 200 ticks
 				if (fuel.getItem() == Items.MAP){
 					return 2500;
 				}
@@ -225,10 +214,10 @@ public class Fuels implements IFuelHandler{
 				}
 				//Fishing Rods and Carrot on a Stick.
 				if (fuel.getItem() == Items.FISHING_ROD){
-					return 320;
+					return 300;
 				}
 				if (fuel.getItem() == Items.CARROT_ON_A_STICK){
-					return 340;
+					return 300;
 				}
 				//This handles ferns, also redundant for some items like dead bush
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.TALLGRASS)){
@@ -255,24 +244,17 @@ public class Fuels implements IFuelHandler{
 					//This covers the giant red mushroom BLOCK in giant mushrooms
 					return 200;
 				}
-				//Armor stands
 				if (fuel.getItem() == Items.ARMOR_STAND){
-					return 620;
+					return 600;
 				}
-				//Easter egg. Commented for now....because its pretty darn illogical tbh.
-				//if (fuel.getItem() == Items.saddle){
-				//	return 1000000;
-				//}
-				//Now for some weird misc. things
 				if (fuel.getItem() == Items.FIRE_CHARGE){
-				//Actual calculation here was 1466.66~ but I rounded.
-					return 1480;
+					return 1500;
 				}
 				if (fuel.getItem() == Items.FIREWORK_CHARGE){
-					return 3220;
+					return 3200;
 				}
 				if (fuel.getItem() == Items.FIREWORKS){
-					return 5120;
+					return 5100;
 				}
 				if (fuel.getItem() == Items.GUNPOWDER){
 					return 1600;
@@ -286,11 +268,9 @@ public class Fuels implements IFuelHandler{
 				if (fuel.getItem() == Items.GHAST_TEAR){
 					return 2000;
 				}
-				//Attempt to implement spawn eggs as being burnable...idk why.
 				if (fuel.getItem() == Items.SPAWN_EGG){
 					return 5000;
 				}
-				//Stupid stuff made burn-able just so we can get rid of it.
 				if (fuel.getItem() == Items.POISONOUS_POTATO){
 					return 100;
 				}
@@ -301,14 +281,11 @@ public class Fuels implements IFuelHandler{
 					return 100;
 				}
 				if (fuel.getItem() == Items.FERMENTED_SPIDER_EYE){
-					return 220;
+					return 200;
 				}
 				if (fuel.getItem() == Items.RABBIT_FOOT){
 					return 200;
 				}
-				//Lets make all leather burnable...it makes some sense.
-				//All leather items ticks are calculated by multiplying the base tick.
-				//Working on being able to burn damaged leather.
 				if (fuel.getItem() == Items.LEATHER){
 					return 100;
 				}
@@ -324,7 +301,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.getItem() == Items.LEATHER_LEGGINGS){
 					return 700;
 				}
-				//Adding 1.9 Stuff
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.CHORUS_PLANT)){
 					return 600;
 				}
@@ -332,37 +308,41 @@ public class Fuels implements IFuelHandler{
 					return 600;
 				}
 				if (fuel.getItem() == Items.SHIELD){
-					return 1820;
+					return 1800;
 				}
 				if (fuel.getItem() == Items.DRAGON_BREATH){
-					return 2060;
+					return 2100;
 				}
-				//Adding TNT
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.TNT)){
-					return 8080;
+					return 8100;
 				}
-				//Adding Minecart with TNT
 				if (fuel.getItem() == Items.TNT_MINECART){
-					return 8180;
+					return 8200;
 				}
 				//MOD ITEMS BELOW THIS POINT
 				if (fuel.getItem() == ModItems.pelletsFuel){
-					return 2000;
+					return 900;
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.pelletBlock)){
-					return 18000; //9 times the value of fuel pellets
+					return 8100; //9 times the value of fuel pellets
 				}
 				if (fuel.getItem() == ModItems.concentratedPelletsFuel){
-					return 8000; //4 times the value of fuel pellets
+					return 3600; //4 times the value of fuel pellets
 				}
 				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.concentratedPelletBlock)){
-					return 72000; //9 times the value of concentrated fuel pellets...
+					return 32400; //9 times the value of concentrated fuel pellets...
 				}
 				if (fuel.getItem() == ModItems.coke){
 					return 3200; //twice the value of coal.
 				}
+				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.cokeBlock)){
+					return 28800;
+				}
 				if (fuel.getItem() == ModItems.bituminousCoal){
 					return 1600; //Same as regular coal, it will function as this with the ability to make coke.
+				}
+				if (fuel.getItem() == ModItems.canSlimoline){
+					return 20000;
 				}
 				
 				return 0;

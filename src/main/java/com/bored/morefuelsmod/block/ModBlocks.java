@@ -11,10 +11,12 @@ public class ModBlocks {
 
 	public static BlockBase pelletBlock;
 	public static BlockBase concentratedPelletBlock;
+	public static BlockBase cokeBlock;
 
 	public static void init() {
 		pelletBlock = register(new BlockBase(Material.WOOD, "pelletBlock"));
 		concentratedPelletBlock = register(new BlockBase(Material.WOOD, "concentratedPelletBlock"));
+		cokeBlock = register(new BlockBase(Material.ROCK, "cokeBlock"));
 	}
 
 	private static <T extends Block> T register(T block, ItemBlock itemBlock) {
