@@ -1,16 +1,15 @@
 [
 {
   "modid": "morefuelsmod-bleeding",
-  "name": "More Fuels Mod",
-  "description": "A mod that adds fuels, you shouldn't have v1.4 pre-alpha builds though if you arent me js.",
-  "version": "${version}",
+  "name": "§4More Fuels Mod",
+  "description": "§4§oA mod that makes more items usable as fuel as well as adds some fuel storage items and blocks.",
+  "version": "",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "http://tinyurl.com/MoreFuelsMod",
   "updateUrl": "",
-  "authorList": ["Noah Martino"],
-  "credits": "The Forge and FML guys, for making this example",
-  "logoFile": "",
+  "authorList": ["§6Noah §4Martino"],
+  "logoFile": "mf-logo.png",
   "screenshots": [],
-  "dependencies": []
+  "dependencies": ["mod_Forge"]
 }
 ]
