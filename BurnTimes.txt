@@ -1,0 +1,95 @@
+This is the list of burn times for this mod. These are non configurable and will be listed in this order
+Item = Ticks or Seconds
+Now, to begin.
+
+Algorithm Notes:
+
+For Craftable items like a lever, the burn time is determined by calculating the total burn time of the items used to craft it. 20 Ticks or 1 Second is added per non burnable item. Ie, cobble. So a lever burns for 100 Ticks, or 5 seconds. A lever also needs 1 cobble to make so the burn time for a lever would be 120 Ticks, or 6 Seconds HOWEVER, if an item is not normally burnable but is made burnable in this mod, the time of that items burn will be used instead of a default value of 20 ticks.
+
+For Non-Craftable items, it is based on judgement of what seems reasonable for the item.
+
+When an Item is crafted and the burn time is calculated based on its ingredients, but the crafting recipe produces MORE THAN ONE OF THE ITEM, the total burn time that was calcultaed based on ingredients WILL BE DIVIDED BY THE NUMBER OF ITEMS THE CRAFTING RECIPE PRODUCES to achieve a fair and even price. This often produces rounding.
+
+To avoid .5 and other partial second timings, all things will be rounded up to the nearest multiple of 100. This also helps with the fuel pellet crafting system. 
+
+Deadbush       = 200  Ticks or 10  Seconds
+Cactus         = 300  Ticks or 15  Seconds
+Cobweb         = 200  Ticks or 10  Seconds
+Lever          = 100  Ticks or 5   Seconds
+Grass          = 100  Ticks or 5   Seconds
+Double Plants  = 200  Ticks or 10  Seconds
+All Flowers    = 100  Ticks or 5   Seconds
+Item Frame     = 900  Ticks or 45  Seconds
+Bed            = 1500 Ticks or 70  Seconds
+Painting       = 1000 Ticks or 50  Seconds
+Sign           = 700  Ticks or 35  Seconds
+Ladder         = 300  Ticks or 15  Seconds
+Rail           = 100  Ticks or 5   Seconds
+Activator Rail = 100  Ticks or 5   Seconds
+Detector Rail  = 100  Ticks or 5   Seconds
+Powered Rail   = 100  Ticks or 5   Seconds
+Piston         = 1000 Ticks or 50  Seconds
+Sticky Piston  = 1100 Ticks or 55  Seconds
+Vine           = 100  Ticks or 5   Seconds
+Waterlily      = 100  Ticks or 5   Seconds
+Tripwire Hook  = 200  Ticks or 10  Seconds
+Hay Block      = 900  Ticks or 45  Seconds
+Carpet         = 200  Ticks or 10  Seconds
+Wool           = 200  Ticks or 10  Seconds
+Arrow          = 100  Ticks or 5   Seconds
+Feather        = 100  Ticks or 5   Seconds
+Wheat          = 100  Ticks or 5   Seconds
+All Seeds      = 100  Ticks or 5   Seconds
+Torch          = 100  Ticks or 5   Seconds
+Redstone Torch = 100  Ticks or 5   Seconds
+All Wood Doors = 600  Ticks or 30  Seconds
+Wooden Button  = 300  Ticks or 15  Seconds
+Wooden Bowl    = 300  Ticks or 15  Seconds
+All Boats      = 1500 Ticks or 75  Seconds
+Sugarcane      = 300  Ticks or 15  Seconds
+Paper          = 300  Ticks or 15  Seconds
+Book           = 1000 Ticks or 50  Seconds
+Book & Quill   = 1200 Ticks or 60  Seconds
+Written Book   = 1200 Ticks or 60  Seconds
+Chest Minecart = 400 Ticks or  20  Seconds
+All Maps       = 2500 Ticks or 125 Seconds
+Fishing Rod    = 300  Ticks or 15  Seconds
+Carrot + Stick = 400  Ticks or 20  Seconds
+Ferns/BigGrass = 200  Ticks or 10  Seconds
+Mushroom Item  = 100  Ticks or 5   Seconds
+Mushroom Block = 200  Ticks or 10  Seconds
+Armor Stand    = 600  Ticks or 30  Seconds
+Fire Charge    = 1500 Ticks or 75  Seconds
+Firework Star  = 3200 Ticks or 160 Seconds
+Firework       = 5100 Ticks or 255 Seconds
+Gunpowder      = 1600 Ticks or 80  Seconds
+Blaze Powder   = 1200 Ticks or 60  Seconds
+Magma Cream    = 2000 Ticks or 100 Seconds
+Ghast Tear     = 2000 Ticks or 100 Seconds
+Spawn Eggs     = 5000 Ticks or 250 Seconds
+Poison Potato  = 100  Ticks or 5   Seconds
+Rotton Flesh   = 100  Ticks or 5   Seconds
+Spider Eye     = 100  Ticks or 5   Seconds
+Fer Spider Eye = 200  Ticks or 10  Seconds
+Rabbit Foot    = 200  Ticks or 10  Seconds
+Leather        = 100  Ticks or 5   Seconds
+Leather Boots  = 400  Ticks or 20  Seconds
+Leather Tunic  = 800  Ticks or 40  Seconds
+Leather Helmet = 500  Ticks or 25  Seconds
+Leather Pants  = 700  Ticks or 35  Seconds
+Chorus Plant   = 600  Ticks or 30  Seconds
+Chorus Flower  = 600  Ticks or 30  Seconds
+Shields        = 1800 Ticks or 90  Seconds
+Dragons Breath = 2100 Ticks or 105 Seconds
+TNT            = 8100 Ticks or 405 Seconds
+TNT Minecart   = 8200 Ticks or 410 Seconds
+Fuel Pellets   = 900  Ticks or 45  Seconds
+Block F. Pellet= 8100 Ticks or 405 Seconds
+C. Fuel Pellets= 3600 Ticks or 180 Seconds
+Block C. F. P. = 32400 Ticks or 1620 Seconds
+Coke           = 3200 Ticks or 160 Seconds
+Coke Block     = 28800 Ticks or 1449 Seconds
+Bitum. Coal    = 1600 Ticks or 80  Seconds
+Can o Slimoline= 20000 Ticks or 1000 Seconds
+
+ 
