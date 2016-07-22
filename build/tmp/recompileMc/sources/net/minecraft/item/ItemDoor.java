@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 
 public class ItemDoor extends Item
 {
-    private Block block;
+    private final Block block;
 
     public ItemDoor(Block block)
     {

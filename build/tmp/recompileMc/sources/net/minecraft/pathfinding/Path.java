@@ -134,13 +134,22 @@ public class Path
         }
     }
 
-    /**
-     * Returns true if the final PathPoint in the PathEntity is equal to Vec3D coords.
-     */
-    public boolean isDestinationSame(Vec3d vec)
+    @SideOnly(Side.CLIENT)
+    public PathPoint[] func_189966_g()
     {
-        PathPoint pathpoint = this.getFinalPathPoint();
-        return pathpoint == null ? false : pathpoint.xCoord == (int)vec.xCoord && pathpoint.zCoord == (int)vec.zCoord;
+        return this.openSet;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public PathPoint[] func_189965_h()
+    {
+        return this.closedSet;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public PathPoint func_189964_i()
+    {
+        return this.target;
     }
 
     @SideOnly(Side.CLIENT)

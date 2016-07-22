@@ -8,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -28,6 +29,7 @@ public class Particle
     protected double motionZ;
     private AxisAlignedBB boundingBox;
     protected boolean isCollided;
+    protected boolean field_190017_n;
     protected boolean isExpired;
     protected float width;
     protected float height;
@@ -49,9 +51,12 @@ public class Particle
     /** Particle alpha */
     protected float particleAlpha;
     protected TextureAtlasSprite particleTexture;
+    protected float field_190014_F;
+    protected float field_190015_G;
     public static double interpPosX;
     public static double interpPosY;
     public static double interpPosZ;
+    public static Vec3d field_190016_K;
 
     protected Particle(World worldIn, double posXIn, double posYIn, double posZIn)
     {
@@ -66,12 +71,15 @@ public class Particle
         this.prevPosX = posXIn;
         this.prevPosY = posYIn;
         this.prevPosZ = posZIn;
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
+        this.particleRed = 1.0F;
+        this.particleGreen = 1.0F;
+        this.particleBlue = 1.0F;
         this.particleTextureJitterX = this.rand.nextFloat() * 3.0F;
         this.particleTextureJitterY = this.rand.nextFloat() * 3.0F;
         this.particleScale = (this.rand.nextFloat() * 0.5F + 0.5F) * 2.0F;
         this.particleMaxAge = (int)(4.0F / (this.rand.nextFloat() * 0.9F + 0.1F));
         this.particleAge = 0;
+        this.field_190017_n = true;
     }
 
     public Particle(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn)
@@ -191,10 +199,27 @@ public class Particle
         int i = this.getBrightnessForRender(partialTicks);
         int j = i >> 16 & 65535;
         int k = i & 65535;
-        worldRendererIn.pos((double)(f5 - rotationX * f4 - rotationXY * f4), (double)(f6 - rotationZ * f4), (double)(f7 - rotationYZ * f4 - rotationXZ * f4)).tex((double)f1, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
-        worldRendererIn.pos((double)(f5 - rotationX * f4 + rotationXY * f4), (double)(f6 + rotationZ * f4), (double)(f7 - rotationYZ * f4 + rotationXZ * f4)).tex((double)f1, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
-        worldRendererIn.pos((double)(f5 + rotationX * f4 + rotationXY * f4), (double)(f6 + rotationZ * f4), (double)(f7 + rotationYZ * f4 + rotationXZ * f4)).tex((double)f, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
-        worldRendererIn.pos((double)(f5 + rotationX * f4 - rotationXY * f4), (double)(f6 - rotationZ * f4), (double)(f7 + rotationYZ * f4 - rotationXZ * f4)).tex((double)f, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
+        Vec3d[] avec3d = new Vec3d[] {new Vec3d((double)(-rotationX * f4 - rotationXY * f4), (double)(-rotationZ * f4), (double)(-rotationYZ * f4 - rotationXZ * f4)), new Vec3d((double)(-rotationX * f4 + rotationXY * f4), (double)(rotationZ * f4), (double)(-rotationYZ * f4 + rotationXZ * f4)), new Vec3d((double)(rotationX * f4 + rotationXY * f4), (double)(rotationZ * f4), (double)(rotationYZ * f4 + rotationXZ * f4)), new Vec3d((double)(rotationX * f4 - rotationXY * f4), (double)(-rotationZ * f4), (double)(rotationYZ * f4 - rotationXZ * f4))};
+
+        if (this.field_190014_F != 0.0F)
+        {
+            float f8 = this.field_190014_F + (this.field_190014_F - this.field_190015_G) * partialTicks;
+            float f9 = MathHelper.cos(f8 * 0.5F);
+            float f10 = MathHelper.sin(f8 * 0.5F) * (float)field_190016_K.xCoord;
+            float f11 = MathHelper.sin(f8 * 0.5F) * (float)field_190016_K.yCoord;
+            float f12 = MathHelper.sin(f8 * 0.5F) * (float)field_190016_K.zCoord;
+            Vec3d vec3d = new Vec3d((double)f10, (double)f11, (double)f12);
+
+            for (int l = 0; l < 4; ++l)
+            {
+                avec3d[l] = vec3d.scale(2.0D * avec3d[l].dotProduct(vec3d)).add(avec3d[l].scale((double)(f9 * f9) - vec3d.dotProduct(vec3d))).add(vec3d.crossProduct(avec3d[l]).scale((double)(2.0F * f9)));
+            }
+        }
+
+        worldRendererIn.pos((double)f5 + avec3d[0].xCoord, (double)f6 + avec3d[0].yCoord, (double)f7 + avec3d[0].zCoord).tex((double)f1, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
+        worldRendererIn.pos((double)f5 + avec3d[1].xCoord, (double)f6 + avec3d[1].yCoord, (double)f7 + avec3d[1].zCoord).tex((double)f1, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
+        worldRendererIn.pos((double)f5 + avec3d[2].xCoord, (double)f6 + avec3d[2].yCoord, (double)f7 + avec3d[2].zCoord).tex((double)f, (double)f2).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
+        worldRendererIn.pos((double)f5 + avec3d[3].xCoord, (double)f6 + avec3d[3].yCoord, (double)f7 + avec3d[3].zCoord).tex((double)f, (double)f3).color(this.particleRed, this.particleGreen, this.particleBlue, this.particleAlpha).lightmap(j, k).endVertex();
     }
 
     public int getFXLayer()
@@ -276,40 +301,47 @@ public class Particle
 
     public void moveEntity(double x, double y, double z)
     {
-        double d0 = x;
-        double d1 = y;
-        double d2 = z;
-        List<AxisAlignedBB> list = this.worldObj.getCollisionBoxes((Entity)null, this.getEntityBoundingBox().addCoord(x, y, z));
+        double d0 = y;
 
-        for (AxisAlignedBB axisalignedbb : list)
+        if (this.field_190017_n)
         {
-            y = axisalignedbb.calculateYOffset(this.getEntityBoundingBox(), y);
+            List<AxisAlignedBB> list = this.worldObj.getCollisionBoxes((Entity)null, this.getEntityBoundingBox().addCoord(x, y, z));
+
+            for (AxisAlignedBB axisalignedbb : list)
+            {
+                y = axisalignedbb.calculateYOffset(this.getEntityBoundingBox(), y);
+            }
+
+            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, y, 0.0D));
+
+            for (AxisAlignedBB axisalignedbb1 : list)
+            {
+                x = axisalignedbb1.calculateXOffset(this.getEntityBoundingBox(), x);
+            }
+
+            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
+
+            for (AxisAlignedBB axisalignedbb2 : list)
+            {
+                z = axisalignedbb2.calculateZOffset(this.getEntityBoundingBox(), z);
+            }
+
+            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, 0.0D, z));
+        }
+        else
+        {
+            this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, y, z));
         }
 
-        this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, y, 0.0D));
-
-        for (AxisAlignedBB axisalignedbb1 : list)
-        {
-            x = axisalignedbb1.calculateXOffset(this.getEntityBoundingBox(), x);
-        }
-
-        this.setEntityBoundingBox(this.getEntityBoundingBox().offset(x, 0.0D, 0.0D));
-
-        for (AxisAlignedBB axisalignedbb2 : list)
-        {
-            z = axisalignedbb2.calculateZOffset(this.getEntityBoundingBox(), z);
-        }
-
-        this.setEntityBoundingBox(this.getEntityBoundingBox().offset(0.0D, 0.0D, z));
         this.resetPositionToBB();
-        this.isCollided = d1 != y && d1 < 0.0D;
+        this.isCollided = y != y && d0 < 0.0D;
 
-        if (d0 != x)
+        if (x != x)
         {
             this.motionX = 0.0D;
         }
 
-        if (d2 != z)
+        if (z != z)
         {
             this.motionZ = 0.0D;
         }

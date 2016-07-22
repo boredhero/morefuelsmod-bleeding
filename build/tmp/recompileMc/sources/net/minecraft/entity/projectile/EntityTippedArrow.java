@@ -17,6 +17,7 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -129,6 +130,11 @@ public class EntityTippedArrow extends EntityArrow
     public int getColor()
     {
         return ((Integer)this.dataManager.get(COLOR)).intValue();
+    }
+
+    public static void func_189660_b(DataFixer p_189660_0_)
+    {
+        EntityArrow.func_189657_a(p_189660_0_, "TippedArrow");
     }
 
     /**

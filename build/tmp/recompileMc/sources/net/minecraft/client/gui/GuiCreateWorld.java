@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Random;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ChatAllowedCharacters;
+import net.minecraft.world.GameType;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.storage.ISaveFormat;
@@ -16,7 +17,7 @@ import org.lwjgl.input.Keyboard;
 @SideOnly(Side.CLIENT)
 public class GuiCreateWorld extends GuiScreen
 {
-    private GuiScreen parentScreen;
+    private final GuiScreen parentScreen;
     private GuiTextField worldNameField;
     private GuiTextField worldSeedField;
     private String saveDirName;
@@ -78,17 +79,17 @@ public class GuiCreateWorld extends GuiScreen
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(0, this.width / 2 - 155, this.height - 28, 150, 20, I18n.format("selectWorld.create", new Object[0])));
         this.buttonList.add(new GuiButton(1, this.width / 2 + 5, this.height - 28, 150, 20, I18n.format("gui.cancel", new Object[0])));
-        this.buttonList.add(this.btnGameMode = new GuiButton(2, this.width / 2 - 75, 115, 150, 20, I18n.format("selectWorld.gameMode", new Object[0])));
-        this.buttonList.add(this.btnMoreOptions = new GuiButton(3, this.width / 2 - 75, 187, 150, 20, I18n.format("selectWorld.moreWorldOptions", new Object[0])));
-        this.buttonList.add(this.btnMapFeatures = new GuiButton(4, this.width / 2 - 155, 100, 150, 20, I18n.format("selectWorld.mapFeatures", new Object[0])));
+        this.btnGameMode = this.func_189646_b(new GuiButton(2, this.width / 2 - 75, 115, 150, 20, I18n.format("selectWorld.gameMode", new Object[0])));
+        this.btnMoreOptions = this.func_189646_b(new GuiButton(3, this.width / 2 - 75, 187, 150, 20, I18n.format("selectWorld.moreWorldOptions", new Object[0])));
+        this.btnMapFeatures = this.func_189646_b(new GuiButton(4, this.width / 2 - 155, 100, 150, 20, I18n.format("selectWorld.mapFeatures", new Object[0])));
         this.btnMapFeatures.visible = false;
-        this.buttonList.add(this.btnBonusItems = new GuiButton(7, this.width / 2 + 5, 151, 150, 20, I18n.format("selectWorld.bonusItems", new Object[0])));
+        this.btnBonusItems = this.func_189646_b(new GuiButton(7, this.width / 2 + 5, 151, 150, 20, I18n.format("selectWorld.bonusItems", new Object[0])));
         this.btnBonusItems.visible = false;
-        this.buttonList.add(this.btnMapType = new GuiButton(5, this.width / 2 + 5, 100, 150, 20, I18n.format("selectWorld.mapType", new Object[0])));
+        this.btnMapType = this.func_189646_b(new GuiButton(5, this.width / 2 + 5, 100, 150, 20, I18n.format("selectWorld.mapType", new Object[0])));
         this.btnMapType.visible = false;
-        this.buttonList.add(this.btnAllowCommands = new GuiButton(6, this.width / 2 - 155, 151, 150, 20, I18n.format("selectWorld.allowCommands", new Object[0])));
+        this.btnAllowCommands = this.func_189646_b(new GuiButton(6, this.width / 2 - 155, 151, 150, 20, I18n.format("selectWorld.allowCommands", new Object[0])));
         this.btnAllowCommands.visible = false;
-        this.buttonList.add(this.btnCustomizeType = new GuiButton(8, this.width / 2 + 5, 120, 150, 20, I18n.format("selectWorld.customizeType", new Object[0])));
+        this.btnCustomizeType = this.func_189646_b(new GuiButton(8, this.width / 2 + 5, 120, 150, 20, I18n.format("selectWorld.customizeType", new Object[0])));
         this.btnCustomizeType.visible = false;
         this.worldNameField = new GuiTextField(9, this.fontRendererObj, this.width / 2 - 100, 60, 200, 20);
         this.worldNameField.setFocused(true);
@@ -238,7 +239,7 @@ public class GuiCreateWorld extends GuiScreen
 
                 WorldType.WORLD_TYPES[this.selectedIndex].onGUICreateWorldPress();
 
-                WorldSettings worldsettings = new WorldSettings(i, WorldSettings.GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex]);
+                WorldSettings worldsettings = new WorldSettings(i, GameType.getByName(this.gameMode), this.generateStructuresEnabled, this.hardCoreMode, WorldType.WORLD_TYPES[this.selectedIndex]);
                 worldsettings.setGeneratorOptions(this.chunkProviderSettingsJson);
 
                 if (this.bonusChestEnabled && !this.hardCoreMode)
@@ -259,7 +260,7 @@ public class GuiCreateWorld extends GuiScreen
             }
             else if (button.id == 2)
             {
-                if (this.gameMode.equals("survival"))
+                if ("survival".equals(this.gameMode))
                 {
                     if (!this.allowCheatsWasSetByUser)
                     {
@@ -273,7 +274,7 @@ public class GuiCreateWorld extends GuiScreen
                     this.btnBonusItems.enabled = false;
                     this.updateDisplayState();
                 }
-                else if (this.gameMode.equals("hardcore"))
+                else if ("hardcore".equals(this.gameMode))
                 {
                     if (!this.allowCheatsWasSetByUser)
                     {

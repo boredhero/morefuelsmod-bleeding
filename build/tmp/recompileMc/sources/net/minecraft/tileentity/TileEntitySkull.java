@@ -6,11 +6,15 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.properties.Property;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.block.BlockSkull;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.server.management.PlayerProfileCache;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -19,7 +23,7 @@ public class TileEntitySkull extends TileEntity implements ITickable
 {
     private int skullType;
     private int skullRotation;
-    private GameProfile playerProfile = null;
+    private GameProfile playerProfile;
     private int dragonAnimatedTicks;
     private boolean dragonAnimated;
     private static PlayerProfileCache profileCache;
@@ -190,5 +194,21 @@ public class TileEntitySkull extends TileEntity implements ITickable
     public void setSkullRotation(int rotation)
     {
         this.skullRotation = rotation;
+    }
+
+    public void func_189668_a(Mirror p_189668_1_)
+    {
+        if (this.worldObj != null && this.worldObj.getBlockState(this.getPos()).getValue(BlockSkull.FACING) == EnumFacing.UP)
+        {
+            this.skullRotation = p_189668_1_.mirrorRotation(this.skullRotation, 16);
+        }
+    }
+
+    public void func_189667_a(Rotation p_189667_1_)
+    {
+        if (this.worldObj != null && this.worldObj.getBlockState(this.getPos()).getValue(BlockSkull.FACING) == EnumFacing.UP)
+        {
+            this.skullRotation = p_189667_1_.rotate(this.skullRotation, 16);
+        }
     }
 }

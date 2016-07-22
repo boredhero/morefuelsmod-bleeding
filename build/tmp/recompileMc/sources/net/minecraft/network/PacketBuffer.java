@@ -89,9 +89,9 @@ public class PacketBuffer extends ByteBuf
     {
         this.writeVarIntToBuffer(array.length);
 
-        for (int i = 0; i < array.length; ++i)
+        for (int i : array)
         {
-            this.writeVarIntToBuffer(array[i]);
+            this.writeVarIntToBuffer(i);
         }
 
         return this;
@@ -130,9 +130,9 @@ public class PacketBuffer extends ByteBuf
     {
         this.writeVarIntToBuffer(array.length);
 
-        for (int i = 0; i < array.length; ++i)
+        for (long i : array)
         {
-            this.writeLong(array[i]);
+            this.writeLong(i);
         }
 
         return this;

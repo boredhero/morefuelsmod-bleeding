@@ -40,23 +40,24 @@ public class GuiNewChat extends Gui
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN)
         {
             int i = this.getLineCount();
-            boolean flag = false;
-            int j = 0;
-            int k = this.drawnChatLines.size();
+            int j = this.drawnChatLines.size();
             float f = this.mc.gameSettings.chatOpacity * 0.9F + 0.1F;
 
-            if (k > 0)
+            if (j > 0)
             {
+                boolean flag = false;
+
                 if (this.getChatOpen())
                 {
                     flag = true;
                 }
 
                 float f1 = this.getChatScale();
-                int l = MathHelper.ceiling_float_int((float)this.getChatWidth() / f1);
+                int k = MathHelper.ceiling_float_int((float)this.getChatWidth() / f1);
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(2.0F, 8.0F, 0.0F);
                 GlStateManager.scale(f1, f1, 1.0F);
+                int l = 0;
 
                 for (int i1 = 0; i1 + this.scrollPos < this.drawnChatLines.size() && i1 < i; ++i1)
                 {
@@ -81,16 +82,16 @@ public class GuiNewChat extends Gui
                             }
 
                             l1 = (int)((float)l1 * f);
-                            ++j;
+                            ++l;
 
                             if (l1 > 3)
                             {
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
-                                drawRect(i2 - 2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
+                                drawRect(-2, j2 - 9, 0 + k + 4, j2, l1 / 2 << 24);
                                 String s = chatline.getChatComponent().getFormattedText();
                                 GlStateManager.enableBlend();
-                                this.mc.fontRendererObj.drawStringWithShadow(s, (float)i2, (float)(j2 - 8), 16777215 + (l1 << 24));
+                                this.mc.fontRendererObj.drawStringWithShadow(s, 0.0F, (float)(j2 - 8), 16777215 + (l1 << 24));
                                 GlStateManager.disableAlpha();
                                 GlStateManager.disableBlend();
                             }
@@ -102,9 +103,9 @@ public class GuiNewChat extends Gui
                 {
                     int k2 = this.mc.fontRendererObj.FONT_HEIGHT;
                     GlStateManager.translate(-3.0F, 0.0F, 0.0F);
-                    int l2 = k * k2 + k;
-                    int i3 = j * k2 + j;
-                    int j3 = this.scrollPos * i3 / k;
+                    int l2 = j * k2 + j;
+                    int i3 = l * k2 + l;
+                    int j3 = this.scrollPos * i3 / j;
                     int k1 = i3 * i3 / l2;
 
                     if (l2 != i3)
@@ -142,7 +143,7 @@ public class GuiNewChat extends Gui
     public void printChatMessageWithOptionalDeletion(ITextComponent chatComponent, int chatLineId)
     {
         this.setChatLine(chatComponent, chatLineId, this.mc.ingameGUI.getUpdateCounter(), false);
-        LOGGER.info("[CHAT] " + NEWLINE_STRING_JOINER.join(NEWLINE_SPLITTER.split(chatComponent.getUnformattedText())));
+        LOGGER.info("[CHAT] {}", new Object[] {NEWLINE_STRING_JOINER.join(NEWLINE_SPLITTER.split(chatComponent.getUnformattedText()))});
     }
 
     private void setChatLine(ITextComponent chatComponent, int chatLineId, int updateCounter, boolean displayOnly)
@@ -362,14 +363,14 @@ public class GuiNewChat extends Gui
     {
         int i = 320;
         int j = 40;
-        return MathHelper.floor_float(scale * (float)(i - j) + (float)j);
+        return MathHelper.floor_float(scale * 280.0F + 40.0F);
     }
 
     public static int calculateChatboxHeight(float scale)
     {
         int i = 180;
         int j = 20;
-        return MathHelper.floor_float(scale * (float)(i - j) + (float)j);
+        return MathHelper.floor_float(scale * 160.0F + 20.0F);
     }
 
     public int getLineCount()

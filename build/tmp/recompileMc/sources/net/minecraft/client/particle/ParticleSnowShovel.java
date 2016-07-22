@@ -26,7 +26,10 @@ public class ParticleSnowShovel extends Particle
         this.motionX += xSpeedIn;
         this.motionY += ySpeedIn;
         this.motionZ += zSpeedIn;
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F - (float)(Math.random() * 0.30000001192092896D);
+        float f = 1.0F - (float)(Math.random() * 0.30000001192092896D);
+        this.particleRed = f;
+        this.particleGreen = f;
+        this.particleBlue = f;
         this.particleScale *= 0.75F;
         this.particleScale *= p_i1228_14_;
         this.snowDigParticleScale = this.particleScale;

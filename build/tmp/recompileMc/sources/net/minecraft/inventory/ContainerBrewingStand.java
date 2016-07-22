@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerBrewingStand extends Container
 {
-    private IInventory tileBrewingStand;
+    private final IInventory tileBrewingStand;
     /** Instance of Slot. */
     private final Slot theSlot;
     /** Used to cache the brewing time to send changes to ICrafting listeners. */
@@ -239,7 +239,7 @@ public class ContainerBrewingStand extends Container
     static class Potion extends Slot
         {
             /** The player that has this container open. */
-            private EntityPlayer player;
+            private final EntityPlayer player;
 
             public Potion(EntityPlayer playerIn, IInventory inventoryIn, int index, int xPosition, int yPosition)
             {

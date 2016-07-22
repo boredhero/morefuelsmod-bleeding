@@ -14,8 +14,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class InventoryBasic implements IInventory
 {
     private String inventoryTitle;
-    private int slotsCount;
-    private ItemStack[] inventoryContents;
+    private final int slotsCount;
+    private final ItemStack[] inventoryContents;
     private List<IInventoryChangedListener> changeListeners;
     private boolean hasCustomName;
 

@@ -3,6 +3,7 @@ package net.minecraft.entity.monster;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
@@ -25,6 +27,11 @@ public abstract class EntityMob extends EntityCreature implements IMob
     {
         super(worldIn);
         this.experienceValue = 5;
+    }
+
+    public static void func_189760_c(DataFixer p_189760_0_)
+    {
+        EntityLiving.func_189752_a(p_189760_0_, "Monster");
     }
 
     public SoundCategory getSoundCategory()

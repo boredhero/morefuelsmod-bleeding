@@ -141,11 +141,6 @@ public class TileEntityEndGatewayRenderer extends TileEntitySpecialRenderer<Tile
             float f3 = (RANDOM.nextFloat() * 0.5F + 0.4F) * f5;
             float f4 = (RANDOM.nextFloat() * 0.5F + 0.5F) * f5;
 
-            if (k == 0)
-            {
-                f2 = f3 = f4 = 1.0F * f5;
-            }
-
             if (te.shouldRenderFace(EnumFacing.SOUTH))
             {
                 vertexbuffer.pos(x, y, z + 1.0D).color(f2, f3, f4, 1.0F).endVertex();

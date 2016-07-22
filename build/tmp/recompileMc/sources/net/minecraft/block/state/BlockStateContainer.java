@@ -158,7 +158,6 @@ public class BlockStateContainer
     }
 
     @Nullable
-    @SideOnly(Side.CLIENT)
     public IProperty<?> getProperty(String propertyName)
     {
         return (IProperty)this.properties.get(propertyName);
@@ -291,6 +290,11 @@ public class BlockStateContainer
             public boolean isFullBlock()
             {
                 return this.block.isFullBlock(this);
+            }
+
+            public boolean func_189884_a(Entity p_189884_1_)
+            {
+                return this.block.func_189872_a(this, p_189884_1_);
             }
 
             public int getLightOpacity()

@@ -14,12 +14,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class NpcMerchant implements IMerchant
 {
     /** Instance of Merchants Inventory. */
-    private InventoryMerchant theMerchantInventory;
+    private final InventoryMerchant theMerchantInventory;
     /** This merchant's current player customer. */
-    private EntityPlayer customer;
+    private final EntityPlayer customer;
     /** The MerchantRecipeList instance. */
     private MerchantRecipeList recipeList;
-    private ITextComponent name;
+    private final ITextComponent name;
 
     public NpcMerchant(EntityPlayer customerIn, ITextComponent nameIn)
     {

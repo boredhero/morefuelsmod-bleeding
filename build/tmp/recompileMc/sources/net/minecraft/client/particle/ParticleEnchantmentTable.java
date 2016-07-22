@@ -7,10 +7,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleEnchantmentTable extends Particle
 {
-    private float oSize;
-    private double coordX;
-    private double coordY;
-    private double coordZ;
+    private final float oSize;
+    private final double coordX;
+    private final double coordY;
+    private final double coordZ;
 
     protected ParticleEnchantmentTable(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn)
     {
@@ -21,14 +21,18 @@ public class ParticleEnchantmentTable extends Particle
         this.coordX = xCoordIn;
         this.coordY = yCoordIn;
         this.coordZ = zCoordIn;
-        this.posX = this.prevPosX = xCoordIn + xSpeedIn;
-        this.posY = this.prevPosY = yCoordIn + ySpeedIn;
-        this.posZ = this.prevPosZ = zCoordIn + zSpeedIn;
+        this.prevPosX = xCoordIn + xSpeedIn;
+        this.prevPosY = yCoordIn + ySpeedIn;
+        this.prevPosZ = zCoordIn + zSpeedIn;
+        this.posX = this.prevPosX;
+        this.posY = this.prevPosY;
+        this.posZ = this.prevPosZ;
         float f = this.rand.nextFloat() * 0.6F + 0.4F;
-        this.oSize = this.particleScale = this.rand.nextFloat() * 0.5F + 0.2F;
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F * f;
-        this.particleGreen *= 0.9F;
-        this.particleRed *= 0.9F;
+        this.particleScale = this.rand.nextFloat() * 0.5F + 0.2F;
+        this.oSize = this.particleScale;
+        this.particleRed = 0.9F * f;
+        this.particleGreen = 0.9F * f;
+        this.particleBlue = f;
         this.particleMaxAge = (int)(Math.random() * 10.0D) + 30;
         this.setParticleTextureIndex((int)(Math.random() * 26.0D + 1.0D + 224.0D));
     }

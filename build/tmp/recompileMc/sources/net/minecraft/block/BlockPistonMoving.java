@@ -140,7 +140,7 @@ public class BlockPistonMoving extends BlockContainer
                 iblockstate.getBlock().dropBlockAsItem(worldIn, pos, iblockstate, 0);
             }
         }
-        super.dropBlockAsItemWithChance(worldIn, pos, state, chance, fortune);
+        super.dropBlockAsItemWithChance(worldIn, pos, state, 1, fortune); // mimic vanilla behavior from above and ignore chance
     }
 
     /**

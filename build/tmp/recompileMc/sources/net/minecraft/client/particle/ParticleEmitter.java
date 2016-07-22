@@ -10,10 +10,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleEmitter extends Particle
 {
-    private Entity attachedEntity;
+    private final Entity attachedEntity;
     private int age;
-    private int lifetime;
-    private EnumParticleTypes particleTypes;
+    private final int lifetime;
+    private final EnumParticleTypes particleTypes;
 
     public ParticleEmitter(World worldIn, Entity p_i46279_2_, EnumParticleTypes particleTypesIn)
     {

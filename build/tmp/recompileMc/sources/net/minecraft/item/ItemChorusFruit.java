@@ -36,6 +36,11 @@ public class ItemChorusFruit extends ItemFood
                 double d4 = MathHelper.clamp_double(entityLiving.posY + (double)(entityLiving.getRNG().nextInt(16) - 8), 0.0D, (double)(worldIn.getActualHeight() - 1));
                 double d5 = entityLiving.posZ + (entityLiving.getRNG().nextDouble() - 0.5D) * 16.0D;
 
+                if (entityLiving.isRiding())
+                {
+                    entityLiving.dismountRidingEntity();
+                }
+
                 if (entityLiving.attemptTeleport(d3, d4, d5))
                 {
                     worldIn.playSound((EntityPlayer)null, d0, d1, d2, SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.PLAYERS, 1.0F, 1.0F);

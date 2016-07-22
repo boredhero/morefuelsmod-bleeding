@@ -4,6 +4,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -21,6 +22,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -122,6 +124,11 @@ public class EntityPigZombie extends EntityZombie
     public boolean isNotColliding()
     {
         return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.containsAnyLiquid(this.getEntityBoundingBox());
+    }
+
+    public static void func_189781_b(DataFixer p_189781_0_)
+    {
+        EntityLiving.func_189752_a(p_189781_0_, "PigZombie");
     }
 
     /**
@@ -248,7 +255,7 @@ public class EntityPigZombie extends EntityZombie
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         super.onInitialSpawn(difficulty, livingdata);
-        this.setToNotVillager();
+        this.func_189778_a(ZombieType.NORMAL);
         return livingdata;
     }
 

@@ -159,6 +159,12 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
     }
 
     @Deprecated
+    public boolean func_189872_a(IBlockState p_189872_1_, Entity p_189872_2_)
+    {
+        return true;
+    }
+
+    @Deprecated
     public int getLightOpacity(IBlockState state)
     {
         return this.lightOpacity;
@@ -688,9 +694,9 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
                 return;
             }
             float f = 0.5F;
-            double d0 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-            double d1 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-            double d2 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
+            double d0 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
+            double d1 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
+            double d2 = (double)(worldIn.rand.nextFloat() * 0.5F) + 0.25D;
             EntityItem entityitem = new EntityItem(worldIn, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, stack);
             entityitem.setDefaultPickupDelay();
             worldIn.spawnEntityInWorld(entityitem);
@@ -1612,7 +1618,7 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
      */
     public boolean canBeReplacedByLeaves(IBlockState state, IBlockAccess world, BlockPos pos)
     {
-        return !state.isFullBlock();
+        return isAir(state, world, pos) || isLeaves(state, world, pos); //!state.isFullBlock();
     }
 
     /**
@@ -2492,7 +2498,12 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
         registerBlock(210, "repeating_command_block", (new BlockCommandBlock(MapColor.PURPLE)).setBlockUnbreakable().setResistance(6000000.0F).setUnlocalizedName("repeatingCommandBlock"));
         registerBlock(211, "chain_command_block", (new BlockCommandBlock(MapColor.GREEN)).setBlockUnbreakable().setResistance(6000000.0F).setUnlocalizedName("chainCommandBlock"));
         registerBlock(212, "frosted_ice", (new BlockFrostedIce()).setHardness(0.5F).setLightOpacity(3).setSoundType(SoundType.GLASS).setUnlocalizedName("frostedIce"));
-        registerBlock(255, "structure_block", (new BlockStructure()).setBlockUnbreakable().setResistance(6000000.0F).setUnlocalizedName("structureBlock").setLightLevel(1.0F));
+        registerBlock(213, "magma", (new BlockMagma()).setHardness(0.5F).setSoundType(SoundType.STONE).setUnlocalizedName("magma"));
+        registerBlock(214, "nether_wart_block", (new Block(Material.GRASS, MapColor.RED)).setCreativeTab(CreativeTabs.BUILDING_BLOCKS).setHardness(1.0F).setSoundType(SoundType.WOOD).setUnlocalizedName("netherWartBlock"));
+        registerBlock(215, "red_nether_brick", (new BlockNetherBrick()).setHardness(2.0F).setResistance(10.0F).setSoundType(SoundType.STONE).setUnlocalizedName("redNetherBrick").setCreativeTab(CreativeTabs.BUILDING_BLOCKS));
+        registerBlock(216, "bone_block", (new BlockBone()).setUnlocalizedName("boneBlock"));
+        registerBlock(217, "structure_void", (new BlockStructureVoid()).setUnlocalizedName("structureVoid"));
+        registerBlock(255, "structure_block", (new BlockStructure()).setBlockUnbreakable().setResistance(6000000.0F).setUnlocalizedName("structureBlock"));
         REGISTRY.validateKey();
 
         for (Block block15 : REGISTRY)

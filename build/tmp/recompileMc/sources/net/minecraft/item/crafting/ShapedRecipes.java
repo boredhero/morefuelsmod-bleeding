@@ -3,7 +3,6 @@ package net.minecraft.item.crafting;
 import javax.annotation.Nullable;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class ShapedRecipes implements IRecipe
@@ -135,7 +134,7 @@ public class ShapedRecipes implements IRecipe
 
                 if (itemstack1 != null && itemstack1.hasTagCompound())
                 {
-                    itemstack.setTagCompound((NBTTagCompound)itemstack1.getTagCompound().copy());
+                    itemstack.setTagCompound(itemstack1.getTagCompound().copy());
                 }
             }
         }

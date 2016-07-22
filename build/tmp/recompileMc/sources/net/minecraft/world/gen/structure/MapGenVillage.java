@@ -13,11 +13,11 @@ import net.minecraft.world.biome.Biome;
 
 public class MapGenVillage extends MapGenStructure
 {
-    public static List<Biome> VILLAGE_SPAWN_BIOMES = Arrays.<Biome>asList(new Biome[] {Biomes.PLAINS, Biomes.DESERT, Biomes.SAVANNA});
+    public static List<Biome> VILLAGE_SPAWN_BIOMES = Arrays.<Biome>asList(new Biome[] {Biomes.PLAINS, Biomes.DESERT, Biomes.SAVANNA, Biomes.TAIGA});
     /** None */
     private int size;
     private int distance;
-    private int minTownSeparation;
+    private final int minTownSeparation;
 
     public MapGenVillage()
     {
@@ -37,7 +37,7 @@ public class MapGenVillage extends MapGenStructure
             }
             else if (((String)entry.getKey()).equals("distance"))
             {
-                this.distance = MathHelper.parseIntWithDefaultAndMax((String)entry.getValue(), this.distance, this.minTownSeparation + 1);
+                this.distance = MathHelper.parseIntWithDefaultAndMax((String)entry.getValue(), this.distance, 9);
             }
         }
     }
@@ -67,8 +67,8 @@ public class MapGenVillage extends MapGenStructure
         Random random = this.worldObj.setRandomSeed(k, l, 10387312);
         k = k * this.distance;
         l = l * this.distance;
-        k = k + random.nextInt(this.distance - this.minTownSeparation);
-        l = l + random.nextInt(this.distance - this.minTownSeparation);
+        k = k + random.nextInt(this.distance - 8);
+        l = l + random.nextInt(this.distance - 8);
 
         if (i == k && j == l)
         {

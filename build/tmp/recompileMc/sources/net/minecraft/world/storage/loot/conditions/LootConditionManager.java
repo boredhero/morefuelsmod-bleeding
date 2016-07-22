@@ -59,12 +59,8 @@ public class LootConditionManager
         }
         else
         {
-            int i = 0;
-
-            for (int j = conditions.length; i < j; ++i)
+            for (LootCondition lootcondition : conditions)
             {
-                LootCondition lootcondition = conditions[i];
-
                 if (!lootcondition.testCondition(rand, context))
                 {
                     return false;

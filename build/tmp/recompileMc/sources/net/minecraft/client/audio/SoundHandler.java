@@ -209,7 +209,7 @@ public class SoundHandler implements IResourceManagerReloadListener, ITickable
         }
         catch (IOException ioexception)
         {
-            LOGGER.warn((String)("Could not load sound file " + resourcelocation + ", cannot add it to event " + p_184401_2_), (Throwable)ioexception);
+            LOGGER.warn("Could not load sound file {}, cannot add it to event {}", new Object[] {resourcelocation, p_184401_2_, ioexception});
             flag = false;
             return flag;
         }

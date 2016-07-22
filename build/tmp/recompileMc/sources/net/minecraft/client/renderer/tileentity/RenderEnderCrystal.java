@@ -69,7 +69,10 @@ public class RenderEnderCrystal extends Render<EntityEnderCrystal>
             float f2 = (float)blockpos.getX() + 0.5F;
             float f3 = (float)blockpos.getY() + 0.5F;
             float f4 = (float)blockpos.getZ() + 0.5F;
-            RenderDragon.renderCrystalBeams(x, y - 1.2999999523162842D + (double)(f1 * 0.4F), z, partialTicks, entity.posX, entity.posY, entity.posZ, entity.innerRotation, (double)f2, (double)f3, (double)f4);
+            double d0 = (double)f2 - entity.posX;
+            double d1 = (double)f3 - entity.posY;
+            double d2 = (double)f4 - entity.posZ;
+            RenderDragon.renderCrystalBeams(x + d0, y - 0.3D + (double)(f1 * 0.4F) + d1, z + d2, partialTicks, (double)f2, (double)f3, (double)f4, entity.innerRotation, entity.posX, entity.posY, entity.posZ);
         }
 
         super.doRender(entity, x, y, z, entityYaw, partialTicks);

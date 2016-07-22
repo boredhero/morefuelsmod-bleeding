@@ -11,6 +11,9 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 
 public class TileEntityDispenser extends TileEntityLockableLoot implements IInventory
 {
@@ -133,6 +136,11 @@ public class TileEntityDispenser extends TileEntityLockableLoot implements IInve
     public boolean hasCustomName()
     {
         return this.customName != null;
+    }
+
+    public static void func_189678_a(DataFixer p_189678_0_)
+    {
+        p_189678_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists("Trap", new String[] {"Items"}));
     }
 
     public void readFromNBT(NBTTagCompound compound)

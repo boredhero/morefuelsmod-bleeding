@@ -257,9 +257,7 @@ public enum EnumConnectionState
         }
     };
 
-    private static int MIN_PROTOCOL_ID = -1;
-    private static int MAX_PROTOCOL_ID = 2;
-    private static final EnumConnectionState[] STATES_BY_ID = new EnumConnectionState[MAX_PROTOCOL_ID - MIN_PROTOCOL_ID + 1];
+    private static final EnumConnectionState[] STATES_BY_ID = new EnumConnectionState[4];
     private static final Map < Class <? extends Packet<? >> , EnumConnectionState > STATES_BY_CLASS = Maps. < Class <? extends Packet<? >> , EnumConnectionState > newHashMap();
     private final int id;
     private final Map < EnumPacketDirection, BiMap < Integer, Class <? extends Packet<? >>> > directionMaps;
@@ -312,7 +310,7 @@ public enum EnumConnectionState
 
     public static EnumConnectionState getById(int stateId)
     {
-        return stateId >= MIN_PROTOCOL_ID && stateId <= MAX_PROTOCOL_ID ? STATES_BY_ID[stateId - MIN_PROTOCOL_ID] : null;
+        return stateId >= -1 && stateId <= 2 ? STATES_BY_ID[stateId - -1] : null;
     }
 
     public static EnumConnectionState getFromPacket(Packet<?> packetIn)
@@ -326,12 +324,12 @@ public enum EnumConnectionState
         {
             int i = enumconnectionstate.getId();
 
-            if (i < MIN_PROTOCOL_ID || i > MAX_PROTOCOL_ID)
+            if (i < -1 || i > 2)
             {
                 throw new Error("Invalid protocol ID " + Integer.toString(i));
             }
 
-            STATES_BY_ID[i - MIN_PROTOCOL_ID] = enumconnectionstate;
+            STATES_BY_ID[i - -1] = enumconnectionstate;
 
             for (EnumPacketDirection enumpacketdirection : enumconnectionstate.directionMaps.keySet())
             {

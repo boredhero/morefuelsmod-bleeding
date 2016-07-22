@@ -16,7 +16,7 @@ public class BlockStateContainer implements IBlockStatePaletteResizer
     protected static final IBlockState AIR_BLOCK_STATE = Blocks.AIR.getDefaultState();
     protected BitArray storage;
     protected IBlockStatePalette palette;
-    private int bits = 0;
+    private int bits;
 
     public BlockStateContainer()
     {

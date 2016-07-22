@@ -20,17 +20,20 @@ public class ParticleExplosionLarge extends Particle
     private static final ResourceLocation EXPLOSION_TEXTURE = new ResourceLocation("textures/entity/explosion.png");
     private static final VertexFormat VERTEX_FORMAT = (new VertexFormat()).addElement(DefaultVertexFormats.POSITION_3F).addElement(DefaultVertexFormats.TEX_2F).addElement(DefaultVertexFormats.COLOR_4UB).addElement(DefaultVertexFormats.TEX_2S).addElement(DefaultVertexFormats.NORMAL_3B).addElement(DefaultVertexFormats.PADDING_1B);
     private int life;
-    private int lifeTime;
+    private final int lifeTime;
     /** The Rendering Engine. */
-    private TextureManager theRenderEngine;
-    private float size;
+    private final TextureManager theRenderEngine;
+    private final float size;
 
     protected ParticleExplosionLarge(TextureManager renderEngine, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double p_i1213_9_, double p_i1213_11_, double p_i1213_13_)
     {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
         this.theRenderEngine = renderEngine;
         this.lifeTime = 6 + this.rand.nextInt(4);
-        this.particleRed = this.particleGreen = this.particleBlue = this.rand.nextFloat() * 0.6F + 0.4F;
+        float f = this.rand.nextFloat() * 0.6F + 0.4F;
+        this.particleRed = f;
+        this.particleGreen = f;
+        this.particleBlue = f;
         this.size = 1.0F - (float)p_i1213_9_ * 0.5F;
     }
 

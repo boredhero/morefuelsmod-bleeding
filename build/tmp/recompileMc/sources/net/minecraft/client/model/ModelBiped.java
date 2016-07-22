@@ -79,12 +79,12 @@ public class ModelBiped extends ModelBase
         if (this.isChild)
         {
             float f = 2.0F;
-            GlStateManager.scale(1.5F / f, 1.5F / f, 1.5F / f);
+            GlStateManager.scale(0.75F, 0.75F, 0.75F);
             GlStateManager.translate(0.0F, 16.0F * scale, 0.0F);
             this.bipedHead.render(scale);
             GlStateManager.popMatrix();
             GlStateManager.pushMatrix();
-            GlStateManager.scale(1.0F / f, 1.0F / f, 1.0F / f);
+            GlStateManager.scale(0.5F, 0.5F, 0.5F);
             GlStateManager.translate(0.0F, 24.0F * scale, 0.0F);
             this.bipedBody.render(scale);
             this.bipedRightArm.render(scale);
@@ -209,7 +209,6 @@ public class ModelBiped extends ModelBase
         {
             EnumHandSide enumhandside = this.getMainHand(entityIn);
             ModelRenderer modelrenderer = this.getArmForSide(enumhandside);
-            this.getArmForSide(enumhandside.opposite());
             float f1 = this.swingProgress;
             this.bipedBody.rotateAngleY = MathHelper.sin(MathHelper.sqrt_float(f1) * ((float)Math.PI * 2F)) * 0.2F;
 

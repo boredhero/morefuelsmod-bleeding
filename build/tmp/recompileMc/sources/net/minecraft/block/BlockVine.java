@@ -208,11 +208,11 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
                 int i = 4;
                 int j = 5;
                 boolean flag = false;
-                label62:
+                label58:
 
-                for (int k = -i; k <= i; ++k)
+                for (int k = -4; k <= 4; ++k)
                 {
-                    for (int l = -i; l <= i; ++l)
+                    for (int l = -4; l <= 4; ++l)
                     {
                         for (int i1 = -1; i1 <= 1; ++i1)
                         {
@@ -223,7 +223,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
                                 if (j <= 0)
                                 {
                                     flag = true;
-                                    break label62;
+                                    break label58;
                                 }
                             }
                         }

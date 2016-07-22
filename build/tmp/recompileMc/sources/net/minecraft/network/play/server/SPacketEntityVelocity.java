@@ -29,34 +29,34 @@ public class SPacketEntityVelocity implements Packet<INetHandlerPlayClient>
         this.entityID = entityIdIn;
         double d0 = 3.9D;
 
-        if (motionXIn < -d0)
+        if (motionXIn < -3.9D)
         {
-            motionXIn = -d0;
+            motionXIn = -3.9D;
         }
 
-        if (motionYIn < -d0)
+        if (motionYIn < -3.9D)
         {
-            motionYIn = -d0;
+            motionYIn = -3.9D;
         }
 
-        if (motionZIn < -d0)
+        if (motionZIn < -3.9D)
         {
-            motionZIn = -d0;
+            motionZIn = -3.9D;
         }
 
-        if (motionXIn > d0)
+        if (motionXIn > 3.9D)
         {
-            motionXIn = d0;
+            motionXIn = 3.9D;
         }
 
-        if (motionYIn > d0)
+        if (motionYIn > 3.9D)
         {
-            motionYIn = d0;
+            motionYIn = 3.9D;
         }
 
-        if (motionZIn > d0)
+        if (motionZIn > 3.9D)
         {
-            motionZIn = d0;
+            motionZIn = 3.9D;
         }
 
         this.motionX = (int)(motionXIn * 8000.0D);

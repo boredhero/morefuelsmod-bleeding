@@ -12,7 +12,7 @@ public class GuiOptionSlider extends GuiButton
 {
     private float sliderValue;
     public boolean dragging;
-    private GameSettings.Options options;
+    private final GameSettings.Options options;
     private final float minValue;
     private final float maxValue;
 

@@ -3,6 +3,7 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIFollowParent;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -19,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -29,6 +31,11 @@ public class EntityCow extends EntityAnimal
     {
         super(worldIn);
         this.setSize(0.9F, 1.4F);
+    }
+
+    public static void func_189790_b(DataFixer p_189790_0_)
+    {
+        EntityLiving.func_189752_a(p_189790_0_, "Cow");
     }
 
     protected void initEntityAI()

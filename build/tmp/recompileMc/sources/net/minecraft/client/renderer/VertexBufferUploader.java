@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class VertexBufferUploader extends WorldVertexBufferUploader
 {
-    private net.minecraft.client.renderer.vertex.VertexBuffer vertexBuffer = null;
+    private net.minecraft.client.renderer.vertex.VertexBuffer vertexBuffer;
 
     public void draw(VertexBuffer vertexBufferIn)
     {

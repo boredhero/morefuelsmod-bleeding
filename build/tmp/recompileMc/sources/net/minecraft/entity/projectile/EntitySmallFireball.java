@@ -4,6 +4,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -26,6 +27,11 @@ public class EntitySmallFireball extends EntityFireball
     {
         super(worldIn, x, y, z, accelX, accelY, accelZ);
         this.setSize(0.3125F, 0.3125F);
+    }
+
+    public static void func_189745_a(DataFixer p_189745_0_)
+    {
+        EntityFireball.func_189743_a(p_189745_0_, "SmallFireball");
     }
 
     /**

@@ -34,7 +34,7 @@ public class SetDamage extends LootFunction
         }
         else
         {
-            LOGGER.warn("Couldn\'t set damage of loot item " + stack);
+            LOGGER.warn("Couldn\'t set damage of loot item {}", new Object[] {stack});
         }
 
         return stack;

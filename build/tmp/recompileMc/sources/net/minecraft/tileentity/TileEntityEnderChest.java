@@ -43,11 +43,11 @@ public class TileEntityEnderChest extends TileEntity implements ITickable
 
             if (this.numPlayersUsing > 0)
             {
-                this.lidAngle += f;
+                this.lidAngle += 0.1F;
             }
             else
             {
-                this.lidAngle -= f;
+                this.lidAngle -= 0.1F;
             }
 
             if (this.lidAngle > 1.0F)
@@ -57,7 +57,7 @@ public class TileEntityEnderChest extends TileEntity implements ITickable
 
             float f1 = 0.5F;
 
-            if (this.lidAngle < f1 && f2 >= f1)
+            if (this.lidAngle < 0.5F && f2 >= 0.5F)
             {
                 double d3 = (double)i + 0.5D;
                 double d2 = (double)k + 0.5D;

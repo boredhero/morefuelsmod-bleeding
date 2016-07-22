@@ -125,7 +125,7 @@ public class GuiSpectator extends Gui implements ISpectatorMenuRecipient
         if (i > 3 && this.menu != null)
         {
             ISpectatorMenuObject ispectatormenuobject = this.menu.getSelectedItem();
-            String s = ispectatormenuobject != SpectatorMenu.EMPTY_SLOT ? ispectatormenuobject.getSpectatorName().getFormattedText() : this.menu.getSelectedCategory().getPrompt().getFormattedText();
+            String s = ispectatormenuobject == SpectatorMenu.EMPTY_SLOT ? this.menu.getSelectedCategory().getPrompt().getFormattedText() : ispectatormenuobject.getSpectatorName().getFormattedText();
 
             if (s != null)
             {

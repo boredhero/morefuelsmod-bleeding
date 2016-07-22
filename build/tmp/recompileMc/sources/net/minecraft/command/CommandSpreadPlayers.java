@@ -256,11 +256,11 @@ public class CommandSpreadPlayers extends CommandBase
             entity.setPositionAndUpdate((double)((float)MathHelper.floor_double(commandspreadplayers$position.x) + 0.5F), (double)commandspreadplayers$position.getSpawnY(worldIn), (double)MathHelper.floor_double(commandspreadplayers$position.z) + 0.5D);
             double d2 = Double.MAX_VALUE;
 
-            for (int k = 0; k < p_110671_3_.length; ++k)
+            for (CommandSpreadPlayers.Position commandspreadplayers$position1 : p_110671_3_)
             {
-                if (commandspreadplayers$position != p_110671_3_[k])
+                if (commandspreadplayers$position != commandspreadplayers$position1)
                 {
-                    double d1 = commandspreadplayers$position.dist(p_110671_3_[k]);
+                    double d1 = commandspreadplayers$position.dist(commandspreadplayers$position1);
                     d2 = Math.min(d1, d2);
                 }
             }

@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.feature.WorldGenAbstractTree;
+import net.minecraft.world.gen.feature.WorldGenFossils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -73,6 +74,16 @@ public class BiomeSwamp extends Biome
         }
 
         this.generateBiomeTerrain(worldIn, rand, chunkPrimerIn, x, z, noiseVal);
+    }
+
+    public void decorate(World worldIn, Random rand, BlockPos pos)
+    {
+        super.decorate(worldIn, rand, pos);
+
+        if (rand.nextInt(64) == 0)
+        {
+            (new WorldGenFossils()).generate(worldIn, rand, pos);
+        }
     }
 
     @SideOnly(Side.CLIENT)

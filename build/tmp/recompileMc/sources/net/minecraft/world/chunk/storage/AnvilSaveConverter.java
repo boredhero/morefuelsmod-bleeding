@@ -72,7 +72,7 @@ public class AnvilSaveConverter extends SaveFormatOld
                         }
 
                         long i = 0L;
-                        list.add(new WorldSummary(worldinfo, s, s1, i, flag));
+                        list.add(new WorldSummary(worldinfo, s, s1, 0L, flag));
                     }
                 }
             }
@@ -146,9 +146,9 @@ public class AnvilSaveConverter extends SaveFormatOld
         }
 
         int i = list.size() + list1.size() + list2.size();
-        LOGGER.info("Total conversion count is " + i);
+        LOGGER.info("Total conversion count is {}", new Object[] {Integer.valueOf(i)});
         WorldInfo worldinfo = this.getWorldInfo(filename);
-        BiomeProvider biomeprovider = null;
+        BiomeProvider biomeprovider;
 
         if (worldinfo.getTerrainType() == WorldType.FLAT)
         {

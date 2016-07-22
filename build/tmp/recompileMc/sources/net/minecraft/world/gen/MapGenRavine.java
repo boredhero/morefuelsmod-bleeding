@@ -12,7 +12,7 @@ public class MapGenRavine extends MapGenBase
 {
     protected static final IBlockState FLOWING_LAVA = Blocks.FLOWING_LAVA.getDefaultState();
     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
-    private float[] rs = new float[1024];
+    private final float[] rs = new float[1024];
 
     protected void addTunnel(long p_180707_1_, int p_180707_3_, int p_180707_4_, ChunkPrimer p_180707_5_, double p_180707_6_, double p_180707_8_, double p_180707_10_, float p_180707_12_, float p_180707_13_, float p_180707_14_, int p_180707_15_, int p_180707_16_, double p_180707_17_)
     {
@@ -195,7 +195,7 @@ public class MapGenRavine extends MapGenBase
             double d2 = (double)(chunkZ * 16 + this.rand.nextInt(16));
             int i = 1;
 
-            for (int j = 0; j < i; ++j)
+            for (int j = 0; j < 1; ++j)
             {
                 float f = this.rand.nextFloat() * ((float)Math.PI * 2F);
                 float f1 = (this.rand.nextFloat() - 0.5F) * 2.0F / 8.0F;

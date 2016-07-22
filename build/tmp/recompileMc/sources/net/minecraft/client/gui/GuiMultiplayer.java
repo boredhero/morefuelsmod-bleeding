@@ -8,6 +8,7 @@ import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.client.network.LanServerDetector;
+import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerPinger;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
@@ -21,7 +22,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final ServerPinger oldServerPinger = new ServerPinger();
-    private GuiScreen parentScreen;
+    private final GuiScreen parentScreen;
     private ServerSelectionList serverListSelector;
     private ServerList savedServerList;
     private GuiButton btnEditServer;
@@ -53,7 +54,11 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
 
-        if (!this.initialized)
+        if (this.initialized)
+        {
+            this.serverListSelector.setDimensions(this.width, this.height, 32, this.height - 64);
+        }
+        else
         {
             this.initialized = true;
             this.savedServerList = new ServerList(this.mc);
@@ -67,15 +72,11 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
             }
             catch (Exception exception)
             {
-                LOGGER.warn("Unable to start LAN server detection: " + exception.getMessage());
+                LOGGER.warn("Unable to start LAN server detection: {}", new Object[] {exception.getMessage()});
             }
 
             this.serverListSelector = new ServerSelectionList(this, this.mc, this.width, this.height, 32, this.height - 64, 36);
             this.serverListSelector.updateOnlineServers(this.savedServerList);
-        }
-        else
-        {
-            this.serverListSelector.setDimensions(this.width, this.height, 32, this.height - 64);
         }
 
         this.createButtons();
@@ -92,9 +93,9 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
 
     public void createButtons()
     {
-        this.buttonList.add(this.btnEditServer = new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit", new Object[0])));
-        this.buttonList.add(this.btnDeleteServer = new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete", new Object[0])));
-        this.buttonList.add(this.btnSelectServer = new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select", new Object[0])));
+        this.btnEditServer = this.func_189646_b(new GuiButton(7, this.width / 2 - 154, this.height - 28, 70, 20, I18n.format("selectServer.edit", new Object[0])));
+        this.btnDeleteServer = this.func_189646_b(new GuiButton(2, this.width / 2 - 74, this.height - 28, 70, 20, I18n.format("selectServer.delete", new Object[0])));
+        this.btnSelectServer = this.func_189646_b(new GuiButton(1, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("selectServer.select", new Object[0])));
         this.buttonList.add(new GuiButton(4, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("selectServer.direct", new Object[0])));
         this.buttonList.add(new GuiButton(3, this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.format("selectServer.add", new Object[0])));
         this.buttonList.add(new GuiButton(8, this.width / 2 + 4, this.height - 28, 70, 20, I18n.format("selectServer.refresh", new Object[0])));
@@ -111,7 +112,7 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
 
         if (this.lanServerList.getWasUpdated())
         {
-            List<LanServerDetector.LanServer> list = this.lanServerList.getLanServers();
+            List<LanServerInfo> list = this.lanServerList.getLanServers();
             this.lanServerList.setWasNotUpdated();
             this.serverListSelector.updateNetworkServers(list);
         }
@@ -166,12 +167,14 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
             else if (button.id == 4)
             {
                 this.directConnect = true;
-                this.mc.displayGuiScreen(new GuiScreenServerList(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName", new Object[0]), "", false)));
+                this.selectedServer = new ServerData(I18n.format("selectServer.defaultName", new Object[0]), "", false);
+                this.mc.displayGuiScreen(new GuiScreenServerList(this, this.selectedServer));
             }
             else if (button.id == 3)
             {
                 this.addingServer = true;
-                this.mc.displayGuiScreen(new GuiScreenAddServer(this, this.selectedServer = new ServerData(I18n.format("selectServer.defaultName", new Object[0]), "", false)));
+                this.selectedServer = new ServerData(I18n.format("selectServer.defaultName", new Object[0]), "", false);
+                this.mc.displayGuiScreen(new GuiScreenAddServer(this, this.selectedServer));
             }
             else if (button.id == 7 && guilistextended$iguilistentry instanceof ServerListEntryNormal)
             {
@@ -390,8 +393,8 @@ public class GuiMultiplayer extends GuiScreen implements GuiYesNoCallback
         }
         else if (guilistextended$iguilistentry instanceof ServerListEntryLanDetected)
         {
-            LanServerDetector.LanServer lanserverdetector$lanserver = ((ServerListEntryLanDetected)guilistextended$iguilistentry).getLanServer();
-            this.connectToServer(new ServerData(lanserverdetector$lanserver.getServerMotd(), lanserverdetector$lanserver.getServerIpPort(), true));
+            LanServerInfo lanserverinfo = ((ServerListEntryLanDetected)guilistextended$iguilistentry).func_189995_a();
+            this.connectToServer(new ServerData(lanserverinfo.getServerMotd(), lanserverinfo.getServerIpPort(), true));
         }
     }
 

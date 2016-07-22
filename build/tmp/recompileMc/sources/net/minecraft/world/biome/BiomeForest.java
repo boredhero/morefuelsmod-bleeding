@@ -20,7 +20,7 @@ public class BiomeForest extends Biome
     protected static final WorldGenBirchTree SUPER_BIRCH_TREE = new WorldGenBirchTree(false, true);
     protected static final WorldGenBirchTree BIRCH_TREE = new WorldGenBirchTree(false, false);
     protected static final WorldGenCanopyTree ROOF_TREE = new WorldGenCanopyTree(false);
-    private BiomeForest.Type type;
+    private final BiomeForest.Type type;
 
     public BiomeForest(BiomeForest.Type typeIn, Biome.BiomeProperties properties)
     {

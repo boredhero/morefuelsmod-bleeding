@@ -45,14 +45,11 @@ public class BlockQuartz extends Block
                 case X:
                     return this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.LINES_X);
                 case Y:
-                default:
                     return this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.LINES_Y);
             }
         }
-        else
-        {
-            return meta == BlockQuartz.EnumType.CHISELED.getMetadata() ? this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.CHISELED) : this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.DEFAULT);
-        }
+
+        return meta == BlockQuartz.EnumType.CHISELED.getMetadata() ? this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.CHISELED) : this.getDefaultState().withProperty(VARIANT, BlockQuartz.EnumType.DEFAULT);
     }
 
     /**

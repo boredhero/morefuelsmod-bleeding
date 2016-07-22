@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public class EntityAIPanic extends EntityAIBase
 {
-    private EntityCreature theEntityCreature;
+    private final EntityCreature theEntityCreature;
     protected double speed;
     private double randPosX;
     private double randPosY;
@@ -33,7 +33,7 @@ public class EntityAIPanic extends EntityAIBase
         {
             return false;
         }
-        else
+        else if (!this.theEntityCreature.isBurning())
         {
             Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.theEntityCreature, 5, 4);
 
@@ -46,19 +46,22 @@ public class EntityAIPanic extends EntityAIBase
                 this.randPosX = vec3d.xCoord;
                 this.randPosY = vec3d.yCoord;
                 this.randPosZ = vec3d.zCoord;
+                return true;
+            }
+        }
+        else
+        {
+            BlockPos blockpos = this.getRandPos(this.theEntityCreature.worldObj, this.theEntityCreature, 5, 4);
 
-                if (this.theEntityCreature.isBurning())
-                {
-                    BlockPos blockpos = this.getRandPos(this.theEntityCreature.worldObj, this.theEntityCreature, 5, 4);
-
-                    if (blockpos != null)
-                    {
-                        this.randPosX = (double)blockpos.getX();
-                        this.randPosY = (double)blockpos.getY();
-                        this.randPosZ = (double)blockpos.getZ();
-                    }
-                }
-
+            if (blockpos == null)
+            {
+                return false;
+            }
+            else
+            {
+                this.randPosX = (double)blockpos.getX();
+                this.randPosY = (double)blockpos.getY();
+                this.randPosZ = (double)blockpos.getZ();
                 return true;
             }
         }

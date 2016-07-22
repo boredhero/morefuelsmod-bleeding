@@ -16,7 +16,7 @@ public class GuiKeyBindingList extends GuiListExtended
     private final GuiControls controlsScreen;
     private final Minecraft mc;
     private final GuiListExtended.IGuiListEntry[] listEntries;
-    private int maxListLabelWidth = 0;
+    private int maxListLabelWidth;
 
     public GuiKeyBindingList(GuiControls controls, Minecraft mcIn)
     {

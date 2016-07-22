@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 
 public class EntityMinecartEmpty extends EntityMinecart
@@ -16,6 +17,11 @@ public class EntityMinecartEmpty extends EntityMinecart
     public EntityMinecartEmpty(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189673_a(DataFixer p_189673_0_)
+    {
+        EntityMinecart.func_189669_a(p_189673_0_, "MinecartRideable");
     }
 
     public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)

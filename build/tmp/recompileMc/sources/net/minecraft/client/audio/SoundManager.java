@@ -56,7 +56,7 @@ public class SoundManager
     /** Set to true when the SoundManager has been initialised. */
     private boolean loaded;
     /** A counter for how long the sound manager has been running */
-    private int playTime = 0;
+    private int playTime;
     private final Map<String, ISound> playingSounds = HashBiMap.<String, ISound>create();
     private final Map<ISound, String> invPlayingSounds;
     private final Multimap<SoundCategory, String> categorySounds;
@@ -100,7 +100,7 @@ public class SoundManager
 
             if (this.sndHandler.getAccessor(resourcelocation) == null)
             {
-                LOGGER.warn("Missing sound for event: " + SoundEvent.REGISTRY.getNameForObject(soundevent));
+                LOGGER.warn("Missing sound for event: {}", new Object[] {SoundEvent.REGISTRY.getNameForObject(soundevent)});
                 UNABLE_TO_PLAY.add(resourcelocation);
             }
         }
@@ -143,7 +143,7 @@ public class SoundManager
                             {
                                 if (!p_errorMessage_2_.isEmpty())
                                 {
-                                    SoundManager.LOGGER.error("Error in class \'" + p_errorMessage_1_ + "\'");
+                                    SoundManager.LOGGER.error("Error in class \'{}\'", new Object[] {p_errorMessage_1_});
                                     SoundManager.LOGGER.error(p_errorMessage_2_);
                                 }
                             }

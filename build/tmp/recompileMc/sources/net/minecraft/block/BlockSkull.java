@@ -10,6 +10,7 @@ import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.BlockWorldState;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.pattern.BlockMaterialMatcher;
 import net.minecraft.block.state.pattern.BlockPattern;
 import net.minecraft.block.state.pattern.BlockStateMatcher;
 import net.minecraft.block.state.pattern.FactoryBlockPattern;
@@ -294,7 +295,7 @@ public class BlockSkull extends BlockContainer
     {
         if (this.witherBasePattern == null)
         {
-            this.witherBasePattern = FactoryBlockPattern.start().aisle(new String[] {"   ", "###", "~#~"}).where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND))).where('~', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.AIR))).build();
+            this.witherBasePattern = FactoryBlockPattern.start().aisle(new String[] {"   ", "###", "~#~"}).where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND))).where('~', BlockWorldState.hasState(BlockMaterialMatcher.func_189886_a(Material.AIR))).build();
         }
 
         return this.witherBasePattern;
@@ -304,7 +305,7 @@ public class BlockSkull extends BlockContainer
     {
         if (this.witherPattern == null)
         {
-            this.witherPattern = FactoryBlockPattern.start().aisle(new String[] {"^^^", "###", "~#~"}).where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND))).where('^', IS_WITHER_SKELETON).where('~', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.AIR))).build();
+            this.witherPattern = FactoryBlockPattern.start().aisle(new String[] {"^^^", "###", "~#~"}).where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.SOUL_SAND))).where('^', IS_WITHER_SKELETON).where('~', BlockWorldState.hasState(BlockMaterialMatcher.func_189886_a(Material.AIR))).build();
         }
 
         return this.witherPattern;

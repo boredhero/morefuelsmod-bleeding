@@ -69,7 +69,7 @@ public class WeightedBakedModel implements IBakedModel
     @SideOnly(Side.CLIENT)
     public static class Builder
         {
-            private List<WeightedBakedModel.WeightedModel> listItems = Lists.<WeightedBakedModel.WeightedModel>newArrayList();
+            private final List<WeightedBakedModel.WeightedModel> listItems = Lists.<WeightedBakedModel.WeightedModel>newArrayList();
 
             public WeightedBakedModel.Builder add(IBakedModel p_177677_1_, int p_177677_2_)
             {

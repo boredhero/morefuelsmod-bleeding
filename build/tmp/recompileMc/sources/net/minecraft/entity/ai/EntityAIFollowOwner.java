@@ -1,11 +1,10 @@
 package net.minecraft.entity.ai;
 
-import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathNodeType;
@@ -15,11 +14,11 @@ import net.minecraft.world.World;
 
 public class EntityAIFollowOwner extends EntityAIBase
 {
-    private EntityTameable thePet;
+    private final EntityTameable thePet;
     private EntityLivingBase theOwner;
     World theWorld;
-    private double followSpeed;
-    private PathNavigate petPathfinder;
+    private final double followSpeed;
+    private final PathNavigate petPathfinder;
     private int timeToRecalcPath;
     float maxDist;
     float minDist;
@@ -102,8 +101,7 @@ public class EntityAIFollowOwner extends EntityAIBase
     private boolean isEmptyBlock(BlockPos pos)
     {
         IBlockState iblockstate = this.theWorld.getBlockState(pos);
-        Block block = iblockstate.getBlock();
-        return block == Blocks.AIR ? true : !iblockstate.isFullCube();
+        return iblockstate.getMaterial() == Material.AIR ? true : !iblockstate.isFullCube();
     }
 
     /**

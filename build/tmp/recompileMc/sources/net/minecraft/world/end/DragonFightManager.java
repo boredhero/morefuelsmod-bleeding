@@ -55,24 +55,24 @@ public class DragonFightManager
     private final WorldServer world;
     private final List<Integer> gateways = Lists.<Integer>newArrayList();
     private final BlockPattern portalPattern;
-    private int ticksSinceDragonSeen = 0;
-    private int aliveCrystals = 0;
-    private int ticksSinceCrystalsScanned = 0;
-    private int ticksSinceLastPlayerScan = 0;
-    private boolean dragonKilled = false;
-    private boolean previouslyKilled = false;
-    private UUID dragonUniqueId = null;
-    private boolean scanForLegacyFight = false;
-    private BlockPos exitPortalLocation = null;
+    private int ticksSinceDragonSeen;
+    private int aliveCrystals;
+    private int ticksSinceCrystalsScanned;
+    private int ticksSinceLastPlayerScan;
+    private boolean dragonKilled;
+    private boolean previouslyKilled;
+    private UUID dragonUniqueId;
+    private boolean scanForLegacyFight = true;
+    private BlockPos exitPortalLocation;
     private DragonSpawnManager respawnState;
-    private int respawnStateTicks = 0;
+    private int respawnStateTicks;
     private List<EntityEnderCrystal> crystals;
 
     public DragonFightManager(WorldServer worldIn, NBTTagCompound compound)
     {
         this.world = worldIn;
 
-        if (compound.hasKey("DragonKilled", 1))
+        if (compound.hasKey("DragonKilled", 99))
         {
             if (compound.hasUniqueId("DragonUUID"))
             {
@@ -94,7 +94,6 @@ public class DragonFightManager
         }
         else
         {
-            this.scanForLegacyFight = true;
             this.dragonKilled = true;
             this.previouslyKilled = true;
         }
@@ -119,39 +118,32 @@ public class DragonFightManager
 
     public NBTTagCompound getCompound()
     {
-        if (this.scanForLegacyFight)
+        NBTTagCompound nbttagcompound = new NBTTagCompound();
+
+        if (this.dragonUniqueId != null)
         {
-            return new NBTTagCompound();
+            nbttagcompound.setUniqueId("DragonUUID", this.dragonUniqueId);
         }
-        else
+
+        nbttagcompound.setBoolean("DragonKilled", this.dragonKilled);
+        nbttagcompound.setBoolean("PreviouslyKilled", this.previouslyKilled);
+
+        if (this.exitPortalLocation != null)
         {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-
-            if (this.dragonUniqueId != null)
-            {
-                nbttagcompound.setUniqueId("DragonUUID", this.dragonUniqueId);
-            }
-
-            nbttagcompound.setBoolean("DragonKilled", this.dragonKilled);
-            nbttagcompound.setBoolean("PreviouslyKilled", this.previouslyKilled);
-
-            if (this.exitPortalLocation != null)
-            {
-                nbttagcompound.setTag("ExitPortalLocation", NBTUtil.createPosTag(this.exitPortalLocation));
-            }
-
-            NBTTagList nbttaglist = new NBTTagList();
-            Iterator iterator = this.gateways.iterator();
-
-            while (iterator.hasNext())
-            {
-                int i = ((Integer)iterator.next()).intValue();
-                nbttaglist.appendTag(new NBTTagInt(i));
-            }
-
-            nbttagcompound.setTag("Gateways", nbttaglist);
-            return nbttagcompound;
+            nbttagcompound.setTag("ExitPortalLocation", NBTUtil.createPosTag(this.exitPortalLocation));
         }
+
+        NBTTagList nbttaglist = new NBTTagList();
+        Iterator iterator = this.gateways.iterator();
+
+        while (iterator.hasNext())
+        {
+            int i = ((Integer)iterator.next()).intValue();
+            nbttaglist.appendTag(new NBTTagInt(i));
+        }
+
+        nbttagcompound.setTag("Gateways", nbttaglist);
+        return nbttagcompound;
     }
 
     public void tick()
@@ -171,8 +163,9 @@ public class DragonFightManager
                 LOGGER.info("Scanning for legacy world dragon fight...");
                 this.loadChunks();
                 this.scanForLegacyFight = false;
+                boolean flag = this.hasDragonBeenKilled();
 
-                if (this.hasDragonBeenKilled())
+                if (flag)
                 {
                     LOGGER.info("Found that the dragon has been killed in this world already.");
                     this.previouslyKilled = true;
@@ -181,20 +174,28 @@ public class DragonFightManager
                 {
                     LOGGER.info("Found that the dragon has not yet been killed in this world.");
                     this.previouslyKilled = false;
+                    this.generatePortal(false);
                 }
 
                 List<EntityDragon> list = this.world.getEntities(EntityDragon.class, EntitySelectors.IS_ALIVE);
 
-                if (!list.isEmpty())
+                if (list.isEmpty())
                 {
-                    EntityDragon entitydragon = (EntityDragon)list.get(0);
-                    this.dragonUniqueId = entitydragon.getUniqueID();
-                    LOGGER.info("Found that there\'s a dragon still alive (" + entitydragon + ")");
-                    this.dragonKilled = false;
+                    this.dragonKilled = true;
                 }
                 else
                 {
-                    this.dragonKilled = true;
+                    EntityDragon entitydragon = (EntityDragon)list.get(0);
+                    this.dragonUniqueId = entitydragon.getUniqueID();
+                    LOGGER.info("Found that there\'s a dragon still alive ({})", new Object[] {entitydragon});
+                    this.dragonKilled = false;
+
+                    if (!flag)
+                    {
+                        LOGGER.info("But we didn\'t have a portal, let\'s remove it.");
+                        entitydragon.setDead();
+                        this.dragonUniqueId = null;
+                    }
                 }
 
                 if (!this.previouslyKilled && this.dragonKilled)
@@ -221,16 +222,15 @@ public class DragonFightManager
                     this.loadChunks();
                     List<EntityDragon> list1 = this.world.getEntities(EntityDragon.class, EntitySelectors.IS_ALIVE);
 
-                    if (!list1.isEmpty())
-                    {
-                        LOGGER.debug("Haven\'t seen our dragon, but found another one to use.");
-                        this.dragonUniqueId = ((EntityDragon)list1.get(0)).getUniqueID();
-                    }
-                    else
+                    if (list1.isEmpty())
                     {
                         LOGGER.debug("Haven\'t seen the dragon, respawning it");
                         this.spawnDragon();
-                        this.generatePortal(false);
+                    }
+                    else
+                    {
+                        LOGGER.debug("Haven\'t seen our dragon, but found another one to use.");
+                        this.dragonUniqueId = ((EntityDragon)list1.get(0)).getUniqueID();
                     }
 
                     this.ticksSinceDragonSeen = 0;
@@ -306,7 +306,7 @@ public class DragonFightManager
 
                         if (blockpattern$patternhelper != null)
                         {
-                            BlockPos blockpos = blockpattern$patternhelper.translateOffset(3, 3, 4).getPos();
+                            BlockPos blockpos = blockpattern$patternhelper.translateOffset(3, 3, 3).getPos();
 
                             if (this.exitPortalLocation == null && blockpos.getX() == 0 && blockpos.getZ() == 0)
                             {
@@ -330,7 +330,7 @@ public class DragonFightManager
             {
                 if (this.exitPortalLocation == null)
                 {
-                    this.exitPortalLocation = blockpattern$patternhelper1.translateOffset(3, 3, 4).getPos();
+                    this.exitPortalLocation = blockpattern$patternhelper1.translateOffset(3, 3, 3).getPos();
                 }
 
                 return blockpattern$patternhelper1;
@@ -500,13 +500,13 @@ public class DragonFightManager
                 {
                     LOGGER.debug("Couldn\'t find a portal, so we made one.");
                     this.generatePortal(true);
-                    blockpos = this.exitPortalLocation;
                 }
                 else
                 {
                     LOGGER.debug("Found the exit portal & temporarily using it.");
-                    blockpos = blockpattern$patternhelper.translateOffset(3, 3, 3).getPos();
                 }
+
+                blockpos = this.exitPortalLocation;
             }
 
             List<EntityEnderCrystal> list1 = Lists.<EntityEnderCrystal>newArrayList();

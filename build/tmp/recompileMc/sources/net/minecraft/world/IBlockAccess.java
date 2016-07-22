@@ -28,12 +28,6 @@ public interface IBlockAccess
     @SideOnly(Side.CLIENT)
     Biome getBiomeGenForCoords(BlockPos pos);
 
-    /**
-     * set by !chunk.getAreLevelsEmpty
-     */
-    @SideOnly(Side.CLIENT)
-    boolean extendedLevelsInChunkCache();
-
     int getStrongPower(BlockPos pos, EnumFacing direction);
 
     @SideOnly(Side.CLIENT)

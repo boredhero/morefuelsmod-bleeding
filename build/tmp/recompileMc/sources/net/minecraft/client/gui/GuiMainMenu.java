@@ -44,7 +44,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Random RANDOM = new Random();
     /** Counts the number of screen updates. */
-    private float updateCounter;
+    private final float updateCounter;
     /** The splash message. */
     private String splashText;
     private GuiButton buttonResetDemo;
@@ -52,7 +52,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private int panoramaTimer;
     /** Texture allocated for the current viewport of the main menu's panorama background. */
     private DynamicTexture viewportTexture;
-    private boolean mcoEnabled = true;
+    private final boolean mcoEnabled = true;
     /** The Object object utilized as a thread lock when performing non thread-safe operations */
     private final Object threadLock = new Object();
     /** OpenGL graphics card warning. */
@@ -94,7 +94,6 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     public GuiMainMenu()
     {
         this.openGLWarning2 = MORE_INFO_TEXT;
-        this.hasCheckedForRealmsNotification = false;
         this.splashText = "missingno";
         IResource iresource = null;
 
@@ -260,7 +259,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     {
         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, p_73969_1_, I18n.format("menu.singleplayer", new Object[0])));
         this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.format("menu.multiplayer", new Object[0])));
-        this.buttonList.add(this.realmsButton = new GuiButton(14, this.width / 2 + 2, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("menu.online", new Object[0]).replace("Minecraft", "").trim()));
+        this.realmsButton = this.func_189646_b(new GuiButton(14, this.width / 2 + 2, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("menu.online", new Object[0]).replace("Minecraft", "").trim()));
         this.buttonList.add(modButton = new GuiButton(6, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("fml.menu.mods")));
     }
 
@@ -270,7 +269,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private void addDemoButtons(int p_73972_1_, int p_73972_2_)
     {
         this.buttonList.add(new GuiButton(11, this.width / 2 - 100, p_73972_1_, I18n.format("menu.playdemo", new Object[0])));
-        this.buttonList.add(this.buttonResetDemo = new GuiButton(12, this.width / 2 - 100, p_73972_1_ + p_73972_2_ * 1, I18n.format("menu.resetdemo", new Object[0])));
+        this.buttonResetDemo = this.func_189646_b(new GuiButton(12, this.width / 2 - 100, p_73972_1_ + p_73972_2_ * 1, I18n.format("menu.resetdemo", new Object[0])));
         ISaveFormat isaveformat = this.mc.getSaveLoader();
         WorldInfo worldinfo = isaveformat.getWorldInfo("Demo_World");
 
@@ -396,13 +395,13 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         int i = 8;
 
-        for (int j = 0; j < i * i; ++j)
+        for (int j = 0; j < 64; ++j)
         {
             GlStateManager.pushMatrix();
-            float f = ((float)(j % i) / (float)i - 0.5F) / 64.0F;
-            float f1 = ((float)(j / i) / (float)i - 0.5F) / 64.0F;
+            float f = ((float)(j % 8) / 8.0F - 0.5F) / 64.0F;
+            float f1 = ((float)(j / 8) / 8.0F - 0.5F) / 64.0F;
             float f2 = 0.0F;
-            GlStateManager.translate(f, f1, f2);
+            GlStateManager.translate(f, f1, 0.0F);
             GlStateManager.rotate(MathHelper.sin(((float)this.panoramaTimer + partialTicks) / 400.0F) * 25.0F + 20.0F, 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(-((float)this.panoramaTimer + partialTicks) * 0.1F, 0.0F, 1.0F, 0.0F);
 
@@ -480,12 +479,12 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         GlStateManager.disableAlpha();
         int i = 3;
 
-        for (int j = 0; j < i; ++j)
+        for (int j = 0; j < 3; ++j)
         {
             float f = 1.0F / (float)(j + 1);
             int k = this.width;
             int l = this.height;
-            float f1 = (float)(j - i / 2) / 256.0F;
+            float f1 = (float)(j - 1) / 256.0F;
             vertexbuffer.pos((double)k, (double)l, (double)this.zLevel).tex((double)(0.0F + f1), 1.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
             vertexbuffer.pos((double)k, 0.0D, (double)this.zLevel).tex((double)(1.0F + f1), 1.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
             vertexbuffer.pos(0.0D, 0.0D, (double)this.zLevel).tex((double)(1.0F + f1), 0.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
@@ -514,7 +513,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         this.rotateAndBlurSkybox(partialTicks);
         this.mc.getFramebuffer().bindFramebuffer(true);
         GlStateManager.viewport(0, 0, this.mc.displayWidth, this.mc.displayHeight);
-        float f = this.width > this.height ? 120.0F / (float)this.width : 120.0F / (float)this.height;
+        float f = 120.0F / (float)(this.width > this.height ? this.width : this.height);
         float f1 = (float)this.height * f / 256.0F;
         float f2 = (float)this.width * f / 256.0F;
         int i = this.width;
@@ -537,10 +536,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         GlStateManager.disableAlpha();
         this.renderSkybox(mouseX, mouseY, partialTicks);
         GlStateManager.enableAlpha();
-        Tessellator tessellator = Tessellator.getInstance();
-        VertexBuffer vertexbuffer = tessellator.getBuffer();
         int i = 274;
-        int j = this.width / 2 - i / 2;
+        int j = this.width / 2 - 137;
         int k = 30;
         this.drawGradientRect(0, 0, this.width, this.height, -2130706433, 16777215);
         this.drawGradientRect(0, 0, this.width, this.height, 0, Integer.MIN_VALUE);
@@ -549,16 +546,16 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
         if ((double)this.updateCounter < 1.0E-4D)
         {
-            this.drawTexturedModalRect(j + 0, k + 0, 0, 0, 99, 44);
-            this.drawTexturedModalRect(j + 99, k + 0, 129, 0, 27, 44);
-            this.drawTexturedModalRect(j + 99 + 26, k + 0, 126, 0, 3, 44);
-            this.drawTexturedModalRect(j + 99 + 26 + 3, k + 0, 99, 0, 26, 44);
-            this.drawTexturedModalRect(j + 155, k + 0, 0, 45, 155, 44);
+            this.drawTexturedModalRect(j + 0, 30, 0, 0, 99, 44);
+            this.drawTexturedModalRect(j + 99, 30, 129, 0, 27, 44);
+            this.drawTexturedModalRect(j + 99 + 26, 30, 126, 0, 3, 44);
+            this.drawTexturedModalRect(j + 99 + 26 + 3, 30, 99, 0, 26, 44);
+            this.drawTexturedModalRect(j + 155, 30, 0, 45, 155, 44);
         }
         else
         {
-            this.drawTexturedModalRect(j + 0, k + 0, 0, 0, 155, 44);
-            this.drawTexturedModalRect(j + 155, k + 0, 0, 45, 155, 44);
+            this.drawTexturedModalRect(j + 0, 30, 0, 0, 155, 44);
+            this.drawTexturedModalRect(j + 155, 30, 0, 45, 155, 44);
         }
 
         this.splashText = net.minecraftforge.client.ForgeHooksClient.renderMainMenu(this, this.fontRendererObj, this.width, this.height, this.splashText);
@@ -571,7 +568,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         GlStateManager.scale(f, f, f);
         this.drawCenteredString(this.fontRendererObj, this.splashText, 0, -8, -256);
         GlStateManager.popMatrix();
-        String s = "Minecraft 1.9.4";
+        String s = "Minecraft 1.10.2";
 
         if (this.mc.isDemo())
         {
@@ -592,7 +589,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
             }
         }
         String s1 = "Copyright Mojang AB. Do not distribute!";
-        this.drawString(this.fontRendererObj, s1, this.width - this.fontRendererObj.getStringWidth(s1) - 2, this.height - 10, -1);
+        this.drawString(this.fontRendererObj, "Copyright Mojang AB. Do not distribute!", this.width - this.fontRendererObj.getStringWidth("Copyright Mojang AB. Do not distribute!") - 2, this.height - 10, -1);
 
         if (this.openGLWarning1 != null && !this.openGLWarning1.isEmpty())
         {

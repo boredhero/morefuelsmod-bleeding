@@ -206,7 +206,7 @@ public class CrashReportCategory
             for (StackTraceElement stacktraceelement : this.stackTrace)
             {
                 builder.append("\n\tat ");
-                builder.append(stacktraceelement.toString());
+                builder.append((Object)stacktraceelement);
             }
         }
     }

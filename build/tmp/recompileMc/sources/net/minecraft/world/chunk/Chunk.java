@@ -120,7 +120,7 @@ public class Chunk
         {
             for (int k = 0; k < 16; ++k)
             {
-                for (int l = 0; l < i; ++l)
+                for (int l = 0; l < 256; ++l)
                 {
                     IBlockState iblockstate = primer.getBlockState(j, l, k);
 
@@ -595,7 +595,8 @@ public class Chunk
                     return null;
                 }
 
-                extendedblockstorage = this.storageArrays[j >> 4] = new ExtendedBlockStorage(j >> 4 << 4, !this.worldObj.provider.getHasNoSky());
+                extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, !this.worldObj.provider.getHasNoSky());
+                this.storageArrays[j >> 4] = extendedblockstorage;
                 flag = j >= i1;
             }
 
@@ -696,7 +697,8 @@ public class Chunk
 
         if (extendedblockstorage == NULL_BLOCK_STORAGE)
         {
-            extendedblockstorage = this.storageArrays[j >> 4] = new ExtendedBlockStorage(j >> 4 << 4, !this.worldObj.provider.getHasNoSky());
+            extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, !this.worldObj.provider.getHasNoSky());
+            this.storageArrays[j >> 4] = extendedblockstorage;
             this.generateSkylightMap();
         }
 
@@ -752,7 +754,7 @@ public class Chunk
 
         if (i != this.xPosition || j != this.zPosition)
         {
-            LOGGER.warn("Wrong location! (" + i + ", " + j + ") should be (" + this.xPosition + ", " + this.zPosition + "), " + entityIn, new Object[] {entityIn});
+            LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", new Object[] {Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(this.xPosition), Integer.valueOf(this.zPosition), entityIn, entityIn});
             entityIn.setDead();
         }
 
@@ -895,14 +897,9 @@ public class Chunk
         this.isChunkLoaded = true;
         this.worldObj.addTileEntities(this.chunkTileEntityMap.values());
 
-        for (int i = 0; i < this.entityLists.length; ++i)
+        for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists)
         {
-            for (Entity entity : this.entityLists[i])
-            {
-                entity.onChunkLoad();
-            }
-
-            this.worldObj.loadEntities(com.google.common.collect.ImmutableList.copyOf(this.entityLists[i]));
+            this.worldObj.loadEntities(com.google.common.collect.ImmutableList.copyOf(classinheritancemultimap));
         }
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Load(this));
     }
@@ -919,9 +916,9 @@ public class Chunk
             this.worldObj.markTileEntityForRemoval(tileentity);
         }
 
-        for (int i = 0; i < this.entityLists.length; ++i)
+        for (ClassInheritanceMultiMap<Entity> classinheritancemultimap : this.entityLists)
         {
-            this.worldObj.unloadEntities(this.entityLists[i]);
+            this.worldObj.unloadEntities(classinheritancemultimap);
         }
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Unload(this));
     }
@@ -961,13 +958,11 @@ public class Chunk
 
                         if (aentity != null)
                         {
-                            for (int l = 0; l < aentity.length; ++l)
+                            for (Entity entity1 : aentity)
                             {
-                                entity = aentity[l];
-
-                                if (entity != entityIn && entity.getEntityBoundingBox().intersectsWith(aabb) && (p_177414_4_ == null || p_177414_4_.apply(entity)))
+                                if (entity1 != entityIn && entity1.getEntityBoundingBox().intersectsWith(aabb) && (p_177414_4_ == null || p_177414_4_.apply(entity1)))
                                 {
-                                    listToFill.add(entity);
+                                    listToFill.add(entity1);
                                 }
                             }
                         }
@@ -1189,7 +1184,7 @@ public class Chunk
     {
         if (this.storageArrays.length != newStorageArrays.length)
         {
-            LOGGER.warn("Could not set level chunk sections, array length is " + newStorageArrays.length + " instead of " + this.storageArrays.length);
+            LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", new Object[] {Integer.valueOf(newStorageArrays.length), Integer.valueOf(this.storageArrays.length)});
         }
         else
         {
@@ -1300,14 +1295,11 @@ public class Chunk
     {
         if (this.blockBiomeArray.length != biomeArray.length)
         {
-            LOGGER.warn("Could not set level chunk biomes, array length is " + biomeArray.length + " instead of " + this.blockBiomeArray.length);
+            LOGGER.warn("Could not set level chunk biomes, array length is {} instead of {}", new Object[] {Integer.valueOf(biomeArray.length), Integer.valueOf(this.blockBiomeArray.length)});
         }
         else
         {
-            for (int i = 0; i < this.blockBiomeArray.length; ++i)
-            {
-                this.blockBiomeArray[i] = biomeArray[i];
-            }
+            System.arraycopy(biomeArray, 0, this.blockBiomeArray, 0, this.blockBiomeArray.length);
         }
     }
 
@@ -1518,14 +1510,11 @@ public class Chunk
     {
         if (this.heightMap.length != newHeightMap.length)
         {
-            LOGGER.warn("Could not set level chunk heightmap, array length is " + newHeightMap.length + " instead of " + this.heightMap.length);
+            LOGGER.warn("Could not set level chunk heightmap, array length is {} instead of {}", new Object[] {Integer.valueOf(newHeightMap.length), Integer.valueOf(this.heightMap.length)});
         }
         else
         {
-            for (int i = 0; i < this.heightMap.length; ++i)
-            {
-                this.heightMap[i] = newHeightMap[i];
-            }
+            System.arraycopy(newHeightMap, 0, this.heightMap, 0, this.heightMap.length);
         }
     }
 

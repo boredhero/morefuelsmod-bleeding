@@ -9,7 +9,6 @@ import java.net.SocketTimeoutException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ThreadLanServerPing;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -23,43 +22,9 @@ public class LanServerDetector
     private static final Logger LOGGER = LogManager.getLogger();
 
     @SideOnly(Side.CLIENT)
-    public static class LanServer
-        {
-            private String lanServerMotd;
-            private String lanServerIpPort;
-            /** Last time this LanServer was seen. */
-            private long timeLastSeen;
-
-            public LanServer(String motd, String address)
-            {
-                this.lanServerMotd = motd;
-                this.lanServerIpPort = address;
-                this.timeLastSeen = Minecraft.getSystemTime();
-            }
-
-            public String getServerMotd()
-            {
-                return this.lanServerMotd;
-            }
-
-            public String getServerIpPort()
-            {
-                return this.lanServerIpPort;
-            }
-
-            /**
-             * Updates the time this LanServer was last seen.
-             */
-            public void updateLastSeen()
-            {
-                this.timeLastSeen = Minecraft.getSystemTime();
-            }
-        }
-
-    @SideOnly(Side.CLIENT)
     public static class LanServerList
         {
-            private List<LanServerDetector.LanServer> listOfLanServers = Lists.<LanServerDetector.LanServer>newArrayList();
+            private final List<LanServerInfo> listOfLanServers = Lists.<LanServerInfo>newArrayList();
             boolean wasUpdated;
 
             public synchronized boolean getWasUpdated()
@@ -72,9 +37,9 @@ public class LanServerDetector
                 this.wasUpdated = false;
             }
 
-            public synchronized List<LanServerDetector.LanServer> getLanServers()
+            public synchronized List<LanServerInfo> getLanServers()
             {
-                return Collections.<LanServerDetector.LanServer>unmodifiableList(this.listOfLanServers);
+                return Collections.<LanServerInfo>unmodifiableList(this.listOfLanServers);
             }
 
             public synchronized void addServer(String pingResponse, InetAddress ipAddress)
@@ -87,11 +52,11 @@ public class LanServerDetector
                     s1 = ipAddress.getHostAddress() + ":" + s1;
                     boolean flag = false;
 
-                    for (LanServerDetector.LanServer lanserverdetector$lanserver : this.listOfLanServers)
+                    for (LanServerInfo lanserverinfo : this.listOfLanServers)
                     {
-                        if (lanserverdetector$lanserver.getServerIpPort().equals(s1))
+                        if (lanserverinfo.getServerIpPort().equals(s1))
                         {
-                            lanserverdetector$lanserver.updateLastSeen();
+                            lanserverinfo.updateLastSeen();
                             flag = true;
                             break;
                         }
@@ -99,7 +64,7 @@ public class LanServerDetector
 
                     if (!flag)
                     {
-                        this.listOfLanServers.add(new LanServerDetector.LanServer(s, s1));
+                        this.listOfLanServers.add(new LanServerInfo(s, s1));
                         this.wasUpdated = true;
                     }
                 }
@@ -150,7 +115,7 @@ public class LanServerDetector
                     }
 
                     String s = new String(datagrampacket.getData(), datagrampacket.getOffset(), datagrampacket.getLength());
-                    LanServerDetector.LOGGER.debug(datagrampacket.getAddress() + ": " + s);
+                    LanServerDetector.LOGGER.debug("{}: {}", new Object[] {datagrampacket.getAddress(), s});
                     this.localServerList.addServer(s, datagrampacket.getAddress());
                 }
 

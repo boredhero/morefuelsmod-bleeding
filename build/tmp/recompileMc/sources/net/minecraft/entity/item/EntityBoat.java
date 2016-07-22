@@ -42,7 +42,7 @@ public class EntityBoat extends Entity
     private static final DataParameter<Float> DAMAGE_TAKEN = EntityDataManager.<Float>createKey(EntityBoat.class, DataSerializers.FLOAT);
     private static final DataParameter<Integer> BOAT_TYPE = EntityDataManager.<Integer>createKey(EntityBoat.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean>[] DATA_ID_PADDLE = new DataParameter[] {EntityDataManager.createKey(EntityBoat.class, DataSerializers.BOOLEAN), EntityDataManager.createKey(EntityBoat.class, DataSerializers.BOOLEAN)};
-    private float[] paddlePositions;
+    private final float[] paddlePositions;
     /** How much of current speed to retain. Value zero to one. */
     private float momentum;
     private float outOfControlTicks;
@@ -103,9 +103,9 @@ public class EntityBoat extends Entity
         this.dataManager.register(DAMAGE_TAKEN, Float.valueOf(0.0F));
         this.dataManager.register(BOAT_TYPE, Integer.valueOf(EntityBoat.Type.OAK.ordinal()));
 
-        for (int i = 0; i < DATA_ID_PADDLE.length; ++i)
+        for (DataParameter<Boolean> dataparameter : DATA_ID_PADDLE)
         {
-            this.dataManager.register(DATA_ID_PADDLE[i], Boolean.valueOf(false));
+            this.dataManager.register(dataparameter, Boolean.valueOf(false));
         }
     }
 
@@ -461,7 +461,7 @@ public class EntityBoat extends Entity
 
                     for (int i2 = i1; i2 < j1; ++i2)
                     {
-                        blockpos$pooledmutableblockpos.set(l1, k1, i2);
+                        blockpos$pooledmutableblockpos.setPos(l1, k1, i2);
                         IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
 
                         if (iblockstate.getMaterial() == Material.WATER)
@@ -520,7 +520,7 @@ public class EntityBoat extends Entity
                         {
                             if (j2 <= 0 || k2 != k && k2 != l - 1)
                             {
-                                blockpos$pooledmutableblockpos.set(l1, k2, i2);
+                                blockpos$pooledmutableblockpos.setPos(l1, k2, i2);
                                 IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
                                 iblockstate.addCollisionBoxToList(this.worldObj, blockpos$pooledmutableblockpos, axisalignedbb1, list, this);
 
@@ -566,7 +566,7 @@ public class EntityBoat extends Entity
                 {
                     for (int i2 = i1; i2 < j1; ++i2)
                     {
-                        blockpos$pooledmutableblockpos.set(k1, l1, i2);
+                        blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
                         IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
 
                         if (iblockstate.getMaterial() == Material.WATER)
@@ -612,7 +612,7 @@ public class EntityBoat extends Entity
                 {
                     for (int i2 = i1; i2 < j1; ++i2)
                     {
-                        blockpos$pooledmutableblockpos.set(k1, l1, i2);
+                        blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
                         IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
 
                         if (iblockstate.getMaterial() == Material.WATER && d0 < (double)getLiquidHeight(iblockstate, this.worldObj, blockpos$pooledmutableblockpos))
@@ -654,7 +654,7 @@ public class EntityBoat extends Entity
     private void updateMotion()
     {
         double d0 = -0.03999999910593033D;
-        double d1 = d0;
+        double d1 = this.func_189652_ae() ? 0.0D : -0.03999999910593033D;
         double d2 = 0.0D;
         this.momentum = 0.05F;
 
@@ -705,7 +705,7 @@ public class EntityBoat extends Entity
             if (d2 > 0.0D)
             {
                 double d3 = 0.65D;
-                this.motionY += d2 * (-d0 / 0.65D);
+                this.motionY += d2 * 0.06153846016296973D;
                 double d4 = 0.75D;
                 this.motionY *= 0.75D;
             }

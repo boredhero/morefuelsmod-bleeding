@@ -19,6 +19,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.PotionHelper;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.BlockPos;
 
 public class TileEntityBrewingStand extends TileEntityLockable implements ITickable, ISidedInventory
@@ -223,6 +226,11 @@ public class TileEntityBrewingStand extends TileEntityLockable implements ITicka
         this.brewingItemStacks[3] = itemstack;
         this.worldObj.playEvent(1035, blockpos, 0);
         net.minecraftforge.event.ForgeEventFactory.onPotionBrewed(brewingItemStacks);
+    }
+
+    public static void func_189675_a(DataFixer p_189675_0_)
+    {
+        p_189675_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists("Cauldron", new String[] {"Items"}));
     }
 
     public void readFromNBT(NBTTagCompound compound)

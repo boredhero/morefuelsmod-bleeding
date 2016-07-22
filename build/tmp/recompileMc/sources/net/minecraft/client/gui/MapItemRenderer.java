@@ -127,10 +127,10 @@ public class MapItemRenderer
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
             GlStateManager.disableAlpha();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
-            vertexbuffer.pos((double)((float)(i + 0) + f), (double)((float)(j + 128) - f), -0.009999999776482582D).tex(0.0D, 1.0D).endVertex();
-            vertexbuffer.pos((double)((float)(i + 128) - f), (double)((float)(j + 128) - f), -0.009999999776482582D).tex(1.0D, 1.0D).endVertex();
-            vertexbuffer.pos((double)((float)(i + 128) - f), (double)((float)(j + 0) + f), -0.009999999776482582D).tex(1.0D, 0.0D).endVertex();
-            vertexbuffer.pos((double)((float)(i + 0) + f), (double)((float)(j + 0) + f), -0.009999999776482582D).tex(0.0D, 0.0D).endVertex();
+            vertexbuffer.pos(0.0D, 128.0D, -0.009999999776482582D).tex(0.0D, 1.0D).endVertex();
+            vertexbuffer.pos(128.0D, 128.0D, -0.009999999776482582D).tex(1.0D, 1.0D).endVertex();
+            vertexbuffer.pos(128.0D, 0.0D, -0.009999999776482582D).tex(1.0D, 0.0D).endVertex();
+            vertexbuffer.pos(0.0D, 0.0D, -0.009999999776482582D).tex(0.0D, 0.0D).endVertex();
             tessellator.draw();
             GlStateManager.enableAlpha();
             GlStateManager.disableBlend();
@@ -142,7 +142,7 @@ public class MapItemRenderer
                 if (!noOverlayRendering || vec4b.getType() == 1)
                 {
                     GlStateManager.pushMatrix();
-                    GlStateManager.translate((float)i + (float)vec4b.getX() / 2.0F + 64.0F, (float)j + (float)vec4b.getY() / 2.0F + 64.0F, -0.02F);
+                    GlStateManager.translate(0.0F + (float)vec4b.getX() / 2.0F + 64.0F, 0.0F + (float)vec4b.getY() / 2.0F + 64.0F, -0.02F);
                     GlStateManager.rotate((float)(vec4b.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
                     GlStateManager.scale(4.0F, 4.0F, 3.0F);
                     GlStateManager.translate(-0.125F, 0.125F, 0.0F);

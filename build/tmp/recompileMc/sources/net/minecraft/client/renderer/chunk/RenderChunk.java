@@ -26,8 +26,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,7 +40,7 @@ public class RenderChunk
     public CompiledChunk compiledChunk = CompiledChunk.DUMMY;
     private final ReentrantLock lockCompileTask = new ReentrantLock();
     private final ReentrantLock lockCompiledChunk = new ReentrantLock();
-    private ChunkCompileTaskGenerator compileTask = null;
+    private ChunkCompileTaskGenerator compileTask;
     private final Set<TileEntity> setTileEntities = Sets.<TileEntity>newHashSet();
     private final int index;
     private final FloatBuffer modelviewMatrix = GLAllocation.createDirectFloatBuffer(16);
@@ -51,7 +51,7 @@ public class RenderChunk
     private BlockPos.MutableBlockPos position = new BlockPos.MutableBlockPos(-1, -1, -1);
     private BlockPos.MutableBlockPos[] mapEnumFacing = new BlockPos.MutableBlockPos[6];
     private boolean needsUpdateCustom;
-    private IBlockAccess region;
+    private ChunkCache region;
 
     public RenderChunk(World p_i47120_1_, RenderGlobal p_i47120_2_, int p_i47120_3_)
     {
@@ -60,7 +60,6 @@ public class RenderChunk
             this.mapEnumFacing[i] = new BlockPos.MutableBlockPos();
         }
 
-        this.needsUpdateCustom = false;
         this.world = p_i47120_1_;
         this.renderGlobal = p_i47120_2_;
         this.index = p_i47120_3_;
@@ -164,7 +163,7 @@ public class RenderChunk
 
                 if (block.hasTileEntity(iblockstate))
                 {
-                    TileEntity tileentity = this.region.getTileEntity(new BlockPos(blockpos$mutableblockpos));
+                    TileEntity tileentity = this.region.func_190300_a(blockpos$mutableblockpos, Chunk.EnumCreateEntityType.CHECK);
 
                     if (tileentity != null)
                     {
@@ -351,7 +350,7 @@ public class RenderChunk
         GlStateManager.loadIdentity();
         float f = 1.000001F;
         GlStateManager.translate(-8.0F, -8.0F, -8.0F);
-        GlStateManager.scale(f, f, f);
+        GlStateManager.scale(1.000001F, 1.000001F, 1.000001F);
         GlStateManager.translate(8.0F, 8.0F, 8.0F);
         GlStateManager.getFloat(2982, this.modelviewMatrix);
         GlStateManager.popMatrix();

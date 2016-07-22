@@ -4,6 +4,7 @@ import java.util.Calendar;
 import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -14,6 +15,7 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -120,7 +122,9 @@ public class EntityBat extends EntityAmbientCreature
 
         if (this.getIsBatHanging())
         {
-            this.motionX = this.motionY = this.motionZ = 0.0D;
+            this.motionX = 0.0D;
+            this.motionY = 0.0D;
+            this.motionZ = 0.0D;
             this.posY = (double)MathHelper.floor_double(this.posY) + 1.0D - (double)this.height;
         }
         else
@@ -137,12 +141,7 @@ public class EntityBat extends EntityAmbientCreature
 
         if (this.getIsBatHanging())
         {
-            if (!this.worldObj.getBlockState(blockpos1).isNormalCube())
-            {
-                this.setIsBatHanging(false);
-                this.worldObj.playEvent((EntityPlayer)null, 1025, blockpos, 0);
-            }
-            else
+            if (this.worldObj.getBlockState(blockpos1).isNormalCube())
             {
                 if (this.rand.nextInt(200) == 0)
                 {
@@ -154,6 +153,11 @@ public class EntityBat extends EntityAmbientCreature
                     this.setIsBatHanging(false);
                     this.worldObj.playEvent((EntityPlayer)null, 1025, blockpos, 0);
                 }
+            }
+            else
+            {
+                this.setIsBatHanging(false);
+                this.worldObj.playEvent((EntityPlayer)null, 1025, blockpos, 0);
             }
         }
         else
@@ -229,6 +233,11 @@ public class EntityBat extends EntityAmbientCreature
 
             return super.attackEntityFrom(source, amount);
         }
+    }
+
+    public static void func_189754_b(DataFixer p_189754_0_)
+    {
+        EntityLiving.func_189752_a(p_189754_0_, "Bat");
     }
 
     /**

@@ -23,8 +23,8 @@ public class ShaderLoader
 {
     private final ShaderLoader.ShaderType shaderType;
     private final String shaderFilename;
-    private int shader;
-    private int shaderAttachCount = 0;
+    private final int shader;
+    private int shaderAttachCount;
 
     private ShaderLoader(ShaderLoader.ShaderType type, int shaderId, String filename)
     {
@@ -117,17 +117,17 @@ public class ShaderLoader
             return this.shaderName;
         }
 
-        protected String getShaderExtension()
+        private String getShaderExtension()
         {
             return this.shaderExtension;
         }
 
-        protected int getShaderMode()
+        private int getShaderMode()
         {
             return this.shaderMode;
         }
 
-        protected Map<String, ShaderLoader> getLoadedShaders()
+        private Map<String, ShaderLoader> getLoadedShaders()
         {
             return this.loadedShaders;
         }

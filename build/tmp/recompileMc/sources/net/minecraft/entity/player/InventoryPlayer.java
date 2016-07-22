@@ -312,6 +312,12 @@ public class InventoryPlayer implements IInventory
             {
                 itemstack = itemStackIn.copy(); // Forge: Replace Item clone above to preserve item capabilities when picking the item up.
                 itemstack.stackSize = 0;
+
+                if (itemStackIn.hasTagCompound())
+                {
+                    itemstack.setTagCompound(itemStackIn.getTagCompound().copy());
+                }
+
                 this.setInventorySlotContents(j, itemstack);
             }
 
@@ -374,15 +380,13 @@ public class InventoryPlayer implements IInventory
      */
     public void decrementAnimations()
     {
-        for (int i = 0; i < this.allInventories.length; ++i)
+        for (ItemStack[] aitemstack : this.allInventories)
         {
-            ItemStack[] aitemstack = this.allInventories[i];
-
-            for (int j = 0; j < aitemstack.length; ++j)
+            for (int i = 0; i < aitemstack.length; ++i)
             {
-                if (aitemstack[j] != null)
+                if (aitemstack[i] != null)
                 {
-                    aitemstack[j].updateAnimation(this.player.worldObj, this.player, j, this.currentItem == j);
+                    aitemstack[i].updateAnimation(this.player.worldObj, this.player, i, this.currentItem == i);
                 }
             }
         }
@@ -822,9 +826,9 @@ public class InventoryPlayer implements IInventory
     {
         for (ItemStack[] aitemstack : this.allInventories)
         {
-            for (int i = 0; i < aitemstack.length; ++i)
+            for (ItemStack itemstack : aitemstack)
             {
-                if (aitemstack[i] != null && aitemstack[i].isItemEqual(itemStackIn))
+                if (itemstack != null && itemstack.isItemEqual(itemStackIn))
                 {
                     return true;
                 }

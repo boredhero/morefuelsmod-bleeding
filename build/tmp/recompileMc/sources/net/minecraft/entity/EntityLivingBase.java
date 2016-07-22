@@ -176,6 +176,8 @@ public abstract class EntityLivingBase extends Entity
     protected int ticksElytraFlying;
     /** The BlockPos the entity had during the previous tick. */
     private BlockPos prevBlockpos;
+    private DamageSource field_189750_bF;
+    private long field_189751_bG;
 
     /**
      * Called by the /kill command.
@@ -586,6 +588,8 @@ public abstract class EntityLivingBase extends Entity
 
             compound.setTag("ActiveEffects", nbttaglist);
         }
+
+        compound.setBoolean("FallFlying", this.isElytraFlying());
     }
 
     /**
@@ -630,6 +634,11 @@ public abstract class EntityLivingBase extends Entity
             String s = compound.getString("Team");
             this.worldObj.getScoreboard().addPlayerToTeam(this.getCachedUniqueIdString(), s);
         }
+
+        if (compound.getBoolean("FallFlying"))
+        {
+            this.setFlag(7, true);
+        }
     }
 
     protected void updatePotionEffects()
@@ -670,15 +679,15 @@ public abstract class EntityLivingBase extends Entity
 
         if (i > 0)
         {
-            boolean flag = false;
+            boolean flag;
 
-            if (!this.isInvisible())
+            if (this.isInvisible())
             {
-                flag = this.rand.nextBoolean();
+                flag = this.rand.nextInt(15) == 0;
             }
             else
             {
-                flag = this.rand.nextInt(15) == 0;
+                flag = this.rand.nextBoolean();
             }
 
             if (flag1)
@@ -975,7 +984,8 @@ public abstract class EntityLivingBase extends Entity
                     this.lastDamage = amount;
                     this.hurtResistantTime = this.maxHurtResistantTime;
                     this.damageEntity(source, amount);
-                    this.hurtTime = this.maxHurtTime = 10;
+                    this.maxHurtTime = 10;
+                    this.hurtTime = this.maxHurtTime;
                 }
 
                 this.attackedAtYaw = 0.0F;
@@ -1060,9 +1070,26 @@ public abstract class EntityLivingBase extends Entity
                     this.playHurtSound(source);
                 }
 
+                if (!flag || amount > 0.0F)
+                {
+                    this.field_189750_bF = source;
+                    this.field_189751_bG = this.worldObj.getTotalWorldTime();
+                }
+
                 return !flag || amount > 0.0F;
             }
         }
+    }
+
+    @Nullable
+    public DamageSource func_189748_bU()
+    {
+        if (this.worldObj.getTotalWorldTime() - this.field_189751_bG > 40L)
+        {
+            this.field_189750_bF = null;
+        }
+
+        return this.field_189750_bF;
     }
 
     protected void playHurtSound(DamageSource source)
@@ -1154,6 +1181,7 @@ public abstract class EntityLivingBase extends Entity
                 {
                     i = EnchantmentHelper.getLootingModifier((EntityLivingBase)entity);
                 }
+                i = net.minecraftforge.common.ForgeHooks.getLootingLevel(this, cause, i);
 
                 captureDrops = true;
                 capturedDrops.clear();
@@ -1324,7 +1352,8 @@ public abstract class EntityLivingBase extends Entity
     @SideOnly(Side.CLIENT)
     public void performHurtAnimation()
     {
-        this.hurtTime = this.maxHurtTime = 10;
+        this.maxHurtTime = 10;
+        this.hurtTime = this.maxHurtTime;
         this.attackedAtYaw = 0.0F;
     }
 
@@ -1430,6 +1459,7 @@ public abstract class EntityLivingBase extends Entity
         return this._combatTracker;
     }
 
+    @Nullable
     public EntityLivingBase getAttackingEntity()
     {
         return (EntityLivingBase)(this._combatTracker.getBestAttacker() != null ? this._combatTracker.getBestAttacker() : (this.attackingPlayer != null ? this.attackingPlayer : (this.entityLivingToAttack != null ? this.entityLivingToAttack : null)));
@@ -1521,7 +1551,8 @@ public abstract class EntityLivingBase extends Entity
         {
             this.limbSwingAmount = 1.5F;
             this.hurtResistantTime = this.maxHurtResistantTime;
-            this.hurtTime = this.maxHurtTime = 10;
+            this.maxHurtTime = 10;
+            this.hurtTime = this.maxHurtTime;
             this.attackedAtYaw = 0.0F;
 
             if (flag)
@@ -1827,6 +1858,11 @@ public abstract class EntityLivingBase extends Entity
         this.motionY += 0.03999999910593033D;
     }
 
+    protected float func_189749_co()
+    {
+        return 0.8F;
+    }
+
     /**
      * Moves the entity based on the specified heading.
      */
@@ -1926,14 +1962,14 @@ public abstract class EntityLivingBase extends Entity
 
                         if (this.onGround)
                         {
-                            f6 = this.worldObj.getBlockState(blockpos$pooledmutableblockpos.set(this.posX, this.getEntityBoundingBox().minY - 1.0D, this.posZ)).getBlock().slipperiness * 0.91F;
+                            f6 = this.worldObj.getBlockState(blockpos$pooledmutableblockpos.setPos(this.posX, this.getEntityBoundingBox().minY - 1.0D, this.posZ)).getBlock().slipperiness * 0.91F;
                         }
 
                         if (this.isOnLadder())
                         {
                             float f9 = 0.15F;
-                            this.motionX = MathHelper.clamp_double(this.motionX, (double)(-f9), (double)f9);
-                            this.motionZ = MathHelper.clamp_double(this.motionZ, (double)(-f9), (double)f9);
+                            this.motionX = MathHelper.clamp_double(this.motionX, -0.15000000596046448D, 0.15000000596046448D);
+                            this.motionZ = MathHelper.clamp_double(this.motionZ, -0.15000000596046448D, 0.15000000596046448D);
                             this.fallDistance = 0.0F;
 
                             if (this.motionY < -0.15D)
@@ -1962,22 +1998,22 @@ public abstract class EntityLivingBase extends Entity
                         }
                         else
                         {
-                            blockpos$pooledmutableblockpos.set(this.posX, 0.0D, this.posZ);
+                            blockpos$pooledmutableblockpos.setPos(this.posX, 0.0D, this.posZ);
 
-                            if (this.worldObj.isRemote && (!this.worldObj.isBlockLoaded(blockpos$pooledmutableblockpos) || !this.worldObj.getChunkFromBlockCoords(blockpos$pooledmutableblockpos).isLoaded()))
+                            if (!this.worldObj.isRemote || this.worldObj.isBlockLoaded(blockpos$pooledmutableblockpos) && this.worldObj.getChunkFromBlockCoords(blockpos$pooledmutableblockpos).isLoaded())
                             {
-                                if (this.posY > 0.0D)
+                                if (!this.func_189652_ae())
                                 {
-                                    this.motionY = -0.1D;
+                                    this.motionY -= 0.08D;
                                 }
-                                else
-                                {
-                                    this.motionY = 0.0D;
-                                }
+                            }
+                            else if (this.posY > 0.0D)
+                            {
+                                this.motionY = -0.1D;
                             }
                             else
                             {
-                                this.motionY -= 0.08D;
+                                this.motionY = 0.0D;
                             }
                         }
 
@@ -1995,7 +2031,11 @@ public abstract class EntityLivingBase extends Entity
                     this.motionX *= 0.5D;
                     this.motionY *= 0.5D;
                     this.motionZ *= 0.5D;
-                    this.motionY -= 0.02D;
+
+                    if (!this.func_189652_ae())
+                    {
+                        this.motionY -= 0.02D;
+                    }
 
                     if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6000000238418579D - this.posY + d4, this.motionZ))
                     {
@@ -2006,7 +2046,7 @@ public abstract class EntityLivingBase extends Entity
             else
             {
                 double d0 = this.posY;
-                float f1 = 0.8F;
+                float f1 = this.func_189749_co();
                 float f2 = 0.02F;
                 float f3 = (float)EnchantmentHelper.getDepthStriderModifier(this);
 
@@ -2031,7 +2071,11 @@ public abstract class EntityLivingBase extends Entity
                 this.motionX *= (double)f1;
                 this.motionY *= 0.800000011920929D;
                 this.motionZ *= (double)f1;
-                this.motionY -= 0.02D;
+
+                if (!this.func_189652_ae())
+                {
+                    this.motionY -= 0.02D;
+                }
 
                 if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(this.motionX, this.motionY + 0.6000000238418579D - this.posY + d0, this.motionZ))
                 {
@@ -2954,9 +2998,9 @@ public abstract class EntityLivingBase extends Entity
         {
             int i = 128;
 
-            for (int j = 0; j < i; ++j)
+            for (int j = 0; j < 128; ++j)
             {
-                double d6 = (double)j / ((double)i - 1.0D);
+                double d6 = (double)j / 127.0D;
                 float f = (random.nextFloat() - 0.5F) * 0.2F;
                 float f1 = (random.nextFloat() - 0.5F) * 0.2F;
                 float f2 = (random.nextFloat() - 0.5F) * 0.2F;

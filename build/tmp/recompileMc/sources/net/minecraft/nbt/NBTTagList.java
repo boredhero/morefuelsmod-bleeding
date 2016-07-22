@@ -20,13 +20,13 @@ public class NBTTagList extends NBTBase
      */
     void write(DataOutput output) throws IOException
     {
-        if (!this.tagList.isEmpty())
+        if (this.tagList.isEmpty())
         {
-            this.tagType = ((NBTBase)this.tagList.get(0)).getId();
+            this.tagType = 0;
         }
         else
         {
-            this.tagType = 0;
+            this.tagType = ((NBTBase)this.tagList.get(0)).getId();
         }
 
         output.writeByte(this.tagType);
@@ -279,7 +279,7 @@ public class NBTTagList extends NBTBase
     /**
      * Creates a clone of the tag.
      */
-    public NBTBase copy()
+    public NBTTagList copy()
     {
         NBTTagList nbttaglist = new NBTTagList();
         nbttaglist.tagType = this.tagType;

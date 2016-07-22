@@ -20,6 +20,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IDataFixer;
+import net.minecraft.util.datafix.IDataWalker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.MinecraftException;
@@ -35,12 +37,12 @@ import org.apache.logging.log4j.Logger;
 public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private Map<ChunkPos, NBTTagCompound> chunksToRemove = new ConcurrentHashMap();
-    private Set<ChunkPos> pendingAnvilChunksCoordinates = Collections.<ChunkPos>newSetFromMap(new ConcurrentHashMap());
+    private final Map<ChunkPos, NBTTagCompound> chunksToRemove = new ConcurrentHashMap();
+    private final Set<ChunkPos> pendingAnvilChunksCoordinates = Collections.<ChunkPos>newSetFromMap(new ConcurrentHashMap());
     /** Save directory for chunks using the Anvil format */
     public final File chunkSaveLocation;
     private final DataFixer dataFixer;
-    private boolean savingExtraData = false;
+    private boolean savingExtraData;
 
     public AnvilChunkLoader(File chunkSaveLocationIn, DataFixer dataFixerIn)
     {
@@ -119,7 +121,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
     {
         if (!compound.hasKey("Level", 10))
         {
-            LOGGER.error("Chunk file at " + x + "," + z + " is missing level data, skipping");
+            LOGGER.error("Chunk file at {},{} is missing level data, skipping", new Object[] {Integer.valueOf(x), Integer.valueOf(z)});
             return null;
         }
         else
@@ -128,7 +130,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
             if (!nbttagcompound.hasKey("Sections", 9))
             {
-                LOGGER.error("Chunk file at " + x + "," + z + " is missing block data, skipping");
+                LOGGER.error("Chunk file at {},{} is missing block data, skipping", new Object[] {Integer.valueOf(x), Integer.valueOf(z)});
                 return null;
             }
             else
@@ -137,7 +139,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
                 if (!chunk.isAtLocation(x, z))
                 {
-                    LOGGER.error("Chunk file at " + x + "," + z + " is in the wrong location; relocating. (Expected " + x + ", " + z + ", got " + chunk.xPosition + ", " + chunk.zPosition + ")");
+                    LOGGER.error("Chunk file at {},{} is in the wrong location; relocating. (Expected {}, {}, got {}, {})", new Object[] {Integer.valueOf(x), Integer.valueOf(z), Integer.valueOf(x), Integer.valueOf(z), Integer.valueOf(chunk.xPosition), Integer.valueOf(chunk.zPosition)});
                     nbttagcompound.setInteger("xPos", x);
                     nbttagcompound.setInteger("zPos", z);
 
@@ -176,7 +178,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
             nbttagcompound.setTag("Level", nbttagcompound1);
-            nbttagcompound.setInteger("DataVersion", 184);
+            nbttagcompound.setInteger("DataVersion", 512);
             this.writeChunkToNBT(chunkIn, worldIn, nbttagcompound1);
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkDataEvent.Save(chunkIn, nbttagcompound));
             this.addChunkToPending(chunkIn.getChunkCoordIntPair(), nbttagcompound);
@@ -276,12 +278,48 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         {
             this.savingExtraData = true;
 
-            while (this.writeNextIO()); // Fernflower decompile issue...
+            while (this.writeNextIO());
         }
         finally
         {
             this.savingExtraData = false;
         }
+    }
+
+    public static void func_189889_a(DataFixer p_189889_0_)
+    {
+        p_189889_0_.registerWalker(FixTypes.CHUNK, new IDataWalker()
+        {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
+            {
+                if (compound.hasKey("Level", 10))
+                {
+                    NBTTagCompound nbttagcompound = compound.getCompoundTag("Level");
+
+                    if (nbttagcompound.hasKey("Entities", 9))
+                    {
+                        NBTTagList nbttaglist = nbttagcompound.getTagList("Entities", 10);
+
+                        for (int i = 0; i < nbttaglist.tagCount(); ++i)
+                        {
+                            nbttaglist.set(i, fixer.process(FixTypes.ENTITY, (NBTTagCompound)nbttaglist.get(i), versionIn));
+                        }
+                    }
+
+                    if (nbttagcompound.hasKey("TileEntities", 9))
+                    {
+                        NBTTagList nbttaglist1 = nbttagcompound.getTagList("TileEntities", 10);
+
+                        for (int j = 0; j < nbttaglist1.tagCount(); ++j)
+                        {
+                            nbttaglist1.set(j, fixer.process(FixTypes.BLOCK_ENTITY, (NBTTagCompound)nbttaglist1.get(j), versionIn));
+                        }
+                    }
+                }
+
+                return compound;
+            }
+        });
     }
 
     /**
@@ -419,7 +457,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         chunk.setInhabitedTime(compound.getLong("InhabitedTime"));
         NBTTagList nbttaglist = compound.getTagList("Sections", 10);
         int k = 16;
-        ExtendedBlockStorage[] aextendedblockstorage = new ExtendedBlockStorage[k];
+        ExtendedBlockStorage[] aextendedblockstorage = new ExtendedBlockStorage[16];
         boolean flag = !worldIn.provider.getHasNoSky();
 
         for (int l = 0; l < nbttaglist.tagCount(); ++l)
@@ -474,7 +512,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             for (int k1 = 0; k1 < nbttaglist2.tagCount(); ++k1)
             {
                 NBTTagCompound nbttagcompound2 = nbttaglist2.getCompoundTagAt(k1);
-                TileEntity tileentity = TileEntity.create(nbttagcompound2);
+                TileEntity tileentity = TileEntity.func_190200_a(worldIn, nbttagcompound2);
 
                 if (tileentity != null)
                 {

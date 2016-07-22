@@ -119,20 +119,20 @@ public class CommandFill extends CommandBase
 
                             if (args.length >= 9)
                             {
-                                if (!args[8].equals("outline") && !args[8].equals("hollow"))
+                                if (!"outline".equals(args[8]) && !"hollow".equals(args[8]))
                                 {
-                                    if (args[8].equals("destroy"))
+                                    if ("destroy".equals(args[8]))
                                     {
                                         world.destroyBlock(blockpos4, true);
                                     }
-                                    else if (args[8].equals("keep"))
+                                    else if ("keep".equals(args[8]))
                                     {
                                         if (!world.isAirBlock(blockpos4))
                                         {
                                             continue;
                                         }
                                     }
-                                    else if (args[8].equals("replace") && !block.hasTileEntity(state))
+                                    else if ("replace".equals(args[8]) && !block.hasTileEntity(state))
                                     {
                                         if (args.length > 9)
                                         {
@@ -158,7 +158,7 @@ public class CommandFill extends CommandBase
                                 }
                                 else if (k1 != blockpos2.getX() && k1 != blockpos3.getX() && j1 != blockpos2.getY() && j1 != blockpos3.getY() && i1 != blockpos2.getZ() && i1 != blockpos3.getZ())
                                 {
-                                    if (args[8].equals("hollow"))
+                                    if ("hollow".equals(args[8]))
                                     {
                                         world.setBlockState(blockpos4, Blocks.AIR.getDefaultState(), 2);
                                         list.add(blockpos4);

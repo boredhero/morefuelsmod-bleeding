@@ -135,6 +135,11 @@ public class Vec3d
         return (double)MathHelper.sqrt_double(this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord);
     }
 
+    public double func_189985_c()
+    {
+        return this.xCoord * this.xCoord + this.yCoord * this.yCoord + this.zCoord * this.zCoord;
+    }
+
     /**
      * Returns a new vector with x value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
@@ -252,5 +257,19 @@ public class Vec3d
         double d1 = this.yCoord;
         double d2 = this.zCoord * (double)f - this.xCoord * (double)f1;
         return new Vec3d(d0, d1, d2);
+    }
+
+    public static Vec3d func_189984_a(Vec2f p_189984_0_)
+    {
+        return func_189986_a(p_189984_0_.field_189982_i, p_189984_0_.field_189983_j);
+    }
+
+    public static Vec3d func_189986_a(float p_189986_0_, float p_189986_1_)
+    {
+        float f = MathHelper.cos(-p_189986_1_ * 0.017453292F - (float)Math.PI);
+        float f1 = MathHelper.sin(-p_189986_1_ * 0.017453292F - (float)Math.PI);
+        float f2 = -MathHelper.cos(-p_189986_0_ * 0.017453292F);
+        float f3 = MathHelper.sin(-p_189986_0_ * 0.017453292F);
+        return new Vec3d((double)(f1 * f2), (double)f3, (double)(f * f2));
     }
 }

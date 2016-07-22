@@ -53,7 +53,7 @@ public class CrashReport
         {
             public String call()
             {
-                return "1.9.4";
+                return "1.10.2";
             }
         });
         this.theReportCategory.setDetail("Operating System", new ICrashReportDetail<String>()
@@ -160,7 +160,7 @@ public class CrashReport
 
             for (StackTraceElement stacktraceelement : this.stacktrace)
             {
-                builder.append("\t").append("at ").append(stacktraceelement.toString());
+                builder.append("\t").append("at ").append((Object)stacktraceelement);
                 builder.append("\n");
             }
 
@@ -277,19 +277,28 @@ public class CrashReport
                 toFile.getParentFile().mkdirs();
             }
 
+            FileWriter filewriter = null;
+            boolean flag1;
+
             try
             {
-                FileWriter filewriter = new FileWriter(toFile);
+                filewriter = new FileWriter(toFile);
                 filewriter.write(this.getCompleteReport());
-                filewriter.close();
                 this.crashReportFile = toFile;
-                return true;
+                boolean lvt_3_1_ = true;
+                return lvt_3_1_;
             }
             catch (Throwable throwable)
             {
-                LOGGER.error("Could not save crash report to " + toFile, throwable);
-                return false;
+                LOGGER.error("Could not save crash report to {}", new Object[] {toFile, throwable});
+                flag1 = false;
             }
+            finally
+            {
+                IOUtils.closeQuietly((Writer)filewriter);
+            }
+
+            return flag1;
         }
     }
 

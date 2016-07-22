@@ -3,6 +3,7 @@ package net.minecraft.world.gen.structure.template;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -19,9 +20,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagDouble;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityStructure;
 import net.minecraft.util.Mirror;
+import net.minecraft.util.ObjectIntIdentityMap;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -197,27 +200,38 @@ public class Template
      */
     public void addBlocksToWorld(World worldIn, BlockPos pos, PlacementSettings placementIn)
     {
+        this.func_189960_a(worldIn, pos, new BlockRotationProcessor(pos, placementIn), placementIn, 2);
+    }
+
+    public void func_189962_a(World p_189962_1_, BlockPos p_189962_2_, PlacementSettings p_189962_3_, int p_189962_4_)
+    {
+        this.func_189960_a(p_189962_1_, p_189962_2_, new BlockRotationProcessor(p_189962_2_, p_189962_3_), p_189962_3_, p_189962_4_);
+    }
+
+    public void func_189960_a(World p_189960_1_, BlockPos p_189960_2_, @Nullable ITemplateProcessor p_189960_3_, PlacementSettings p_189960_4_, int p_189960_5_)
+    {
         if (!this.blocks.isEmpty() && this.size.getX() >= 1 && this.size.getY() >= 1 && this.size.getZ() >= 1)
         {
-            Block block = placementIn.getReplacedBlock();
-            StructureBoundingBox structureboundingbox = placementIn.getBoundingBox();
+            Block block = p_189960_4_.getReplacedBlock();
+            StructureBoundingBox structureboundingbox = p_189960_4_.getBoundingBox();
 
             for (Template.BlockInfo template$blockinfo : this.blocks)
             {
-                Block block1 = template$blockinfo.blockState.getBlock();
+                BlockPos blockpos = transformedBlockPos(p_189960_4_, template$blockinfo.pos).add(p_189960_2_);
+                Template.BlockInfo template$blockinfo1 = p_189960_3_ != null ? p_189960_3_.func_189943_a(p_189960_1_, blockpos, template$blockinfo) : template$blockinfo;
 
-                if ((block == null || block != block1) && (!placementIn.getIgnoreStructureBlock() || block1 != Blocks.STRUCTURE_BLOCK))
+                if (template$blockinfo1 != null)
                 {
-                    BlockPos blockpos = transformedBlockPos(placementIn, template$blockinfo.pos).add(pos);
+                    Block block1 = template$blockinfo1.blockState.getBlock();
 
-                    if (structureboundingbox == null || structureboundingbox.isVecInside(blockpos))
+                    if ((block == null || block != block1) && (!p_189960_4_.getIgnoreStructureBlock() || block1 != Blocks.STRUCTURE_BLOCK) && (structureboundingbox == null || structureboundingbox.isVecInside(blockpos)))
                     {
-                        IBlockState iblockstate = template$blockinfo.blockState.withMirror(placementIn.getMirror());
-                        IBlockState iblockstate1 = iblockstate.withRotation(placementIn.getRotation());
+                        IBlockState iblockstate = template$blockinfo1.blockState.withMirror(p_189960_4_.getMirror());
+                        IBlockState iblockstate1 = iblockstate.withRotation(p_189960_4_.getRotation());
 
-                        if (template$blockinfo.tileentityData != null)
+                        if (template$blockinfo1.tileentityData != null)
                         {
-                            TileEntity tileentity = worldIn.getTileEntity(blockpos);
+                            TileEntity tileentity = p_189960_1_.getTileEntity(blockpos);
 
                             if (tileentity != null)
                             {
@@ -226,39 +240,41 @@ public class Template
                                     ((IInventory)tileentity).clear();
                                 }
 
-                                worldIn.setBlockState(blockpos, Blocks.BARRIER.getDefaultState(), 4);
+                                p_189960_1_.setBlockState(blockpos, Blocks.BARRIER.getDefaultState(), 4);
                             }
                         }
 
-                        if (worldIn.setBlockState(blockpos, iblockstate1, 2) && template$blockinfo.tileentityData != null)
+                        if (p_189960_1_.setBlockState(blockpos, iblockstate1, p_189960_5_) && template$blockinfo1.tileentityData != null)
                         {
-                            TileEntity tileentity2 = worldIn.getTileEntity(blockpos);
+                            TileEntity tileentity2 = p_189960_1_.getTileEntity(blockpos);
 
                             if (tileentity2 != null)
                             {
-                                template$blockinfo.tileentityData.setInteger("x", blockpos.getX());
-                                template$blockinfo.tileentityData.setInteger("y", blockpos.getY());
-                                template$blockinfo.tileentityData.setInteger("z", blockpos.getZ());
-                                tileentity2.readFromNBT(template$blockinfo.tileentityData);
+                                template$blockinfo1.tileentityData.setInteger("x", blockpos.getX());
+                                template$blockinfo1.tileentityData.setInteger("y", blockpos.getY());
+                                template$blockinfo1.tileentityData.setInteger("z", blockpos.getZ());
+                                tileentity2.readFromNBT(template$blockinfo1.tileentityData);
+                                tileentity2.func_189668_a(p_189960_4_.getMirror());
+                                tileentity2.func_189667_a(p_189960_4_.getRotation());
                             }
                         }
                     }
                 }
             }
 
-            for (Template.BlockInfo template$blockinfo1 : this.blocks)
+            for (Template.BlockInfo template$blockinfo2 : this.blocks)
             {
-                if (block == null || block != template$blockinfo1.blockState.getBlock())
+                if (block == null || block != template$blockinfo2.blockState.getBlock())
                 {
-                    BlockPos blockpos1 = transformedBlockPos(placementIn, template$blockinfo1.pos).add(pos);
+                    BlockPos blockpos1 = transformedBlockPos(p_189960_4_, template$blockinfo2.pos).add(p_189960_2_);
 
                     if (structureboundingbox == null || structureboundingbox.isVecInside(blockpos1))
                     {
-                        worldIn.notifyNeighborsRespectDebug(blockpos1, template$blockinfo1.blockState.getBlock());
+                        p_189960_1_.notifyNeighborsRespectDebug(blockpos1, template$blockinfo2.blockState.getBlock());
 
-                        if (template$blockinfo1.tileentityData != null)
+                        if (template$blockinfo2.tileentityData != null)
                         {
-                            TileEntity tileentity1 = worldIn.getTileEntity(blockpos1);
+                            TileEntity tileentity1 = p_189960_1_.getTileEntity(blockpos1);
 
                             if (tileentity1 != null)
                             {
@@ -269,9 +285,9 @@ public class Template
                 }
             }
 
-            if (!placementIn.getIgnoreEntities())
+            if (!p_189960_4_.getIgnoreEntities())
             {
-                this.addEntitiesToWorld(worldIn, pos, placementIn.getMirror(), placementIn.getRotation(), structureboundingbox);
+                this.addEntitiesToWorld(p_189960_1_, p_189960_2_, p_189960_4_.getMirror(), p_189960_4_.getRotation(), structureboundingbox);
             }
         }
     }
@@ -306,20 +322,9 @@ public class Template
 
                 if (entity != null)
                 {
-                    if (entity instanceof EntityPainting)
-                    {
-                        entity.getMirroredYaw(mirrorIn);
-                        entity.getRotatedYaw(rotationIn);
-                        entity.setPosition((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
-                        entity.setLocationAndAngles(vec3d1.xCoord, vec3d1.yCoord, vec3d1.zCoord, entity.rotationYaw, entity.rotationPitch);
-                    }
-                    else
-                    {
-                        float f = entity.getMirroredYaw(mirrorIn);
-                        f = f + (entity.rotationYaw - entity.getRotatedYaw(rotationIn));
-                        entity.setLocationAndAngles(vec3d1.xCoord, vec3d1.yCoord, vec3d1.zCoord, f, entity.rotationPitch);
-                    }
-
+                    float f = entity.getMirroredYaw(mirrorIn);
+                    f = f + (entity.rotationYaw - entity.getRotatedYaw(rotationIn));
+                    entity.setLocationAndAngles(vec3d1.xCoord, vec3d1.yCoord, vec3d1.zCoord, f, entity.rotationPitch);
                     worldIn.spawnEntityInWorld(entity);
                 }
             }
@@ -402,15 +407,42 @@ public class Template
         }
     }
 
+    public BlockPos func_189961_a(BlockPos p_189961_1_, Mirror p_189961_2_, Rotation p_189961_3_)
+    {
+        int i = this.getSize().getX() - 1;
+        int j = this.getSize().getZ() - 1;
+        int k = p_189961_2_ == Mirror.FRONT_BACK ? i : 0;
+        int l = p_189961_2_ == Mirror.LEFT_RIGHT ? j : 0;
+        BlockPos blockpos = p_189961_1_;
+
+        switch (p_189961_3_)
+        {
+            case COUNTERCLOCKWISE_90:
+                blockpos = p_189961_1_.add(l, 0, i - k);
+                break;
+            case CLOCKWISE_90:
+                blockpos = p_189961_1_.add(j - l, 0, k);
+                break;
+            case CLOCKWISE_180:
+                blockpos = p_189961_1_.add(i - k, 0, j - l);
+                break;
+            case NONE:
+                blockpos = p_189961_1_.add(k, 0, l);
+        }
+
+        return blockpos;
+    }
+
     public NBTTagCompound writeToNBT(NBTTagCompound p_189552_1_)
     {
+        Template.BasicPalette template$basicpalette = new Template.BasicPalette();
         NBTTagList nbttaglist = new NBTTagList();
 
         for (Template.BlockInfo template$blockinfo : this.blocks)
         {
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             nbttagcompound.setTag("pos", this.writeInts(new int[] {template$blockinfo.pos.getX(), template$blockinfo.pos.getY(), template$blockinfo.pos.getZ()}));
-            nbttagcompound.setInteger("state", Block.getStateId(template$blockinfo.blockState));
+            nbttagcompound.setInteger("state", template$basicpalette.func_189954_a(template$blockinfo.blockState));
 
             if (template$blockinfo.tileentityData != null)
             {
@@ -436,6 +468,14 @@ public class Template
             nbttaglist1.appendTag(nbttagcompound1);
         }
 
+        NBTTagList nbttaglist2 = new NBTTagList();
+
+        for (IBlockState iblockstate : template$basicpalette)
+        {
+            nbttaglist2.appendTag(NBTUtil.func_190009_a(new NBTTagCompound(), iblockstate));
+        }
+
+        p_189552_1_.setTag("palette", nbttaglist2);
         p_189552_1_.setTag("blocks", nbttaglist);
         p_189552_1_.setTag("entities", nbttaglist1);
         p_189552_1_.setTag("size", this.writeInts(new int[] {this.size.getX(), this.size.getY(), this.size.getZ()}));
@@ -451,15 +491,22 @@ public class Template
         NBTTagList nbttaglist = compound.getTagList("size", 3);
         this.size = new BlockPos(nbttaglist.getIntAt(0), nbttaglist.getIntAt(1), nbttaglist.getIntAt(2));
         this.author = compound.getString("author");
-        NBTTagList nbttaglist1 = compound.getTagList("blocks", 10);
+        Template.BasicPalette template$basicpalette = new Template.BasicPalette();
+        NBTTagList nbttaglist1 = compound.getTagList("palette", 10);
 
         for (int i = 0; i < nbttaglist1.tagCount(); ++i)
         {
-            NBTTagCompound nbttagcompound = nbttaglist1.getCompoundTagAt(i);
+            template$basicpalette.func_189956_a(NBTUtil.func_190008_d(nbttaglist1.getCompoundTagAt(i)), i);
+        }
+
+        NBTTagList nbttaglist3 = compound.getTagList("blocks", 10);
+
+        for (int j = 0; j < nbttaglist3.tagCount(); ++j)
+        {
+            NBTTagCompound nbttagcompound = nbttaglist3.getCompoundTagAt(j);
             NBTTagList nbttaglist2 = nbttagcompound.getTagList("pos", 3);
             BlockPos blockpos = new BlockPos(nbttaglist2.getIntAt(0), nbttaglist2.getIntAt(1), nbttaglist2.getIntAt(2));
-            int j = nbttagcompound.getInteger("state");
-            IBlockState iblockstate = Block.getStateById(j);
+            IBlockState iblockstate = template$basicpalette.func_189955_a(nbttagcompound.getInteger("state"));
             NBTTagCompound nbttagcompound1;
 
             if (nbttagcompound.hasKey("nbt"))
@@ -474,15 +521,15 @@ public class Template
             this.blocks.add(new Template.BlockInfo(blockpos, iblockstate, nbttagcompound1));
         }
 
-        NBTTagList nbttaglist3 = compound.getTagList("entities", 10);
+        NBTTagList nbttaglist4 = compound.getTagList("entities", 10);
 
-        for (int k = 0; k < nbttaglist3.tagCount(); ++k)
+        for (int k = 0; k < nbttaglist4.tagCount(); ++k)
         {
-            NBTTagCompound nbttagcompound3 = nbttaglist3.getCompoundTagAt(k);
-            NBTTagList nbttaglist4 = nbttagcompound3.getTagList("pos", 6);
-            Vec3d vec3d = new Vec3d(nbttaglist4.getDoubleAt(0), nbttaglist4.getDoubleAt(1), nbttaglist4.getDoubleAt(2));
-            NBTTagList nbttaglist5 = nbttagcompound3.getTagList("blockPos", 3);
-            BlockPos blockpos1 = new BlockPos(nbttaglist5.getIntAt(0), nbttaglist5.getIntAt(1), nbttaglist5.getIntAt(2));
+            NBTTagCompound nbttagcompound3 = nbttaglist4.getCompoundTagAt(k);
+            NBTTagList nbttaglist5 = nbttagcompound3.getTagList("pos", 6);
+            Vec3d vec3d = new Vec3d(nbttaglist5.getDoubleAt(0), nbttaglist5.getDoubleAt(1), nbttaglist5.getDoubleAt(2));
+            NBTTagList nbttaglist6 = nbttagcompound3.getTagList("blockPos", 3);
+            BlockPos blockpos1 = new BlockPos(nbttaglist6.getIntAt(0), nbttaglist6.getIntAt(1), nbttaglist6.getIntAt(2));
 
             if (nbttagcompound3.hasKey("nbt"))
             {
@@ -516,7 +563,49 @@ public class Template
         return nbttaglist;
     }
 
-    static class BlockInfo
+    static class BasicPalette implements Iterable<IBlockState>
+        {
+            public static final IBlockState field_189957_a = Blocks.AIR.getDefaultState();
+            final ObjectIntIdentityMap<IBlockState> field_189958_b;
+            private int field_189959_c;
+
+            private BasicPalette()
+            {
+                this.field_189958_b = new ObjectIntIdentityMap(16);
+            }
+
+            public int func_189954_a(IBlockState p_189954_1_)
+            {
+                int i = this.field_189958_b.get(p_189954_1_);
+
+                if (i == -1)
+                {
+                    i = this.field_189959_c++;
+                    this.field_189958_b.put(p_189954_1_, i);
+                }
+
+                return i;
+            }
+
+            @Nullable
+            public IBlockState func_189955_a(int p_189955_1_)
+            {
+                IBlockState iblockstate = (IBlockState)this.field_189958_b.getByValue(p_189955_1_);
+                return iblockstate == null ? field_189957_a : iblockstate;
+            }
+
+            public Iterator<IBlockState> iterator()
+            {
+                return this.field_189958_b.iterator();
+            }
+
+            public void func_189956_a(IBlockState p_189956_1_, int p_189956_2_)
+            {
+                this.field_189958_b.put(p_189956_1_, p_189956_2_);
+            }
+        }
+
+    public static class BlockInfo
         {
             /** the position the block is to be generated to */
             public final BlockPos pos;
@@ -525,7 +614,7 @@ public class Template
             /** NBT data for the tileentity */
             public final NBTTagCompound tileentityData;
 
-            private BlockInfo(BlockPos posIn, IBlockState stateIn, @Nullable NBTTagCompound compoundIn)
+            public BlockInfo(BlockPos posIn, IBlockState stateIn, @Nullable NBTTagCompound compoundIn)
             {
                 this.pos = posIn;
                 this.blockState = stateIn;
@@ -533,7 +622,7 @@ public class Template
             }
         }
 
-    static class EntityInfo
+    public static class EntityInfo
         {
             /** the position the entity is will be generated to */
             public final Vec3d pos;
@@ -542,7 +631,7 @@ public class Template
             /** the serialized NBT data of the entity in the structure */
             public final NBTTagCompound entityData;
 
-            private EntityInfo(Vec3d vecIn, BlockPos posIn, NBTTagCompound compoundIn)
+            public EntityInfo(Vec3d vecIn, BlockPos posIn, NBTTagCompound compoundIn)
             {
                 this.pos = vecIn;
                 this.blockPos = posIn;

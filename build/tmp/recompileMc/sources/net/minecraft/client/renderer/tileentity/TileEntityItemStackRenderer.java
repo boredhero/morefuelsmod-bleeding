@@ -25,12 +25,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileEntityItemStackRenderer
 {
     public static TileEntityItemStackRenderer instance = new TileEntityItemStackRenderer();
-    private TileEntityChest chestBasic = new TileEntityChest(BlockChest.Type.BASIC);
-    private TileEntityChest chestTrap = new TileEntityChest(BlockChest.Type.TRAP);
-    private TileEntityEnderChest enderChest = new TileEntityEnderChest();
-    private TileEntityBanner banner = new TileEntityBanner();
-    private TileEntitySkull skull = new TileEntitySkull();
-    private ModelShield modelShield = new ModelShield();
+    private final TileEntityChest chestBasic = new TileEntityChest(BlockChest.Type.BASIC);
+    private final TileEntityChest chestTrap = new TileEntityChest(BlockChest.Type.TRAP);
+    private final TileEntityEnderChest enderChest = new TileEntityEnderChest();
+    private final TileEntityBanner banner = new TileEntityBanner();
+    private final TileEntitySkull skull = new TileEntitySkull();
+    private final ModelShield modelShield = new ModelShield();
 
     public void renderByItem(ItemStack itemStackIn)
     {

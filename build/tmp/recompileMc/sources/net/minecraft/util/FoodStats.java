@@ -134,12 +134,6 @@ public class FoodStats
         return this.foodLevel;
     }
 
-    @SideOnly(Side.CLIENT)
-    public int getPrevFoodLevel()
-    {
-        return this.prevFoodLevel;
-    }
-
     /**
      * Get whether the player must eat food.
      */

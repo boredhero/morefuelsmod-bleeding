@@ -10,9 +10,9 @@ import net.minecraft.world.World;
 
 public class ItemSeedFood extends ItemFood implements net.minecraftforge.common.IPlantable
 {
-    private Block crops;
+    private final Block crops;
     /** Block ID of the soil this seed food should be planted on. */
-    private Block soilId;
+    private final Block soilId;
 
     public ItemSeedFood(int healAmount, float saturation, Block crops, Block soil)
     {

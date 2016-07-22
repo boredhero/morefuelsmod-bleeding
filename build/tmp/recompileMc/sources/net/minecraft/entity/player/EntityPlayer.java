@@ -31,7 +31,6 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -66,6 +65,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.tileentity.TileEntityStructure;
 import net.minecraft.util.CooldownTracker;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumActionResult;
@@ -76,6 +76,11 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.FoodStats;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.DataFixesManager;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IDataFixer;
+import net.minecraft.util.datafix.IDataWalker;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -83,11 +88,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.GameType;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldSettings;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -159,8 +164,9 @@ public abstract class EntityPlayer extends EntityLivingBase
     private int lastXPSound;
     /** The player's unique game profile */
     private final GameProfile gameProfile;
-    private boolean hasReducedDebug = false;
-    private ItemStack itemStackMainHand = null;
+    @SideOnly(Side.CLIENT)
+    private boolean hasReducedDebug;
+    private ItemStack itemStackMainHand;
     private final CooldownTracker cooldownTracker = this.createCooldownTracker();
     /** An instance of a fishing rod's hook. If this isn't null, the icon image of the fishing rod is slightly different */
     public EntityFishHook fishEntity;
@@ -252,7 +258,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         super.onUpdate();
 
-        if (!this.worldObj.isRemote && this.openContainer != null && !net.minecraftforge.common.ForgeHooks.canInteractWith(this, this.openContainer))
+        if (!this.worldObj.isRemote && this.openContainer != null && !this.openContainer.canInteractWith(this))
         {
             this.closeScreen();
             this.openContainer = this.inventoryContainer;
@@ -322,34 +328,40 @@ public abstract class EntityPlayer extends EntityLivingBase
         double d2 = this.posZ - this.chasingPosZ;
         double d3 = 10.0D;
 
-        if (d0 > d3)
+        if (d0 > 10.0D)
         {
-            this.prevChasingPosX = this.chasingPosX = this.posX;
+            this.chasingPosX = this.posX;
+            this.prevChasingPosX = this.chasingPosX;
         }
 
-        if (d2 > d3)
+        if (d2 > 10.0D)
         {
-            this.prevChasingPosZ = this.chasingPosZ = this.posZ;
+            this.chasingPosZ = this.posZ;
+            this.prevChasingPosZ = this.chasingPosZ;
         }
 
-        if (d1 > d3)
+        if (d1 > 10.0D)
         {
-            this.prevChasingPosY = this.chasingPosY = this.posY;
+            this.chasingPosY = this.posY;
+            this.prevChasingPosY = this.chasingPosY;
         }
 
-        if (d0 < -d3)
+        if (d0 < -10.0D)
         {
-            this.prevChasingPosX = this.chasingPosX = this.posX;
+            this.chasingPosX = this.posX;
+            this.prevChasingPosX = this.chasingPosX;
         }
 
-        if (d2 < -d3)
+        if (d2 < -10.0D)
         {
-            this.prevChasingPosZ = this.chasingPosZ = this.posZ;
+            this.chasingPosZ = this.posZ;
+            this.prevChasingPosZ = this.chasingPosZ;
         }
 
-        if (d1 < -d3)
+        if (d1 < -10.0D)
         {
-            this.prevChasingPosY = this.chasingPosY = this.posY;
+            this.chasingPosY = this.posY;
+            this.prevChasingPosY = this.chasingPosY;
         }
 
         this.chasingPosX += d0 * 0.25D;
@@ -359,8 +371,8 @@ public abstract class EntityPlayer extends EntityLivingBase
 
     protected void updateSize()
     {
-        float f = this.width;
-        float f1 = this.height;
+        float f;
+        float f1;
 
         if (this.isElytraFlying())
         {
@@ -585,7 +597,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         if (this.getHealth() > 0.0F && !this.isSpectator())
         {
-            AxisAlignedBB axisalignedbb = null;
+            AxisAlignedBB axisalignedbb;
 
             if (this.isRiding() && !this.getRidingEntity().isDead)
             {
@@ -651,7 +663,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         captureDrops = true;
         capturedDrops.clear();
 
-        if (this.getName().equals("Notch"))
+        if ("Notch".equals(this.getName()))
         {
             this.dropItem(new ItemStack(Items.APPLE, 1), true, false);
         }
@@ -672,7 +684,8 @@ public abstract class EntityPlayer extends EntityLivingBase
         }
         else
         {
-            this.motionX = this.motionZ = 0.0D;
+            this.motionX = 0.0D;
+            this.motionZ = 0.0D;
         }
 
         this.addStat(StatList.DEATHS);
@@ -713,8 +726,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
             for (ScoreObjective scoreobjective : collection)
             {
-                Score score = this.getWorldScoreboard().getOrCreateScore(this.getName(), scoreobjective);
-                score.incrementScore();
+                this.getWorldScoreboard().getOrCreateScore(this.getName(), scoreobjective).incrementScore();
             }
         }
     }
@@ -881,7 +893,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         if (this.isPotionActive(MobEffects.MINING_FATIGUE))
         {
-            float f1 = 1.0F;
+            float f1;
 
             switch (this.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier())
             {
@@ -919,6 +931,19 @@ public abstract class EntityPlayer extends EntityLivingBase
     public boolean canHarvestBlock(IBlockState state)
     {
         return net.minecraftforge.event.ForgeEventFactory.doPlayerHarvestCheck(this, state, this.inventory.canHarvestBlock(state));
+    }
+
+    public static void func_189806_a(DataFixer p_189806_0_)
+    {
+        p_189806_0_.registerWalker(FixTypes.PLAYER, new IDataWalker()
+        {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
+            {
+                DataFixesManager.processInventory(fixer, compound, versionIn, "Inventory");
+                DataFixesManager.processInventory(fixer, compound, versionIn, "EnderItems");
+                return compound;
+            }
+        });
     }
 
     /**
@@ -983,7 +1008,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     public void writeEntityToNBT(NBTTagCompound compound)
     {
         super.writeEntityToNBT(compound);
-        compound.setInteger("DataVersion", 184);
+        compound.setInteger("DataVersion", 512);
         compound.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
         compound.setInteger("SelectedItemSlot", this.inventory.currentItem);
         compound.setBoolean("Sleeping", this.sleeping);
@@ -1071,21 +1096,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                     }
                 }
 
-                if (amount == 0.0F)
-                {
-                    return false;
-                }
-                else
-                {
-                    Entity entity = source.getEntity();
-
-                    if (entity instanceof EntityArrow && ((EntityArrow)entity).shootingEntity != null)
-                    {
-                        entity = ((EntityArrow)entity).shootingEntity;
-                    }
-
-                    return super.attackEntityFrom(source, amount);
-                }
+                return amount == 0.0F ? false : super.attackEntityFrom(source, amount);
             }
         }
     }
@@ -1189,6 +1200,10 @@ public abstract class EntityPlayer extends EntityLivingBase
     }
 
     public void displayGuiCommandBlock(TileEntityCommandBlock p_184824_1_)
+    {
+    }
+
+    public void func_189807_a(TileEntityStructure p_189807_1_)
     {
     }
 
@@ -1300,7 +1315,7 @@ public abstract class EntityPlayer extends EntityLivingBase
             if (!targetEntity.hitByEntity(this))
             {
                 float f = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
-                float f1 = 0.0F;
+                float f1;
 
                 if (targetEntity instanceof EntityLivingBase)
                 {
@@ -1320,8 +1335,6 @@ public abstract class EntityPlayer extends EntityLivingBase
                 {
                     boolean flag = f2 > 0.9F;
                     boolean flag1 = false;
-                    boolean flag2 = false;
-                    boolean flag3 = false;
                     int i = 0;
                     i = i + EnchantmentHelper.getKnockbackModifier(this);
 
@@ -1332,7 +1345,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                         flag1 = true;
                     }
 
-                    flag2 = flag && this.fallDistance > 0.0F && !this.onGround && !this.isOnLadder() && !this.isInWater() && !this.isPotionActive(MobEffects.BLINDNESS) && !this.isRiding() && targetEntity instanceof EntityLivingBase;
+                    boolean flag2 = flag && this.fallDistance > 0.0F && !this.onGround && !this.isOnLadder() && !this.isInWater() && !this.isPotionActive(MobEffects.BLINDNESS) && !this.isRiding() && targetEntity instanceof EntityLivingBase;
                     flag2 = flag2 && !this.isSprinting();
 
                     if (flag2)
@@ -1341,6 +1354,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                     }
 
                     f = f + f1;
+                    boolean flag3 = false;
                     double d0 = (double)(this.distanceWalkedModified - this.prevDistanceWalkedModified);
 
                     if (flag && !flag2 && !flag1 && this.onGround && d0 < (double)this.getAIMoveSpeed())
@@ -1624,7 +1638,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
             double d0 = 8.0D;
             double d1 = 5.0D;
-            List<EntityMob> list = this.worldObj.<EntityMob>getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB((double)bedLocation.getX() - d0, (double)bedLocation.getY() - d1, (double)bedLocation.getZ() - d0, (double)bedLocation.getX() + d0, (double)bedLocation.getY() + d1, (double)bedLocation.getZ() + d0));
+            List<EntityMob> list = this.worldObj.<EntityMob>getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB((double)bedLocation.getX() - 8.0D, (double)bedLocation.getY() - 5.0D, (double)bedLocation.getZ() - 8.0D, (double)bedLocation.getX() + 8.0D, (double)bedLocation.getY() + 5.0D, (double)bedLocation.getZ() + 8.0D));
 
             if (!list.isEmpty())
             {
@@ -1672,7 +1686,9 @@ public abstract class EntityPlayer extends EntityLivingBase
         this.sleeping = true;
         this.sleepTimer = 0;
         this.playerLocation = bedLocation;
-        this.motionX = this.motionZ = this.motionY = 0.0D;
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
 
         if (!this.worldObj.isRemote)
         {
@@ -2340,7 +2356,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     /**
      * Sets the player's game mode and sends it to them.
      */
-    public void setGameType(WorldSettings.GameType gameType)
+    public void setGameType(GameType gameType)
     {
     }
 
@@ -2684,6 +2700,11 @@ public abstract class EntityPlayer extends EntityLivingBase
     public float getLuck()
     {
         return (float)this.getEntityAttribute(SharedMonsterAttributes.LUCK).getAttributeValue();
+    }
+
+    public boolean func_189808_dh()
+    {
+        return this.capabilities.isCreativeMode && this.canCommandSenderUseCommand(2, "");
     }
 
     /**

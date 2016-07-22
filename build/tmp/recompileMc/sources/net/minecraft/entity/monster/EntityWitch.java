@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -34,6 +35,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -55,6 +57,11 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
     {
         super(worldIn);
         this.setSize(0.6F, 1.95F);
+    }
+
+    public static void func_189776_b(DataFixer p_189776_0_)
+    {
+        EntityLiving.func_189752_a(p_189776_0_, "Witch");
     }
 
     protected void initEntityAI()
@@ -149,7 +156,7 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
                 {
                     potiontype = PotionTypes.WATER_BREATHING;
                 }
-                else if (this.rand.nextFloat() < 0.15F && this.isBurning() && !this.isPotionActive(MobEffects.FIRE_RESISTANCE))
+                else if (this.rand.nextFloat() < 0.15F && (this.isBurning() || this.func_189748_bU() != null && this.func_189748_bU().isFireDamage()) && !this.isPotionActive(MobEffects.FIRE_RESISTANCE))
                 {
                     potiontype = PotionTypes.FIRE_RESISTANCE;
                 }

@@ -5,12 +5,14 @@ import java.util.List;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.model.ModelZombieVillager;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerCustomHead;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerVillagerArmor;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.ZombieType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -25,8 +27,9 @@ public class RenderZombie extends RenderBiped<EntityZombie>
     private static final ResourceLocation ZOMBIE_VILLAGER_SMITH_LOCATION = new ResourceLocation("textures/entity/zombie_villager/zombie_smith.png");
     private static final ResourceLocation ZOMBIE_VILLAGER_BUTCHER_LOCATION = new ResourceLocation("textures/entity/zombie_villager/zombie_butcher.png");
     private static final ResourceLocation ZOMBIE_TEXTURES = new ResourceLocation("textures/entity/zombie/zombie.png");
+    private static final ResourceLocation field_190086_r = new ResourceLocation("textures/entity/zombie/husk.png");
     private final ModelBiped defaultModel;
-    private ModelZombieVillager zombieVillagerModel;
+    private final ModelZombieVillager zombieVillagerModel;
     private final List<LayerRenderer<EntityZombie>> villagerLayers;
     private final List<LayerRenderer<EntityZombie>> defaultLayers;
 
@@ -60,6 +63,20 @@ public class RenderZombie extends RenderBiped<EntityZombie>
     }
 
     /**
+     * Allows the render to do state modifications necessary before the model is rendered.
+     */
+    protected void preRenderCallback(EntityZombie entitylivingbaseIn, float partialTickTime)
+    {
+        if (entitylivingbaseIn.func_189777_di() == ZombieType.HUSK)
+        {
+            float f = 1.0625F;
+            GlStateManager.scale(1.0625F, 1.0625F, 1.0625F);
+        }
+
+        super.preRenderCallback(entitylivingbaseIn, partialTickTime);
+    }
+
+    /**
      * Renders the desired {@code T} type Entity.
      */
     public void doRender(EntityZombie entity, double x, double y, double z, float entityYaw, float partialTicks)
@@ -79,7 +96,7 @@ public class RenderZombie extends RenderBiped<EntityZombie>
         }
         else
         {
-            return ZOMBIE_TEXTURES;
+            return entity.func_189777_di() == ZombieType.HUSK ? field_190086_r : ZOMBIE_TEXTURES;
         }
     }
 

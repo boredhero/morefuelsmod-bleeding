@@ -20,7 +20,7 @@ public class SPacketTeams implements Packet<INetHandlerPlayClient>
     private String nameTagVisibility;
     private String collisionRule;
     private int color;
-    private Collection<String> players;
+    private final Collection<String> players;
     private int action;
     private int friendlyFlags;
 

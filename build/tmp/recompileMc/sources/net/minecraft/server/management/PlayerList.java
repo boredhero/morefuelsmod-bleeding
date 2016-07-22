@@ -51,9 +51,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldSettings;
 import net.minecraft.world.border.IBorderListener;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.storage.AnvilChunkLoader;
@@ -91,7 +91,7 @@ public abstract class PlayerList
     /** The maximum number of players that can be connected at a time. */
     protected int maxPlayers;
     private int viewDistance;
-    private WorldSettings.GameType gameType;
+    private GameType gameType;
     /** True if all players are allowed to use commands (cheats). */
     private boolean commandsAllowedForAll;
     /** index into playerEntities of player to ping, updated every tick; currently hardcoded to max at 200 players */
@@ -138,7 +138,7 @@ public abstract class PlayerList
             s1 = netManager.getRemoteAddress().toString();
         }
 
-        LOG.info(playerIn.getName() + "[" + s1 + "] logged in with entity id " + playerIn.getEntityId() + " at (" + playerIn.posX + ", " + playerIn.posY + ", " + playerIn.posZ + ")");
+        LOG.info("{}[{}] logged in with entity id {} at ({}, {}, {})", new Object[] {playerIn.getName(), s1, Integer.valueOf(playerIn.getEntityId()), Double.valueOf(playerIn.posX), Double.valueOf(playerIn.posY), Double.valueOf(playerIn.posZ)});
         WorldServer worldserver = this.mcServer.worldServerForDimension(playerIn.dimension);
         WorldInfo worldinfo = worldserver.getWorldInfo();
         BlockPos blockpos = worldserver.getSpawnPoint();
@@ -157,13 +157,13 @@ public abstract class PlayerList
         this.mcServer.refreshStatusNextTick();
         TextComponentTranslation textcomponenttranslation;
 
-        if (!playerIn.getName().equalsIgnoreCase(s))
+        if (playerIn.getName().equalsIgnoreCase(s))
         {
-            textcomponenttranslation = new TextComponentTranslation("multiplayer.player.joined.renamed", new Object[] {playerIn.getDisplayName(), s});
+            textcomponenttranslation = new TextComponentTranslation("multiplayer.player.joined", new Object[] {playerIn.getDisplayName()});
         }
         else
         {
-            textcomponenttranslation = new TextComponentTranslation("multiplayer.player.joined", new Object[] {playerIn.getDisplayName()});
+            textcomponenttranslation = new TextComponentTranslation("multiplayer.player.joined.renamed", new Object[] {playerIn.getDisplayName(), s});
         }
 
         textcomponenttranslation.getStyle().setColor(TextFormatting.YELLOW);
@@ -675,8 +675,8 @@ public abstract class PlayerList
 
         if (false && entityIn.dimension == -1)
         {
-            d0 = MathHelper.clamp_double(d0 / d2, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
-            d1 = MathHelper.clamp_double(d1 / d2, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
+            d0 = MathHelper.clamp_double(d0 / 8.0D, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
+            d1 = MathHelper.clamp_double(d1 / 8.0D, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
 
             if (entityIn.isEntityAlive())
@@ -686,8 +686,8 @@ public abstract class PlayerList
         }
         else if (false && entityIn.dimension == 0)
         {
-            d0 = MathHelper.clamp_double(d0 * d2, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
-            d1 = MathHelper.clamp_double(d1 * d2, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
+            d0 = MathHelper.clamp_double(d0 * 8.0D, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
+            d1 = MathHelper.clamp_double(d1 * 8.0D, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
             entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
 
             if (entityIn.isEntityAlive())
@@ -1100,7 +1100,7 @@ public abstract class PlayerList
     }
 
     @SideOnly(Side.CLIENT)
-    public void setGameType(WorldSettings.GameType gameModeIn)
+    public void setGameType(GameType gameModeIn)
     {
         this.gameType = gameModeIn;
     }
@@ -1162,7 +1162,7 @@ public abstract class PlayerList
         if (statisticsmanagerserver == null)
         {
             File file1 = new File(this.mcServer.worldServerForDimension(0).getSaveHandler().getWorldDirectory(), "stats");
-            File file2 = new File(file1, uuid.toString() + ".json");
+            File file2 = new File(file1, uuid + ".json");
 
             if (!file2.exists())
             {

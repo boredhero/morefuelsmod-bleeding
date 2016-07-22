@@ -16,8 +16,12 @@ public class Barrier extends Particle
     {
         super(worldIn, p_i46286_2_, p_i46286_4_, p_i46286_6_, 0.0D, 0.0D, 0.0D);
         this.setParticleTexture(Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(p_i46286_8_));
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
-        this.motionX = this.motionY = this.motionZ = 0.0D;
+        this.particleRed = 1.0F;
+        this.particleGreen = 1.0F;
+        this.particleBlue = 1.0F;
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
         this.particleGravity = 0.0F;
         this.particleMaxAge = 80;
     }

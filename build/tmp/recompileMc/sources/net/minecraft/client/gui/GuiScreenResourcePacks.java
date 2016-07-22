@@ -25,7 +25,7 @@ public class GuiScreenResourcePacks extends GuiScreen
     private GuiResourcePackAvailable availableResourcePacksList;
     /** List component that contains the selected resource packs */
     private GuiResourcePackSelected selectedResourcePacksList;
-    private boolean changed = false;
+    private boolean changed;
 
     public GuiScreenResourcePacks(GuiScreen parentScreenIn)
     {

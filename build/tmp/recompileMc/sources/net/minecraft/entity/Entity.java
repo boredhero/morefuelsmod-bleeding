@@ -63,6 +63,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -170,11 +171,12 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     protected boolean firstUpdate;
     protected boolean isImmuneToFire;
     protected EntityDataManager dataManager;
-    private static final DataParameter<Byte> FLAGS = EntityDataManager.<Byte>createKey(Entity.class, DataSerializers.BYTE);
+    protected static final DataParameter<Byte> FLAGS = EntityDataManager.<Byte>createKey(Entity.class, DataSerializers.BYTE);
     private static final DataParameter<Integer> AIR = EntityDataManager.<Integer>createKey(Entity.class, DataSerializers.VARINT);
     private static final DataParameter<String> CUSTOM_NAME = EntityDataManager.<String>createKey(Entity.class, DataSerializers.STRING);
     private static final DataParameter<Boolean> CUSTOM_NAME_VISIBLE = EntityDataManager.<Boolean>createKey(Entity.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> SILENT = EntityDataManager.<Boolean>createKey(Entity.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> field_189655_aD = EntityDataManager.<Boolean>createKey(Entity.class, DataSerializers.BOOLEAN);
     /** Has this entity been added to the chunk its within */
     public boolean addedToChunk;
     public int chunkCoordX;
@@ -244,6 +246,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         this.dataManager.register(CUSTOM_NAME_VISIBLE, Boolean.valueOf(false));
         this.dataManager.register(CUSTOM_NAME, "");
         this.dataManager.register(SILENT, Boolean.valueOf(false));
+        this.dataManager.register(field_189655_aD, Boolean.valueOf(false));
         this.entityInit();
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityEvent.EntityConstructing(this));
         capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
@@ -334,7 +337,9 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 ++this.posY;
             }
 
-            this.motionX = this.motionY = this.motionZ = 0.0D;
+            this.motionX = 0.0D;
+            this.motionY = 0.0D;
+            this.motionZ = 0.0D;
             this.rotationPitch = 0.0F;
         }
     }
@@ -673,68 +678,66 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
             if (flag)
             {
-                double d6;
-
-                for (d6 = 0.05D; x != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, 0.0D)).isEmpty(); d3 = x)
+                for (double d6 = 0.05D; x != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, 0.0D)).isEmpty(); d3 = x)
                 {
-                    if (x < d6 && x >= -d6)
+                    if (x < 0.05D && x >= -0.05D)
                     {
                         x = 0.0D;
                     }
                     else if (x > 0.0D)
                     {
-                        x -= d6;
+                        x -= 0.05D;
                     }
                     else
                     {
-                        x += d6;
+                        x += 0.05D;
                     }
                 }
 
                 for (; z != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(0.0D, -1.0D, z)).isEmpty(); d5 = z)
                 {
-                    if (z < d6 && z >= -d6)
+                    if (z < 0.05D && z >= -0.05D)
                     {
                         z = 0.0D;
                     }
                     else if (z > 0.0D)
                     {
-                        z -= d6;
+                        z -= 0.05D;
                     }
                     else
                     {
-                        z += d6;
+                        z += 0.05D;
                     }
                 }
 
                 for (; x != 0.0D && z != 0.0D && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox().offset(x, -1.0D, z)).isEmpty(); d5 = z)
                 {
-                    if (x < d6 && x >= -d6)
+                    if (x < 0.05D && x >= -0.05D)
                     {
                         x = 0.0D;
                     }
                     else if (x > 0.0D)
                     {
-                        x -= d6;
+                        x -= 0.05D;
                     }
                     else
                     {
-                        x += d6;
+                        x += 0.05D;
                     }
 
                     d3 = x;
 
-                    if (z < d6 && z >= -d6)
+                    if (z < 0.05D && z >= -0.05D)
                     {
                         z = 0.0D;
                     }
                     else if (z > 0.0D)
                     {
-                        z -= d6;
+                        z -= 0.05D;
                     }
                     else
                     {
-                        z += d6;
+                        z += 0.05D;
                     }
                 }
             }
@@ -1032,7 +1035,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 {
                     for (int k = blockpos$pooledmutableblockpos.getZ(); k <= blockpos$pooledmutableblockpos1.getZ(); ++k)
                     {
-                        blockpos$pooledmutableblockpos2.set(i, j, k);
+                        blockpos$pooledmutableblockpos2.setPos(i, j, k);
                         IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos2);
 
                         try
@@ -1093,6 +1096,16 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     public void setSilent(boolean isSilent)
     {
         this.dataManager.set(SILENT, Boolean.valueOf(isSilent));
+    }
+
+    public boolean func_189652_ae()
+    {
+        return ((Boolean)this.dataManager.get(field_189655_aD)).booleanValue();
+    }
+
+    public void func_189654_d(boolean p_189654_1_)
+    {
+        this.dataManager.set(field_189655_aD, Boolean.valueOf(p_189654_1_));
     }
 
     /**
@@ -1170,7 +1183,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         {
             BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain(this.posX, this.posY, this.posZ);
 
-            if (!this.worldObj.isRainingAt(blockpos$pooledmutableblockpos) && !this.worldObj.isRainingAt(blockpos$pooledmutableblockpos.set(this.posX, this.posY + (double)this.height, this.posZ)))
+            if (!this.worldObj.isRainingAt(blockpos$pooledmutableblockpos) && !this.worldObj.isRainingAt(blockpos$pooledmutableblockpos.setPos(this.posX, this.posY + (double)this.height, this.posZ)))
             {
                 blockpos$pooledmutableblockpos.release();
                 return false;
@@ -1382,12 +1395,17 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public void setPositionAndRotation(double x, double y, double z, float yaw, float pitch)
     {
-        this.prevPosX = this.posX = MathHelper.clamp_double(x, -3.0E7D, 3.0E7D);
-        this.prevPosY = this.posY = y;
-        this.prevPosZ = this.posZ = MathHelper.clamp_double(z, -3.0E7D, 3.0E7D);
+        this.posX = MathHelper.clamp_double(x, -3.0E7D, 3.0E7D);
+        this.posY = y;
+        this.posZ = MathHelper.clamp_double(z, -3.0E7D, 3.0E7D);
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
         pitch = MathHelper.clamp_float(pitch, -90.0F, 90.0F);
-        this.prevRotationYaw = this.rotationYaw = yaw;
-        this.prevRotationPitch = this.rotationPitch = pitch;
+        this.rotationYaw = yaw;
+        this.rotationPitch = pitch;
+        this.prevRotationYaw = this.rotationYaw;
+        this.prevRotationPitch = this.rotationPitch;
         double d0 = (double)(this.prevRotationYaw - yaw);
 
         if (d0 < -180.0D)
@@ -1414,9 +1432,15 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      */
     public void setLocationAndAngles(double x, double y, double z, float yaw, float pitch)
     {
-        this.lastTickPosX = this.prevPosX = this.posX = x;
-        this.lastTickPosY = this.prevPosY = this.posY = y;
-        this.lastTickPosZ = this.prevPosZ = this.posZ = z;
+        this.posX = x;
+        this.posY = y;
+        this.posZ = z;
+        this.prevPosX = this.posX;
+        this.prevPosY = this.posY;
+        this.prevPosZ = this.posZ;
+        this.lastTickPosX = this.posX;
+        this.lastTickPosY = this.posY;
+        this.lastTickPosZ = this.posZ;
         this.rotationYaw = yaw;
         this.rotationPitch = pitch;
         this.setPosition(this.posX, this.posY, this.posZ);
@@ -1745,6 +1769,11 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 p_189511_1_.setBoolean("Silent", this.isSilent());
             }
 
+            if (this.func_189652_ae())
+            {
+                p_189511_1_.setBoolean("NoGravity", this.func_189652_ae());
+            }
+
             if (this.glowing)
             {
                 p_189511_1_.setBoolean("Glowing", this.glowing);
@@ -1827,11 +1856,19 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 this.motionZ = 0.0D;
             }
 
-            this.prevPosX = this.lastTickPosX = this.posX = nbttaglist.getDoubleAt(0);
-            this.prevPosY = this.lastTickPosY = this.posY = nbttaglist.getDoubleAt(1);
-            this.prevPosZ = this.lastTickPosZ = this.posZ = nbttaglist.getDoubleAt(2);
-            this.prevRotationYaw = this.rotationYaw = nbttaglist3.getFloatAt(0);
-            this.prevRotationPitch = this.rotationPitch = nbttaglist3.getFloatAt(1);
+            this.posX = nbttaglist.getDoubleAt(0);
+            this.posY = nbttaglist.getDoubleAt(1);
+            this.posZ = nbttaglist.getDoubleAt(2);
+            this.lastTickPosX = this.posX;
+            this.lastTickPosY = this.posY;
+            this.lastTickPosZ = this.posZ;
+            this.prevPosX = this.posX;
+            this.prevPosY = this.posY;
+            this.prevPosZ = this.posZ;
+            this.rotationYaw = nbttaglist3.getFloatAt(0);
+            this.rotationPitch = nbttaglist3.getFloatAt(1);
+            this.prevRotationYaw = this.rotationYaw;
+            this.prevRotationPitch = this.rotationPitch;
             this.setRotationYawHead(this.rotationYaw);
             this.setRenderYawOffset(this.rotationYaw);
             this.fallDistance = compound.getFloat("FallDistance");
@@ -1864,6 +1901,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             this.setAlwaysRenderNameTag(compound.getBoolean("CustomNameVisible"));
             this.cmdResultStats.readStatsFromNBT(compound);
             this.setSilent(compound.getBoolean("Silent"));
+            this.func_189654_d(compound.getBoolean("NoGravity"));
             this.setGlowing(compound.getBoolean("Glowing"));
 
             if (compound.hasKey("ForgeData")) customEntityData = compound.getCompoundTag("ForgeData");
@@ -1919,10 +1957,6 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
     protected abstract void writeEntityToNBT(NBTTagCompound compound);
-
-    public void onChunkLoad()
-    {
-    }
 
     /**
      * creates a NBT list from the array of doubles passed to this function
@@ -2014,7 +2048,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
                 if (blockpos$pooledmutableblockpos.getX() != k || blockpos$pooledmutableblockpos.getY() != j || blockpos$pooledmutableblockpos.getZ() != l)
                 {
-                    blockpos$pooledmutableblockpos.set(k, j, l);
+                    blockpos$pooledmutableblockpos.setPos(k, j, l);
 
                     if (this.worldObj.getBlockState(blockpos$pooledmutableblockpos).getBlock().isVisuallyOpaque())
                     {
@@ -2207,6 +2241,19 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     public Vec3d getLookVec()
     {
         return null;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public Vec2f func_189653_aC()
+    {
+        Vec2f vec2f = new Vec2f(this.rotationPitch, this.rotationYaw);
+        return vec2f;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public Vec3d func_189651_aD()
+    {
+        return Vec3d.func_189984_a(this.func_189653_aC());
     }
 
     /**
@@ -2693,13 +2740,13 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
                 if (dimensionIn == -1)
                 {
-                    d0 = MathHelper.clamp_double(d0 / d2, worldserver1.getWorldBorder().minX() + 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
-                    d1 = MathHelper.clamp_double(d1 / d2, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
+                    d0 = MathHelper.clamp_double(d0 / 8.0D, worldserver1.getWorldBorder().minX() + 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
+                    d1 = MathHelper.clamp_double(d1 / 8.0D, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
                 }
                 else if (dimensionIn == 0)
                 {
-                    d0 = MathHelper.clamp_double(d0 * d2, worldserver1.getWorldBorder().minX() + 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
-                    d1 = MathHelper.clamp_double(d1 * d2, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
+                    d0 = MathHelper.clamp_double(d0 * 8.0D, worldserver1.getWorldBorder().minX() + 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
+                    d1 = MathHelper.clamp_double(d1 * 8.0D, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
                 }
 
                 d0 = (double)MathHelper.clamp_int((int)d0, -29999872, 29999872);

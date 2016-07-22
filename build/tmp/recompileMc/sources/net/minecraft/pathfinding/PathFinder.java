@@ -1,6 +1,6 @@
 package net.minecraft.pathfinding;
 
-import java.util.HashSet;
+import com.google.common.collect.Sets;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -12,7 +12,7 @@ public class PathFinder
 {
     /** The path being generated */
     private final PathHeap path = new PathHeap();
-    private final Set<PathPoint> closedSet = new HashSet();
+    private final Set<PathPoint> closedSet = Sets.<PathPoint>newHashSet();
     /** Selection of path points to add to the path */
     private final PathPoint[] pathOptions = new PathPoint[32];
     private final NodeProcessor nodeProcessor;

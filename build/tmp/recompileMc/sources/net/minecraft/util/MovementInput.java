@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import net.minecraft.util.math.Vec2f;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -19,5 +20,10 @@ public class MovementInput
 
     public void updatePlayerMoveState()
     {
+    }
+
+    public Vec2f func_190020_b()
+    {
+        return new Vec2f(this.moveStrafe, this.moveForward);
     }
 }

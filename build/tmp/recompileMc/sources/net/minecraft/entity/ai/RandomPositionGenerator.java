@@ -115,10 +115,7 @@ public class RandomPositionGenerator
                     }
                 }
 
-                l = l + MathHelper.floor_double(entitycreatureIn.posX);
-                k1 = k1 + MathHelper.floor_double(entitycreatureIn.posY);
-                i1 = i1 + MathHelper.floor_double(entitycreatureIn.posZ);
-                BlockPos blockpos1 = new BlockPos(l, k1, i1);
+                BlockPos blockpos1 = new BlockPos((double)l + entitycreatureIn.posX, (double)k1 + entitycreatureIn.posY, (double)i1 + entitycreatureIn.posZ);
 
                 if ((!flag1 || entitycreatureIn.isWithinHomeDistanceFromPosition(blockpos1)) && pathnavigate.canEntityStandOnPos(blockpos1))
                 {
@@ -138,7 +135,7 @@ public class RandomPositionGenerator
 
         if (flag)
         {
-            return new Vec3d((double)i, (double)j, (double)k);
+            return new Vec3d((double)i + entitycreatureIn.posX, (double)j + entitycreatureIn.posY, (double)k + entitycreatureIn.posZ);
         }
         else
         {

@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ParticleFlame extends Particle
 {
     /** the scale of the flame FX */
-    private float flameScale;
+    private final float flameScale;
 
     protected ParticleFlame(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn)
     {
@@ -23,7 +23,9 @@ public class ParticleFlame extends Particle
         this.posY += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
         this.posZ += (double)((this.rand.nextFloat() - this.rand.nextFloat()) * 0.05F);
         this.flameScale = this.particleScale;
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
+        this.particleRed = 1.0F;
+        this.particleGreen = 1.0F;
+        this.particleBlue = 1.0F;
         this.particleMaxAge = (int)(8.0D / (Math.random() * 0.8D + 0.2D)) + 4;
         this.setParticleTextureIndex(48);
     }

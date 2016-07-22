@@ -50,6 +50,10 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackData;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
@@ -91,7 +95,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
     protected float jumpPower;
     private boolean allowStandSliding;
     private boolean skeletonTrap;
-    private int skeletonTrapTime = 0;
+    private int skeletonTrapTime;
     private float headLean;
     private float prevHeadLean;
     private float rearingAmount;
@@ -101,8 +105,9 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
     /** Used to determine the sound that the horse should make when it steps */
     private int gallopTime;
     private String texturePrefix;
-    private String[] horseTexturesArray = new String[3];
-    private boolean hasTexture = false;
+    private final String[] horseTexturesArray = new String[3];
+    @SideOnly(Side.CLIENT)
+    private boolean hasTexture;
 
     public EntityHorse(World worldIn)
     {
@@ -1095,7 +1100,8 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
 
         if (this.isRearing())
         {
-            this.prevHeadLean = this.headLean = 0.0F;
+            this.headLean = 0.0F;
+            this.prevHeadLean = this.headLean;
             this.rearingAmount += (1.0F - this.rearingAmount) * 0.4F + 0.05F;
 
             if (this.rearingAmount > 1.0F)
@@ -1225,10 +1231,12 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
         if (this.isBeingRidden() && this.canBeSteered() && this.isHorseSaddled())
         {
             EntityLivingBase entitylivingbase = (EntityLivingBase)this.getControllingPassenger();
-            this.prevRotationYaw = this.rotationYaw = entitylivingbase.rotationYaw;
+            this.rotationYaw = entitylivingbase.rotationYaw;
+            this.prevRotationYaw = this.rotationYaw;
             this.rotationPitch = entitylivingbase.rotationPitch * 0.5F;
             this.setRotation(this.rotationYaw, this.rotationPitch);
-            this.rotationYawHead = this.renderYawOffset = this.rotationYaw;
+            this.renderYawOffset = this.rotationYaw;
+            this.rotationYawHead = this.renderYawOffset;
             strafe = entitylivingbase.moveStrafing * 0.5F;
             forward = entitylivingbase.moveForward;
 
@@ -1309,6 +1317,13 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
         }
     }
 
+    public static void func_189803_b(DataFixer p_189803_0_)
+    {
+        EntityLiving.func_189752_a(p_189803_0_, "EntityHorse");
+        p_189803_0_.registerWalker(FixTypes.ENTITY, new ItemStackDataLists("EntityHorse", new String[] {"Items"}));
+        p_189803_0_.registerWalker(FixTypes.ENTITY, new ItemStackData("EntityHorse", new String[] {"ArmorItem", "SaddleItem"}));
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -1378,7 +1393,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
         this.setHorseTamed(compound.getBoolean("Tame"));
         this.setSkeletonTrap(compound.getBoolean("SkeletonTrap"));
         this.skeletonTrapTime = compound.getInteger("SkeletonTrapTime");
-        String s = "";
+        String s;
 
         if (compound.hasKey("OwnerUUID", 8))
         {
@@ -1543,8 +1558,8 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
     public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
-        HorseType horsetype = HorseType.HORSE;
         int i = 0;
+        HorseType horsetype;
 
         if (livingdata instanceof EntityHorse.GroupData)
         {

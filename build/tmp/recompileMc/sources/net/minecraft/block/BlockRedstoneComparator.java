@@ -129,7 +129,6 @@ public class BlockRedstoneComparator extends BlockRedstoneDiode implements ITile
         EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
         BlockPos blockpos = pos.offset(enumfacing);
         IBlockState iblockstate = worldIn.getBlockState(blockpos);
-        Block block = iblockstate.getBlock();
 
         if (iblockstate.hasComparatorInputOverride())
         {

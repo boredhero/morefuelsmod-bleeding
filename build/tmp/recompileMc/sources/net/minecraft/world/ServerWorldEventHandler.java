@@ -16,9 +16,9 @@ import net.minecraft.util.math.BlockPos;
 public class ServerWorldEventHandler implements IWorldEventListener
 {
     /** Reference to the MinecraftServer object. */
-    private MinecraftServer mcServer;
+    private final MinecraftServer mcServer;
     /** The WorldServer object. */
-    private WorldServer theWorldServer;
+    private final WorldServer theWorldServer;
 
     public ServerWorldEventHandler(MinecraftServer mcServerIn, WorldServer worldServerIn)
     {

@@ -11,7 +11,10 @@ import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -21,8 +24,8 @@ import org.apache.logging.log4j.Logger;
 public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static Map < String, Class <? extends TileEntity >> nameToClassMap = Maps. < String, Class <? extends TileEntity >> newHashMap();
-    private static Map < Class <? extends TileEntity > , String > classToNameMap = Maps. < Class <? extends TileEntity > , String > newHashMap();
+    private static final Map < String, Class <? extends TileEntity >> nameToClassMap = Maps. < String, Class <? extends TileEntity >> newHashMap();
+    private static final Map < Class <? extends TileEntity > , String > classToNameMap = Maps. < Class <? extends TileEntity > , String > newHashMap();
     /** the instance of the world the tile entity is in. */
     protected World worldObj;
     protected BlockPos pos = BlockPos.ORIGIN;
@@ -103,10 +106,10 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         }
     }
 
-    public static TileEntity create(NBTTagCompound compound)
+    public static TileEntity func_190200_a(World p_190200_0_, NBTTagCompound p_190200_1_)
     {
         TileEntity tileentity = null;
-        String s = compound.getString("id");
+        String s = p_190200_1_.getString("id");
         Class <? extends TileEntity > oclass = null;
 
         try
@@ -120,7 +123,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         }
         catch (Throwable throwable1)
         {
-            LOGGER.error("Failed to create block entity " + s, throwable1);
+            LOGGER.error("Failed to create block entity {}", new Object[] {s, throwable1});
             net.minecraftforge.fml.common.FMLLog.log(org.apache.logging.log4j.Level.ERROR, throwable1,
                     "A TileEntity %s(%s) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
                     s, oclass.getName());
@@ -130,11 +133,12 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         {
             try
             {
-                tileentity.readFromNBT(compound);
+                tileentity.func_190201_b(p_190200_0_);
+                tileentity.readFromNBT(p_190200_1_);
             }
             catch (Throwable throwable)
             {
-                LOGGER.error("Failed to load data for block entity " + s, throwable);
+                LOGGER.error("Failed to load data for block entity {}", new Object[] {s, throwable});
                 net.minecraftforge.fml.common.FMLLog.log(org.apache.logging.log4j.Level.ERROR, throwable,
                         "A TileEntity %s(%s) has thrown an exception during loading, its state cannot be restored. Report this to the mod author",
                         s, oclass.getName());
@@ -143,10 +147,14 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         }
         else
         {
-            LOGGER.warn("Skipping BlockEntity with id " + s);
+            LOGGER.warn("Skipping BlockEntity with id {}", new Object[] {s});
         }
 
         return tileentity;
+    }
+
+    protected void func_190201_b(World p_190201_1_)
+    {
     }
 
     public int getBlockMetadata()
@@ -321,6 +329,23 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
     public boolean onlyOpsCanSetNbt()
     {
         return false;
+    }
+
+    /**
+     * Get the formatted ChatComponent that will be used for the sender's username in chat
+     */
+    @Nullable
+    public ITextComponent getDisplayName()
+    {
+        return null;
+    }
+
+    public void func_189667_a(Rotation p_189667_1_)
+    {
+    }
+
+    public void func_189668_a(Mirror p_189668_1_)
+    {
     }
 
     // -- BEGIN FORGE PATCHES --

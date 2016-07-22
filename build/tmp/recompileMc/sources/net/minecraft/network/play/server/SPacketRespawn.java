@@ -5,7 +5,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -14,14 +14,14 @@ public class SPacketRespawn implements Packet<INetHandlerPlayClient>
 {
     private int dimensionID;
     private EnumDifficulty difficulty;
-    private WorldSettings.GameType gameType;
+    private GameType gameType;
     private WorldType worldType;
 
     public SPacketRespawn()
     {
     }
 
-    public SPacketRespawn(int dimensionIdIn, EnumDifficulty difficultyIn, WorldType worldTypeIn, WorldSettings.GameType gameModeIn)
+    public SPacketRespawn(int dimensionIdIn, EnumDifficulty difficultyIn, WorldType worldTypeIn, GameType gameModeIn)
     {
         this.dimensionID = dimensionIdIn;
         this.difficulty = difficultyIn;
@@ -44,7 +44,7 @@ public class SPacketRespawn implements Packet<INetHandlerPlayClient>
     {
         this.dimensionID = buf.readInt();
         this.difficulty = EnumDifficulty.getDifficultyEnum(buf.readUnsignedByte());
-        this.gameType = WorldSettings.GameType.getByID(buf.readUnsignedByte());
+        this.gameType = GameType.getByID(buf.readUnsignedByte());
         this.worldType = WorldType.parseWorldType(buf.readStringFromBuffer(16));
 
         if (this.worldType == null)
@@ -77,7 +77,7 @@ public class SPacketRespawn implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public WorldSettings.GameType getGameType()
+    public GameType getGameType()
     {
         return this.gameType;
     }

@@ -1,8 +1,10 @@
 package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -13,6 +15,11 @@ public class EntityGiantZombie extends EntityMob
     {
         super(worldIn);
         this.setSize(this.width * 6.0F, this.height * 6.0F);
+    }
+
+    public static void func_189765_b(DataFixer p_189765_0_)
+    {
+        EntityLiving.func_189752_a(p_189765_0_, "Giant");
     }
 
     public float getEyeHeight()

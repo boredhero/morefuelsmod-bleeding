@@ -67,15 +67,15 @@ public abstract class LootEntry
                 LootEntry ret = net.minecraftforge.common.ForgeHooks.deserializeJsonLootEntry(s, jsonobject, i, j, alootcondition);
                 if (ret != null) return ret;
 
-                if (s.equals("item"))
+                if ("item".equals(s))
                 {
                     return LootEntryItem.deserialize(jsonobject, p_deserialize_3_, i, j, alootcondition);
                 }
-                else if (s.equals("loot_table"))
+                else if ("loot_table".equals(s))
                 {
                     return LootEntryTable.deserialize(jsonobject, p_deserialize_3_, i, j, alootcondition);
                 }
-                else if (s.equals("empty"))
+                else if ("empty".equals(s))
                 {
                     return LootEntryEmpty.deserialize(jsonobject, p_deserialize_3_, i, j, alootcondition);
                 }

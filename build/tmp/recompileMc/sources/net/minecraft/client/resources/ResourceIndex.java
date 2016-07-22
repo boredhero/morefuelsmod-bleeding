@@ -60,11 +60,11 @@ public class ResourceIndex
         }
         catch (JsonParseException var20)
         {
-            LOGGER.error("Unable to parse resource index file: " + file2);
+            LOGGER.error("Unable to parse resource index file: {}", new Object[] {file2});
         }
         catch (FileNotFoundException var21)
         {
-            LOGGER.error("Can\'t find the resource index file: " + file2);
+            LOGGER.error("Can\'t find the resource index file: {}", new Object[] {file2});
         }
         finally
         {

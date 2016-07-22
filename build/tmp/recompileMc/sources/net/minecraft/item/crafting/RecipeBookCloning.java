@@ -5,7 +5,6 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemWrittenBook;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public class RecipeBookCloning implements IRecipe
@@ -87,7 +86,7 @@ public class RecipeBookCloning implements IRecipe
         if (itemstack != null && i >= 1 && ItemWrittenBook.getGeneration(itemstack) < 2)
         {
             ItemStack itemstack2 = new ItemStack(Items.WRITTEN_BOOK, i);
-            itemstack2.setTagCompound((NBTTagCompound)itemstack.getTagCompound().copy());
+            itemstack2.setTagCompound(itemstack.getTagCompound().copy());
             itemstack2.getTagCompound().setInteger("generation", ItemWrittenBook.getGeneration(itemstack) + 1);
 
             if (itemstack.hasDisplayName())

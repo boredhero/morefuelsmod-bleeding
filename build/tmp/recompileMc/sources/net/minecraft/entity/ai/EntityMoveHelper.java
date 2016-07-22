@@ -125,7 +125,7 @@ public class EntityMoveHelper
             this.entity.rotationYaw = this.limitAngle(this.entity.rotationYaw, f9, 90.0F);
             this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
 
-            if (d2 > (double)this.entity.stepHeight && d0 * d0 + d1 * d1 < 1.0D)
+            if (d2 > (double)this.entity.stepHeight && d0 * d0 + d1 * d1 < (double)Math.max(1.0F, this.entity.width))
             {
                 this.entity.getJumpHelper().setJumping();
             }

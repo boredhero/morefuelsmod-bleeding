@@ -8,6 +8,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.BlockWorldState;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.state.pattern.BlockMaterialMatcher;
 import net.minecraft.block.state.pattern.BlockPattern;
 import net.minecraft.block.state.pattern.BlockStateMatcher;
 import net.minecraft.block.state.pattern.FactoryBlockPattern;
@@ -58,9 +59,9 @@ public class BlockPumpkin extends BlockHorizontal
 
     private void trySpawnGolem(World worldIn, BlockPos pos)
     {
-        BlockPattern.PatternHelper blockpattern$patternhelper;
+        BlockPattern.PatternHelper blockpattern$patternhelper = this.getSnowmanPattern().match(worldIn, pos);
 
-        if ((blockpattern$patternhelper = this.getSnowmanPattern().match(worldIn, pos)) != null)
+        if (blockpattern$patternhelper != null)
         {
             for (int i = 0; i < this.getSnowmanPattern().getThumbLength(); ++i)
             {
@@ -84,33 +85,38 @@ public class BlockPumpkin extends BlockHorizontal
                 worldIn.notifyNeighborsRespectDebug(blockworldstate1.getPos(), Blocks.AIR);
             }
         }
-        else if ((blockpattern$patternhelper = this.getGolemPattern().match(worldIn, pos)) != null)
+        else
         {
-            for (int k = 0; k < this.getGolemPattern().getPalmLength(); ++k)
+            blockpattern$patternhelper = this.getGolemPattern().match(worldIn, pos);
+
+            if (blockpattern$patternhelper != null)
             {
-                for (int l = 0; l < this.getGolemPattern().getThumbLength(); ++l)
+                for (int k = 0; k < this.getGolemPattern().getPalmLength(); ++k)
                 {
-                    worldIn.setBlockState(blockpattern$patternhelper.translateOffset(k, l, 0).getPos(), Blocks.AIR.getDefaultState(), 2);
+                    for (int l = 0; l < this.getGolemPattern().getThumbLength(); ++l)
+                    {
+                        worldIn.setBlockState(blockpattern$patternhelper.translateOffset(k, l, 0).getPos(), Blocks.AIR.getDefaultState(), 2);
+                    }
                 }
-            }
 
-            BlockPos blockpos = blockpattern$patternhelper.translateOffset(1, 2, 0).getPos();
-            EntityIronGolem entityirongolem = new EntityIronGolem(worldIn);
-            entityirongolem.setPlayerCreated(true);
-            entityirongolem.setLocationAndAngles((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.05D, (double)blockpos.getZ() + 0.5D, 0.0F, 0.0F);
-            worldIn.spawnEntityInWorld(entityirongolem);
+                BlockPos blockpos = blockpattern$patternhelper.translateOffset(1, 2, 0).getPos();
+                EntityIronGolem entityirongolem = new EntityIronGolem(worldIn);
+                entityirongolem.setPlayerCreated(true);
+                entityirongolem.setLocationAndAngles((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.05D, (double)blockpos.getZ() + 0.5D, 0.0F, 0.0F);
+                worldIn.spawnEntityInWorld(entityirongolem);
 
-            for (int j1 = 0; j1 < 120; ++j1)
-            {
-                worldIn.spawnParticle(EnumParticleTypes.SNOWBALL, (double)blockpos.getX() + worldIn.rand.nextDouble(), (double)blockpos.getY() + worldIn.rand.nextDouble() * 3.9D, (double)blockpos.getZ() + worldIn.rand.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
-            }
-
-            for (int k1 = 0; k1 < this.getGolemPattern().getPalmLength(); ++k1)
-            {
-                for (int l1 = 0; l1 < this.getGolemPattern().getThumbLength(); ++l1)
+                for (int j1 = 0; j1 < 120; ++j1)
                 {
-                    BlockWorldState blockworldstate2 = blockpattern$patternhelper.translateOffset(k1, l1, 0);
-                    worldIn.notifyNeighborsRespectDebug(blockworldstate2.getPos(), Blocks.AIR);
+                    worldIn.spawnParticle(EnumParticleTypes.SNOWBALL, (double)blockpos.getX() + worldIn.rand.nextDouble(), (double)blockpos.getY() + worldIn.rand.nextDouble() * 3.9D, (double)blockpos.getZ() + worldIn.rand.nextDouble(), 0.0D, 0.0D, 0.0D, new int[0]);
+                }
+
+                for (int k1 = 0; k1 < this.getGolemPattern().getPalmLength(); ++k1)
+                {
+                    for (int l1 = 0; l1 < this.getGolemPattern().getThumbLength(); ++l1)
+                    {
+                        BlockWorldState blockworldstate2 = blockpattern$patternhelper.translateOffset(k1, l1, 0);
+                        worldIn.notifyNeighborsRespectDebug(blockworldstate2.getPos(), Blocks.AIR);
+                    }
                 }
             }
         }
@@ -193,7 +199,7 @@ public class BlockPumpkin extends BlockHorizontal
     {
         if (this.golemBasePattern == null)
         {
-            this.golemBasePattern = FactoryBlockPattern.start().aisle(new String[] {"~ ~", "###", "~#~"}).where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.IRON_BLOCK))).where('~', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.AIR))).build();
+            this.golemBasePattern = FactoryBlockPattern.start().aisle(new String[] {"~ ~", "###", "~#~"}).where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.IRON_BLOCK))).where('~', BlockWorldState.hasState(BlockMaterialMatcher.func_189886_a(Material.AIR))).build();
         }
 
         return this.golemBasePattern;
@@ -203,7 +209,7 @@ public class BlockPumpkin extends BlockHorizontal
     {
         if (this.golemPattern == null)
         {
-            this.golemPattern = FactoryBlockPattern.start().aisle(new String[] {"~^~", "###", "~#~"}).where('^', BlockWorldState.hasState(IS_PUMPKIN)).where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.IRON_BLOCK))).where('~', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.AIR))).build();
+            this.golemPattern = FactoryBlockPattern.start().aisle(new String[] {"~^~", "###", "~#~"}).where('^', BlockWorldState.hasState(IS_PUMPKIN)).where('#', BlockWorldState.hasState(BlockStateMatcher.forBlock(Blocks.IRON_BLOCK))).where('~', BlockWorldState.hasState(BlockMaterialMatcher.func_189886_a(Material.AIR))).build();
         }
 
         return this.golemPattern;

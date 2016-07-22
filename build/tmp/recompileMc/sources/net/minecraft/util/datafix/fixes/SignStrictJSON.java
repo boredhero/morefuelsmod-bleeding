@@ -47,7 +47,7 @@ public class SignStrictJSON implements IFixableData
             }
             else
             {
-                throw new JsonParseException("Don\'t know how to turn " + p_deserialize_1_.toString() + " into a Component");
+                throw new JsonParseException("Don\'t know how to turn " + p_deserialize_1_ + " into a Component");
             }
         }
     }).create();

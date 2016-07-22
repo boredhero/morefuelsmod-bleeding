@@ -20,7 +20,7 @@ public abstract class EntityAITarget extends EntityAIBase
     /** If true, EntityAI targets must be able to be seen (cannot be blocked by walls) to be suitable targets. */
     protected boolean shouldCheckSight;
     /** When true, only entities that can be reached with minimal effort will be targetted. */
-    private boolean nearbyOnly;
+    private final boolean nearbyOnly;
     /** When nearbyOnly is true: 0 -> No target, but OK to search; 1 -> Nearby target found; 2 -> Target too far. */
     private int targetSearchStatus;
     /** When nearbyOnly is true, this throttles target searching to avoid excessive pathfinding. */

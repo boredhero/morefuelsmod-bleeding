@@ -69,7 +69,7 @@ public class CommandBlockData extends CommandBase
                 else
                 {
                     NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
-                    NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttagcompound.copy();
+                    NBTTagCompound nbttagcompound1 = nbttagcompound.copy();
                     NBTTagCompound nbttagcompound2;
 
                     try

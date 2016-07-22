@@ -1,7 +1,7 @@
 package net.minecraft.pathfinding;
 
+import com.google.common.collect.Sets;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -56,7 +56,11 @@ public class WalkNodeProcessor extends NodeProcessor
                 blockpos$mutableblockpos.setPos(MathHelper.floor_double(this.entity.posX), i, MathHelper.floor_double(this.entity.posZ));
             }
         }
-        else if (!this.entity.onGround)
+        else if (this.entity.onGround)
+        {
+            i = MathHelper.floor_double(this.entity.getEntityBoundingBox().minY + 0.5D);
+        }
+        else
         {
             BlockPos blockpos;
 
@@ -67,17 +71,13 @@ public class WalkNodeProcessor extends NodeProcessor
 
             i = blockpos.up().getY();
         }
-        else
-        {
-            i = MathHelper.floor_double(this.entity.getEntityBoundingBox().minY + 0.5D);
-        }
 
         BlockPos blockpos2 = new BlockPos(this.entity);
         PathNodeType pathnodetype1 = this.getPathNodeType(this.entity, blockpos2.getX(), i, blockpos2.getZ());
 
         if (this.entity.getPathPriority(pathnodetype1) < 0.0F)
         {
-            Set<BlockPos> set = new HashSet();
+            Set<BlockPos> set = Sets.<BlockPos>newHashSet();
             set.add(new BlockPos(this.entity.getEntityBoundingBox().minX, (double)i, this.entity.getEntityBoundingBox().minZ));
             set.add(new BlockPos(this.entity.getEntityBoundingBox().minX, (double)i, this.entity.getEntityBoundingBox().maxZ));
             set.add(new BlockPos(this.entity.getEntityBoundingBox().maxX, (double)i, this.entity.getEntityBoundingBox().minZ));
@@ -202,7 +202,7 @@ public class WalkNodeProcessor extends NodeProcessor
         BlockPos blockpos1 = blockpos.down();
         double d0 = (double)y - (1.0D - this.blockaccess.getBlockState(blockpos1).getBoundingBox(this.blockaccess, blockpos1).maxY);
 
-        if (d0 - p_186332_5_ > 1.0D)
+        if (d0 - p_186332_5_ > 1.125D)
         {
             return null;
         }
@@ -229,7 +229,7 @@ public class WalkNodeProcessor extends NodeProcessor
                 {
                     pathpoint = this.getSafePoint(x, y + 1, z, p_186332_4_ - 1, p_186332_5_, facing);
 
-                    if (pathpoint != null && (pathpoint.nodeType == PathNodeType.OPEN || pathpoint.nodeType == PathNodeType.WALKABLE))
+                    if (pathpoint != null && (pathpoint.nodeType == PathNodeType.OPEN || pathpoint.nodeType == PathNodeType.WALKABLE) && this.entity.width < 1.0F)
                     {
                         double d2 = (double)(x - facing.getFrontOffsetX()) + 0.5D;
                         double d3 = (double)(z - facing.getFrontOffsetZ()) + 0.5D;
@@ -391,27 +391,38 @@ public class WalkNodeProcessor extends NodeProcessor
 
         if (pathnodetype == PathNodeType.OPEN && z >= 1)
         {
+            Block block = x.getBlockState(new BlockPos(y, z - 1, p_186330_4_)).getBlock();
             PathNodeType pathnodetype1 = this.getPathNodeTypeRaw(x, y, z - 1, p_186330_4_);
             pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER && pathnodetype1 != PathNodeType.LAVA ? PathNodeType.WALKABLE : PathNodeType.OPEN;
+
+            if (pathnodetype1 == PathNodeType.DAMAGE_FIRE || block == Blocks.field_189877_df)
+            {
+                pathnodetype = PathNodeType.DAMAGE_FIRE;
+            }
+
+            if (pathnodetype1 == PathNodeType.DAMAGE_CACTUS)
+            {
+                pathnodetype = PathNodeType.DAMAGE_CACTUS;
+            }
         }
 
         BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
 
         if (pathnodetype == PathNodeType.WALKABLE)
         {
-            for (int i = -1; i <= 1; ++i)
+            for (int j = -1; j <= 1; ++j)
             {
-                for (int j = -1; j <= 1; ++j)
+                for (int i = -1; i <= 1; ++i)
                 {
-                    if (i != 0 || j != 0)
+                    if (j != 0 || i != 0)
                     {
-                        Block block = x.getBlockState(blockpos$pooledmutableblockpos.set(i + y, z, j + p_186330_4_)).getBlock();
+                        Block block1 = x.getBlockState(blockpos$pooledmutableblockpos.setPos(j + y, z, i + p_186330_4_)).getBlock();
 
-                        if (block == Blocks.CACTUS)
+                        if (block1 == Blocks.CACTUS)
                         {
                             pathnodetype = PathNodeType.DANGER_CACTUS;
                         }
-                        else if (block == Blocks.FIRE)
+                        else if (block1 == Blocks.FIRE)
                         {
                             pathnodetype = PathNodeType.DANGER_FIRE;
                         }

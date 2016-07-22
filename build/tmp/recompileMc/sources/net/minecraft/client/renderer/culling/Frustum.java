@@ -7,7 +7,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class Frustum implements ICamera
 {
-    private ClippingHelper clippingHelper;
+    private final ClippingHelper clippingHelper;
     private double xPosition;
     private double yPosition;
     private double zPosition;

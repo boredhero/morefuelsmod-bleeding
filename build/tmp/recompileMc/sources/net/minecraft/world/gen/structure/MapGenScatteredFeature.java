@@ -16,11 +16,11 @@ import net.minecraft.world.biome.Biome;
 public class MapGenScatteredFeature extends MapGenStructure
 {
     private static final List<Biome> BIOMELIST = Arrays.<Biome>asList(new Biome[] {Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.SWAMPLAND, Biomes.ICE_PLAINS, Biomes.COLD_TAIGA});
-    private List<Biome.SpawnListEntry> scatteredFeatureSpawnList;
+    private final List<Biome.SpawnListEntry> scatteredFeatureSpawnList;
     /** the maximum distance between scattered features */
     private int maxDistanceBetweenScatteredFeatures;
     /** the minimum distance between scattered features */
-    private int minDistanceBetweenScatteredFeatures;
+    private final int minDistanceBetweenScatteredFeatures;
 
     public MapGenScatteredFeature()
     {
@@ -38,7 +38,7 @@ public class MapGenScatteredFeature extends MapGenStructure
         {
             if (((String)entry.getKey()).equals("distance"))
             {
-                this.maxDistanceBetweenScatteredFeatures = MathHelper.parseIntWithDefaultAndMax((String)entry.getValue(), this.maxDistanceBetweenScatteredFeatures, this.minDistanceBetweenScatteredFeatures + 1);
+                this.maxDistanceBetweenScatteredFeatures = MathHelper.parseIntWithDefaultAndMax((String)entry.getValue(), this.maxDistanceBetweenScatteredFeatures, 9);
             }
         }
     }
@@ -68,8 +68,8 @@ public class MapGenScatteredFeature extends MapGenStructure
         Random random = this.worldObj.setRandomSeed(k, l, 14357617);
         k = k * this.maxDistanceBetweenScatteredFeatures;
         l = l * this.maxDistanceBetweenScatteredFeatures;
-        k = k + random.nextInt(this.maxDistanceBetweenScatteredFeatures - this.minDistanceBetweenScatteredFeatures);
-        l = l + random.nextInt(this.maxDistanceBetweenScatteredFeatures - this.minDistanceBetweenScatteredFeatures);
+        k = k + random.nextInt(this.maxDistanceBetweenScatteredFeatures - 8);
+        l = l + random.nextInt(this.maxDistanceBetweenScatteredFeatures - 8);
 
         if (i == k && j == l)
         {

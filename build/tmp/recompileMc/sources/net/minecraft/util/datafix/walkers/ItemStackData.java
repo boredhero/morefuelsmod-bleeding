@@ -16,11 +16,9 @@ public class ItemStackData extends Filtered
 
     NBTTagCompound filteredProcess(IDataFixer fixer, NBTTagCompound compound, int versionIn)
     {
-        int i = 0;
-
-        for (int j = this.matchingTags.length; i < j; ++i)
+        for (String s : this.matchingTags)
         {
-            compound = DataFixesManager.processItemStack(fixer, compound, versionIn, this.matchingTags[i]);
+            compound = DataFixesManager.processItemStack(fixer, compound, versionIn, s);
         }
 
         return compound;

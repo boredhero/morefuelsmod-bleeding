@@ -19,12 +19,20 @@ import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockJukebox extends BlockContainer
 {
     public static final PropertyBool HAS_RECORD = PropertyBool.create("has_record");
+
+    public static void func_189873_a(DataFixer p_189873_0_)
+    {
+        p_189873_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackData("RecordPlayer", new String[] {"RecordItem"}));
+    }
 
     protected BlockJukebox()
     {
@@ -79,9 +87,9 @@ public class BlockJukebox extends BlockContainer
                     worldIn.playRecord(pos, (SoundEvent)null);
                     blockjukebox$tileentityjukebox.setRecord((ItemStack)null);
                     float f = 0.7F;
-                    double d0 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
-                    double d1 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.2D + 0.6D;
-                    double d2 = (double)(worldIn.rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
+                    double d0 = (double)(worldIn.rand.nextFloat() * 0.7F) + 0.15000000596046448D;
+                    double d1 = (double)(worldIn.rand.nextFloat() * 0.7F) + 0.06000000238418579D + 0.6D;
+                    double d2 = (double)(worldIn.rand.nextFloat() * 0.7F) + 0.15000000596046448D;
                     ItemStack itemstack1 = itemstack.copy();
                     EntityItem entityitem = new EntityItem(worldIn, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, itemstack1);
                     entityitem.setDefaultPickupDelay();

@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticleDigging extends Particle
 {
-    private IBlockState sourceState;
+    private final IBlockState sourceState;
     private BlockPos sourcePos;
 
     protected ParticleDigging(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, IBlockState state)
@@ -24,7 +24,9 @@ public class ParticleDigging extends Particle
         this.sourceState = state;
         this.setParticleTexture(Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state));
         this.particleGravity = state.getBlock().blockParticleGravity;
-        this.particleRed = this.particleGreen = this.particleBlue = 0.6F;
+        this.particleRed = 0.6F;
+        this.particleGreen = 0.6F;
+        this.particleBlue = 0.6F;
         this.particleScale /= 2.0F;
     }
 

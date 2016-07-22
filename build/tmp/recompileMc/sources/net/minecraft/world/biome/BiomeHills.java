@@ -13,8 +13,8 @@ import net.minecraft.world.gen.feature.WorldGenerator;
 
 public class BiomeHills extends Biome
 {
-    private WorldGenerator theWorldGenerator = new WorldGenMinable(Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.STONE), 9);
-    private WorldGenTaiga2 spruceGenerator = new WorldGenTaiga2(false);
+    private final WorldGenerator theWorldGenerator = new WorldGenMinable(Blocks.MONSTER_EGG.getDefaultState().withProperty(BlockSilverfish.VARIANT, BlockSilverfish.EnumType.STONE), 9);
+    private final WorldGenTaiga2 spruceGenerator = new WorldGenTaiga2(false);
     private final BiomeHills.Type type;
 
     public BiomeHills(BiomeHills.Type p_i46710_1_, Biome.BiomeProperties properties)

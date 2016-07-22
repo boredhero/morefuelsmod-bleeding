@@ -14,6 +14,10 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IDataFixer;
+import net.minecraft.util.datafix.IDataWalker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
@@ -90,7 +94,7 @@ public class EntityMinecartCommandBlock extends EntityMinecart
         }
     };
     /** Cooldown before command block logic runs again in ticks */
-    private int activatorRailCooldown = 0;
+    private int activatorRailCooldown;
 
     public EntityMinecartCommandBlock(World worldIn)
     {
@@ -100,6 +104,25 @@ public class EntityMinecartCommandBlock extends EntityMinecart
     public EntityMinecartCommandBlock(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189670_a(DataFixer p_189670_0_)
+    {
+        EntityMinecart.func_189669_a(p_189670_0_, "MinecartCommandBlock");
+        p_189670_0_.registerWalker(FixTypes.ENTITY, new IDataWalker()
+        {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
+            {
+                if ("MinecartCommandBlock".equals(compound.getString("id")))
+                {
+                    compound.setString("id", "Control");
+                    fixer.process(FixTypes.BLOCK_ENTITY, compound, versionIn);
+                    compound.setString("id", "MinecartCommandBlock");
+                }
+
+                return compound;
+            }
+        });
     }
 
     protected void entityInit()

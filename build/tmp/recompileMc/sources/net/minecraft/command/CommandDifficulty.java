@@ -53,7 +53,7 @@ public class CommandDifficulty extends CommandBase
 
     protected EnumDifficulty getDifficultyFromCommand(String difficultyString) throws CommandException, NumberInvalidException
     {
-        return !difficultyString.equalsIgnoreCase("peaceful") && !difficultyString.equalsIgnoreCase("p") ? (!difficultyString.equalsIgnoreCase("easy") && !difficultyString.equalsIgnoreCase("e") ? (!difficultyString.equalsIgnoreCase("normal") && !difficultyString.equalsIgnoreCase("n") ? (!difficultyString.equalsIgnoreCase("hard") && !difficultyString.equalsIgnoreCase("h") ? EnumDifficulty.getDifficultyEnum(parseInt(difficultyString, 0, 3)) : EnumDifficulty.HARD) : EnumDifficulty.NORMAL) : EnumDifficulty.EASY) : EnumDifficulty.PEACEFUL;
+        return !"peaceful".equalsIgnoreCase(difficultyString) && !"p".equalsIgnoreCase(difficultyString) ? (!"easy".equalsIgnoreCase(difficultyString) && !"e".equalsIgnoreCase(difficultyString) ? (!"normal".equalsIgnoreCase(difficultyString) && !"n".equalsIgnoreCase(difficultyString) ? (!"hard".equalsIgnoreCase(difficultyString) && !"h".equalsIgnoreCase(difficultyString) ? EnumDifficulty.getDifficultyEnum(parseInt(difficultyString, 0, 3)) : EnumDifficulty.HARD) : EnumDifficulty.NORMAL) : EnumDifficulty.EASY) : EnumDifficulty.PEACEFUL;
     }
 
     public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)

@@ -98,15 +98,15 @@ public class TeleportToTeam implements ISpectatorMenuView, ISpectatorMenuObject
                 }
             }
 
-            if (!this.players.isEmpty())
+            if (this.players.isEmpty())
+            {
+                this.location = DefaultPlayerSkin.getDefaultSkinLegacy();
+            }
+            else
             {
                 String s1 = ((NetworkPlayerInfo)this.players.get((new Random()).nextInt(this.players.size()))).getGameProfile().getName();
                 this.location = AbstractClientPlayer.getLocationSkin(s1);
                 AbstractClientPlayer.getDownloadImageSkin(this.location, s1);
-            }
-            else
-            {
-                this.location = DefaultPlayerSkin.getDefaultSkinLegacy();
             }
         }
 

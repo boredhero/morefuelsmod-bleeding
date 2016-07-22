@@ -16,7 +16,7 @@ import net.minecraft.client.gui.spectator.SpectatorMenu;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -43,7 +43,7 @@ public class TeleportToPlayer implements ISpectatorMenuView, ISpectatorMenuObjec
 
         for (NetworkPlayerInfo networkplayerinfo : PROFILE_ORDER.sortedCopy(p_i45493_1_))
         {
-            if (networkplayerinfo.getGameType() != WorldSettings.GameType.SPECTATOR)
+            if (networkplayerinfo.getGameType() != GameType.SPECTATOR)
             {
                 this.items.add(new PlayerMenuObject(networkplayerinfo.getGameProfile()));
             }

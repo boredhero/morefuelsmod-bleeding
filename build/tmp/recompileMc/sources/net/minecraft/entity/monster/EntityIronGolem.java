@@ -30,6 +30,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.Village;
@@ -165,6 +166,11 @@ public class EntityIronGolem extends EntityGolem
     public boolean canAttackClass(Class <? extends EntityLivingBase > cls)
     {
         return this.isPlayerCreated() && EntityPlayer.class.isAssignableFrom(cls) ? false : (cls == EntityCreeper.class ? false : super.canAttackClass(cls));
+    }
+
+    public static void func_189784_b(DataFixer p_189784_0_)
+    {
+        EntityLiving.func_189752_a(p_189784_0_, "VillagerGolem");
     }
 
     /**

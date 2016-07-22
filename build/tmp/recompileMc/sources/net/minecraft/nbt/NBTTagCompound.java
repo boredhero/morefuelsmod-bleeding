@@ -16,7 +16,7 @@ import net.minecraft.util.ReportedException;
 
 public class NBTTagCompound extends NBTBase
 {
-    private Map<String, NBTBase> tagMap = Maps.<String, NBTBase>newHashMap();
+    private final Map<String, NBTBase> tagMap = Maps.<String, NBTBase>newHashMap();
 
     /**
      * Write the actual data contents of the tag, implemented in NBT extension classes
@@ -227,7 +227,7 @@ public class NBTTagCompound extends NBTBase
         {
             if (this.hasKey(key, 99))
             {
-                return ((NBTBase.NBTPrimitive)this.tagMap.get(key)).getByte();
+                return ((NBTPrimitive)this.tagMap.get(key)).getByte();
             }
         }
         catch (ClassCastException var3)
@@ -247,7 +247,7 @@ public class NBTTagCompound extends NBTBase
         {
             if (this.hasKey(key, 99))
             {
-                return ((NBTBase.NBTPrimitive)this.tagMap.get(key)).getShort();
+                return ((NBTPrimitive)this.tagMap.get(key)).getShort();
             }
         }
         catch (ClassCastException var3)
@@ -267,7 +267,7 @@ public class NBTTagCompound extends NBTBase
         {
             if (this.hasKey(key, 99))
             {
-                return ((NBTBase.NBTPrimitive)this.tagMap.get(key)).getInt();
+                return ((NBTPrimitive)this.tagMap.get(key)).getInt();
             }
         }
         catch (ClassCastException var3)
@@ -287,7 +287,7 @@ public class NBTTagCompound extends NBTBase
         {
             if (this.hasKey(key, 99))
             {
-                return ((NBTBase.NBTPrimitive)this.tagMap.get(key)).getLong();
+                return ((NBTPrimitive)this.tagMap.get(key)).getLong();
             }
         }
         catch (ClassCastException var3)
@@ -307,7 +307,7 @@ public class NBTTagCompound extends NBTBase
         {
             if (this.hasKey(key, 99))
             {
-                return ((NBTBase.NBTPrimitive)this.tagMap.get(key)).getFloat();
+                return ((NBTPrimitive)this.tagMap.get(key)).getFloat();
             }
         }
         catch (ClassCastException var3)
@@ -327,7 +327,7 @@ public class NBTTagCompound extends NBTBase
         {
             if (this.hasKey(key, 99))
             {
-                return ((NBTBase.NBTPrimitive)this.tagMap.get(key)).getDouble();
+                return ((NBTPrimitive)this.tagMap.get(key)).getDouble();
             }
         }
         catch (ClassCastException var3)
@@ -516,7 +516,7 @@ public class NBTTagCompound extends NBTBase
     /**
      * Creates a clone of the tag.
      */
-    public NBTBase copy()
+    public NBTTagCompound copy()
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
 

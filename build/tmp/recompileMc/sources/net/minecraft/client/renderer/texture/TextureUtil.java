@@ -105,15 +105,7 @@ public class TextureUtil
 
     private static int blendColors(int p_147943_0_, int p_147943_1_, int p_147943_2_, int p_147943_3_, boolean p_147943_4_)
     {
-        if (!p_147943_4_)
-        {
-            int i1 = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 24);
-            int j1 = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 16);
-            int k1 = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 8);
-            int l1 = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 0);
-            return i1 << 24 | j1 << 16 | k1 << 8 | l1;
-        }
-        else
+        if (p_147943_4_)
         {
             MIPMAP_BUFFER[0] = p_147943_0_;
             MIPMAP_BUFFER[1] = p_147943_1_;
@@ -124,14 +116,14 @@ public class TextureUtil
             float f2 = 0.0F;
             float f3 = 0.0F;
 
-            for (int i = 0; i < 4; ++i)
+            for (int i1 = 0; i1 < 4; ++i1)
             {
-                if (MIPMAP_BUFFER[i] >> 24 != 0)
+                if (MIPMAP_BUFFER[i1] >> 24 != 0)
                 {
-                    f += getColorGamma(MIPMAP_BUFFER[i] >> 24);
-                    f1 += getColorGamma(MIPMAP_BUFFER[i] >> 16);
-                    f2 += getColorGamma(MIPMAP_BUFFER[i] >> 8);
-                    f3 += getColorGamma(MIPMAP_BUFFER[i] >> 0);
+                    f += getColorGamma(MIPMAP_BUFFER[i1] >> 24);
+                    f1 += getColorGamma(MIPMAP_BUFFER[i1] >> 16);
+                    f2 += getColorGamma(MIPMAP_BUFFER[i1] >> 8);
+                    f3 += getColorGamma(MIPMAP_BUFFER[i1] >> 0);
                 }
             }
 
@@ -140,16 +132,24 @@ public class TextureUtil
             f2 = f2 / 4.0F;
             f3 = f3 / 4.0F;
             int i2 = (int)(Math.pow((double)f, 0.45454545454545453D) * 255.0D);
-            int j = (int)(Math.pow((double)f1, 0.45454545454545453D) * 255.0D);
-            int k = (int)(Math.pow((double)f2, 0.45454545454545453D) * 255.0D);
-            int l = (int)(Math.pow((double)f3, 0.45454545454545453D) * 255.0D);
+            int j1 = (int)(Math.pow((double)f1, 0.45454545454545453D) * 255.0D);
+            int k1 = (int)(Math.pow((double)f2, 0.45454545454545453D) * 255.0D);
+            int l1 = (int)(Math.pow((double)f3, 0.45454545454545453D) * 255.0D);
 
             if (i2 < 96)
             {
                 i2 = 0;
             }
 
-            return i2 << 24 | j << 16 | k << 8 | l;
+            return i2 << 24 | j1 << 16 | k1 << 8 | l1;
+        }
+        else
+        {
+            int i = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 24);
+            int j = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 16);
+            int k = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 8);
+            int l = blendColorComponent(p_147943_0_, p_147943_1_, p_147943_2_, p_147943_3_, 0);
+            return i << 24 | j << 16 | k << 8 | l;
         }
     }
 

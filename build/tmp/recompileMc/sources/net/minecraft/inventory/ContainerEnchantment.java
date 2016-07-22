@@ -10,9 +10,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -23,9 +25,9 @@ public class ContainerEnchantment extends Container
     /** SlotEnchantmentTable object with ItemStack to be enchanted */
     public IInventory tableInventory;
     /** current world (for bookshelf counting) */
-    private World worldPointer;
-    private BlockPos position;
-    private Random rand;
+    private final World worldPointer;
+    private final BlockPos position;
+    private final Random rand;
     public int xpSeed;
     /** 3-member array storing the enchantment levels of each slot */
     public int[] enchantLevels;
@@ -307,6 +309,7 @@ public class ContainerEnchantment extends Container
                     this.tableInventory.markDirty();
                     this.xpSeed = playerIn.getXPSeed();
                     this.onCraftMatrixChanged(this.tableInventory);
+                    this.worldPointer.playSound((EntityPlayer)null, this.position, SoundEvents.field_190021_aL, SoundCategory.BLOCKS, 1.0F, this.worldPointer.rand.nextFloat() * 0.1F + 0.9F);
                 }
             }
 

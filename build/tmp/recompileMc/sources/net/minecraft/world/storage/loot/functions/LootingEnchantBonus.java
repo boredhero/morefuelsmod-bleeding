@@ -17,11 +17,13 @@ import net.minecraft.world.storage.loot.conditions.LootCondition;
 public class LootingEnchantBonus extends LootFunction
 {
     private final RandomValueRange count;
+    private final int field_189971_b;
 
-    public LootingEnchantBonus(LootCondition[] conditionsIn, RandomValueRange randomRange)
+    public LootingEnchantBonus(LootCondition[] p_i47145_1_, RandomValueRange p_i47145_2_, int p_i47145_3_)
     {
-        super(conditionsIn);
-        this.count = randomRange;
+        super(p_i47145_1_);
+        this.count = p_i47145_2_;
+        this.field_189971_b = p_i47145_3_;
     }
 
     public ItemStack apply(ItemStack stack, Random rand, LootContext context)
@@ -39,6 +41,11 @@ public class LootingEnchantBonus extends LootFunction
 
             float f = (float)i * this.count.generateFloat(rand);
             stack.stackSize += Math.round(f);
+
+            if (this.field_189971_b != 0 && stack.stackSize > this.field_189971_b)
+            {
+                stack.stackSize = this.field_189971_b;
+            }
         }
 
         return stack;
@@ -54,11 +61,17 @@ public class LootingEnchantBonus extends LootFunction
             public void serialize(JsonObject object, LootingEnchantBonus functionClazz, JsonSerializationContext serializationContext)
             {
                 object.add("count", serializationContext.serialize(functionClazz.count));
+
+                if (functionClazz.field_189971_b > 0)
+                {
+                    object.add("limit", serializationContext.serialize(Integer.valueOf(functionClazz.field_189971_b)));
+                }
             }
 
             public LootingEnchantBonus deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootCondition[] conditionsIn)
             {
-                return new LootingEnchantBonus(conditionsIn, (RandomValueRange)JsonUtils.deserializeClass(object, "count", deserializationContext, RandomValueRange.class));
+                int i = JsonUtils.getInt(object, "limit", 0);
+                return new LootingEnchantBonus(conditionsIn, (RandomValueRange)JsonUtils.deserializeClass(object, "count", deserializationContext, RandomValueRange.class), i);
             }
         }
 }

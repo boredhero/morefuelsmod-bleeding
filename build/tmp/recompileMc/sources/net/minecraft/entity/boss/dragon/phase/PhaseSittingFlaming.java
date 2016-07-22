@@ -75,8 +75,8 @@ public class PhaseSittingFlaming extends PhaseSittingBase
         {
             Vec3d vec3d = (new Vec3d(this.dragon.dragonPartHead.posX - this.dragon.posX, 0.0D, this.dragon.dragonPartHead.posZ - this.dragon.posZ)).normalize();
             float f = 5.0F;
-            double d0 = this.dragon.dragonPartHead.posX + vec3d.xCoord * (double)f / 2.0D;
-            double d1 = this.dragon.dragonPartHead.posZ + vec3d.zCoord * (double)f / 2.0D;
+            double d0 = this.dragon.dragonPartHead.posX + vec3d.xCoord * 5.0D / 2.0D;
+            double d1 = this.dragon.dragonPartHead.posZ + vec3d.zCoord * 5.0D / 2.0D;
             double d2 = this.dragon.dragonPartHead.posY + (double)(this.dragon.dragonPartHead.height / 2.0F);
             BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.floor_double(d0), MathHelper.floor_double(d2), MathHelper.floor_double(d1));
 
@@ -89,7 +89,7 @@ public class PhaseSittingFlaming extends PhaseSittingBase
             d2 = (double)(MathHelper.floor_double(d2) + 1);
             this.areaEffectCloud = new EntityAreaEffectCloud(this.dragon.worldObj, d0, d2, d1);
             this.areaEffectCloud.setOwner(this.dragon);
-            this.areaEffectCloud.setRadius(f);
+            this.areaEffectCloud.setRadius(5.0F);
             this.areaEffectCloud.setDuration(200);
             this.areaEffectCloud.setParticle(EnumParticleTypes.DRAGON_BREATH);
             this.areaEffectCloud.addEffect(new PotionEffect(MobEffects.INSTANT_DAMAGE));

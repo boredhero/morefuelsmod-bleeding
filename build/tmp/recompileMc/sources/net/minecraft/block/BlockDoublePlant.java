@@ -173,7 +173,11 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         {
             if (worldIn.getBlockState(pos.down()).getBlock() == this)
             {
-                if (!player.capabilities.isCreativeMode)
+                if (player.capabilities.isCreativeMode)
+                {
+                    worldIn.setBlockToAir(pos.down());
+                }
+                else
                 {
                     IBlockState iblockstate = worldIn.getBlockState(pos.down());
                     BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)iblockstate.getValue(VARIANT);
@@ -182,26 +186,19 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
                     {
                         worldIn.destroyBlock(pos.down(), true);
                     }
-                    else if (!worldIn.isRemote)
-                    {
-                        if (player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() == Items.SHEARS)
-                        {
-                            this.onHarvest(worldIn, pos, iblockstate, player);
-                            worldIn.setBlockToAir(pos.down());
-                        }
-                        else
-                        {
-                            worldIn.destroyBlock(pos.down(), true);
-                        }
-                    }
-                    else
+                    else if (worldIn.isRemote)
                     {
                         worldIn.setBlockToAir(pos.down());
                     }
-                }
-                else
-                {
-                    worldIn.setBlockToAir(pos.down());
+                    else if (player.getHeldItemMainhand() != null && player.getHeldItemMainhand().getItem() == Items.SHEARS)
+                    {
+                        this.onHarvest(worldIn, pos, iblockstate, player);
+                        worldIn.setBlockToAir(pos.down());
+                    }
+                    else
+                    {
+                        worldIn.destroyBlock(pos.down(), true);
+                    }
                 }
             }
         }

@@ -59,7 +59,8 @@ public class BlockChorusFlower extends Block
                 {
                     boolean flag = false;
                     boolean flag1 = false;
-                    Block block = worldIn.getBlockState(pos.down()).getBlock();
+                    IBlockState iblockstate = worldIn.getBlockState(pos.down());
+                    Block block = iblockstate.getBlock();
 
                     if (block == Blocks.END_STONE)
                     {
@@ -98,7 +99,7 @@ public class BlockChorusFlower extends Block
                             flag = true;
                         }
                     }
-                    else if (block == Blocks.AIR)
+                    else if (iblockstate.getMaterial() == Material.AIR)
                     {
                         flag = true;
                     }
@@ -206,23 +207,25 @@ public class BlockChorusFlower extends Block
 
     public boolean canSurvive(World worldIn, BlockPos pos)
     {
-        Block block = worldIn.getBlockState(pos.down()).getBlock();
+        IBlockState iblockstate = worldIn.getBlockState(pos.down());
+        Block block = iblockstate.getBlock();
 
         if (block != Blocks.CHORUS_PLANT && block != Blocks.END_STONE)
         {
-            if (block == Blocks.AIR)
+            if (iblockstate.getMaterial() == Material.AIR)
             {
                 int i = 0;
 
                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
                 {
-                    Block block1 = worldIn.getBlockState(pos.offset(enumfacing)).getBlock();
+                    IBlockState iblockstate1 = worldIn.getBlockState(pos.offset(enumfacing));
+                    Block block1 = iblockstate1.getBlock();
 
                     if (block1 == Blocks.CHORUS_PLANT)
                     {
                         ++i;
                     }
-                    else if (block1 != Blocks.AIR)
+                    else if (iblockstate1.getMaterial() != Material.AIR)
                     {
                         return false;
                     }

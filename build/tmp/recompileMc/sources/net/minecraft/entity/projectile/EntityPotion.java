@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
@@ -19,6 +18,9 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackData;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -28,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 
 public class EntityPotion extends EntityThrowable
 {
-    private static final DataParameter<Optional<ItemStack>> ITEM = EntityDataManager.<Optional<ItemStack>>createKey(EntityItem.class, DataSerializers.OPTIONAL_ITEM_STACK);
+    private static final DataParameter<Optional<ItemStack>> ITEM = EntityDataManager.<Optional<ItemStack>>createKey(EntityPotion.class, DataSerializers.OPTIONAL_ITEM_STACK);
     private static final Logger LOGGER = LogManager.getLogger();
 
     public EntityPotion(World worldIn)
@@ -65,7 +67,7 @@ public class EntityPotion extends EntityThrowable
         {
             if (this.worldObj != null)
             {
-                LOGGER.error("ThrownPotion entity " + this.getEntityId() + " has no item?!");
+                LOGGER.error("ThrownPotion entity {} has no item?!", new Object[] {Integer.valueOf(this.getEntityId())});
             }
 
             return new ItemStack(Items.SPLASH_POTION);
@@ -199,6 +201,12 @@ public class EntityPotion extends EntityThrowable
         {
             this.worldObj.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
         }
+    }
+
+    public static void func_189665_a(DataFixer p_189665_0_)
+    {
+        EntityThrowable.func_189661_a(p_189665_0_, "ThrownPotion");
+        p_189665_0_.registerWalker(FixTypes.ENTITY, new ItemStackData("ThrownPotion", new String[] {"Potion"}));
     }
 
     /**

@@ -270,16 +270,17 @@ public class BlockModelRenderer
             }
         }
 
-        int i1 = 0;
+        int l = 0;
 
-        for (int j1 = p_187496_7_.size(); i1 < j1; ++i1)
+        for (int i1 = p_187496_7_.size(); l < i1; ++l)
         {
-            BakedQuad bakedquad = (BakedQuad)p_187496_7_.get(i1);
+            BakedQuad bakedquad = (BakedQuad)p_187496_7_.get(l);
 
             if (p_187496_5_)
             {
                 this.fillQuadBounds(state, bakedquad.getVertexData(), bakedquad.getFace(), (float[])null, p_187496_8_);
-                p_187496_4_ = p_187496_8_.get(0) ? state.getPackedLightmapCoords(worldIn, pos.offset(bakedquad.getFace())) : state.getPackedLightmapCoords(worldIn, pos);
+                BlockPos blockpos = p_187496_8_.get(0) ? pos.offset(bakedquad.getFace()) : pos;
+                p_187496_4_ = state.getPackedLightmapCoords(worldIn, blockpos);
             }
 
             p_187496_6_.addVertexData(bakedquad.getVertexData());
@@ -287,16 +288,16 @@ public class BlockModelRenderer
 
             if (bakedquad.hasTintIndex())
             {
-                int l = this.blockColors.colorMultiplier(state, worldIn, pos, bakedquad.getTintIndex());
+                int j1 = this.blockColors.colorMultiplier(state, worldIn, pos, bakedquad.getTintIndex());
 
                 if (EntityRenderer.anaglyphEnable)
                 {
-                    l = TextureUtil.anaglyphColor(l);
+                    j1 = TextureUtil.anaglyphColor(j1);
                 }
 
-                float f = (float)(l >> 16 & 255) / 255.0F;
-                float f1 = (float)(l >> 8 & 255) / 255.0F;
-                float f2 = (float)(l & 255) / 255.0F;
+                float f = (float)(j1 >> 16 & 255) / 255.0F;
+                float f1 = (float)(j1 >> 8 & 255) / 255.0F;
+                float f2 = (float)(j1 & 255) / 255.0F;
                 if(bakedquad.shouldApplyDiffuseLighting())
                 {
                     float diffuse = net.minecraftforge.client.model.pipeline.LightUtil.diffuseLight(bakedquad.getFace());
@@ -398,10 +399,10 @@ public class BlockModelRenderer
             BlockPos blockpos = shapeState.get(0) ? centerPos.offset(direction) : centerPos;
             BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos = BlockPos.PooledMutableBlockPos.retain();
             BlockModelRenderer.EnumNeighborInfo blockmodelrenderer$enumneighborinfo = BlockModelRenderer.EnumNeighborInfo.getNeighbourInfo(direction);
-            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos1 = BlockPos.PooledMutableBlockPos.retain(blockpos).offsetMutable(blockmodelrenderer$enumneighborinfo.corners[0]);
-            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos2 = BlockPos.PooledMutableBlockPos.retain(blockpos).offsetMutable(blockmodelrenderer$enumneighborinfo.corners[1]);
-            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos3 = BlockPos.PooledMutableBlockPos.retain(blockpos).offsetMutable(blockmodelrenderer$enumneighborinfo.corners[2]);
-            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos4 = BlockPos.PooledMutableBlockPos.retain(blockpos).offsetMutable(blockmodelrenderer$enumneighborinfo.corners[3]);
+            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos1 = BlockPos.PooledMutableBlockPos.retain(blockpos).move(blockmodelrenderer$enumneighborinfo.corners[0]);
+            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos2 = BlockPos.PooledMutableBlockPos.retain(blockpos).move(blockmodelrenderer$enumneighborinfo.corners[1]);
+            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos3 = BlockPos.PooledMutableBlockPos.retain(blockpos).move(blockmodelrenderer$enumneighborinfo.corners[2]);
+            BlockPos.PooledMutableBlockPos blockpos$pooledmutableblockpos4 = BlockPos.PooledMutableBlockPos.retain(blockpos).move(blockmodelrenderer$enumneighborinfo.corners[3]);
             int i = state.getPackedLightmapCoords(worldIn, blockpos$pooledmutableblockpos1);
             int j = state.getPackedLightmapCoords(worldIn, blockpos$pooledmutableblockpos2);
             int k = state.getPackedLightmapCoords(worldIn, blockpos$pooledmutableblockpos3);
@@ -410,10 +411,10 @@ public class BlockModelRenderer
             float f1 = worldIn.getBlockState(blockpos$pooledmutableblockpos2).getAmbientOcclusionLightValue();
             float f2 = worldIn.getBlockState(blockpos$pooledmutableblockpos3).getAmbientOcclusionLightValue();
             float f3 = worldIn.getBlockState(blockpos$pooledmutableblockpos4).getAmbientOcclusionLightValue();
-            boolean flag = worldIn.getBlockState(blockpos$pooledmutableblockpos.set(blockpos$pooledmutableblockpos1).offsetMutable(direction)).isTranslucent();
-            boolean flag1 = worldIn.getBlockState(blockpos$pooledmutableblockpos.set(blockpos$pooledmutableblockpos2).offsetMutable(direction)).isTranslucent();
-            boolean flag2 = worldIn.getBlockState(blockpos$pooledmutableblockpos.set(blockpos$pooledmutableblockpos3).offsetMutable(direction)).isTranslucent();
-            boolean flag3 = worldIn.getBlockState(blockpos$pooledmutableblockpos.set(blockpos$pooledmutableblockpos4).offsetMutable(direction)).isTranslucent();
+            boolean flag = worldIn.getBlockState(blockpos$pooledmutableblockpos.setPos(blockpos$pooledmutableblockpos1).move(direction)).isTranslucent();
+            boolean flag1 = worldIn.getBlockState(blockpos$pooledmutableblockpos.setPos(blockpos$pooledmutableblockpos2).move(direction)).isTranslucent();
+            boolean flag2 = worldIn.getBlockState(blockpos$pooledmutableblockpos.setPos(blockpos$pooledmutableblockpos3).move(direction)).isTranslucent();
+            boolean flag3 = worldIn.getBlockState(blockpos$pooledmutableblockpos.setPos(blockpos$pooledmutableblockpos4).move(direction)).isTranslucent();
             float f4;
             int i1;
 
@@ -424,7 +425,7 @@ public class BlockModelRenderer
             }
             else
             {
-                BlockPos blockpos1 = blockpos$pooledmutableblockpos.set(blockpos$pooledmutableblockpos1).offsetMutable(blockmodelrenderer$enumneighborinfo.corners[2]);
+                BlockPos blockpos1 = blockpos$pooledmutableblockpos.setPos(blockpos$pooledmutableblockpos1).move(blockmodelrenderer$enumneighborinfo.corners[2]);
                 f4 = worldIn.getBlockState(blockpos1).getAmbientOcclusionLightValue();
                 i1 = state.getPackedLightmapCoords(worldIn, blockpos1);
             }
@@ -439,7 +440,7 @@ public class BlockModelRenderer
             }
             else
             {
-                BlockPos blockpos2 = blockpos$pooledmutableblockpos.set(blockpos$pooledmutableblockpos1).offsetMutable(blockmodelrenderer$enumneighborinfo.corners[3]);
+                BlockPos blockpos2 = blockpos$pooledmutableblockpos.setPos(blockpos$pooledmutableblockpos1).move(blockmodelrenderer$enumneighborinfo.corners[3]);
                 f5 = worldIn.getBlockState(blockpos2).getAmbientOcclusionLightValue();
                 j1 = state.getPackedLightmapCoords(worldIn, blockpos2);
             }
@@ -454,7 +455,7 @@ public class BlockModelRenderer
             }
             else
             {
-                BlockPos blockpos3 = blockpos$pooledmutableblockpos.set(blockpos$pooledmutableblockpos2).offsetMutable(blockmodelrenderer$enumneighborinfo.corners[2]);
+                BlockPos blockpos3 = blockpos$pooledmutableblockpos.setPos(blockpos$pooledmutableblockpos2).move(blockmodelrenderer$enumneighborinfo.corners[2]);
                 f6 = worldIn.getBlockState(blockpos3).getAmbientOcclusionLightValue();
                 k1 = state.getPackedLightmapCoords(worldIn, blockpos3);
             }
@@ -469,7 +470,7 @@ public class BlockModelRenderer
             }
             else
             {
-                BlockPos blockpos4 = blockpos$pooledmutableblockpos.set(blockpos$pooledmutableblockpos2).offsetMutable(blockmodelrenderer$enumneighborinfo.corners[3]);
+                BlockPos blockpos4 = blockpos$pooledmutableblockpos.setPos(blockpos$pooledmutableblockpos2).move(blockmodelrenderer$enumneighborinfo.corners[3]);
                 f7 = worldIn.getBlockState(blockpos4).getAmbientOcclusionLightValue();
                 l1 = state.getPackedLightmapCoords(worldIn, blockpos4);
             }
@@ -582,13 +583,13 @@ public class BlockModelRenderer
         WEST(new EnumFacing[]{EnumFacing.UP, EnumFacing.DOWN, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.6F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.SOUTH}),
         EAST(new EnumFacing[]{EnumFacing.DOWN, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH}, 0.6F, true, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.SOUTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.DOWN, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.NORTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_NORTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.NORTH}, new BlockModelRenderer.Orientation[]{BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.SOUTH, BlockModelRenderer.Orientation.FLIP_UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.FLIP_SOUTH, BlockModelRenderer.Orientation.UP, BlockModelRenderer.Orientation.SOUTH});
 
-        protected final EnumFacing[] corners;
-        protected final float shadeWeight;
-        protected final boolean doNonCubicWeight;
-        protected final BlockModelRenderer.Orientation[] vert0Weights;
-        protected final BlockModelRenderer.Orientation[] vert1Weights;
-        protected final BlockModelRenderer.Orientation[] vert2Weights;
-        protected final BlockModelRenderer.Orientation[] vert3Weights;
+        private final EnumFacing[] corners;
+        private final float shadeWeight;
+        private final boolean doNonCubicWeight;
+        private final BlockModelRenderer.Orientation[] vert0Weights;
+        private final BlockModelRenderer.Orientation[] vert1Weights;
+        private final BlockModelRenderer.Orientation[] vert2Weights;
+        private final BlockModelRenderer.Orientation[] vert3Weights;
         private static final BlockModelRenderer.EnumNeighborInfo[] VALUES = new BlockModelRenderer.EnumNeighborInfo[6];
 
         private EnumNeighborInfo(EnumFacing[] p_i46236_3_, float p_i46236_4_, boolean p_i46236_5_, BlockModelRenderer.Orientation[] p_i46236_6_, BlockModelRenderer.Orientation[] p_i46236_7_, BlockModelRenderer.Orientation[] p_i46236_8_, BlockModelRenderer.Orientation[] p_i46236_9_)
@@ -634,7 +635,7 @@ public class BlockModelRenderer
         FLIP_WEST(EnumFacing.WEST, true),
         FLIP_EAST(EnumFacing.EAST, true);
 
-        protected final int shape;
+        private final int shape;
 
         private Orientation(EnumFacing p_i46233_3_, boolean p_i46233_4_)
         {

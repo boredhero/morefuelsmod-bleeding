@@ -56,7 +56,7 @@ public class NBTTagString extends NBTBase
     /**
      * Creates a clone of the tag.
      */
-    public NBTBase copy()
+    public NBTTagString copy()
     {
         return new NBTTagString(this.data);
     }

@@ -20,7 +20,7 @@ public class Scoreboard
     private final ScoreObjective[] objectiveDisplaySlots = new ScoreObjective[19];
     private final Map<String, ScorePlayerTeam> teams = Maps.<String, ScorePlayerTeam>newHashMap();
     private final Map<String, ScorePlayerTeam> teamMemberships = Maps.<String, ScorePlayerTeam>newHashMap();
-    private static String[] displaySlots = null;
+    private static String[] displaySlots;
 
     /**
      * Returns a ScoreObjective for the objective name
@@ -463,15 +463,15 @@ public class Scoreboard
      */
     public static int getObjectiveDisplaySlotNumber(String name)
     {
-        if (name.equalsIgnoreCase("list"))
+        if ("list".equalsIgnoreCase(name))
         {
             return 0;
         }
-        else if (name.equalsIgnoreCase("sidebar"))
+        else if ("sidebar".equalsIgnoreCase(name))
         {
             return 1;
         }
-        else if (name.equalsIgnoreCase("belowName"))
+        else if ("belowName".equalsIgnoreCase(name))
         {
             return 2;
         }

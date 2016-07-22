@@ -12,7 +12,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -57,7 +57,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
         {
             GameProfile gameprofile = null;
             int k = 0;
-            WorldSettings.GameType worldsettings$gametype = null;
+            GameType gametype = null;
             ITextComponent itextcomponent = null;
 
             switch (this.action)
@@ -82,7 +82,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
                         }
                     }
 
-                    worldsettings$gametype = WorldSettings.GameType.getByID(buf.readVarIntFromBuffer());
+                    gametype = GameType.getByID(buf.readVarIntFromBuffer());
                     k = buf.readVarIntFromBuffer();
 
                     if (buf.readBoolean())
@@ -93,7 +93,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
                     break;
                 case UPDATE_GAME_MODE:
                     gameprofile = new GameProfile(buf.readUuid(), (String)null);
-                    worldsettings$gametype = WorldSettings.GameType.getByID(buf.readVarIntFromBuffer());
+                    gametype = GameType.getByID(buf.readVarIntFromBuffer());
                     break;
                 case UPDATE_LATENCY:
                     gameprofile = new GameProfile(buf.readUuid(), (String)null);
@@ -112,7 +112,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
                     gameprofile = new GameProfile(buf.readUuid(), (String)null);
             }
 
-            this.players.add(new SPacketPlayerListItem.AddPlayerData(gameprofile, k, worldsettings$gametype, itextcomponent));
+            this.players.add(new SPacketPlayerListItem.AddPlayerData(gameprofile, k, gametype, itextcomponent));
         }
     }
 
@@ -228,11 +228,11 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
     public class AddPlayerData
     {
         private final int ping;
-        private final WorldSettings.GameType gamemode;
+        private final GameType gamemode;
         private final GameProfile profile;
         private final ITextComponent displayName;
 
-        public AddPlayerData(GameProfile profileIn, int latencyIn, WorldSettings.GameType gameModeIn, @Nullable ITextComponent displayNameIn)
+        public AddPlayerData(GameProfile profileIn, int latencyIn, GameType gameModeIn, @Nullable ITextComponent displayNameIn)
         {
             this.profile = profileIn;
             this.ping = latencyIn;
@@ -250,7 +250,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient>
             return this.ping;
         }
 
-        public WorldSettings.GameType getGameMode()
+        public GameType getGameMode()
         {
             return this.gamemode;
         }

@@ -50,23 +50,23 @@ public class CommandWhitelist extends CommandBase
         }
         else
         {
-            if (args[0].equals("on"))
+            if ("on".equals(args[0]))
             {
                 server.getPlayerList().setWhiteListEnabled(true);
                 notifyCommandListener(sender, this, "commands.whitelist.enabled", new Object[0]);
             }
-            else if (args[0].equals("off"))
+            else if ("off".equals(args[0]))
             {
                 server.getPlayerList().setWhiteListEnabled(false);
                 notifyCommandListener(sender, this, "commands.whitelist.disabled", new Object[0]);
             }
-            else if (args[0].equals("list"))
+            else if ("list".equals(args[0]))
             {
                 sender.addChatMessage(new TextComponentTranslation("commands.whitelist.list", new Object[] {Integer.valueOf(server.getPlayerList().getWhitelistedPlayerNames().length), Integer.valueOf(server.getPlayerList().getAvailablePlayerDat().length)}));
                 String[] astring = server.getPlayerList().getWhitelistedPlayerNames();
                 sender.addChatMessage(new TextComponentString(joinNiceString(astring)));
             }
-            else if (args[0].equals("add"))
+            else if ("add".equals(args[0]))
             {
                 if (args.length < 2)
                 {
@@ -83,7 +83,7 @@ public class CommandWhitelist extends CommandBase
                 server.getPlayerList().addWhitelistedPlayer(gameprofile);
                 notifyCommandListener(sender, this, "commands.whitelist.add.success", new Object[] {args[1]});
             }
-            else if (args[0].equals("remove"))
+            else if ("remove".equals(args[0]))
             {
                 if (args.length < 2)
                 {
@@ -100,7 +100,7 @@ public class CommandWhitelist extends CommandBase
                 server.getPlayerList().removePlayerFromWhitelist(gameprofile1);
                 notifyCommandListener(sender, this, "commands.whitelist.remove.success", new Object[] {args[1]});
             }
-            else if (args[0].equals("reload"))
+            else if ("reload".equals(args[0]))
             {
                 server.getPlayerList().reloadWhitelist();
                 notifyCommandListener(sender, this, "commands.whitelist.reloaded", new Object[0]);
@@ -122,7 +122,7 @@ public class CommandWhitelist extends CommandBase
         {
             if (args.length == 2)
             {
-                if (args[0].equals("remove"))
+                if ("remove".equals(args[0]))
                 {
                     /**
                      * Returns a List of strings (chosen from the given strings) which the last word in the given string
@@ -131,7 +131,7 @@ public class CommandWhitelist extends CommandBase
                     return getListOfStringsMatchingLastWord(args, server.getPlayerList().getWhitelistedPlayerNames());
                 }
 
-                if (args[0].equals("add"))
+                if ("add".equals(args[0]))
                 {
                     /**
                      * Returns a List of strings (chosen from the given strings) which the last word in the given string

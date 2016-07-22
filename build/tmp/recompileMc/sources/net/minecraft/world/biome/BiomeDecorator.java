@@ -65,6 +65,7 @@ public class BiomeDecorator
     public int waterlilyPerChunk;
     /** The number of trees to attempt to generate per chunk. Up to 10 in forests, none in deserts. */
     public int treesPerChunk;
+    public float field_189870_A = 0.1F;
     /**
      * The number of yellow flower patches to generate per chunk. The game generates much less than this number, since
      * it attempts to generate them at a random altitude.
@@ -154,7 +155,7 @@ public class BiomeDecorator
 
         int k1 = this.treesPerChunk;
 
-        if (random.nextInt(10) == 0)
+        if (random.nextFloat() < this.field_189870_A)
         {
             ++k1;
         }

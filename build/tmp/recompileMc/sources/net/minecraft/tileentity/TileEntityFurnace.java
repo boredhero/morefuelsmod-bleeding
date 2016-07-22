@@ -25,6 +25,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -119,6 +122,11 @@ public class TileEntityFurnace extends TileEntityLockable implements ITickable, 
     public void setCustomInventoryName(String p_145951_1_)
     {
         this.furnaceCustomName = p_145951_1_;
+    }
+
+    public static void func_189676_a(DataFixer p_189676_0_)
+    {
+        p_189676_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists("Furnace", new String[] {"Items"}));
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -219,7 +227,8 @@ public class TileEntityFurnace extends TileEntityLockable implements ITickable, 
             {
                 if (!this.isBurning() && this.canSmelt())
                 {
-                    this.currentItemBurnTime = this.furnaceBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
+                    this.furnaceBurnTime = getItemBurnTime(this.furnaceItemStacks[1]);
+                    this.currentItemBurnTime = this.furnaceBurnTime;
 
                     if (this.isBurning())
                     {
@@ -363,9 +372,9 @@ public class TileEntityFurnace extends TileEntityLockable implements ITickable, 
                 }
             }
 
-            if (item instanceof ItemTool && ((ItemTool)item).getToolMaterialName().equals("WOOD")) return 200;
-            if (item instanceof ItemSword && ((ItemSword)item).getToolMaterialName().equals("WOOD")) return 200;
-            if (item instanceof ItemHoe && ((ItemHoe)item).getMaterialName().equals("WOOD")) return 200;
+            if (item instanceof ItemTool && "WOOD".equals(((ItemTool)item).getToolMaterialName())) return 200;
+            if (item instanceof ItemSword && "WOOD".equals(((ItemSword)item).getToolMaterialName())) return 200;
+            if (item instanceof ItemHoe && "WOOD".equals(((ItemHoe)item).getMaterialName())) return 200;
             if (item == Items.STICK) return 100;
             if (item == Items.COAL) return 1600;
             if (item == Items.LAVA_BUCKET) return 20000;

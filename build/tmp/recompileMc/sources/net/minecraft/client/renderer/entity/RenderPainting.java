@@ -35,7 +35,7 @@ public class RenderPainting extends Render<EntityPainting>
         this.bindEntityTexture(entity);
         EntityPainting.EnumArt entitypainting$enumart = entity.art;
         float f = 0.0625F;
-        GlStateManager.scale(f, f, f);
+        GlStateManager.scale(0.0625F, 0.0625F, 0.0625F);
 
         if (this.renderOutlines)
         {
@@ -98,30 +98,30 @@ public class RenderPainting extends Render<EntityPainting>
                 Tessellator tessellator = Tessellator.getInstance();
                 VertexBuffer vertexbuffer = tessellator.getBuffer();
                 vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
-                vertexbuffer.pos((double)f15, (double)f18, (double)(-f2)).tex((double)f20, (double)f21).normal(0.0F, 0.0F, -1.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f18, (double)(-f2)).tex((double)f19, (double)f21).normal(0.0F, 0.0F, -1.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f17, (double)(-f2)).tex((double)f19, (double)f22).normal(0.0F, 0.0F, -1.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f17, (double)(-f2)).tex((double)f20, (double)f22).normal(0.0F, 0.0F, -1.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f17, (double)f2).tex((double)f3, (double)f5).normal(0.0F, 0.0F, 1.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f17, (double)f2).tex((double)f4, (double)f5).normal(0.0F, 0.0F, 1.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f18, (double)f2).tex((double)f4, (double)f6).normal(0.0F, 0.0F, 1.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f18, (double)f2).tex((double)f3, (double)f6).normal(0.0F, 0.0F, 1.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f17, (double)(-f2)).tex((double)f7, (double)f9).normal(0.0F, 1.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f17, (double)(-f2)).tex((double)f8, (double)f9).normal(0.0F, 1.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f17, (double)f2).tex((double)f8, (double)f10).normal(0.0F, 1.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f17, (double)f2).tex((double)f7, (double)f10).normal(0.0F, 1.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f18, (double)f2).tex((double)f7, (double)f9).normal(0.0F, -1.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f18, (double)f2).tex((double)f8, (double)f9).normal(0.0F, -1.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f18, (double)(-f2)).tex((double)f8, (double)f10).normal(0.0F, -1.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f18, (double)(-f2)).tex((double)f7, (double)f10).normal(0.0F, -1.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f17, (double)f2).tex((double)f12, (double)f13).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f18, (double)f2).tex((double)f12, (double)f14).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f18, (double)(-f2)).tex((double)f11, (double)f14).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f15, (double)f17, (double)(-f2)).tex((double)f11, (double)f13).normal(-1.0F, 0.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f17, (double)(-f2)).tex((double)f12, (double)f13).normal(1.0F, 0.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f18, (double)(-f2)).tex((double)f12, (double)f14).normal(1.0F, 0.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f18, (double)f2).tex((double)f11, (double)f14).normal(1.0F, 0.0F, 0.0F).endVertex();
-                vertexbuffer.pos((double)f16, (double)f17, (double)f2).tex((double)f11, (double)f13).normal(1.0F, 0.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f18, -0.5D).tex((double)f20, (double)f21).normal(0.0F, 0.0F, -1.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f18, -0.5D).tex((double)f19, (double)f21).normal(0.0F, 0.0F, -1.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f17, -0.5D).tex((double)f19, (double)f22).normal(0.0F, 0.0F, -1.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f17, -0.5D).tex((double)f20, (double)f22).normal(0.0F, 0.0F, -1.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f17, 0.5D).tex(0.75D, 0.0D).normal(0.0F, 0.0F, 1.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f17, 0.5D).tex(0.8125D, 0.0D).normal(0.0F, 0.0F, 1.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f18, 0.5D).tex(0.8125D, 0.0625D).normal(0.0F, 0.0F, 1.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f18, 0.5D).tex(0.75D, 0.0625D).normal(0.0F, 0.0F, 1.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f17, -0.5D).tex(0.75D, 0.001953125D).normal(0.0F, 1.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f17, -0.5D).tex(0.8125D, 0.001953125D).normal(0.0F, 1.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f17, 0.5D).tex(0.8125D, 0.001953125D).normal(0.0F, 1.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f17, 0.5D).tex(0.75D, 0.001953125D).normal(0.0F, 1.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f18, 0.5D).tex(0.75D, 0.001953125D).normal(0.0F, -1.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f18, 0.5D).tex(0.8125D, 0.001953125D).normal(0.0F, -1.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f18, -0.5D).tex(0.8125D, 0.001953125D).normal(0.0F, -1.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f18, -0.5D).tex(0.75D, 0.001953125D).normal(0.0F, -1.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f17, 0.5D).tex(0.751953125D, 0.0D).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f18, 0.5D).tex(0.751953125D, 0.0625D).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f18, -0.5D).tex(0.751953125D, 0.0625D).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f15, (double)f17, -0.5D).tex(0.751953125D, 0.0D).normal(-1.0F, 0.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f17, -0.5D).tex(0.751953125D, 0.0D).normal(1.0F, 0.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f18, -0.5D).tex(0.751953125D, 0.0625D).normal(1.0F, 0.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f18, 0.5D).tex(0.751953125D, 0.0625D).normal(1.0F, 0.0F, 0.0F).endVertex();
+                vertexbuffer.pos((double)f16, (double)f17, 0.5D).tex(0.751953125D, 0.0D).normal(1.0F, 0.0F, 0.0F).endVertex();
                 tessellator.draw();
             }
         }

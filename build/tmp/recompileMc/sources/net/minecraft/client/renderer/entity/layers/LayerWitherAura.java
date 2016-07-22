@@ -36,7 +36,7 @@ public class LayerWitherAura implements LayerRenderer<EntityWither>
             GlStateManager.matrixMode(5888);
             GlStateManager.enableBlend();
             float f3 = 0.5F;
-            GlStateManager.color(f3, f3, f3, 1.0F);
+            GlStateManager.color(0.5F, 0.5F, 0.5F, 1.0F);
             GlStateManager.disableLighting();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
             this.witherModel.setLivingAnimations(entitylivingbaseIn, limbSwing, limbSwingAmount, partialTicks);

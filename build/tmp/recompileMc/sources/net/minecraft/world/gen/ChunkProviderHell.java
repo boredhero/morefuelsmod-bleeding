@@ -55,6 +55,7 @@ public class ChunkProviderHell implements IChunkGenerator
     private final WorldGenGlowStone1 lightGemGen = new WorldGenGlowStone1();
     private final WorldGenGlowStone2 hellPortalGen = new WorldGenGlowStone2();
     private final WorldGenerator quartzGen = new WorldGenMinable(Blocks.QUARTZ_ORE.getDefaultState(), 14, BlockMatcher.forBlock(Blocks.NETHERRACK));
+    private final WorldGenerator field_189888_D = new WorldGenMinable(Blocks.field_189877_df.getDefaultState(), 33, BlockMatcher.forBlock(Blocks.NETHERRACK));
     private final WorldGenHellLava lavaTrapGen = new WorldGenHellLava(Blocks.FLOWING_LAVA, true);
     private final WorldGenHellLava hellSpringGen = new WorldGenHellLava(Blocks.FLOWING_LAVA, false);
     private final WorldGenBush brownMushroomFeature = new WorldGenBush(Blocks.BROWN_MUSHROOM);
@@ -99,40 +100,40 @@ public class ChunkProviderHell implements IChunkGenerator
     {
         int i = 4;
         int j = this.world.getSeaLevel() / 2 + 1;
-        int k = i + 1;
+        int k = 5;
         int l = 17;
-        int i1 = i + 1;
-        this.buffer = this.getHeights(this.buffer, p_185936_1_ * i, 0, p_185936_2_ * i, k, l, i1);
+        int i1 = 5;
+        this.buffer = this.getHeights(this.buffer, p_185936_1_ * 4, 0, p_185936_2_ * 4, 5, 17, 5);
 
-        for (int j1 = 0; j1 < i; ++j1)
+        for (int j1 = 0; j1 < 4; ++j1)
         {
-            for (int k1 = 0; k1 < i; ++k1)
+            for (int k1 = 0; k1 < 4; ++k1)
             {
                 for (int l1 = 0; l1 < 16; ++l1)
                 {
                     double d0 = 0.125D;
-                    double d1 = this.buffer[((j1 + 0) * i1 + k1 + 0) * l + l1 + 0];
-                    double d2 = this.buffer[((j1 + 0) * i1 + k1 + 1) * l + l1 + 0];
-                    double d3 = this.buffer[((j1 + 1) * i1 + k1 + 0) * l + l1 + 0];
-                    double d4 = this.buffer[((j1 + 1) * i1 + k1 + 1) * l + l1 + 0];
-                    double d5 = (this.buffer[((j1 + 0) * i1 + k1 + 0) * l + l1 + 1] - d1) * d0;
-                    double d6 = (this.buffer[((j1 + 0) * i1 + k1 + 1) * l + l1 + 1] - d2) * d0;
-                    double d7 = (this.buffer[((j1 + 1) * i1 + k1 + 0) * l + l1 + 1] - d3) * d0;
-                    double d8 = (this.buffer[((j1 + 1) * i1 + k1 + 1) * l + l1 + 1] - d4) * d0;
+                    double d1 = this.buffer[((j1 + 0) * 5 + k1 + 0) * 17 + l1 + 0];
+                    double d2 = this.buffer[((j1 + 0) * 5 + k1 + 1) * 17 + l1 + 0];
+                    double d3 = this.buffer[((j1 + 1) * 5 + k1 + 0) * 17 + l1 + 0];
+                    double d4 = this.buffer[((j1 + 1) * 5 + k1 + 1) * 17 + l1 + 0];
+                    double d5 = (this.buffer[((j1 + 0) * 5 + k1 + 0) * 17 + l1 + 1] - d1) * 0.125D;
+                    double d6 = (this.buffer[((j1 + 0) * 5 + k1 + 1) * 17 + l1 + 1] - d2) * 0.125D;
+                    double d7 = (this.buffer[((j1 + 1) * 5 + k1 + 0) * 17 + l1 + 1] - d3) * 0.125D;
+                    double d8 = (this.buffer[((j1 + 1) * 5 + k1 + 1) * 17 + l1 + 1] - d4) * 0.125D;
 
                     for (int i2 = 0; i2 < 8; ++i2)
                     {
                         double d9 = 0.25D;
                         double d10 = d1;
                         double d11 = d2;
-                        double d12 = (d3 - d1) * d9;
-                        double d13 = (d4 - d2) * d9;
+                        double d12 = (d3 - d1) * 0.25D;
+                        double d13 = (d4 - d2) * 0.25D;
 
                         for (int j2 = 0; j2 < 4; ++j2)
                         {
                             double d14 = 0.25D;
                             double d15 = d10;
-                            double d16 = (d11 - d10) * d14;
+                            double d16 = (d11 - d10) * 0.25D;
 
                             for (int k2 = 0; k2 < 4; ++k2)
                             {
@@ -174,9 +175,9 @@ public class ChunkProviderHell implements IChunkGenerator
         if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, p_185937_1_, p_185937_2_, primer, this.world)) return;
         int i = this.world.getSeaLevel() + 1;
         double d0 = 0.03125D;
-        this.slowsandNoise = this.slowsandGravelNoiseGen.generateNoiseOctaves(this.slowsandNoise, p_185937_1_ * 16, p_185937_2_ * 16, 0, 16, 16, 1, d0, d0, 1.0D);
-        this.gravelNoise = this.slowsandGravelNoiseGen.generateNoiseOctaves(this.gravelNoise, p_185937_1_ * 16, 109, p_185937_2_ * 16, 16, 1, 16, d0, 1.0D, d0);
-        this.depthBuffer = this.netherrackExculsivityNoiseGen.generateNoiseOctaves(this.depthBuffer, p_185937_1_ * 16, p_185937_2_ * 16, 0, 16, 16, 1, d0 * 2.0D, d0 * 2.0D, d0 * 2.0D);
+        this.slowsandNoise = this.slowsandGravelNoiseGen.generateNoiseOctaves(this.slowsandNoise, p_185937_1_ * 16, p_185937_2_ * 16, 0, 16, 16, 1, 0.03125D, 0.03125D, 1.0D);
+        this.gravelNoise = this.slowsandGravelNoiseGen.generateNoiseOctaves(this.gravelNoise, p_185937_1_ * 16, 109, p_185937_2_ * 16, 16, 1, 16, 0.03125D, 1.0D, 0.03125D);
+        this.depthBuffer = this.netherrackExculsivityNoiseGen.generateNoiseOctaves(this.depthBuffer, p_185937_1_ * 16, p_185937_2_ * 16, 0, 16, 16, 1, 0.0625D, 0.0625D, 0.0625D);
 
         for (int j = 0; j < 16; ++j)
         {
@@ -302,9 +303,9 @@ public class ChunkProviderHell implements IChunkGenerator
         double d1 = 2053.236D;
         this.noiseData4 = this.scaleNoise.generateNoiseOctaves(this.noiseData4, p_185938_2_, p_185938_3_, p_185938_4_, p_185938_5_, 1, p_185938_7_, 1.0D, 0.0D, 1.0D);
         this.dr = this.depthNoise.generateNoiseOctaves(this.dr, p_185938_2_, p_185938_3_, p_185938_4_, p_185938_5_, 1, p_185938_7_, 100.0D, 0.0D, 100.0D);
-        this.pnr = this.perlinNoise1.generateNoiseOctaves(this.pnr, p_185938_2_, p_185938_3_, p_185938_4_, p_185938_5_, p_185938_6_, p_185938_7_, d0 / 80.0D, d1 / 60.0D, d0 / 80.0D);
-        this.ar = this.lperlinNoise1.generateNoiseOctaves(this.ar, p_185938_2_, p_185938_3_, p_185938_4_, p_185938_5_, p_185938_6_, p_185938_7_, d0, d1, d0);
-        this.br = this.lperlinNoise2.generateNoiseOctaves(this.br, p_185938_2_, p_185938_3_, p_185938_4_, p_185938_5_, p_185938_6_, p_185938_7_, d0, d1, d0);
+        this.pnr = this.perlinNoise1.generateNoiseOctaves(this.pnr, p_185938_2_, p_185938_3_, p_185938_4_, p_185938_5_, p_185938_6_, p_185938_7_, 8.555150000000001D, 34.2206D, 8.555150000000001D);
+        this.ar = this.lperlinNoise1.generateNoiseOctaves(this.ar, p_185938_2_, p_185938_3_, p_185938_4_, p_185938_5_, p_185938_6_, p_185938_7_, 684.412D, 2053.236D, 684.412D);
+        this.br = this.lperlinNoise2.generateNoiseOctaves(this.br, p_185938_2_, p_185938_3_, p_185938_4_, p_185938_5_, p_185938_6_, p_185938_7_, 684.412D, 2053.236D, 684.412D);
         int i = 0;
         double[] adouble = new double[p_185938_6_];
 
@@ -333,41 +334,41 @@ public class ChunkProviderHell implements IChunkGenerator
 
                 for (int k = 0; k < p_185938_6_; ++k)
                 {
-                    double d4 = 0.0D;
-                    double d5 = adouble[k];
-                    double d6 = this.ar[i] / 512.0D;
-                    double d7 = this.br[i] / 512.0D;
-                    double d8 = (this.pnr[i] / 10.0D + 1.0D) / 2.0D;
+                    double d4 = adouble[k];
+                    double d5 = this.ar[i] / 512.0D;
+                    double d6 = this.br[i] / 512.0D;
+                    double d7 = (this.pnr[i] / 10.0D + 1.0D) / 2.0D;
+                    double d8;
 
-                    if (d8 < 0.0D)
+                    if (d7 < 0.0D)
                     {
-                        d4 = d6;
+                        d8 = d5;
                     }
-                    else if (d8 > 1.0D)
+                    else if (d7 > 1.0D)
                     {
-                        d4 = d7;
+                        d8 = d6;
                     }
                     else
                     {
-                        d4 = d6 + (d7 - d6) * d8;
+                        d8 = d5 + (d6 - d5) * d7;
                     }
 
-                    d4 = d4 - d5;
+                    d8 = d8 - d4;
 
                     if (k > p_185938_6_ - 4)
                     {
                         double d9 = (double)((float)(k - (p_185938_6_ - 4)) / 3.0F);
-                        d4 = d4 * (1.0D - d9) + -10.0D * d9;
+                        d8 = d8 * (1.0D - d9) + -10.0D * d9;
                     }
 
-                    if ((double)k < d3)
+                    if ((double)k < 0.0D)
                     {
-                        double d10 = (d3 - (double)k) / 4.0D;
+                        double d10 = (0.0D - (double)k) / 4.0D;
                         d10 = MathHelper.clamp_double(d10, 0.0D, 1.0D);
-                        d4 = d4 * (1.0D - d10) + -10.0D * d10;
+                        d8 = d8 * (1.0D - d10) + -10.0D * d10;
                     }
 
-                    p_185938_1_[i] = d4;
+                    p_185938_1_[i] = d8;
                     ++i;
                 }
             }
@@ -380,30 +381,33 @@ public class ChunkProviderHell implements IChunkGenerator
     {
         BlockFalling.fallInstantly = true;
         net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.world, this.rand, x, z, false);
-        BlockPos blockpos = new BlockPos(x * 16, 0, z * 16);
+        int i = x * 16;
+        int j = z * 16;
+        BlockPos blockpos = new BlockPos(i, 0, j);
+        Biome biome = this.world.getBiomeGenForCoords(blockpos.add(16, 0, 16));
         ChunkPos chunkpos = new ChunkPos(x, z);
         this.genNetherBridge.generateStructure(this.world, this.rand, chunkpos);
 
         if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, false, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.NETHER_LAVA))
-        for (int i = 0; i < 8; ++i)
+        for (int k = 0; k < 8; ++k)
         {
             this.hellSpringGen.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, this.rand.nextInt(120) + 4, this.rand.nextInt(16) + 8));
         }
 
         if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, false, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.FIRE))
-        for (int j = 0; j < this.rand.nextInt(this.rand.nextInt(10) + 1) + 1; ++j)
+        for (int i1 = 0; i1 < this.rand.nextInt(this.rand.nextInt(10) + 1) + 1; ++i1)
         {
             this.fireFeature.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, this.rand.nextInt(120) + 4, this.rand.nextInt(16) + 8));
         }
 
         if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, false, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.GLOWSTONE))
         {
-        for (int k = 0; k < this.rand.nextInt(this.rand.nextInt(10) + 1); ++k)
+        for (int j1 = 0; j1 < this.rand.nextInt(this.rand.nextInt(10) + 1); ++j1)
         {
             this.lightGemGen.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, this.rand.nextInt(120) + 4, this.rand.nextInt(16) + 8));
         }
 
-        for (int l = 0; l < 10; ++l)
+        for (int k1 = 0; k1 < 10; ++k1)
         {
             this.hellPortalGen.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16) + 8, this.rand.nextInt(128), this.rand.nextInt(16) + 8));
         }
@@ -426,16 +430,26 @@ public class ChunkProviderHell implements IChunkGenerator
         }
 
         if (net.minecraftforge.event.terraingen.TerrainGen.generateOre(this.world, this.rand, quartzGen, blockpos, net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.QUARTZ))
-        for (int i1 = 0; i1 < 16; ++i1)
+        for (int l1 = 0; l1 < 16; ++l1)
         {
             this.quartzGen.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16), this.rand.nextInt(108) + 10, this.rand.nextInt(16)));
         }
 
+        int i2 = this.world.getSeaLevel() / 2 + 1;
+
+        if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, false, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.NETHER_MAGMA))
+        for (int l = 0; l < 4; ++l)
+        {
+            this.field_189888_D.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16), i2 - 5 + this.rand.nextInt(10), this.rand.nextInt(16)));
+        }
+
         if (net.minecraftforge.event.terraingen.TerrainGen.populate(this, this.world, this.rand, x, z, false, net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.NETHER_LAVA2))
-        for (int j1 = 0; j1 < 16; ++j1)
+        for (int j2 = 0; j2 < 16; ++j2)
         {
             this.lavaTrapGen.generate(this.world, this.rand, blockpos.add(this.rand.nextInt(16), this.rand.nextInt(108) + 10, this.rand.nextInt(16)));
         }
+
+        biome.decorate(this.world, this.rand, new BlockPos(i, 0, j));
 
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.terraingen.DecorateBiomeEvent.Post(this.world, this.rand, blockpos));
 

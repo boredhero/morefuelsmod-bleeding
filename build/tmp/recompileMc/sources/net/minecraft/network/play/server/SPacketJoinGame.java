@@ -5,7 +5,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.world.EnumDifficulty;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -14,7 +14,7 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
 {
     private int playerId;
     private boolean hardcoreMode;
-    private WorldSettings.GameType gameType;
+    private GameType gameType;
     private int dimension;
     private EnumDifficulty difficulty;
     private int maxPlayers;
@@ -25,7 +25,7 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
     {
     }
 
-    public SPacketJoinGame(int playerIdIn, WorldSettings.GameType gameTypeIn, boolean hardcoreModeIn, int dimensionIn, EnumDifficulty difficultyIn, int maxPlayersIn, WorldType worldTypeIn, boolean reducedDebugInfoIn)
+    public SPacketJoinGame(int playerIdIn, GameType gameTypeIn, boolean hardcoreModeIn, int dimensionIn, EnumDifficulty difficultyIn, int maxPlayersIn, WorldType worldTypeIn, boolean reducedDebugInfoIn)
     {
         this.playerId = playerIdIn;
         this.dimension = dimensionIn;
@@ -46,7 +46,7 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
         int i = buf.readUnsignedByte();
         this.hardcoreMode = (i & 8) == 8;
         i = i & -9;
-        this.gameType = WorldSettings.GameType.getByID(i);
+        this.gameType = GameType.getByID(i);
         this.dimension = buf.readInt();
         this.difficulty = EnumDifficulty.getDifficultyEnum(buf.readUnsignedByte());
         this.maxPlayers = buf.readUnsignedByte();
@@ -102,7 +102,7 @@ public class SPacketJoinGame implements Packet<INetHandlerPlayClient>
     }
 
     @SideOnly(Side.CLIENT)
-    public WorldSettings.GameType getGameType()
+    public GameType getGameType()
     {
         return this.gameType;
     }

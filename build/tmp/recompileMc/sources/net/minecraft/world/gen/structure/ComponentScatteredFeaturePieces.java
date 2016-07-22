@@ -25,7 +25,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -47,7 +46,7 @@ public class ComponentScatteredFeaturePieces
 
     public static class DesertPyramid extends ComponentScatteredFeaturePieces.Feature
         {
-            private boolean[] hasPlacedChest = new boolean[4];
+            private final boolean[] hasPlacedChest = new boolean[4];
 
             public DesertPyramid()
             {
@@ -101,7 +100,7 @@ public class ComponentScatteredFeaturePieces
                     for (int j = 0; j < this.scatteredFeatureSizeZ; ++j)
                     {
                         int k = -5;
-                        this.replaceAirAndLiquidDownwards(worldIn, Blocks.SANDSTONE.getDefaultState(), i2, k, j, structureBoundingBoxIn);
+                        this.replaceAirAndLiquidDownwards(worldIn, Blocks.SANDSTONE.getDefaultState(), i2, -5, j, structureBoundingBoxIn);
                     }
                 }
 
@@ -418,7 +417,7 @@ public class ComponentScatteredFeaturePieces
                     Rotation[] arotation = Rotation.values();
                     MinecraftServer minecraftserver = worldIn.getMinecraftServer();
                     TemplateManager templatemanager = worldIn.getSaveHandler().getStructureTemplateManager();
-                    PlacementSettings placementsettings = new PlacementSettings(Mirror.NONE, arotation[randomIn.nextInt(arotation.length)], false, Blocks.BARRIER, structureboundingbox);
+                    PlacementSettings placementsettings = (new PlacementSettings()).setRotation(arotation[randomIn.nextInt(arotation.length)]).setReplacedBlock(Blocks.field_189881_dj).setBoundingBox(structureboundingbox);
                     Template template = templatemanager.getTemplate(minecraftserver, IGLOO_TOP_ID);
                     template.addBlocksToWorldChunk(worldIn, blockpos, placementsettings);
 
@@ -471,7 +470,7 @@ public class ComponentScatteredFeaturePieces
             private boolean placedTrap1;
             private boolean placedTrap2;
             /** List of random stones to be generated in the Jungle Pyramid. */
-            private static ComponentScatteredFeaturePieces.JunglePyramid.Stones junglePyramidsRandomScatteredStones = new ComponentScatteredFeaturePieces.JunglePyramid.Stones();
+            private static final ComponentScatteredFeaturePieces.JunglePyramid.Stones junglePyramidsRandomScatteredStones = new ComponentScatteredFeaturePieces.JunglePyramid.Stones();
 
             public JunglePyramid()
             {

@@ -6,14 +6,14 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntityAIMoveTowardsTarget extends EntityAIBase
 {
-    private EntityCreature theEntity;
+    private final EntityCreature theEntity;
     private EntityLivingBase targetEntity;
     private double movePosX;
     private double movePosY;
     private double movePosZ;
-    private double speed;
+    private final double speed;
     /** If the distance to the target entity is further than this, this AI task will not run. */
-    private float maxTargetDistance;
+    private final float maxTargetDistance;
 
     public EntityAIMoveTowardsTarget(EntityCreature creature, double speedIn, float targetMaxDistance)
     {

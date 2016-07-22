@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
@@ -42,6 +43,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -74,8 +76,9 @@ public class EntityWolf extends EntityTameable
 
     protected void initEntityAI()
     {
+        this.aiSit = new EntityAISit(this);
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, this.aiSit = new EntityAISit(this));
+        this.tasks.addTask(2, this.aiSit);
         this.tasks.addTask(3, new EntityAILeapAtTarget(this, 0.4F));
         this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0D, true));
         this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 2.0F));
@@ -147,6 +150,11 @@ public class EntityWolf extends EntityTameable
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
         this.playSound(SoundEvents.ENTITY_WOLF_STEP, 0.15F, 1.0F);
+    }
+
+    public static void func_189788_b(DataFixer p_189788_0_)
+    {
+        EntityLiving.func_189752_a(p_189788_0_, "Wolf");
     }
 
     /**
@@ -489,7 +497,7 @@ public class EntityWolf extends EntityTameable
     @SideOnly(Side.CLIENT)
     public float getTailRotation()
     {
-        return this.isAngry() ? 1.5393804F : (this.isTamed() ? (0.55F - (20.0F - ((Float)this.dataManager.get(DATA_HEALTH_ID)).floatValue()) * 0.02F) * (float)Math.PI : ((float)Math.PI / 5F));
+        return this.isAngry() ? 1.5393804F : (this.isTamed() ? (0.55F - (this.getMaxHealth() - ((Float)this.dataManager.get(DATA_HEALTH_ID)).floatValue()) * 0.02F) * (float)Math.PI : ((float)Math.PI / 5F));
     }
 
     /**
@@ -590,14 +598,6 @@ public class EntityWolf extends EntityTameable
     public boolean isBegging()
     {
         return ((Boolean)this.dataManager.get(BEGGING)).booleanValue();
-    }
-
-    /**
-     * Determines if an entity can be despawned, used on idle far away entities
-     */
-    protected boolean canDespawn()
-    {
-        return !this.isTamed() && this.ticksExisted > 2400;
     }
 
     public boolean shouldAttackEntity(EntityLivingBase p_142018_1_, EntityLivingBase p_142018_2_)

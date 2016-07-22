@@ -16,8 +16,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,13 +40,13 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     public boolean isSpectator()
     {
         NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(this.getGameProfile().getId());
-        return networkplayerinfo != null && networkplayerinfo.getGameType() == WorldSettings.GameType.SPECTATOR;
+        return networkplayerinfo != null && networkplayerinfo.getGameType() == GameType.SPECTATOR;
     }
 
     public boolean isCreative()
     {
         NetworkPlayerInfo networkplayerinfo = Minecraft.getMinecraft().getConnection().getPlayerInfo(this.getGameProfile().getId());
-        return networkplayerinfo != null && networkplayerinfo.getGameType() == WorldSettings.GameType.CREATIVE;
+        return networkplayerinfo != null && networkplayerinfo.getGameType() == GameType.CREATIVE;
     }
 
     /**

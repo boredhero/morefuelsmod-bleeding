@@ -12,6 +12,9 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackData;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -80,8 +83,10 @@ public class EntityFireworkRocket extends Entity
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
         {
             float f = MathHelper.sqrt_double(x * x + z * z);
-            this.prevRotationYaw = this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
-            this.prevRotationPitch = this.rotationPitch = (float)(MathHelper.atan2(y, (double)f) * (180D / Math.PI));
+            this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
+            this.rotationPitch = (float)(MathHelper.atan2(y, (double)f) * (180D / Math.PI));
+            this.prevRotationYaw = this.rotationYaw;
+            this.prevRotationPitch = this.rotationPitch;
         }
     }
 
@@ -162,6 +167,11 @@ public class EntityFireworkRocket extends Entity
         super.handleStatusUpdate(id);
     }
 
+    public static void func_189656_a(DataFixer p_189656_0_)
+    {
+        p_189656_0_.registerWalker(FixTypes.ENTITY, new ItemStackData("FireworksRocketEntity", new String[] {"FireworksItem"}));
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -173,8 +183,7 @@ public class EntityFireworkRocket extends Entity
 
         if (itemstack != null)
         {
-            NBTTagCompound nbttagcompound = itemstack.writeToNBT(new NBTTagCompound());
-            compound.setTag("FireworksItem", nbttagcompound);
+            compound.setTag("FireworksItem", itemstack.writeToNBT(new NBTTagCompound()));
         }
     }
 

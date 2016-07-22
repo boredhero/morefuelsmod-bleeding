@@ -23,11 +23,11 @@ public class ContainerRepair extends Container
 {
     private static final Logger LOGGER = LogManager.getLogger();
     /** Here comes out item you merged and/or renamed. */
-    private IInventory outputSlot;
+    private final IInventory outputSlot;
     /** The 2slots where you put your items in that you want to merge and/or rename. */
-    private IInventory inputSlots;
-    private World theWorld;
-    private BlockPos selfPosition;
+    private final IInventory inputSlots;
+    private final World theWorld;
+    private final BlockPos selfPosition;
     /** The maximum cost of repairing/renaming in the anvil. */
     public int maximumCost;
     /** determined by damage of input item and stackSize of repair materials */

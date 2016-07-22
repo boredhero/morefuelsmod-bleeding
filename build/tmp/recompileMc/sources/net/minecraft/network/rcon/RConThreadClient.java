@@ -20,9 +20,9 @@ public class RConThreadClient extends RConThreadBase
     /** The client's Socket connection */
     private Socket clientSocket;
     /** A buffer for incoming Socket data */
-    private byte[] buffer = new byte[1460];
+    private final byte[] buffer = new byte[1460];
     /** The RCon password */
-    private String rconPassword;
+    private final String rconPassword;
 
     RConThreadClient(IServer p_i1537_1_, Socket socket)
     {

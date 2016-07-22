@@ -20,7 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiCustomizeWorldScreen extends GuiScreen implements GuiSlider.FormatHelper, GuiPageButtonList.GuiResponder
 {
-    private GuiCreateWorld parent;
+    private final GuiCreateWorld parent;
     protected String title = "Customize World Settings";
     protected String subtitle = "Page 1 of 3";
     protected String pageTitle = "Basic Settings";
@@ -34,10 +34,10 @@ public class GuiCustomizeWorldScreen extends GuiScreen implements GuiSlider.Form
     private GuiButton confirm;
     private GuiButton cancel;
     private GuiButton presets;
-    private boolean settingsModified = false;
-    private int confirmMode = 0;
-    private boolean confirmDismissed = false;
-    private Predicate<String> numberFilter = new Predicate<String>()
+    private boolean settingsModified;
+    private int confirmMode;
+    private boolean confirmDismissed;
+    private final Predicate<String> numberFilter = new Predicate<String>()
     {
         public boolean apply(@Nullable String p_apply_1_)
         {
@@ -45,10 +45,10 @@ public class GuiCustomizeWorldScreen extends GuiScreen implements GuiSlider.Form
             return p_apply_1_.isEmpty() || f != null && Floats.isFinite(f.floatValue()) && f.floatValue() >= 0.0F;
         }
     };
-    private ChunkProviderSettings.Factory defaultSettings = new ChunkProviderSettings.Factory();
+    private final ChunkProviderSettings.Factory defaultSettings = new ChunkProviderSettings.Factory();
     private ChunkProviderSettings.Factory settings;
     /** A Random instance for this world customization */
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public GuiCustomizeWorldScreen(GuiScreen p_i45521_1_, String p_i45521_2_)
     {
@@ -73,12 +73,12 @@ public class GuiCustomizeWorldScreen extends GuiScreen implements GuiSlider.Form
 
         this.title = I18n.format("options.customizeTitle", new Object[0]);
         this.buttonList.clear();
-        this.buttonList.add(this.previousPage = new GuiButton(302, 20, 5, 80, 20, I18n.format("createWorld.customize.custom.prev", new Object[0])));
-        this.buttonList.add(this.nextPage = new GuiButton(303, this.width - 100, 5, 80, 20, I18n.format("createWorld.customize.custom.next", new Object[0])));
-        this.buttonList.add(this.defaults = new GuiButton(304, this.width / 2 - 187, this.height - 27, 90, 20, I18n.format("createWorld.customize.custom.defaults", new Object[0])));
-        this.buttonList.add(this.randomize = new GuiButton(301, this.width / 2 - 92, this.height - 27, 90, 20, I18n.format("createWorld.customize.custom.randomize", new Object[0])));
-        this.buttonList.add(this.presets = new GuiButton(305, this.width / 2 + 3, this.height - 27, 90, 20, I18n.format("createWorld.customize.custom.presets", new Object[0])));
-        this.buttonList.add(this.done = new GuiButton(300, this.width / 2 + 98, this.height - 27, 90, 20, I18n.format("gui.done", new Object[0])));
+        this.previousPage = this.func_189646_b(new GuiButton(302, 20, 5, 80, 20, I18n.format("createWorld.customize.custom.prev", new Object[0])));
+        this.nextPage = this.func_189646_b(new GuiButton(303, this.width - 100, 5, 80, 20, I18n.format("createWorld.customize.custom.next", new Object[0])));
+        this.defaults = this.func_189646_b(new GuiButton(304, this.width / 2 - 187, this.height - 27, 90, 20, I18n.format("createWorld.customize.custom.defaults", new Object[0])));
+        this.randomize = this.func_189646_b(new GuiButton(301, this.width / 2 - 92, this.height - 27, 90, 20, I18n.format("createWorld.customize.custom.randomize", new Object[0])));
+        this.presets = this.func_189646_b(new GuiButton(305, this.width / 2 + 3, this.height - 27, 90, 20, I18n.format("createWorld.customize.custom.presets", new Object[0])));
+        this.done = this.func_189646_b(new GuiButton(300, this.width / 2 + 98, this.height - 27, 90, 20, I18n.format("gui.done", new Object[0])));
         this.defaults.enabled = this.settingsModified;
         this.confirm = new GuiButton(306, this.width / 2 - 55, 160, 50, 20, I18n.format("gui.yes", new Object[0]));
         this.confirm.visible = false;
@@ -163,52 +163,68 @@ public class GuiCustomizeWorldScreen extends GuiScreen implements GuiSlider.Form
         switch (id)
         {
             case 132:
-                f1 = this.settings.mainNoiseScaleX = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                this.settings.mainNoiseScaleX = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                f1 = this.settings.mainNoiseScaleX;
                 break;
             case 133:
-                f1 = this.settings.mainNoiseScaleY = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                this.settings.mainNoiseScaleY = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                f1 = this.settings.mainNoiseScaleY;
                 break;
             case 134:
-                f1 = this.settings.mainNoiseScaleZ = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                this.settings.mainNoiseScaleZ = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                f1 = this.settings.mainNoiseScaleZ;
                 break;
             case 135:
-                f1 = this.settings.depthNoiseScaleX = MathHelper.clamp_float(f, 1.0F, 2000.0F);
+                this.settings.depthNoiseScaleX = MathHelper.clamp_float(f, 1.0F, 2000.0F);
+                f1 = this.settings.depthNoiseScaleX;
                 break;
             case 136:
-                f1 = this.settings.depthNoiseScaleZ = MathHelper.clamp_float(f, 1.0F, 2000.0F);
+                this.settings.depthNoiseScaleZ = MathHelper.clamp_float(f, 1.0F, 2000.0F);
+                f1 = this.settings.depthNoiseScaleZ;
                 break;
             case 137:
-                f1 = this.settings.depthNoiseScaleExponent = MathHelper.clamp_float(f, 0.01F, 20.0F);
+                this.settings.depthNoiseScaleExponent = MathHelper.clamp_float(f, 0.01F, 20.0F);
+                f1 = this.settings.depthNoiseScaleExponent;
                 break;
             case 138:
-                f1 = this.settings.baseSize = MathHelper.clamp_float(f, 1.0F, 25.0F);
+                this.settings.baseSize = MathHelper.clamp_float(f, 1.0F, 25.0F);
+                f1 = this.settings.baseSize;
                 break;
             case 139:
-                f1 = this.settings.coordinateScale = MathHelper.clamp_float(f, 1.0F, 6000.0F);
+                this.settings.coordinateScale = MathHelper.clamp_float(f, 1.0F, 6000.0F);
+                f1 = this.settings.coordinateScale;
                 break;
             case 140:
-                f1 = this.settings.heightScale = MathHelper.clamp_float(f, 1.0F, 6000.0F);
+                this.settings.heightScale = MathHelper.clamp_float(f, 1.0F, 6000.0F);
+                f1 = this.settings.heightScale;
                 break;
             case 141:
-                f1 = this.settings.stretchY = MathHelper.clamp_float(f, 0.01F, 50.0F);
+                this.settings.stretchY = MathHelper.clamp_float(f, 0.01F, 50.0F);
+                f1 = this.settings.stretchY;
                 break;
             case 142:
-                f1 = this.settings.upperLimitScale = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                this.settings.upperLimitScale = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                f1 = this.settings.upperLimitScale;
                 break;
             case 143:
-                f1 = this.settings.lowerLimitScale = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                this.settings.lowerLimitScale = MathHelper.clamp_float(f, 1.0F, 5000.0F);
+                f1 = this.settings.lowerLimitScale;
                 break;
             case 144:
-                f1 = this.settings.biomeDepthWeight = MathHelper.clamp_float(f, 1.0F, 20.0F);
+                this.settings.biomeDepthWeight = MathHelper.clamp_float(f, 1.0F, 20.0F);
+                f1 = this.settings.biomeDepthWeight;
                 break;
             case 145:
-                f1 = this.settings.biomeDepthOffset = MathHelper.clamp_float(f, 0.0F, 20.0F);
+                this.settings.biomeDepthOffset = MathHelper.clamp_float(f, 0.0F, 20.0F);
+                f1 = this.settings.biomeDepthOffset;
                 break;
             case 146:
-                f1 = this.settings.biomeScaleWeight = MathHelper.clamp_float(f, 1.0F, 20.0F);
+                this.settings.biomeScaleWeight = MathHelper.clamp_float(f, 1.0F, 20.0F);
+                f1 = this.settings.biomeScaleWeight;
                 break;
             case 147:
-                f1 = this.settings.biomeScaleOffset = MathHelper.clamp_float(f, 0.0F, 20.0F);
+                this.settings.biomeScaleOffset = MathHelper.clamp_float(f, 0.0F, 20.0F);
+                f1 = this.settings.biomeScaleOffset;
         }
 
         if (f1 != f && f != 0.0F)

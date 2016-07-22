@@ -724,7 +724,7 @@ public class StructureStrongholdPieces
 
                     this.fillWithRandomizedBlocks(worldIn, structureBoundingBoxIn, 0, 0, 0, 13, i - 1, 14, true, randomIn, StructureStrongholdPieces.STRONGHOLD_STONES);
                     this.placeDoor(worldIn, randomIn, structureBoundingBoxIn, this.entryDoor, 4, 1, 0);
-                    this.fillWithBlocksRandomly(worldIn, structureBoundingBoxIn, randomIn, 0.07F, 2, 1, 1, 11, 4, 13, Blocks.WEB.getDefaultState(), Blocks.WEB.getDefaultState(), false);
+                    this.func_189914_a(worldIn, structureBoundingBoxIn, randomIn, 0.07F, 2, 1, 1, 11, 4, 13, Blocks.WEB.getDefaultState(), Blocks.WEB.getDefaultState(), false, 0);
                     int j = 1;
                     int k = 12;
 
@@ -789,25 +789,25 @@ public class StructureStrongholdPieces
                         this.setBlockState(worldIn, iblockstate1, 10, 7, 13, structureBoundingBoxIn);
                         int i1 = 7;
                         int j1 = 7;
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1 - 1, 9, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1, 9, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1 - 1, 8, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1, 8, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1 - 1, 7, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1, 7, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1 - 2, 7, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1 + 1, 7, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1 - 1, 7, j1 - 1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1 - 1, 7, j1 + 1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1, 7, j1 - 1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), i1, 7, j1 + 1, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 6, 9, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 7, 9, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 6, 8, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 7, 8, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 6, 7, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 7, 7, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 5, 7, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 8, 7, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 6, 7, 6, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 6, 7, 8, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 7, 7, 6, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, Blocks.OAK_FENCE.getDefaultState(), 7, 7, 8, structureBoundingBoxIn);
                         IBlockState iblockstate = Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, EnumFacing.UP);
-                        this.setBlockState(worldIn, iblockstate, i1 - 2, 8, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, iblockstate, i1 + 1, 8, j1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, iblockstate, i1 - 1, 8, j1 - 1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, iblockstate, i1 - 1, 8, j1 + 1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, iblockstate, i1, 8, j1 - 1, structureBoundingBoxIn);
-                        this.setBlockState(worldIn, iblockstate, i1, 8, j1 + 1, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, iblockstate, 5, 8, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, iblockstate, 8, 8, 7, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, iblockstate, 6, 8, 6, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, iblockstate, 6, 8, 8, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, iblockstate, 7, 8, 6, structureBoundingBoxIn);
+                        this.setBlockState(worldIn, iblockstate, 7, 8, 8, structureBoundingBoxIn);
                     }
 
                     this.generateChest(worldIn, structureBoundingBoxIn, randomIn, 3, 3, 5, LootTableList.CHESTS_STRONGHOLD_LIBRARY);
@@ -1670,7 +1670,6 @@ public class StructureStrongholdPieces
                 switch (p_74990_4_)
                 {
                     case OPENING:
-                    default:
                         this.fillWithBlocks(worldIn, p_74990_3_, p_74990_5_, p_74990_6_, p_74990_7_, p_74990_5_ + 3 - 1, p_74990_6_ + 3 - 1, p_74990_7_, Blocks.AIR.getDefaultState(), Blocks.AIR.getDefaultState(), false);
                         break;
                     case WOOD_DOOR:

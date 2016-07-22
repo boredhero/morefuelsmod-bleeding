@@ -10,10 +10,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ClippingHelperImpl extends ClippingHelper
 {
-    private static ClippingHelperImpl instance = new ClippingHelperImpl();
-    private FloatBuffer projectionMatrixBuffer = GLAllocation.createDirectFloatBuffer(16);
-    private FloatBuffer modelviewMatrixBuffer = GLAllocation.createDirectFloatBuffer(16);
-    private FloatBuffer floatBuffer16 = GLAllocation.createDirectFloatBuffer(16);
+    private static final ClippingHelperImpl instance = new ClippingHelperImpl();
+    private final FloatBuffer projectionMatrixBuffer = GLAllocation.createDirectFloatBuffer(16);
+    private final FloatBuffer modelviewMatrixBuffer = GLAllocation.createDirectFloatBuffer(16);
+    private final FloatBuffer floatBuffer16 = GLAllocation.createDirectFloatBuffer(16);
 
     /**
      * Initialises the ClippingHelper object then returns an instance of it.

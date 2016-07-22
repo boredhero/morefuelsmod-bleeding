@@ -8,8 +8,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiErrorScreen extends GuiScreen
 {
-    private String title;
-    private String message;
+    private final String title;
+    private final String message;
 
     public GuiErrorScreen(String titleIn, String messageIn)
     {

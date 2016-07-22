@@ -4,7 +4,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 
 public class CommandPublishLocalServer extends CommandBase
 {
@@ -29,7 +29,7 @@ public class CommandPublishLocalServer extends CommandBase
      */
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException
     {
-        String s = server.shareToLAN(WorldSettings.GameType.SURVIVAL, false);
+        String s = server.shareToLAN(GameType.SURVIVAL, false);
 
         if (s != null)
         {

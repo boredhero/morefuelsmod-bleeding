@@ -39,7 +39,7 @@ public class ParticleSimpleAnimated extends Particle
         float f1 = (float)((p_187146_1_ & 65280) >> 8) / 255.0F;
         float f2 = (float)((p_187146_1_ & 255) >> 0) / 255.0F;
         float f3 = 1.0F;
-        this.setRBGColorF(f * f3, f1 * f3, f2 * f3);
+        this.setRBGColorF(f * 1.0F, f1 * 1.0F, f2 * 1.0F);
     }
 
     /**

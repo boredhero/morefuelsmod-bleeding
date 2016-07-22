@@ -1,6 +1,7 @@
 package net.minecraft.entity.item;
 
 import com.google.common.collect.Maps;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -20,8 +21,10 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -359,7 +362,12 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
             this.prevPosZ = this.posZ;
-            this.motionY -= 0.03999999910593033D;
+
+            if (!this.func_189652_ae())
+            {
+                this.motionY -= 0.03999999910593033D;
+            }
+
             int k = MathHelper.floor_double(this.posX);
             int l = MathHelper.floor_double(this.posY);
             int i1 = MathHelper.floor_double(this.posZ);
@@ -414,11 +422,36 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
             AxisAlignedBB box;
             if (getCollisionHandler() != null) box = getCollisionHandler().getMinecartCollisionBox(this);
             else                               box = this.getEntityBoundingBox().expand(0.20000000298023224D, 0.0D, 0.20000000298023224D);
-            for (Entity entity : this.worldObj.getEntitiesWithinAABBExcludingEntity(this, box))
+
+            if (canBeRidden() && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.01D)
             {
-                if (!this.isPassenger(entity) && entity.canBePushed() && entity instanceof EntityMinecart)
+                List<Entity> list = this.worldObj.getEntitiesInAABBexcluding(this, box, EntitySelectors.<Entity>getTeamCollisionPredicate(this));
+
+                if (!list.isEmpty())
                 {
-                    entity.applyEntityCollision(this);
+                    for (int j1 = 0; j1 < list.size(); ++j1)
+                    {
+                        Entity entity1 = (Entity)list.get(j1);
+
+                        if (!(entity1 instanceof EntityPlayer) && !(entity1 instanceof EntityIronGolem) && !(entity1 instanceof EntityMinecart) && !this.isBeingRidden() && !entity1.isRiding())
+                        {
+                            entity1.startRiding(this);
+                        }
+                        else
+                        {
+                            entity1.applyEntityCollision(this);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (Entity entity : this.worldObj.getEntitiesWithinAABBExcludingEntity(this, box))
+                {
+                    if (!this.isPassenger(entity) && entity.canBePushed() && entity instanceof EntityMinecart)
+                    {
+                        entity.applyEntityCollision(this);
+                    }
                 }
             }
 
@@ -577,33 +610,33 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
             }
         }
 
-        double d18 = 0.0D;
-        double d19 = (double)p_180460_1_.getX() + 0.5D + (double)aint[0][0] * 0.5D;
-        double d20 = (double)p_180460_1_.getZ() + 0.5D + (double)aint[0][2] * 0.5D;
-        double d21 = (double)p_180460_1_.getX() + 0.5D + (double)aint[1][0] * 0.5D;
-        double d10 = (double)p_180460_1_.getZ() + 0.5D + (double)aint[1][2] * 0.5D;
-        d1 = d21 - d19;
-        d2 = d10 - d20;
+        double d18 = (double)p_180460_1_.getX() + 0.5D + (double)aint[0][0] * 0.5D;
+        double d19 = (double)p_180460_1_.getZ() + 0.5D + (double)aint[0][2] * 0.5D;
+        double d20 = (double)p_180460_1_.getX() + 0.5D + (double)aint[1][0] * 0.5D;
+        double d21 = (double)p_180460_1_.getZ() + 0.5D + (double)aint[1][2] * 0.5D;
+        d1 = d20 - d18;
+        d2 = d21 - d19;
+        double d10;
 
         if (d1 == 0.0D)
         {
             this.posX = (double)p_180460_1_.getX() + 0.5D;
-            d18 = this.posZ - (double)p_180460_1_.getZ();
+            d10 = this.posZ - (double)p_180460_1_.getZ();
         }
         else if (d2 == 0.0D)
         {
             this.posZ = (double)p_180460_1_.getZ() + 0.5D;
-            d18 = this.posX - (double)p_180460_1_.getX();
+            d10 = this.posX - (double)p_180460_1_.getX();
         }
         else
         {
-            double d11 = this.posX - d19;
-            double d12 = this.posZ - d20;
-            d18 = (d11 * d1 + d12 * d2) * 2.0D;
+            double d11 = this.posX - d18;
+            double d12 = this.posZ - d19;
+            d10 = (d11 * d1 + d12 * d2) * 2.0D;
         }
 
-        this.posX = d19 + d1 * d18;
-        this.posZ = d20 + d2 * d18;
+        this.posX = d18 + d1 * d10;
+        this.posZ = d19 + d2 * d10;
         this.setPosition(this.posX, this.posY, this.posZ);
         this.moveMinecartOnRail(p_180460_1_);
 
@@ -656,8 +689,8 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
             if (d15 > 0.01D)
             {
                 double d16 = 0.06D;
-                this.motionX += this.motionX / d15 * d16;
-                this.motionZ += this.motionZ / d15 * d16;
+                this.motionX += this.motionX / d15 * 0.06D;
+                this.motionZ += this.motionZ / d15 * 0.06D;
             }
             else if (blockrailbase$enumraildirection == BlockRailBase.EnumRailDirection.EAST_WEST)
             {
@@ -780,44 +813,42 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
         {
             BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = (BlockRailBase.EnumRailDirection)iblockstate.getValue(((BlockRailBase)iblockstate.getBlock()).getShapeProperty());
             int[][] aint = MATRIX[blockrailbase$enumraildirection.getMetadata()];
-            double d0 = 0.0D;
-            double d1 = (double)i + 0.5D + (double)aint[0][0] * 0.5D;
-            double d2 = (double)j + 0.0625D + (double)aint[0][1] * 0.5D;
-            double d3 = (double)k + 0.5D + (double)aint[0][2] * 0.5D;
-            double d4 = (double)i + 0.5D + (double)aint[1][0] * 0.5D;
-            double d5 = (double)j + 0.0625D + (double)aint[1][1] * 0.5D;
-            double d6 = (double)k + 0.5D + (double)aint[1][2] * 0.5D;
-            double d7 = d4 - d1;
-            double d8 = (d5 - d2) * 2.0D;
-            double d9 = d6 - d3;
+            double d0 = (double)i + 0.5D + (double)aint[0][0] * 0.5D;
+            double d1 = (double)j + 0.0625D + (double)aint[0][1] * 0.5D;
+            double d2 = (double)k + 0.5D + (double)aint[0][2] * 0.5D;
+            double d3 = (double)i + 0.5D + (double)aint[1][0] * 0.5D;
+            double d4 = (double)j + 0.0625D + (double)aint[1][1] * 0.5D;
+            double d5 = (double)k + 0.5D + (double)aint[1][2] * 0.5D;
+            double d6 = d3 - d0;
+            double d7 = (d4 - d1) * 2.0D;
+            double d8 = d5 - d2;
+            double d9;
 
-            if (d7 == 0.0D)
+            if (d6 == 0.0D)
             {
-                p_70489_1_ = (double)i + 0.5D;
-                d0 = p_70489_5_ - (double)k;
+                d9 = p_70489_5_ - (double)k;
             }
-            else if (d9 == 0.0D)
+            else if (d8 == 0.0D)
             {
-                p_70489_5_ = (double)k + 0.5D;
-                d0 = p_70489_1_ - (double)i;
+                d9 = p_70489_1_ - (double)i;
             }
             else
             {
-                double d10 = p_70489_1_ - d1;
-                double d11 = p_70489_5_ - d3;
-                d0 = (d10 * d7 + d11 * d9) * 2.0D;
+                double d10 = p_70489_1_ - d0;
+                double d11 = p_70489_5_ - d2;
+                d9 = (d10 * d6 + d11 * d8) * 2.0D;
             }
 
-            p_70489_1_ = d1 + d7 * d0;
-            p_70489_3_ = d2 + d8 * d0;
-            p_70489_5_ = d3 + d9 * d0;
+            p_70489_1_ = d0 + d6 * d9;
+            p_70489_3_ = d1 + d7 * d9;
+            p_70489_5_ = d2 + d8 * d9;
 
-            if (d8 < 0.0D)
+            if (d7 < 0.0D)
             {
                 ++p_70489_3_;
             }
 
-            if (d8 > 0.0D)
+            if (d7 > 0.0D)
             {
                 p_70489_3_ += 0.5D;
             }
@@ -839,6 +870,10 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
     {
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
         return this.hasDisplayTile() ? axisalignedbb.expandXyz((double)Math.abs(this.getDisplayTileOffset()) / 16.0D) : axisalignedbb;
+    }
+
+    public static void func_189669_a(DataFixer p_189669_0_, String p_189669_1_)
+    {
     }
 
     /**
@@ -898,11 +933,6 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
             {
                 if (!this.isPassenger(entityIn))
                 {
-                    if (entityIn instanceof EntityLivingBase && canBeRidden() && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.01D && !(entityIn instanceof EntityPlayer) && !(entityIn instanceof EntityIronGolem) && !this.isBeingRidden() && !entityIn.isRiding())
-                    {
-                        entityIn.startRiding(this);
-                    }
-
                     double d0 = entityIn.posX - this.posX;
                     double d1 = entityIn.posZ - this.posZ;
                     double d2 = d0 * d0 + d1 * d1;
@@ -1015,9 +1045,12 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
     @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
     {
-        this.velocityX = this.motionX = x;
-        this.velocityY = this.motionY = y;
-        this.velocityZ = this.motionZ = z;
+        this.motionX = x;
+        this.motionY = y;
+        this.motionZ = z;
+        this.velocityX = this.motionX;
+        this.velocityY = this.motionY;
+        this.velocityZ = this.motionZ;
     }
 
     /**

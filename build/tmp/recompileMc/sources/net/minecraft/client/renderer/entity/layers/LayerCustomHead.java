@@ -55,7 +55,7 @@ public class LayerCustomHead implements LayerRenderer<EntityLivingBase>
                 float f = 2.0F;
                 float f1 = 1.4F;
                 GlStateManager.translate(0.0F, 0.5F * scale, 0.0F);
-                GlStateManager.scale(f1 / f, f1 / f, f1 / f);
+                GlStateManager.scale(0.7F, 0.7F, 0.7F);
                 GlStateManager.translate(0.0F, 16.0F * scale, 0.0F);
             }
 
@@ -65,7 +65,7 @@ public class LayerCustomHead implements LayerRenderer<EntityLivingBase>
             if (item == Items.SKULL)
             {
                 float f2 = 1.1875F;
-                GlStateManager.scale(f2, -f2, -f2);
+                GlStateManager.scale(1.1875F, -1.1875F, -1.1875F);
 
                 if (flag)
                 {
@@ -101,7 +101,7 @@ public class LayerCustomHead implements LayerRenderer<EntityLivingBase>
                 float f3 = 0.625F;
                 GlStateManager.translate(0.0F, -0.25F, 0.0F);
                 GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
-                GlStateManager.scale(f3, -f3, -f3);
+                GlStateManager.scale(0.625F, -0.625F, -0.625F);
 
                 if (flag)
                 {

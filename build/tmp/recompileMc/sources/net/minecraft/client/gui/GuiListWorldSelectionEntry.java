@@ -266,7 +266,7 @@ public class GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry
             }
             catch (Throwable throwable)
             {
-                LOGGER.error("Invalid icon for world " + this.worldSummary.getFileName(), throwable);
+                LOGGER.error("Invalid icon for world {}", new Object[] {this.worldSummary.getFileName(), throwable});
                 this.iconFile = null;
                 return;
             }

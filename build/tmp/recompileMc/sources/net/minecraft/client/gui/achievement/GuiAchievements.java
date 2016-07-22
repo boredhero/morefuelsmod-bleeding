@@ -46,7 +46,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
     protected double xScrollTarget;
     protected double yScrollTarget;
     private int scrolling;
-    private StatisticsManager statFileWriter;
+    private final StatisticsManager statFileWriter;
     private boolean loadingAchievements = true;
 
     private int currentPage = -1;
@@ -59,8 +59,12 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
         this.statFileWriter = statFileWriterIn;
         int i = 141;
         int j = 141;
-        this.xScrollO = this.xScrollP = this.xScrollTarget = (double)(AchievementList.OPEN_INVENTORY.displayColumn * 24 - i / 2 - 12);
-        this.yScrollO = this.yScrollP = this.yScrollTarget = (double)(AchievementList.OPEN_INVENTORY.displayRow * 24 - j / 2);
+        this.xScrollTarget = (double)(AchievementList.OPEN_INVENTORY.displayColumn * 24 - 70 - 12);
+        this.xScrollO = this.xScrollTarget;
+        this.xScrollP = this.xScrollTarget;
+        this.yScrollTarget = (double)(AchievementList.OPEN_INVENTORY.displayRow * 24 - 70);
+        this.yScrollO = this.yScrollTarget;
+        this.yScrollP = this.yScrollTarget;
         minecraftAchievements.clear();
         for (Achievement achievement : AchievementList.ACHIEVEMENTS)
         {
@@ -154,8 +158,10 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
                     {
                         this.xScrollP -= (double)((float)(mouseX - this.xLastScroll) * this.zoom);
                         this.yScrollP -= (double)((float)(mouseY - this.yLastScroll) * this.zoom);
-                        this.xScrollTarget = this.xScrollO = this.xScrollP;
-                        this.yScrollTarget = this.yScrollO = this.yScrollP;
+                        this.xScrollO = this.xScrollP;
+                        this.yScrollO = this.yScrollP;
+                        this.xScrollTarget = this.xScrollP;
+                        this.yScrollTarget = this.yScrollP;
                     }
 
                     this.xLastScroll = mouseX;
@@ -168,7 +174,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
             }
 
             int i1 = Mouse.getDWheel();
-            float f3 = this.zoom;
+            float f2 = this.zoom;
 
             if (i1 < 0)
             {
@@ -181,17 +187,18 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
 
             this.zoom = MathHelper.clamp_float(this.zoom, 1.0F, 2.0F);
 
-            if (this.zoom != f3)
+            if (this.zoom != f2)
             {
-                float f5 = f3 - this.zoom;
-                float f4 = f3 * (float)this.imageWidth;
-                float f = f3 * (float)this.imageHeight;
-                float f1 = this.zoom * (float)this.imageWidth;
-                float f2 = this.zoom * (float)this.imageHeight;
-                this.xScrollP -= (double)((f1 - f4) * 0.5F);
-                this.yScrollP -= (double)((f2 - f) * 0.5F);
-                this.xScrollTarget = this.xScrollO = this.xScrollP;
-                this.yScrollTarget = this.yScrollO = this.yScrollP;
+                float f3 = f2 * (float)this.imageWidth;
+                float f4 = f2 * (float)this.imageHeight;
+                float f = this.zoom * (float)this.imageWidth;
+                float f1 = this.zoom * (float)this.imageHeight;
+                this.xScrollP -= (double)((f - f3) * 0.5F);
+                this.yScrollP -= (double)((f1 - f4) * 0.5F);
+                this.xScrollO = this.xScrollP;
+                this.yScrollO = this.yScrollP;
+                this.xScrollTarget = this.xScrollP;
+                this.yScrollTarget = this.yScrollP;
             }
 
             if (this.xScrollTarget < (double)X_MIN)
@@ -445,22 +452,22 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
                 if (this.statFileWriter.hasAchievementUnlocked(achievement2))
                 {
                     float f5 = 0.75F;
-                    GlStateManager.color(f5, f5, f5, 1.0F);
+                    GlStateManager.color(0.75F, 0.75F, 0.75F, 1.0F);
                 }
                 else if (this.statFileWriter.canUnlockAchievement(achievement2))
                 {
                     float f6 = 1.0F;
-                    GlStateManager.color(f6, f6, f6, 1.0F);
+                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 }
                 else if (l7 < 3)
                 {
                     float f7 = 0.3F;
-                    GlStateManager.color(f7, f7, f7, 1.0F);
+                    GlStateManager.color(0.3F, 0.3F, 0.3F, 1.0F);
                 }
                 else if (l7 == 3)
                 {
                     float f8 = 0.2F;
-                    GlStateManager.color(f8, f8, f8, 1.0F);
+                    GlStateManager.color(0.2F, 0.2F, 0.2F, 1.0F);
                 }
                 else
                 {
@@ -470,7 +477,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
                     }
 
                     float f9 = 0.1F;
-                    GlStateManager.color(f9, f9, f9, 1.0F);
+                    GlStateManager.color(0.1F, 0.1F, 0.1F, 1.0F);
                 }
 
                 this.mc.getTextureManager().bindTexture(ACHIEVEMENT_BACKGROUND);
@@ -489,7 +496,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter
                 if (!this.statFileWriter.canUnlockAchievement(achievement2))
                 {
                     float f10 = 0.1F;
-                    GlStateManager.color(f10, f10, f10, 1.0F);
+                    GlStateManager.color(0.1F, 0.1F, 0.1F, 1.0F);
                     this.itemRender.isNotRenderingEffectsInGUI(false);
                 }
 

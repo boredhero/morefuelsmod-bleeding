@@ -10,8 +10,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelShulker extends ModelBase
 {
-    private ModelRenderer base;
-    private ModelRenderer lid;
+    private final ModelRenderer base;
+    private final ModelRenderer lid;
     public ModelRenderer head;
 
     public ModelShulker()

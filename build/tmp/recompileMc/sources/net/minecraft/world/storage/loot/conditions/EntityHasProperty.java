@@ -35,11 +35,9 @@ public class EntityHasProperty implements LootCondition
         }
         else
         {
-            int i = 0;
-
-            for (int j = this.properties.length; i < j; ++i)
+            for (EntityProperty entityproperty : this.properties)
             {
-                if (!this.properties[i].testProperty(rand, entity))
+                if (!entityproperty.testProperty(rand, entity))
                 {
                     return false;
                 }

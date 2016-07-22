@@ -95,10 +95,10 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.village.MerchantRecipeList;
+import net.minecraft.world.GameType;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldSettings;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.storage.loot.ILootContainer;
 import org.apache.logging.log4j.LogManager;
@@ -140,7 +140,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     private boolean chatColours = true;
     private long playerLastActiveTime = System.currentTimeMillis();
     /** The entity the player is currently spectating through. */
-    private Entity spectatingEntity = null;
+    private Entity spectatingEntity;
     private boolean invulnerableDimensionChange;
     /** The currently in use window ID. Incremented every time a window is opened. */
     public int currentWindowId;
@@ -164,7 +164,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         this.interactionManager = interactionManagerIn;
         BlockPos blockpos = worldIn.provider.getRandomizedSpawnPoint();
 
-        if (false && !worldIn.provider.getHasNoSky() && worldIn.getWorldInfo().getGameType() != WorldSettings.GameType.ADVENTURE)
+        if (false && !worldIn.provider.getHasNoSky() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE)
         {
             int i = Math.max(0, server.getSpawnRadius(worldIn));
             int j = MathHelper.floor_double(worldIn.getWorldBorder().getClosestDistance((double)blockpos.getX(), (double)blockpos.getZ()));
@@ -208,7 +208,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
             }
             else
             {
-                this.interactionManager.setGameType(WorldSettings.GameType.getByID(compound.getInteger("playerGameType")));
+                this.interactionManager.setGameType(GameType.getByID(compound.getInteger("playerGameType")));
             }
         }
     }
@@ -291,7 +291,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 
         this.openContainer.detectAndSendChanges();
 
-        if (!this.worldObj.isRemote && !net.minecraftforge.common.ForgeHooks.canInteractWith(this, this.openContainer))
+        if (!this.worldObj.isRemote && this.openContainer != null && !this.openContainer.canInteractWith(this))
         {
             this.closeScreen();
             this.openContainer = this.inventoryContainer;
@@ -317,11 +317,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 
         if (entity != this)
         {
-            if (!entity.isEntityAlive())
-            {
-                this.setSpectatingEntity(this);
-            }
-            else
+            if (entity.isEntityAlive())
             {
                 this.setPositionAndRotation(entity.posX, entity.posY, entity.posZ, entity.rotationYaw, entity.rotationPitch);
                 this.mcServer.getPlayerList().serverUpdateMountedMovingPlayer(this);
@@ -330,6 +326,10 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
                 {
                     this.setSpectatingEntity(this);
                 }
+            }
+            else
+            {
+                this.setSpectatingEntity(this);
             }
         }
     }
@@ -821,6 +821,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
             this.openContainer = guiOwner.createContainer(this.inventory, this);
             this.openContainer.windowId = this.currentWindowId;
             this.openContainer.addListener(this);
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
         }
     }
 
@@ -867,6 +868,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 
             this.openContainer.windowId = this.currentWindowId;
             this.openContainer.addListener(this);
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
         }
     }
 
@@ -876,6 +878,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         this.openContainer = new ContainerMerchant(this.inventory, villager, this.worldObj);
         this.openContainer.windowId = this.currentWindowId;
         this.openContainer.addListener(this);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.openContainer));
         IInventory iinventory = ((ContainerMerchant)this.openContainer).getMerchantInventory();
         ITextComponent itextcomponent = villager.getDisplayName();
         this.connection.sendPacket(new SPacketOpenWindow(this.currentWindowId, "minecraft:villager", itextcomponent, iinventory.getSizeInventory()));
@@ -918,11 +921,8 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 
     public void displayGuiCommandBlock(TileEntityCommandBlock p_184824_1_)
     {
-        if (this.canCommandSenderUseCommand(2, ""))
-        {
-            p_184824_1_.setSendToClient(true);
-            this.sendTileEntityUpdate(p_184824_1_);
-        }
+        p_184824_1_.setSendToClient(true);
+        this.sendTileEntityUpdate(p_184824_1_);
     }
 
     /**
@@ -998,6 +998,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     public void closeContainer()
     {
         this.openContainer.onContainerClosed(this);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Close(this, this.openContainer));
         this.openContainer = this.inventoryContainer;
     }
 
@@ -1173,12 +1174,12 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     /**
      * Sets the player's game mode and sends it to them.
      */
-    public void setGameType(WorldSettings.GameType gameType)
+    public void setGameType(GameType gameType)
     {
         this.interactionManager.setGameType(gameType);
         this.connection.sendPacket(new SPacketChangeGameState(3, (float)gameType.getID()));
 
-        if (gameType == WorldSettings.GameType.SPECTATOR)
+        if (gameType == GameType.SPECTATOR)
         {
             this.dismountRidingEntity();
         }
@@ -1196,12 +1197,12 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
      */
     public boolean isSpectator()
     {
-        return this.interactionManager.getGameType() == WorldSettings.GameType.SPECTATOR;
+        return this.interactionManager.getGameType() == GameType.SPECTATOR;
     }
 
     public boolean isCreative()
     {
-        return this.interactionManager.getGameType() == WorldSettings.GameType.CREATIVE;
+        return this.interactionManager.getGameType() == GameType.CREATIVE;
     }
 
     /**
@@ -1364,7 +1365,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
      */
     public void attackTargetEntityWithCurrentItem(Entity targetEntity)
     {
-        if (this.interactionManager.getGameType() == WorldSettings.GameType.SPECTATOR)
+        if (this.interactionManager.getGameType() == GameType.SPECTATOR)
         {
             this.setSpectatingEntity(targetEntity);
         }

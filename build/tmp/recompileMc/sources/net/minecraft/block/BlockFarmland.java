@@ -39,12 +39,6 @@ public class BlockFarmland extends Block
         return FARMLAND_AABB;
     }
 
-    @Nullable
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
-    {
-        return FULL_BLOCK_AABB;
-    }
-
     /**
      * Used to determine ambient occlusion and culling when rebuilding chunks for render
      */

@@ -69,11 +69,11 @@ public class EntityTrackerEntry
 {
     private static final Logger LOGGER = LogManager.getLogger();
     /** The entity that this EntityTrackerEntry tracks. */
-    private Entity trackedEntity;
-    private int range;
+    private final Entity trackedEntity;
+    private final int range;
     private int maxRange;
     /** check for sync when ticks % updateFrequency==0 */
-    private int updateFrequency;
+    private final int updateFrequency;
     /** The encoded entity X position. */
     private long encodedPosX;
     /** The encoded entity Y position. */
@@ -93,7 +93,7 @@ public class EntityTrackerEntry
     private double lastTrackedEntityPosY;
     private double lastTrackedEntityPosZ;
     private boolean updatedPlayerVisibility;
-    private boolean sendVelocityUpdates;
+    private final boolean sendVelocityUpdates;
     /**
      * every 400 ticks a  full teleport packet is sent, rather than just a "move me +x" command, so that position
      * remains fully synced.
@@ -103,7 +103,7 @@ public class EntityTrackerEntry
     private boolean ridingEntity;
     private boolean onGround;
     public boolean playerEntitiesUpdated;
-    public Set<EntityPlayerMP> trackingPlayers = Sets.<EntityPlayerMP>newHashSet();
+    public final Set<EntityPlayerMP> trackingPlayers = Sets.<EntityPlayerMP>newHashSet();
 
     public EntityTrackerEntry(Entity entityIn, int p_i46837_2_, int p_i46837_3_, int p_i46837_4_, boolean p_i46837_5_)
     {
@@ -180,15 +180,34 @@ public class EntityTrackerEntry
 
         if (this.updateCounter % this.updateFrequency == 0 || this.trackedEntity.isAirBorne || this.trackedEntity.getDataManager().isDirty())
         {
-            if (!this.trackedEntity.isRiding())
+            if (this.trackedEntity.isRiding())
+            {
+                int j1 = MathHelper.floor_float(this.trackedEntity.rotationYaw * 256.0F / 360.0F);
+                int l1 = MathHelper.floor_float(this.trackedEntity.rotationPitch * 256.0F / 360.0F);
+                boolean flag3 = Math.abs(j1 - this.encodedRotationYaw) >= 1 || Math.abs(l1 - this.encodedRotationPitch) >= 1;
+
+                if (flag3)
+                {
+                    this.sendPacketToTrackedPlayers(new SPacketEntity.S16PacketEntityLook(this.trackedEntity.getEntityId(), (byte)j1, (byte)l1, this.trackedEntity.onGround));
+                    this.encodedRotationYaw = j1;
+                    this.encodedRotationPitch = l1;
+                }
+
+                this.encodedPosX = EntityTracker.getPositionLong(this.trackedEntity.posX);
+                this.encodedPosY = EntityTracker.getPositionLong(this.trackedEntity.posY);
+                this.encodedPosZ = EntityTracker.getPositionLong(this.trackedEntity.posZ);
+                this.sendMetadataToAllAssociatedPlayers();
+                this.ridingEntity = true;
+            }
+            else
             {
                 ++this.ticksSinceLastForcedTeleport;
-                long j1 = EntityTracker.getPositionLong(this.trackedEntity.posX);
+                long i1 = EntityTracker.getPositionLong(this.trackedEntity.posX);
                 long i2 = EntityTracker.getPositionLong(this.trackedEntity.posY);
                 long j2 = EntityTracker.getPositionLong(this.trackedEntity.posZ);
                 int k2 = MathHelper.floor_float(this.trackedEntity.rotationYaw * 256.0F / 360.0F);
                 int i = MathHelper.floor_float(this.trackedEntity.rotationPitch * 256.0F / 360.0F);
-                long j = j1 - this.encodedPosX;
+                long j = i1 - this.encodedPosX;
                 long k = i2 - this.encodedPosY;
                 long l = j2 - this.encodedPosZ;
                 Packet<?> packet1 = null;
@@ -257,7 +276,7 @@ public class EntityTrackerEntry
 
                 if (flag)
                 {
-                    this.encodedPosX = j1;
+                    this.encodedPosX = i1;
                     this.encodedPosY = i2;
                     this.encodedPosZ = j2;
                 }
@@ -269,25 +288,6 @@ public class EntityTrackerEntry
                 }
 
                 this.ridingEntity = false;
-            }
-            else
-            {
-                int i1 = MathHelper.floor_float(this.trackedEntity.rotationYaw * 256.0F / 360.0F);
-                int l1 = MathHelper.floor_float(this.trackedEntity.rotationPitch * 256.0F / 360.0F);
-                boolean flag3 = Math.abs(i1 - this.encodedRotationYaw) >= 1 || Math.abs(l1 - this.encodedRotationPitch) >= 1;
-
-                if (flag3)
-                {
-                    this.sendPacketToTrackedPlayers(new SPacketEntity.S16PacketEntityLook(this.trackedEntity.getEntityId(), (byte)i1, (byte)l1, this.trackedEntity.onGround));
-                    this.encodedRotationYaw = i1;
-                    this.encodedRotationPitch = l1;
-                }
-
-                this.encodedPosX = EntityTracker.getPositionLong(this.trackedEntity.posX);
-                this.encodedPosY = EntityTracker.getPositionLong(this.trackedEntity.posY);
-                this.encodedPosZ = EntityTracker.getPositionLong(this.trackedEntity.posZ);
-                this.sendMetadataToAllAssociatedPlayers();
-                this.ridingEntity = true;
             }
 
             int k1 = MathHelper.floor_float(this.trackedEntity.getRotationYawHead() * 256.0F / 360.0F);

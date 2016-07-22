@@ -130,7 +130,7 @@ public class HttpUtil
         {
             if (!skipLoggingErrors)
             {
-                LOGGER.error((String)("Could not post to " + url), (Throwable)exception);
+                LOGGER.error("Could not post to {}", new Object[] {url, exception});
             }
 
             return "";
@@ -161,6 +161,7 @@ public class HttpUtil
                         byte[] abyte = new byte[4096];
                         URL url = new URL(packUrl);
                         httpurlconnection = (HttpURLConnection)url.openConnection(p_180192_5_);
+                        httpurlconnection.setInstanceFollowRedirects(true);
                         float f = 0.0F;
                         float f1 = (float)p_180192_2_.entrySet().size();
 
@@ -197,7 +198,7 @@ public class HttpUtil
                                 return;
                             }
 
-                            HttpUtil.LOGGER.warn("Deleting " + saveFile + " as it does not match what we currently have (" + i + " vs our " + j + ").");
+                            HttpUtil.LOGGER.warn("Deleting {} as it does not match what we currently have ({} vs our {}).", new Object[] {saveFile, Integer.valueOf(i), Long.valueOf(j)});
                             FileUtils.deleteQuietly(saveFile);
                         }
                         else if (saveFile.getParentFile() != null)
@@ -217,7 +218,7 @@ public class HttpUtil
                             throw new IOException("Filesize is bigger than maximum allowed (file is " + f + ", limit is " + maxSize + ")");
                         }
 
-                        int k = 0;
+                        int k;
 
                         while ((k = inputstream.read(abyte)) >= 0)
                         {

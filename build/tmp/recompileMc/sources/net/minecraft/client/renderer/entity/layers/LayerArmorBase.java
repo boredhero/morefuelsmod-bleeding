@@ -113,18 +113,18 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
         GlStateManager.depthFunc(514);
         GlStateManager.depthMask(false);
         float f1 = 0.5F;
-        GlStateManager.color(f1, f1, f1, 1.0F);
+        GlStateManager.color(0.5F, 0.5F, 0.5F, 1.0F);
 
         for (int i = 0; i < 2; ++i)
         {
             GlStateManager.disableLighting();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_COLOR, GlStateManager.DestFactor.ONE);
             float f2 = 0.76F;
-            GlStateManager.color(0.5F * f2, 0.25F * f2, 0.8F * f2, 1.0F);
+            GlStateManager.color(0.38F, 0.19F, 0.608F, 1.0F);
             GlStateManager.matrixMode(5890);
             GlStateManager.loadIdentity();
             float f3 = 0.33333334F;
-            GlStateManager.scale(f3, f3, f3);
+            GlStateManager.scale(0.33333334F, 0.33333334F, 0.33333334F);
             GlStateManager.rotate(30.0F - (float)i * 60.0F, 0.0F, 0.0F, 1.0F);
             GlStateManager.translate(0.0F, f * (0.001F + (float)i * 0.003F) * 20.0F, 0.0F);
             GlStateManager.matrixMode(5888);

@@ -62,9 +62,9 @@ public class ServerPinger
         server.playerList = null;
         networkmanager.setNetHandler(new INetHandlerStatusClient()
         {
-            private boolean successful = false;
-            private boolean receivedStatus = false;
-            private long pingSentAt = 0L;
+            private boolean successful;
+            private boolean receivedStatus;
+            private long pingSentAt;
             public void handleServerInfo(SPacketServerInfo packetIn)
             {
                 if (this.receivedStatus)
@@ -170,7 +170,7 @@ public class ServerPinger
             {
                 if (!this.successful)
                 {
-                    ServerPinger.LOGGER.error("Can\'t ping " + server.serverIP + ": " + reason.getUnformattedText());
+                    ServerPinger.LOGGER.error("Can\'t ping {}: {}", new Object[] {server.serverIP, reason.getUnformattedText()});
                     server.serverMOTD = TextFormatting.DARK_RED + "Can\'t connect to server.";
                     server.populationInfo = "";
                     ServerPinger.this.tryCompatibilityPing(server);
@@ -180,7 +180,7 @@ public class ServerPinger
 
         try
         {
-            networkmanager.sendPacket(new C00Handshake(110, serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS));
+            networkmanager.sendPacket(new C00Handshake(210, serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS, true));
             networkmanager.sendPacket(new CPacketServerQuery());
         }
         catch (Throwable throwable)

@@ -26,11 +26,11 @@ public abstract class BlockLog extends BlockRotatedPillar
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         int i = 4;
-        int j = i + 1;
+        int j = 5;
 
-        if (worldIn.isAreaLoaded(pos.add(-j, -j, -j), pos.add(j, j, j)))
+        if (worldIn.isAreaLoaded(pos.add(-5, -5, -5), pos.add(5, 5, 5)))
         {
-            for (BlockPos blockpos : BlockPos.getAllInBox(pos.add(-i, -i, -i), pos.add(i, i, i)))
+            for (BlockPos blockpos : BlockPos.getAllInBox(pos.add(-4, -4, -4), pos.add(4, 4, 4)))
             {
                 IBlockState iblockstate = worldIn.getBlockState(blockpos);
 

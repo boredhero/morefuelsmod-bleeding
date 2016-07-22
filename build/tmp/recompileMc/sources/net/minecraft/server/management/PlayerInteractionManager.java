@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockCommandBlock;
+import net.minecraft.block.BlockStructure;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,10 +22,10 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameType;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldSettings;
 
 public class PlayerInteractionManager
 {
@@ -34,7 +35,7 @@ public class PlayerInteractionManager
     public World theWorld;
     /** The EntityPlayerMP object that this object is connected to. */
     public EntityPlayerMP thisPlayerMP;
-    private WorldSettings.GameType gameType = WorldSettings.GameType.NOT_SET;
+    private GameType gameType = GameType.NOT_SET;
     /** True if the player is destroying a block */
     private boolean isDestroyingBlock;
     private int initialDamage;
@@ -54,7 +55,7 @@ public class PlayerInteractionManager
         this.theWorld = worldIn;
     }
 
-    public void setGameType(WorldSettings.GameType type)
+    public void setGameType(GameType type)
     {
         this.gameType = type;
         type.configurePlayerCapabilities(this.thisPlayerMP.capabilities);
@@ -63,7 +64,7 @@ public class PlayerInteractionManager
         this.theWorld.updateAllPlayersSleepingFlag();
     }
 
-    public WorldSettings.GameType getGameType()
+    public GameType getGameType()
     {
         return this.gameType;
     }
@@ -84,9 +85,9 @@ public class PlayerInteractionManager
     /**
      * if the gameType is currently NOT_SET then change it to par1
      */
-    public void initializeGameType(WorldSettings.GameType type)
+    public void initializeGameType(GameType type)
     {
-        if (this.gameType == WorldSettings.GameType.NOT_SET)
+        if (this.gameType == GameType.NOT_SET)
         {
             this.gameType = type;
         }
@@ -181,7 +182,7 @@ public class PlayerInteractionManager
 
             if (this.gameType.isAdventure())
             {
-                if (this.gameType == WorldSettings.GameType.SPECTATOR)
+                if (this.gameType == GameType.SPECTATOR)
                 {
                     return;
                 }
@@ -318,8 +319,9 @@ public class PlayerInteractionManager
         {
             IBlockState iblockstate = this.theWorld.getBlockState(pos);
             TileEntity tileentity = this.theWorld.getTileEntity(pos);
+            Block block = iblockstate.getBlock();
 
-            if (iblockstate.getBlock() instanceof BlockCommandBlock && !this.thisPlayerMP.canCommandSenderUseCommand(2, ""))
+            if ((block instanceof BlockCommandBlock || block instanceof BlockStructure) && !this.thisPlayerMP.func_189808_dh())
             {
                 this.theWorld.notifyBlockUpdate(pos, iblockstate, iblockstate, 3);
                 return false;
@@ -373,7 +375,7 @@ public class PlayerInteractionManager
 
     public EnumActionResult processRightClick(EntityPlayer player, World worldIn, ItemStack stack, EnumHand hand)
     {
-        if (this.gameType == WorldSettings.GameType.SPECTATOR)
+        if (this.gameType == GameType.SPECTATOR)
         {
             return EnumActionResult.PASS;
         }
@@ -425,18 +427,18 @@ public class PlayerInteractionManager
 
     public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, @Nullable ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (this.gameType == WorldSettings.GameType.SPECTATOR)
+        if (this.gameType == GameType.SPECTATOR)
         {
             TileEntity tileentity = worldIn.getTileEntity(pos);
 
             if (tileentity instanceof ILockableContainer)
             {
-                Block block = worldIn.getBlockState(pos).getBlock();
+                Block block1 = worldIn.getBlockState(pos).getBlock();
                 ILockableContainer ilockablecontainer = (ILockableContainer)tileentity;
 
-                if (ilockablecontainer instanceof TileEntityChest && block instanceof BlockChest)
+                if (ilockablecontainer instanceof TileEntityChest && block1 instanceof BlockChest)
                 {
-                    ilockablecontainer = ((BlockChest)block).getLockableContainer(worldIn, pos);
+                    ilockablecontainer = ((BlockChest)block1).getLockableContainer(worldIn, pos);
                 }
 
                 if (ilockablecontainer != null)
@@ -486,29 +488,37 @@ public class PlayerInteractionManager
             {
                 return EnumActionResult.PASS;
             }
-            else if (stack.getItem() instanceof ItemBlock && ((ItemBlock)stack.getItem()).getBlock() instanceof BlockCommandBlock && !player.canCommandSenderUseCommand(2, ""))
-            {
-                return EnumActionResult.FAIL;
-            }
-            else if (this.isCreative())
-            {
-                int j = stack.getMetadata();
-                int i = stack.stackSize;
-                if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
-                        || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW) {
-                EnumActionResult enumactionresult = stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
-                stack.setItemDamage(j);
-                stack.stackSize = i;
-                return enumactionresult;
-                } else return result;
-
-            }
             else
             {
-                if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
-                        || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
-                return stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
-                else return result;
+                if (stack.getItem() instanceof ItemBlock && !player.func_189808_dh())
+                {
+                    Block block = ((ItemBlock)stack.getItem()).getBlock();
+
+                    if (block instanceof BlockCommandBlock || block instanceof BlockStructure)
+                    {
+                        return EnumActionResult.FAIL;
+                    }
+                }
+
+                if (this.isCreative())
+                {
+                    int j = stack.getMetadata();
+                    int i = stack.stackSize;
+                    if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
+                            || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW) {
+                    EnumActionResult enumactionresult = stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+                    stack.setItemDamage(j);
+                    stack.stackSize = i;
+                    return enumactionresult;
+                    } else return result;
+                }
+                else
+                {
+                    if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
+                            || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
+                    return stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+                    else return result;
+                }
             }
         }
     }

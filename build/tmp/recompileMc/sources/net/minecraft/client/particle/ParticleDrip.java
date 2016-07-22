@@ -14,14 +14,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ParticleDrip extends Particle
 {
     /** the material type for dropped items/blocks */
-    private Material materialType;
+    private final Material materialType;
     /** The height of the current bob */
     private int bobTimer;
 
     protected ParticleDrip(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, Material p_i1203_8_)
     {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
-        this.motionX = this.motionY = this.motionZ = 0.0D;
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
 
         if (p_i1203_8_ == Material.WATER)
         {
@@ -42,7 +44,9 @@ public class ParticleDrip extends Particle
         this.materialType = p_i1203_8_;
         this.bobTimer = 40;
         this.particleMaxAge = (int)(64.0D / (Math.random() * 0.8D + 0.2D));
-        this.motionX = this.motionY = this.motionZ = 0.0D;
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
     }
 
     public int getBrightnessForRender(float p_189214_1_)

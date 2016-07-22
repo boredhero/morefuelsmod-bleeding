@@ -31,7 +31,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
     private final Minecraft mc = Minecraft.getMinecraft();
     private final ModelResourceLocation itemFrameModel = new ModelResourceLocation("item_frame", "normal");
     private final ModelResourceLocation mapModel = new ModelResourceLocation("item_frame", "map");
-    private RenderItem itemRenderer;
+    private final RenderItem itemRenderer;
 
     public RenderItemFrame(RenderManager renderManagerIn, RenderItem itemRendererIn)
     {
@@ -126,7 +126,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
                 this.renderManager.renderEngine.bindTexture(MAP_BACKGROUND_TEXTURES);
                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
                 float f = 0.0078125F;
-                GlStateManager.scale(f, f, f);
+                GlStateManager.scale(0.0078125F, 0.0078125F, 0.0078125F);
                 GlStateManager.translate(-64.0F, -64.0F, 0.0F);
                 MapData mapdata = Items.FILLED_MAP.getMapData(entityitem.getEntityItem(), itemFrame.worldObj);
                 GlStateManager.translate(0.0F, 0.0F, -1.0F);

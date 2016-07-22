@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 
 public class ItemBlockSpecial extends Item
 {
-    private Block block;
+    private final Block block;
 
     public ItemBlockSpecial(Block block)
     {

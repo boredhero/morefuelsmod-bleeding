@@ -16,6 +16,7 @@ import net.minecraft.tileentity.TileEntityHopper;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -24,7 +25,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
     /** Whether this hopper minecart is being blocked by an activator rail. */
     private boolean isBlocked = true;
     private int transferTicker = -1;
-    private BlockPos lastPosition = BlockPos.ORIGIN;
+    private final BlockPos lastPosition = BlockPos.ORIGIN;
 
     public EntityMinecartHopper(World worldIn)
     {
@@ -191,6 +192,11 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
         {
             this.dropItemWithOffset(Item.getItemFromBlock(Blocks.HOPPER), 1, 0.0F);
         }
+    }
+
+    public static void func_189682_a(DataFixer p_189682_0_)
+    {
+        EntityMinecartContainer.func_189680_b(p_189682_0_, "MinecartHopper");
     }
 
     /**

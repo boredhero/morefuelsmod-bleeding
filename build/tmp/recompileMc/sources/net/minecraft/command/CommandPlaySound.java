@@ -136,7 +136,7 @@ public class CommandPlaySound extends CommandBase
 
     public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, SoundEvent.REGISTRY.getKeys()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, SoundCategory.getSoundCategoryNames()) : (args.length == 3 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : (args.length > 3 && args.length <= 6 ? getTabCompletionCoordinate(args, 2, pos) : Collections.<String>emptyList())));
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, SoundEvent.REGISTRY.getKeys()) : (args.length == 2 ? getListOfStringsMatchingLastWord(args, SoundCategory.getSoundCategoryNames()) : (args.length == 3 ? getListOfStringsMatchingLastWord(args, server.getAllUsernames()) : (args.length > 3 && args.length <= 6 ? getTabCompletionCoordinate(args, 3, pos) : Collections.<String>emptyList())));
     }
 
     /**

@@ -32,8 +32,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings;
 
 public class EntitySelector
 {
@@ -252,19 +252,19 @@ public class EntitySelector
                 s = s.substring(1);
             }
 
-            WorldSettings.GameType worldsettings$gametype;
+            GameType gametype;
 
             try
             {
                 int i = Integer.parseInt(s);
-                worldsettings$gametype = WorldSettings.GameType.parseGameTypeWithDefault(i, WorldSettings.GameType.NOT_SET);
+                gametype = GameType.parseGameTypeWithDefault(i, GameType.NOT_SET);
             }
             catch (Throwable var6)
             {
-                worldsettings$gametype = WorldSettings.GameType.parseGameTypeWithDefault(s, WorldSettings.GameType.NOT_SET);
+                gametype = GameType.parseGameTypeWithDefault(s, GameType.NOT_SET);
             }
 
-            final WorldSettings.GameType type = worldsettings$gametype;
+            final GameType type = gametype;
             list.add(new Predicate<Entity>()
             {
                 public boolean apply(@Nullable Entity p_apply_1_)
@@ -276,8 +276,8 @@ public class EntitySelector
                     else
                     {
                         EntityPlayerMP entityplayermp = (EntityPlayerMP)p_apply_1_;
-                        WorldSettings.GameType worldsettings$gametype1 = entityplayermp.interactionManager.getGameType();
-                        return flag ? worldsettings$gametype1 != type : worldsettings$gametype1 == type;
+                        GameType gametype1 = entityplayermp.interactionManager.getGameType();
+                        return flag ? gametype1 != type : gametype1 == type;
                     }
                 }
             });

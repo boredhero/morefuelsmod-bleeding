@@ -128,7 +128,7 @@ public class EntityLeashKnot extends EntityHanging
             {
                 double d0 = 7.0D;
 
-                for (EntityLiving entityliving : this.worldObj.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - d0, this.posY - d0, this.posZ - d0, this.posX + d0, this.posY + d0, this.posZ + d0)))
+                for (EntityLiving entityliving : this.worldObj.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - 7.0D, this.posY - 7.0D, this.posZ - 7.0D, this.posX + 7.0D, this.posY + 7.0D, this.posZ + 7.0D)))
                 {
                     if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player)
                     {
@@ -146,7 +146,7 @@ public class EntityLeashKnot extends EntityHanging
                 {
                     double d1 = 7.0D;
 
-                    for (EntityLiving entityliving1 : this.worldObj.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - d1, this.posY - d1, this.posZ - d1, this.posX + d1, this.posY + d1, this.posZ + d1)))
+                    for (EntityLiving entityliving1 : this.worldObj.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - 7.0D, this.posY - 7.0D, this.posZ - 7.0D, this.posX + 7.0D, this.posY + 7.0D, this.posZ + 7.0D)))
                     {
                         if (entityliving1.getLeashed() && entityliving1.getLeashedToEntity() == this)
                         {

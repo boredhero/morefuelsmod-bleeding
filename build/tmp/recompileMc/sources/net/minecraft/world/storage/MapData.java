@@ -28,7 +28,7 @@ public class MapData extends WorldSavedData
     /** colours */
     public byte[] colors = new byte[16384];
     public List<MapData.MapInfo> playersArrayList = Lists.<MapData.MapInfo>newArrayList();
-    private Map<EntityPlayer, MapData.MapInfo> playersHashMap = Maps.<EntityPlayer, MapData.MapInfo>newHashMap();
+    private final Map<EntityPlayer, MapData.MapInfo> playersHashMap = Maps.<EntityPlayer, MapData.MapInfo>newHashMap();
     public Map<String, Vec4b> mapDecorations = Maps.<String, Vec4b>newLinkedHashMap();
 
     public MapData(String mapname)
@@ -190,7 +190,7 @@ public class MapData extends WorldSavedData
         int j = 63;
         byte b2;
 
-        if (f >= (float)(-j) && f1 >= (float)(-j) && f <= (float)j && f1 <= (float)j)
+        if (f >= -63.0F && f1 >= -63.0F && f <= 63.0F && f1 <= 63.0F)
         {
             rotation = rotation + (rotation < 0.0D ? -8.0D : 8.0D);
             b2 = (byte)((int)(rotation * 16.0D / 360.0D));
@@ -212,24 +212,24 @@ public class MapData extends WorldSavedData
             type = 6;
             b2 = 0;
 
-            if (f <= (float)(-j))
+            if (f <= -63.0F)
             {
-                b0 = (byte)((int)((double)(j * 2) + 2.5D));
+                b0 = -128;
             }
 
-            if (f1 <= (float)(-j))
+            if (f1 <= -63.0F)
             {
-                b1 = (byte)((int)((double)(j * 2) + 2.5D));
+                b1 = -128;
             }
 
-            if (f >= (float)j)
+            if (f >= 63.0F)
             {
-                b0 = (byte)(j * 2 + 1);
+                b0 = 127;
             }
 
-            if (f1 >= (float)j)
+            if (f1 >= 63.0F)
             {
-                b1 = (byte)(j * 2 + 1);
+                b1 = 127;
             }
         }
 
@@ -272,8 +272,8 @@ public class MapData extends WorldSavedData
         /** Reference for EntityPlayer object in MapInfo */
         public final EntityPlayer entityplayerObj;
         private boolean isDirty = true;
-        private int minX = 0;
-        private int minY = 0;
+        private int minX;
+        private int minY;
         private int maxX = 127;
         private int maxY = 127;
         private int tick;

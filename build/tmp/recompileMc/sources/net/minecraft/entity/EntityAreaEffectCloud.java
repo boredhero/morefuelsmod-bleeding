@@ -30,6 +30,8 @@ public class EntityAreaEffectCloud extends Entity
     private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> IGNORE_RADIUS = EntityDataManager.<Boolean>createKey(EntityAreaEffectCloud.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Integer> PARTICLE = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> field_189736_e = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> field_189737_f = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
     private PotionType potion;
     private final List<PotionEffect> effects;
     private final Map<Entity, Integer> reapplicationDelayMap;
@@ -69,6 +71,8 @@ public class EntityAreaEffectCloud extends Entity
         this.getDataManager().register(RADIUS, Float.valueOf(0.5F));
         this.getDataManager().register(IGNORE_RADIUS, Boolean.valueOf(false));
         this.getDataManager().register(PARTICLE, Integer.valueOf(EnumParticleTypes.SPELL_MOB.getParticleID()));
+        this.getDataManager().register(field_189736_e, Integer.valueOf(0));
+        this.getDataManager().register(field_189737_f, Integer.valueOf(0));
     }
 
     public void setRadius(float radiusIn)
@@ -138,6 +142,26 @@ public class EntityAreaEffectCloud extends Entity
         this.getDataManager().set(PARTICLE, Integer.valueOf(particleIn.getParticleID()));
     }
 
+    public int func_189733_n()
+    {
+        return ((Integer)this.getDataManager().get(field_189736_e)).intValue();
+    }
+
+    public void func_189734_b(int p_189734_1_)
+    {
+        this.getDataManager().set(field_189736_e, Integer.valueOf(p_189734_1_));
+    }
+
+    public int func_189735_o()
+    {
+        return ((Integer)this.getDataManager().get(field_189737_f)).intValue();
+    }
+
+    public void func_189732_d(int p_189732_1_)
+    {
+        this.getDataManager().set(field_189737_f, Integer.valueOf(p_189732_1_));
+    }
+
     /**
      * Sets if the radius should be ignored, and the effect should be shown in a single point instead of an area
      */
@@ -176,13 +200,22 @@ public class EntityAreaEffectCloud extends Entity
         if (this.worldObj.isRemote)
         {
             EnumParticleTypes enumparticletypes = this.getParticle();
+            int[] aint = new int[enumparticletypes.getArgumentCount()];
+
+            if (aint.length > 0)
+            {
+                aint[0] = this.func_189733_n();
+            }
+
+            if (aint.length > 1)
+            {
+                aint[1] = this.func_189735_o();
+            }
 
             if (flag)
             {
                 if (this.rand.nextBoolean())
                 {
-                    int[] aint = new int[enumparticletypes.getArgumentCount()];
-
                     for (int i = 0; i < 2; ++i)
                     {
                         float f1 = this.rand.nextFloat() * ((float)Math.PI * 2F);
@@ -208,7 +241,6 @@ public class EntityAreaEffectCloud extends Entity
             else
             {
                 float f5 = (float)Math.PI * f * f;
-                int[] aint1 = new int[enumparticletypes.getArgumentCount()];
 
                 for (int k1 = 0; (float)k1 < f5; ++k1)
                 {
@@ -227,7 +259,7 @@ public class EntityAreaEffectCloud extends Entity
                     }
                     else
                     {
-                        this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)f8, this.posY, this.posZ + (double)f9, (0.5D - this.rand.nextDouble()) * 0.15D, 0.009999999776482582D, (0.5D - this.rand.nextDouble()) * 0.15D, aint1);
+                        this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)f8, this.posY, this.posZ + (double)f9, (0.5D - this.rand.nextDouble()) * 0.15D, 0.009999999776482582D, (0.5D - this.rand.nextDouble()) * 0.15D, aint);
                     }
                 }
             }
@@ -413,6 +445,8 @@ public class EntityAreaEffectCloud extends Entity
             if (enumparticletypes != null)
             {
                 this.setParticle(enumparticletypes);
+                this.func_189734_b(compound.getInteger("ParticleParam1"));
+                this.func_189732_d(compound.getInteger("ParticleParam2"));
             }
         }
 
@@ -457,6 +491,8 @@ public class EntityAreaEffectCloud extends Entity
         compound.setFloat("RadiusPerTick", this.radiusPerTick);
         compound.setFloat("Radius", this.getRadius());
         compound.setString("Particle", this.getParticle().getParticleName());
+        compound.setInteger("ParticleParam1", this.func_189733_n());
+        compound.setInteger("ParticleParam2", this.func_189735_o());
 
         if (this.ownerUniqueId != null)
         {

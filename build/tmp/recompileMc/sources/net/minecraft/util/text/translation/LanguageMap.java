@@ -20,7 +20,7 @@ public class LanguageMap
     /** A Splitter that splits a string on the first "=".  For example, "a=b=c" would split into ["a", "b=c"]. */
     private static final Splitter EQUAL_SIGN_SPLITTER = Splitter.on('=').limit(2);
     /** Is the private singleton instance of StringTranslate. */
-    private static LanguageMap instance = new LanguageMap();
+    private static final LanguageMap instance = new LanguageMap();
     private final Map<String, String> languageList = Maps.<String, String>newHashMap();
     /** The time, in milliseconds since epoch, that this instance was last updated */
     private long lastUpdateTimeInMilliseconds;

@@ -238,19 +238,11 @@ public class BlockDispenser extends BlockContainer
      */
     public static IPosition getDispensePosition(IBlockSource coords)
     {
-        EnumFacing enumfacing = getFacing(coords.getBlockMetadata());
+        EnumFacing enumfacing = (EnumFacing)coords.func_189992_e().getValue(FACING);
         double d0 = coords.getX() + 0.7D * (double)enumfacing.getFrontOffsetX();
         double d1 = coords.getY() + 0.7D * (double)enumfacing.getFrontOffsetY();
         double d2 = coords.getZ() + 0.7D * (double)enumfacing.getFrontOffsetZ();
         return new PositionImpl(d0, d1, d2);
-    }
-
-    /**
-     * Get the facing of a dispenser with the given metadata
-     */
-    public static EnumFacing getFacing(int meta)
-    {
-        return EnumFacing.getFront(meta & 7);
     }
 
     public boolean hasComparatorInputOverride(IBlockState state)
@@ -276,7 +268,7 @@ public class BlockDispenser extends BlockContainer
      */
     public IBlockState getStateFromMeta(int meta)
     {
-        return this.getDefaultState().withProperty(FACING, getFacing(meta)).withProperty(TRIGGERED, Boolean.valueOf((meta & 8) > 0));
+        return this.getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(TRIGGERED, Boolean.valueOf((meta & 8) > 0));
     }
 
     /**

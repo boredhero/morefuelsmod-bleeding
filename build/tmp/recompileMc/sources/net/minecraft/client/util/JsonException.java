@@ -40,7 +40,7 @@ public class JsonException extends IOException
 
     public String getMessage()
     {
-        return "Invalid " + ((JsonException.Entry)this.entries.get(this.entries.size() - 1)).toString() + ": " + this.message;
+        return "Invalid " + this.entries.get(this.entries.size() - 1) + ": " + this.message;
     }
 
     public static JsonException forException(Exception p_151379_0_)
@@ -70,7 +70,6 @@ public class JsonException extends IOException
 
             private Entry()
             {
-                this.filename = null;
                 this.jsonKeys = Lists.<String>newArrayList();
             }
 
@@ -86,7 +85,7 @@ public class JsonException extends IOException
 
             public String toString()
             {
-                return this.filename != null ? (!this.jsonKeys.isEmpty() ? this.filename + " " + this.getJsonKeys() : this.filename) : (!this.jsonKeys.isEmpty() ? "(Unknown file) " + this.getJsonKeys() : "(Unknown file)");
+                return this.filename != null ? (this.jsonKeys.isEmpty() ? this.filename : this.filename + " " + this.getJsonKeys()) : (this.jsonKeys.isEmpty() ? "(Unknown file)" : "(Unknown file) " + this.getJsonKeys());
             }
         }
 }

@@ -6,8 +6,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockFalling extends Block
 {
@@ -53,7 +56,7 @@ public class BlockFalling extends Block
         {
             int i = 32;
 
-            if (!fallInstantly && worldIn.isAreaLoaded(pos.add(-i, -i, -i), pos.add(i, i, i)))
+            if (!fallInstantly && worldIn.isAreaLoaded(pos.add(-32, -32, -32), pos.add(32, 32, 32)))
             {
                 if (!worldIn.isRemote)
                 {
@@ -101,5 +104,28 @@ public class BlockFalling extends Block
 
     public void onEndFalling(World worldIn, BlockPos pos)
     {
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
+    {
+        if (rand.nextInt(16) == 0)
+        {
+            BlockPos blockpos = pos.down();
+
+            if (canFallThrough(worldIn.getBlockState(blockpos)))
+            {
+                double d0 = (double)((float)pos.getX() + rand.nextFloat());
+                double d1 = (double)pos.getY() - 0.05D;
+                double d2 = (double)((float)pos.getZ() + rand.nextFloat());
+                worldIn.spawnParticle(EnumParticleTypes.FALLING_DUST, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[] {Block.getStateId(stateIn)});
+            }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int func_189876_x(IBlockState p_189876_1_)
+    {
+        return -16777216;
     }
 }

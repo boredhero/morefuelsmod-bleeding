@@ -296,6 +296,11 @@ public class EnchantmentHelper
         return getMaxEnchantmentLevel(Enchantments.AQUA_AFFINITY, p_185287_0_) > 0;
     }
 
+    public static boolean func_189869_j(EntityLivingBase p_189869_0_)
+    {
+        return getMaxEnchantmentLevel(Enchantments.FROST_WALKER, p_189869_0_) > 0;
+    }
+
     @Nullable
     public static ItemStack getEnchantedItem(Enchantment p_92099_0_, EntityLivingBase p_92099_1_)
     {

@@ -66,11 +66,17 @@ public class ChunkCache implements IBlockAccess
     @Nullable
     public TileEntity getTileEntity(BlockPos pos)
     {
-        int i = (pos.getX() >> 4) - this.chunkX;
-        int j = (pos.getZ() >> 4) - this.chunkZ;
+        return this.func_190300_a(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
+    }
+
+    @Nullable
+    public TileEntity func_190300_a(BlockPos p_190300_1_, Chunk.EnumCreateEntityType p_190300_2_)
+    {
+        int i = (p_190300_1_.getX() >> 4) - this.chunkX;
+        int j = (p_190300_1_.getZ() >> 4) - this.chunkZ;
         if (i < 0 || i >= chunkArray.length || j < 0 || j >= chunkArray[i].length) return null;
         if (chunkArray[i][j] == null) return null;
-        return this.chunkArray[i][j].getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
+        return this.chunkArray[i][j].getTileEntity(p_190300_1_, p_190300_2_);
     }
 
     @SideOnly(Side.CLIENT)
@@ -203,7 +209,7 @@ public class ChunkCache implements IBlockAccess
     {
         int x = (pos.getX() >> 4) - this.chunkX;
         int z = (pos.getZ() >> 4) - this.chunkZ;
-        if (pos.getY() >= 0 && pos.getY() < 256) return _default;
+        if (pos.getY() < 0 || pos.getY() >= 256) return _default;
         if (x < 0 || x >= chunkArray.length || z < 0 || z >= chunkArray[x].length) return _default;
         if (chunkArray[x][z] == null) return _default;
 

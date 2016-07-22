@@ -14,9 +14,9 @@ public class ModelPlayer extends ModelBiped
     public ModelRenderer bipedLeftLegwear;
     public ModelRenderer bipedRightLegwear;
     public ModelRenderer bipedBodyWear;
-    private ModelRenderer bipedCape;
-    private ModelRenderer bipedDeadmau5Head;
-    private boolean smallArms;
+    private final ModelRenderer bipedCape;
+    private final ModelRenderer bipedDeadmau5Head;
+    private final boolean smallArms;
 
     public ModelPlayer(float modelSize, boolean smallArmsIn)
     {
@@ -81,7 +81,7 @@ public class ModelPlayer extends ModelBiped
         if (this.isChild)
         {
             float f = 2.0F;
-            GlStateManager.scale(1.0F / f, 1.0F / f, 1.0F / f);
+            GlStateManager.scale(0.5F, 0.5F, 0.5F);
             GlStateManager.translate(0.0F, 24.0F * scale, 0.0F);
             this.bipedLeftLegwear.render(scale);
             this.bipedRightLegwear.render(scale);

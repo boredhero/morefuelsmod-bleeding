@@ -72,10 +72,10 @@ public class Profiler
 
             if (k > 100000000L)
             {
-                LOGGER.warn("Something\'s taking too long! \'" + this.profilingSection + "\' took aprox " + (double)k / 1000000.0D + " ms");
+                LOGGER.warn("Something\'s taking too long! \'{}\' took aprox {} ms", new Object[] {this.profilingSection, Double.valueOf((double)k / 1000000.0D)});
             }
 
-            this.profilingSection = !this.sectionList.isEmpty() ? (String)this.sectionList.get(this.sectionList.size() - 1) : "";
+            this.profilingSection = this.sectionList.isEmpty() ? "" : (String)this.sectionList.get(this.sectionList.size() - 1);
         }
     }
 

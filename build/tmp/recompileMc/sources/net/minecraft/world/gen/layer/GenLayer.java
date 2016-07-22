@@ -40,13 +40,12 @@ public abstract class GenLayer
         GenLayerAddMushroomIsland genlayeraddmushroomisland = new GenLayerAddMushroomIsland(5L, genlayeraddisland3);
         GenLayerDeepOcean genlayerdeepocean = new GenLayerDeepOcean(4L, genlayeraddmushroomisland);
         GenLayer genlayer4 = GenLayerZoom.magnify(1000L, genlayerdeepocean, 0);
-        ChunkProviderSettings chunkprovidersettings = null;
         int i = 4;
         int j = i;
 
         if (p_180781_2_ == WorldType.CUSTOMIZED && !p_180781_3_.isEmpty())
         {
-            chunkprovidersettings = ChunkProviderSettings.Factory.jsonToFactory(p_180781_3_).build();
+            ChunkProviderSettings chunkprovidersettings = ChunkProviderSettings.Factory.jsonToFactory(p_180781_3_).build();
             i = chunkprovidersettings.biomeSize;
             j = chunkprovidersettings.riverSize;
         }

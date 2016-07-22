@@ -1,3 +1,22 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.minecraftforge.client;
 
 import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.*;
@@ -150,6 +169,7 @@ public class GuiIngameForge extends GuiIngame
 
         renderToolHighlight(res);
         renderHUDText(width, height);
+        renderFPSGraph();
         renderPotionIcons(res);
         renderRecordOverlay(width, height, partialTicks);
         renderSubtitles(res);
@@ -459,7 +479,6 @@ public class GuiIngameForge extends GuiIngame
 
         FoodStats stats = mc.thePlayer.getFoodStats();
         int level = stats.getFoodLevel();
-        int levelLast = stats.getPrevFoodLevel();
 
         for (int i = 0; i < 10; ++i)
         {
@@ -482,14 +501,6 @@ public class GuiIngameForge extends GuiIngame
             }
 
             drawTexturedModalRect(x, y, 16 + background * 9, 27, 9, 9);
-
-            if (unused)
-            {
-                if (idx < levelLast)
-                    drawTexturedModalRect(x, y, icon + 54, 27, 9, 9);
-                else if (idx == levelLast)
-                    drawTexturedModalRect(x, y, icon + 63, 27, 9, 9);
-            }
 
             if (idx < level)
                 drawTexturedModalRect(x, y, icon + 36, 27, 9, 9);
@@ -707,6 +718,15 @@ public class GuiIngameForge extends GuiIngame
         post(TEXT);
     }
 
+    protected void renderFPSGraph()
+    {
+        if (this.mc.gameSettings.showDebugInfo && this.mc.gameSettings.showLagometer && !pre(FPS_GRAPH))
+        {
+            this.debugOverlay.renderLagometer();
+            post(FPS_GRAPH);
+        }
+    }
+
     protected void renderRecordOverlay(int width, int height, float partialTicks)
     {
         if (recordPlayingUpFor > 0)
@@ -874,10 +894,22 @@ public class GuiIngameForge extends GuiIngame
 
     private class GuiOverlayDebugForge extends GuiOverlayDebug
     {
-        private GuiOverlayDebugForge(Minecraft mc){ super(mc); }
+        private Minecraft mc;
+        private GuiOverlayDebugForge(Minecraft mc)
+        {
+            super(mc);
+            this.mc = mc;
+        }
         @Override protected void renderDebugInfoLeft(){}
         @Override protected void renderDebugInfoRight(ScaledResolution res){}
-        private List<String> getLeft(){ return this.call(); }
+        private List<String> getLeft()
+        {
+            List<String> ret = this.call();
+            ret.add("");
+            ret.add("Debug: Pie [shift]: " + (this.mc.gameSettings.showDebugProfilerChart ? "visible" : "hidden") + " FPS [alt]: " + (this.mc.gameSettings.showLagometer ? "visible" : "hidden"));
+            ret.add("For help: press F3 + Q");
+            return ret;
+        }
         private List<String> getRight(){ return this.getDebugInfoRight(); }
     }
 }

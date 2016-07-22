@@ -61,7 +61,7 @@ public class BlockSnow extends Block
         int i = ((Integer)blockState.getValue(LAYERS)).intValue() - 1;
         float f = 0.125F;
         AxisAlignedBB axisalignedbb = blockState.getBoundingBox(worldIn, pos);
-        return new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.maxX, (double)((float)i * f), axisalignedbb.maxZ);
+        return new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.maxX, (double)((float)i * 0.125F), axisalignedbb.maxZ);
     }
 
     /**

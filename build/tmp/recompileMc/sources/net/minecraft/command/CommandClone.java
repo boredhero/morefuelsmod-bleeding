@@ -2,7 +2,7 @@ package net.minecraft.command;
 
 import com.google.common.collect.Lists;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -72,13 +72,13 @@ public class CommandClone extends CommandBase
                 Block block = null;
                 int j = -1;
 
-                if ((args.length < 11 || !args[10].equals("force") && !args[10].equals("move")) && structureboundingbox.intersectsWith(structureboundingbox1))
+                if ((args.length < 11 || !"force".equals(args[10]) && !"move".equals(args[10])) && structureboundingbox.intersectsWith(structureboundingbox1))
                 {
                     throw new CommandException("commands.clone.noOverlap", new Object[0]);
                 }
                 else
                 {
-                    if (args.length >= 11 && args[10].equals("move"))
+                    if (args.length >= 11 && "move".equals(args[10]))
                     {
                         flag = true;
                     }
@@ -93,11 +93,11 @@ public class CommandClone extends CommandBase
 
                             if (args.length >= 10)
                             {
-                                if (args[9].equals("masked"))
+                                if ("masked".equals(args[9]))
                                 {
                                     flag1 = true;
                                 }
-                                else if (args[9].equals("filtered"))
+                                else if ("filtered".equals(args[9]))
                                 {
                                     if (args.length < 12)
                                     {
@@ -116,7 +116,7 @@ public class CommandClone extends CommandBase
                             List<CommandClone.StaticCloneData> list = Lists.<CommandClone.StaticCloneData>newArrayList();
                             List<CommandClone.StaticCloneData> list1 = Lists.<CommandClone.StaticCloneData>newArrayList();
                             List<CommandClone.StaticCloneData> list2 = Lists.<CommandClone.StaticCloneData>newArrayList();
-                            LinkedList<BlockPos> linkedlist = Lists.<BlockPos>newLinkedList();
+                            Deque<BlockPos> deque = Lists.<BlockPos>newLinkedList();
                             BlockPos blockpos3 = new BlockPos(structureboundingbox1.minX - structureboundingbox.minX, structureboundingbox1.minY - structureboundingbox.minY, structureboundingbox1.minZ - structureboundingbox.minZ);
 
                             for (int k = structureboundingbox.minZ; k <= structureboundingbox.maxZ; ++k)
@@ -137,17 +137,17 @@ public class CommandClone extends CommandBase
                                             {
                                                 NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
                                                 list1.add(new CommandClone.StaticCloneData(blockpos5, iblockstate, nbttagcompound));
-                                                linkedlist.addLast(blockpos4);
+                                                deque.addLast(blockpos4);
                                             }
                                             else if (!iblockstate.isFullBlock() && !iblockstate.isFullCube())
                                             {
                                                 list2.add(new CommandClone.StaticCloneData(blockpos5, iblockstate, (NBTTagCompound)null));
-                                                linkedlist.addFirst(blockpos4);
+                                                deque.addFirst(blockpos4);
                                             }
                                             else
                                             {
                                                 list.add(new CommandClone.StaticCloneData(blockpos5, iblockstate, (NBTTagCompound)null));
-                                                linkedlist.addLast(blockpos4);
+                                                deque.addLast(blockpos4);
                                             }
                                         }
                                     }
@@ -156,7 +156,7 @@ public class CommandClone extends CommandBase
 
                             if (flag)
                             {
-                                for (BlockPos blockpos6 : linkedlist)
+                                for (BlockPos blockpos6 : deque)
                                 {
                                     TileEntity tileentity1 = world.getTileEntity(blockpos6);
 
@@ -168,7 +168,7 @@ public class CommandClone extends CommandBase
                                     world.setBlockState(blockpos6, Blocks.BARRIER.getDefaultState(), 2);
                                 }
 
-                                for (BlockPos blockpos7 : linkedlist)
+                                for (BlockPos blockpos7 : deque)
                                 {
                                     world.setBlockState(blockpos7, Blocks.AIR.getDefaultState(), 3);
                                 }

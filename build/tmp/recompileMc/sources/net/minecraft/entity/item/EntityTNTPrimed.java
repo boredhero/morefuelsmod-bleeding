@@ -69,7 +69,12 @@ public class EntityTNTPrimed extends Entity
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
-        this.motionY -= 0.03999999910593033D;
+
+        if (!this.func_189652_ae())
+        {
+            this.motionY -= 0.03999999910593033D;
+        }
+
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
         this.motionX *= 0.9800000190734863D;
         this.motionY *= 0.9800000190734863D;
@@ -103,7 +108,7 @@ public class EntityTNTPrimed extends Entity
     private void explode()
     {
         float f = 4.0F;
-        this.worldObj.createExplosion(this, this.posX, this.posY + (double)(this.height / 16.0F), this.posZ, f, true);
+        this.worldObj.createExplosion(this, this.posX, this.posY + (double)(this.height / 16.0F), this.posZ, 4.0F, true);
     }
 
     /**

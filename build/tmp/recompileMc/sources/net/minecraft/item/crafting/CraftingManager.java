@@ -195,6 +195,7 @@ public class CraftingManager
         this.addRecipe(new ItemStack(Blocks.HOPPER), new Object[] {"I I", "ICI", " I ", 'I', Items.IRON_INGOT, 'C', Blocks.CHEST});
         this.addRecipe(new ItemStack(Items.ARMOR_STAND, 1), new Object[] {"///", " / ", "/_/", '/', Items.STICK, '_', new ItemStack(Blocks.STONE_SLAB, 1, BlockStoneSlab.EnumType.STONE.getMetadata())});
         this.addRecipe(new ItemStack(Blocks.END_ROD, 4), new Object[] {"/", "#", '/', Items.BLAZE_ROD, '#', Items.CHORUS_FRUIT_POPPED});
+        this.addRecipe(new ItemStack(Blocks.field_189880_di, 1), new Object[] {"XXX", "XXX", "XXX", 'X', new ItemStack(Items.DYE, 1, EnumDyeColor.WHITE.getDyeDamage())});
         Collections.sort(this.recipes, new Comparator<IRecipe>()
         {
             public int compare(IRecipe p_compare_1_, IRecipe p_compare_2_)
@@ -218,9 +219,8 @@ public class CraftingManager
         {
             String[] astring = (String[])((String[])recipeComponents[i++]);
 
-            for (int l = 0; l < astring.length; ++l)
+            for (String s2 : astring)
             {
-                String s2 = astring[l];
                 ++k;
                 j = s2.length();
                 s = s + s2;
@@ -262,17 +262,17 @@ public class CraftingManager
 
         ItemStack[] aitemstack = new ItemStack[j * k];
 
-        for (int i1 = 0; i1 < j * k; ++i1)
+        for (int l = 0; l < j * k; ++l)
         {
-            char c0 = s.charAt(i1);
+            char c0 = s.charAt(l);
 
             if (map.containsKey(Character.valueOf(c0)))
             {
-                aitemstack[i1] = ((ItemStack)map.get(Character.valueOf(c0))).copy();
+                aitemstack[l] = ((ItemStack)map.get(Character.valueOf(c0))).copy();
             }
             else
             {
-                aitemstack[i1] = null;
+                aitemstack[l] = null;
             }
         }
 

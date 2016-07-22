@@ -10,6 +10,7 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.EnumDifficulty;
@@ -32,6 +33,11 @@ public class EntityWitherSkull extends EntityFireball
     {
         super(worldIn, shooter, accelX, accelY, accelZ);
         this.setSize(0.3125F, 0.3125F);
+    }
+
+    public static void func_189746_a(DataFixer p_189746_0_)
+    {
+        EntityFireball.func_189743_a(p_189746_0_, "WitherSkull");
     }
 
     /**
@@ -86,13 +92,13 @@ public class EntityWitherSkull extends EntityFireball
                 {
                     if (result.entityHit.attackEntityFrom(DamageSource.causeMobDamage(this.shootingEntity), 8.0F))
                     {
-                        if (!result.entityHit.isEntityAlive())
+                        if (result.entityHit.isEntityAlive())
                         {
-                            this.shootingEntity.heal(5.0F);
+                            this.applyEnchantments(this.shootingEntity, result.entityHit);
                         }
                         else
                         {
-                            this.applyEnchantments(this.shootingEntity, result.entityHit);
+                            this.shootingEntity.heal(5.0F);
                         }
                     }
                 }

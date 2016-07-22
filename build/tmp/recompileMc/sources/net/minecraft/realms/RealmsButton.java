@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class RealmsButton
 {
     protected static final ResourceLocation WIDGETS_LOCATION = new ResourceLocation("textures/gui/widgets.png");
-    private GuiButtonRealmsProxy proxy;
+    private final GuiButtonRealmsProxy proxy;
 
     public RealmsButton(int buttonId, int x, int y, String text)
     {

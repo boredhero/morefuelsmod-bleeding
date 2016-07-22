@@ -40,9 +40,9 @@ public class SPacketDestroyEntities implements Packet<INetHandlerPlayClient>
     {
         buf.writeVarIntToBuffer(this.entityIDs.length);
 
-        for (int i = 0; i < this.entityIDs.length; ++i)
+        for (int i : this.entityIDs)
         {
-            buf.writeVarIntToBuffer(this.entityIDs[i]);
+            buf.writeVarIntToBuffer(i);
         }
     }
 

@@ -59,15 +59,4 @@ public class BlockWorldState
             }
         };
     }
-
-    public static Predicate<BlockWorldState> hasState(final IBlockState p_185925_0_)
-    {
-        return new Predicate<BlockWorldState>()
-        {
-            public boolean apply(@Nullable BlockWorldState p_apply_1_)
-            {
-                return p_apply_1_ != null && p_apply_1_.getBlockState().equals(p_185925_0_);
-            }
-        };
-    }
 }

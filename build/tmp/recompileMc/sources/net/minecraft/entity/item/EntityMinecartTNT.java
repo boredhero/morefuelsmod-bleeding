@@ -12,6 +12,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -30,6 +31,11 @@ public class EntityMinecartTNT extends EntityMinecart
     public EntityMinecartTNT(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189674_a(DataFixer p_189674_0_)
+    {
+        EntityMinecart.func_189669_a(p_189674_0_, "MinecartTNT");
     }
 
     public EntityMinecart.Type getType()

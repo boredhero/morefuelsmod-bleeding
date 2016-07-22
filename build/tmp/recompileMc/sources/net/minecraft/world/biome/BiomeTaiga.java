@@ -25,7 +25,7 @@ public class BiomeTaiga extends Biome
     private static final WorldGenMegaPineTree MEGA_PINE_GENERATOR = new WorldGenMegaPineTree(false, false);
     private static final WorldGenMegaPineTree MEGA_SPRUCE_GENERATOR = new WorldGenMegaPineTree(false, true);
     private static final WorldGenBlockBlob FOREST_ROCK_GENERATOR = new WorldGenBlockBlob(Blocks.MOSSY_COBBLESTONE, 0);
-    private BiomeTaiga.Type type;
+    private final BiomeTaiga.Type type;
 
     public BiomeTaiga(BiomeTaiga.Type typeIn, Biome.BiomeProperties properties)
     {

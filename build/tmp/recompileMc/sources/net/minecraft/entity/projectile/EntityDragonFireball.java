@@ -7,6 +7,7 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -32,6 +33,11 @@ public class EntityDragonFireball extends EntityFireball
     {
         super(worldIn, shooter, accelX, accelY, accelZ);
         this.setSize(0.3125F, 0.3125F);
+    }
+
+    public static void func_189747_a(DataFixer p_189747_0_)
+    {
+        EntityFireball.func_189743_a(p_189747_0_, "DragonFireball");
     }
 
     /**

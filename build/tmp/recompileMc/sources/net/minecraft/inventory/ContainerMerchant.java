@@ -12,8 +12,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ContainerMerchant extends Container
 {
     /** Instance of Merchant. */
-    private IMerchant theMerchant;
-    private InventoryMerchant merchantInventory;
+    private final IMerchant theMerchant;
+    private final InventoryMerchant merchantInventory;
     /** Instance of World. */
     private final World theWorld;
 

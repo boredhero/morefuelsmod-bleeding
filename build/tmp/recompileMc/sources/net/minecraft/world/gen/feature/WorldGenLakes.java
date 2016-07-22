@@ -11,7 +11,7 @@ import net.minecraft.world.biome.Biome;
 
 public class WorldGenLakes extends WorldGenerator
 {
-    private Block block;
+    private final Block block;
 
     public WorldGenLakes(Block blockIn)
     {
@@ -159,9 +159,9 @@ public class WorldGenLakes extends WorldGenerator
                     {
                         int l4 = 4;
 
-                        if (worldIn.canBlockFreezeWater(position.add(k2, l4, l3)))
+                        if (worldIn.canBlockFreezeWater(position.add(k2, 4, l3)))
                         {
-                            worldIn.setBlockState(position.add(k2, l4, l3), Blocks.ICE.getDefaultState(), 2);
+                            worldIn.setBlockState(position.add(k2, 4, l3), Blocks.ICE.getDefaultState(), 2);
                         }
                     }
                 }

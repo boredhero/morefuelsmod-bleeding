@@ -17,7 +17,7 @@ public abstract class EntityCreature extends EntityLiving
     private BlockPos homePosition = BlockPos.ORIGIN;
     /** If -1 there is no maximum distance */
     private float maximumHomeDistance = -1.0F;
-    private EntityAIBase aiBase = new EntityAIMoveTowardsRestriction(this, 1.0D);
+    private final EntityAIBase aiBase = new EntityAIMoveTowardsRestriction(this, 1.0D);
     private boolean isMovementAITaskSet;
     private float restoreWaterCost = PathNodeType.WATER.getPriority();
 

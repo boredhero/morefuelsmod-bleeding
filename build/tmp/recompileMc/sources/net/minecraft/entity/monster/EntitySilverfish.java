@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSilverfish;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
@@ -21,6 +22,7 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -35,10 +37,16 @@ public class EntitySilverfish extends EntityMob
         this.setSize(0.4F, 0.3F);
     }
 
+    public static void func_189767_b(DataFixer p_189767_0_)
+    {
+        EntityLiving.func_189752_a(p_189767_0_, "Silverfish");
+    }
+
     protected void initEntityAI()
     {
+        this.summonSilverfish = new EntitySilverfish.AISummonSilverfish(this);
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(3, this.summonSilverfish = new EntitySilverfish.AISummonSilverfish(this));
+        this.tasks.addTask(3, this.summonSilverfish);
         this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0D, false));
         this.tasks.addTask(5, new EntitySilverfish.AIHideInStone(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[0]));
@@ -254,7 +262,7 @@ public class EntitySilverfish extends EntityMob
 
     static class AISummonSilverfish extends EntityAIBase
         {
-            private EntitySilverfish silverfish;
+            private final EntitySilverfish silverfish;
             private int lookForFriends;
 
             public AISummonSilverfish(EntitySilverfish silverfishIn)

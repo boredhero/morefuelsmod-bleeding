@@ -83,24 +83,24 @@ public class GuiSubtitleOverlay extends Gui implements ISoundEventListener
                 int l1 = MathHelper.floor_double(MathHelper.denormalizeClamp(255.0D, 75.0D, (double)((float)(Minecraft.getSystemTime() - guisubtitleoverlay$subtitle1.getStartTime()) / 3000.0F)));
                 int i2 = l1 << 16 | l1 << 8 | l1;
                 GlStateManager.pushMatrix();
-                GlStateManager.translate((float)resolution.getScaledWidth() - (float)l * f - 2.0F, (float)(resolution.getScaledHeight() - 30) - (float)(i * (i1 + 1)) * f, 0.0F);
-                GlStateManager.scale(f, f, f);
-                drawRect(-l - 1, -j1 - 1, l + 1, j1 + 1, (int)((double)k * 0.8D) << 24);
+                GlStateManager.translate((float)resolution.getScaledWidth() - (float)l * 1.0F - 2.0F, (float)(resolution.getScaledHeight() - 30) - (float)(i * (i1 + 1)) * 1.0F, 0.0F);
+                GlStateManager.scale(1.0F, 1.0F, 1.0F);
+                drawRect(-l - 1, -j1 - 1, l + 1, j1 + 1, -872415232);
                 GlStateManager.enableBlend();
 
                 if (!flag)
                 {
                     if (d0 > 0.0D)
                     {
-                        this.client.fontRendererObj.drawString(">", l - this.client.fontRendererObj.getStringWidth(">"), -j1, i2 + (k << 24 & -16777216));
+                        this.client.fontRendererObj.drawString(">", l - this.client.fontRendererObj.getStringWidth(">"), -j1, i2 + -16777216);
                     }
                     else if (d0 < 0.0D)
                     {
-                        this.client.fontRendererObj.drawString("<", -l, -j1, i2 + (k << 24 & -16777216));
+                        this.client.fontRendererObj.drawString("<", -l, -j1, i2 + -16777216);
                     }
                 }
 
-                this.client.fontRendererObj.drawString(s, -k1 / 2, -j1, i2 + (k << 24 & -16777216));
+                this.client.fontRendererObj.drawString(s, -k1 / 2, -j1, i2 + -16777216);
                 GlStateManager.popMatrix();
                 ++i;
             }

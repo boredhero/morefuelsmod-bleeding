@@ -31,7 +31,7 @@ public class ShaderManager
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ShaderDefault DEFAULT_SHADER_UNIFORM = new ShaderDefault();
-    private static ShaderManager staticShaderManager = null;
+    private static ShaderManager staticShaderManager;
     private static int currentProgram = -1;
     private static boolean lastCull = true;
     private final Map<String, Object> shaderSamplers = Maps.<String, Object>newHashMap();
@@ -284,7 +284,7 @@ public class ShaderManager
 
             if (k == -1)
             {
-                LOGGER.warn("Shader " + this.programFilename + "could not find sampler named " + s + " in the specified shader program.");
+                LOGGER.warn("Shader {}could not find sampler named {} in the specified shader program.", new Object[] {this.programFilename, s});
                 this.shaderSamplers.remove(s);
                 this.samplerNames.remove(j);
                 --j;
@@ -304,7 +304,7 @@ public class ShaderManager
 
             if (l == -1)
             {
-                LOGGER.warn("Could not find uniform named " + s1 + " in the specified" + " shader program.");
+                LOGGER.warn("Could not find uniform named {} in the specified shader program.", new Object[] {s1});
             }
             else
             {

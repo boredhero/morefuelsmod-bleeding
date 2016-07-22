@@ -49,11 +49,11 @@ public final class WorldEntitySpawner
                     int k = MathHelper.floor_double(entityplayer.posZ / 16.0D);
                     int l = 8;
 
-                    for (int i1 = -l; i1 <= l; ++i1)
+                    for (int i1 = -8; i1 <= 8; ++i1)
                     {
-                        for (int j1 = -l; j1 <= l; ++j1)
+                        for (int j1 = -8; j1 <= 8; ++j1)
                         {
-                            boolean flag = i1 == -l || i1 == l || j1 == -l || j1 == l;
+                            boolean flag = i1 == -8 || i1 == 8 || j1 == -8 || j1 == 8;
                             ChunkPos chunkpos = new ChunkPos(i1 + j, j1 + k);
 
                             if (!this.eligibleChunksForSpawning.contains(chunkpos))
@@ -90,7 +90,7 @@ public final class WorldEntitySpawner
                         java.util.ArrayList<ChunkPos> shuffled = com.google.common.collect.Lists.newArrayList(this.eligibleChunksForSpawning);
                         java.util.Collections.shuffle(shuffled);
                         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-                        label415:
+                        label411:
 
                         for (ChunkPos chunkpos1 : shuffled)
                         {
@@ -116,9 +116,9 @@ public final class WorldEntitySpawner
 
                                     for (int i4 = 0; i4 < l3; ++i4)
                                     {
-                                        l2 += worldServerIn.rand.nextInt(k3) - worldServerIn.rand.nextInt(k3);
+                                        l2 += worldServerIn.rand.nextInt(6) - worldServerIn.rand.nextInt(6);
                                         i3 += worldServerIn.rand.nextInt(1) - worldServerIn.rand.nextInt(1);
-                                        j3 += worldServerIn.rand.nextInt(k3) - worldServerIn.rand.nextInt(k3);
+                                        j3 += worldServerIn.rand.nextInt(6) - worldServerIn.rand.nextInt(6);
                                         blockpos$mutableblockpos.setPos(l2, i3, j3);
                                         float f = (float)l2 + 0.5F;
                                         float f1 = (float)j3 + 0.5F;
@@ -154,7 +154,7 @@ public final class WorldEntitySpawner
                                                 net.minecraftforge.fml.common.eventhandler.Event.Result canSpawn = net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, worldServerIn, f, i3, f1);
                                                 if (canSpawn == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW || (canSpawn == net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT && (entityliving.getCanSpawnHere() && entityliving.isNotColliding())))
                                                 {
-                                                    if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(entityliving, worldServerIn, f, l3, f1))
+                                                    if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(entityliving, worldServerIn, f, i3, f1))
                                                     ientitylivingdata = entityliving.onInitialSpawn(worldServerIn.getDifficultyForLocation(new BlockPos(entityliving)), ientitylivingdata);
 
                                                     if (entityliving.isNotColliding())
@@ -169,7 +169,7 @@ public final class WorldEntitySpawner
 
                                                     if (i2 >= net.minecraftforge.event.ForgeEventFactory.getMaxSpawnPackSize(entityliving))
                                                     {
-                                                        continue label415;
+                                                        continue label411;
                                                     }
                                                 }
 
@@ -188,7 +188,7 @@ public final class WorldEntitySpawner
         }
     }
 
-    protected static BlockPos getRandomChunkPosition(World worldIn, int x, int z)
+    private static BlockPos getRandomChunkPosition(World worldIn, int x, int z)
     {
         Chunk chunk = worldIn.getChunkFromChunkCoords(x, z);
         int i = x * 16 + worldIn.rand.nextInt(16);

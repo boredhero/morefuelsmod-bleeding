@@ -103,7 +103,7 @@ public class ShieldRecipes
 
                 if (itemstack.hasTagCompound())
                 {
-                    nbttagcompound = (NBTTagCompound)itemstack.getTagCompound().copy();
+                    nbttagcompound = itemstack.getTagCompound().copy();
                     enumdyecolor = EnumDyeColor.byDyeDamage(TileEntityBanner.getBaseColor(itemstack));
                 }
                 else

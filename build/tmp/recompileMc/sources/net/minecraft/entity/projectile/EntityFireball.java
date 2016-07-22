@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -76,7 +77,9 @@ public abstract class EntityFireball extends Entity
         this.setSize(1.0F, 1.0F);
         this.setLocationAndAngles(shooter.posX, shooter.posY, shooter.posZ, shooter.rotationYaw, shooter.rotationPitch);
         this.setPosition(this.posX, this.posY, this.posZ);
-        this.motionX = this.motionY = this.motionZ = 0.0D;
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
         accelX = accelX + this.rand.nextGaussian() * 0.4D;
         accelY = accelY + this.rand.nextGaussian() * 0.4D;
         accelZ = accelZ + this.rand.nextGaussian() * 0.4D;
@@ -144,7 +147,7 @@ public abstract class EntityFireball extends Entity
                 for (int i = 0; i < 4; ++i)
                 {
                     float f1 = 0.25F;
-                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * (double)f1, this.posY - this.motionY * (double)f1, this.posZ - this.motionZ * (double)f1, this.motionX, this.motionY, this.motionZ, new int[0]);
+                    this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ, new int[0]);
                 }
 
                 f = 0.8F;
@@ -187,6 +190,10 @@ public abstract class EntityFireball extends Entity
      * Called when this EntityFireball hits a block or entity.
      */
     protected abstract void onImpact(RayTraceResult result);
+
+    public static void func_189743_a(DataFixer p_189743_0_, String p_189743_1_)
+    {
+    }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.

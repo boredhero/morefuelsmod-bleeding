@@ -15,8 +15,8 @@ public class RenderEnderman extends RenderLiving<EntityEnderman>
 {
     private static final ResourceLocation ENDERMAN_TEXTURES = new ResourceLocation("textures/entity/enderman/enderman.png");
     /** The model of the enderman */
-    private ModelEnderman endermanModel;
-    private Random rnd = new Random();
+    private final ModelEnderman endermanModel;
+    private final Random rnd = new Random();
 
     public RenderEnderman(RenderManager renderManagerIn)
     {
@@ -38,8 +38,8 @@ public class RenderEnderman extends RenderLiving<EntityEnderman>
         if (entity.isScreaming())
         {
             double d0 = 0.02D;
-            x += this.rnd.nextGaussian() * d0;
-            z += this.rnd.nextGaussian() * d0;
+            x += this.rnd.nextGaussian() * 0.02D;
+            z += this.rnd.nextGaussian() * 0.02D;
         }
 
         super.doRender(entity, x, y, z, entityYaw, partialTicks);

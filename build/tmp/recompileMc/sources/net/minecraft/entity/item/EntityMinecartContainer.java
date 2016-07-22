@@ -13,6 +13,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.World;
@@ -172,6 +175,12 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
     public void setDropItemsWhenDead(boolean dropWhenDead)
     {
         this.dropContentsWhenDead = dropWhenDead;
+    }
+
+    public static void func_189680_b(DataFixer p_189680_0_, String p_189680_1_)
+    {
+        EntityMinecart.func_189669_a(p_189680_0_, p_189680_1_);
+        p_189680_0_.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(p_189680_1_, new String[] {"Items"}));
     }
 
     /**

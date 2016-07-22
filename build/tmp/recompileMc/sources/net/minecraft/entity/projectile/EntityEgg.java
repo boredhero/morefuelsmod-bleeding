@@ -6,6 +6,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 
@@ -24,6 +25,11 @@ public class EntityEgg extends EntityThrowable
     public EntityEgg(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189664_a(DataFixer p_189664_0_)
+    {
+        EntityThrowable.func_189661_a(p_189664_0_, "ThrownEgg");
     }
 
     /**

@@ -10,6 +10,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 
 public class EntityMinecartChest extends EntityMinecartContainer
@@ -22,6 +23,11 @@ public class EntityMinecartChest extends EntityMinecartContainer
     public EntityMinecartChest(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189681_a(DataFixer p_189681_0_)
+    {
+        EntityMinecartContainer.func_189680_b(p_189681_0_, "MinecartChest");
     }
 
     public void killMinecart(DamageSource source)

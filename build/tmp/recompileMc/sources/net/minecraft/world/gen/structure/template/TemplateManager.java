@@ -17,24 +17,32 @@ import org.apache.commons.io.IOUtils;
 
 public class TemplateManager
 {
-    private final Map<String, Template> templates;
+    private final Map<String, Template> templates = Maps.<String, Template>newHashMap();
     /** the folder in the assets folder where the structure templates are found. */
     private final String baseFolder;
 
-    public TemplateManager()
-    {
-        this("structures");
-    }
-
     public TemplateManager(String basefolderIn)
     {
-        this.templates = Maps.<String, Template>newHashMap();
         this.baseFolder = basefolderIn;
     }
 
     public Template getTemplate(@Nullable MinecraftServer server, ResourceLocation id)
     {
-        String s = id.getResourcePath();
+        Template template = this.func_189942_b(server, id);
+
+        if (template == null)
+        {
+            template = new Template();
+            this.templates.put(id.getResourcePath(), template);
+        }
+
+        return template;
+    }
+
+    @Nullable
+    public Template func_189942_b(@Nullable MinecraftServer p_189942_1_, ResourceLocation p_189942_2_)
+    {
+        String s = p_189942_2_.getResourcePath();
 
         if (this.templates.containsKey(s))
         {
@@ -42,25 +50,16 @@ public class TemplateManager
         }
         else
         {
-            if (server != null)
+            if (p_189942_1_ != null)
             {
-                this.readTemplate(server, id);
+                this.readTemplate(p_189942_1_, p_189942_2_);
             }
             else
             {
-                this.readTemplateFromJar(id);
+                this.readTemplateFromJar(p_189942_2_);
             }
 
-            if (this.templates.containsKey(s))
-            {
-                return (Template)this.templates.get(s);
-            }
-            else
-            {
-                Template template = new Template();
-                this.templates.put(s, template);
-                return template;
-            }
+            return this.templates.containsKey(s) ? (Template)this.templates.get(s) : null;
         }
     }
 
@@ -72,10 +71,9 @@ public class TemplateManager
     public boolean readTemplate(MinecraftServer server, ResourceLocation id)
     {
         String s = id.getResourcePath();
-        File file1 = server.getFile(this.baseFolder);
-        File file2 = new File(file1, s + ".nbt");
+        File file1 = new File(this.baseFolder, s + ".nbt");
 
-        if (!file2.exists())
+        if (!file1.exists())
         {
             return this.readTemplateFromJar(id);
         }
@@ -86,11 +84,11 @@ public class TemplateManager
 
             try
             {
-                inputstream = new FileInputStream(file2);
+                inputstream = new FileInputStream(file1);
                 this.readTemplateFromStream(s, inputstream);
                 return true;
             }
-            catch (Throwable var12)
+            catch (Throwable var11)
             {
                 flag = false;
             }
@@ -145,17 +143,13 @@ public class TemplateManager
     /**
      * writes the template to an external folder
      */
-    public boolean writeTemplate(MinecraftServer server, ResourceLocation id)
+    public boolean writeTemplate(@Nullable MinecraftServer server, ResourceLocation id)
     {
         String s = id.getResourcePath();
 
-        if (!this.templates.containsKey(s))
+        if (server != null && this.templates.containsKey(s))
         {
-            return false;
-        }
-        else
-        {
-            File file1 = server.getFile(this.baseFolder);
+            File file1 = new File(this.baseFolder);
 
             if (!file1.exists())
             {
@@ -192,5 +186,14 @@ public class TemplateManager
 
             return flag;
         }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void func_189941_a(ResourceLocation p_189941_1_)
+    {
+        this.templates.remove(p_189941_1_.getResourcePath());
     }
 }

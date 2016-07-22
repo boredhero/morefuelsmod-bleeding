@@ -22,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -126,7 +127,11 @@ public class EntityFallingBlock extends Entity
                 }
             }
 
-            this.motionY -= 0.03999999910593033D;
+            if (!this.func_189652_ae())
+            {
+                this.motionY -= 0.03999999910593033D;
+            }
+
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.9800000190734863D;
             this.motionY *= 0.9800000190734863D;
@@ -176,7 +181,7 @@ public class EntityFallingBlock extends Entity
                                         {
                                             NBTBase nbtbase = this.tileEntityData.getTag(s);
 
-                                            if (!s.equals("x") && !s.equals("y") && !s.equals("z"))
+                                            if (!"x".equals(s) && !"y".equals(s) && !"z".equals(s))
                                             {
                                                 nbttagcompound.setTag(s, nbtbase.copy());
                                             }
@@ -242,6 +247,10 @@ public class EntityFallingBlock extends Entity
                 }
             }
         }
+    }
+
+    public static void func_189741_a(DataFixer p_189741_0_)
+    {
     }
 
     /**

@@ -13,7 +13,7 @@ public class EntityAIAttackMelee extends EntityAIBase
     World worldObj;
     protected EntityCreature attacker;
     /** An amount of decrementing ticks that allows the entity to attack once the tick reaches 0. */
-    int attackTick;
+    protected int attackTick;
     /** The speed with which the mob will approach the target */
     double speedTowardsTarget;
     /** When true, the mob will continue chasing its target, even if it can't find a path to them right now. */
@@ -113,7 +113,6 @@ public class EntityAIAttackMelee extends EntityAIBase
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
         this.attacker.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
         double d0 = this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
-        double d1 = this.getAttackReachSqr(entitylivingbase);
         --this.delayCounter;
 
         if ((this.longMemory || this.attacker.getEntitySenses().canSee(entitylivingbase)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || entitylivingbase.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F))
@@ -156,12 +155,18 @@ public class EntityAIAttackMelee extends EntityAIBase
         }
 
         this.attackTick = Math.max(this.attackTick - 1, 0);
+        this.func_190102_a(entitylivingbase, d0);
+    }
 
-        if (d0 <= d1 && this.attackTick <= 0)
+    protected void func_190102_a(EntityLivingBase p_190102_1_, double p_190102_2_)
+    {
+        double d0 = this.getAttackReachSqr(p_190102_1_);
+
+        if (p_190102_2_ <= d0 && this.attackTick <= 0)
         {
             this.attackTick = 20;
             this.attacker.swingArm(EnumHand.MAIN_HAND);
-            this.attacker.attackEntityAsMob(entitylivingbase);
+            this.attacker.attackEntityAsMob(p_190102_1_);
         }
     }
 

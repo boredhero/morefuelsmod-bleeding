@@ -47,25 +47,22 @@ public class VertexBuffer
 
     private void growBuffer(int p_181670_1_)
     {
-        int i = (this.vertexCount + 1) * this.vertexFormat.getNextOffset() + this.vertexFormat.getOffset(this.vertexFormatIndex);
-
-        if (p_181670_1_ > this.rawIntBuffer.remaining() || i >= this.byteBuffer.capacity())
+        if (MathHelper.roundUp(p_181670_1_, 4) / 4 > this.rawIntBuffer.remaining() || this.vertexCount * this.vertexFormat.getNextOffset() + p_181670_1_ > this.byteBuffer.capacity())
         {
-            int j = this.byteBuffer.capacity();
-            int k = j % 2097152;
-            int l = k + (((this.rawIntBuffer.position() + p_181670_1_) * 4 - k) / 2097152 + 1) * 2097152;
-            LOGGER.debug("Needed to grow BufferBuilder buffer: Old size " + j + " bytes, new size " + l + " bytes.");
-            int i1 = this.rawIntBuffer.position();
-            ByteBuffer bytebuffer = GLAllocation.createDirectByteBuffer(l);
+            int i = this.byteBuffer.capacity();
+            int j = i + MathHelper.roundUp(p_181670_1_, 2097152);
+            LOGGER.debug("Needed to grow BufferBuilder buffer: Old size {} bytes, new size {} bytes.", new Object[] {Integer.valueOf(i), Integer.valueOf(j)});
+            int k = this.rawIntBuffer.position();
+            ByteBuffer bytebuffer = GLAllocation.createDirectByteBuffer(j);
             this.byteBuffer.position(0);
             bytebuffer.put(this.byteBuffer);
             bytebuffer.rewind();
             this.byteBuffer = bytebuffer;
             this.rawFloatBuffer = this.byteBuffer.asFloatBuffer().asReadOnlyBuffer();
             this.rawIntBuffer = this.byteBuffer.asIntBuffer();
-            this.rawIntBuffer.position(i1);
+            this.rawIntBuffer.position(k);
             this.rawShortBuffer = this.byteBuffer.asShortBuffer();
-            this.rawShortBuffer.position(i1 << 1);
+            this.rawShortBuffer.position(k << 1);
         }
     }
 
@@ -97,35 +94,35 @@ public class VertexBuffer
         int l = this.vertexFormat.getNextOffset();
         int[] aint = new int[l];
 
-        for (int l1 = 0; (l1 = bitset.nextClearBit(l1)) < ainteger.length; ++l1)
+        for (int i1 = bitset.nextClearBit(0); i1 < ainteger.length; i1 = bitset.nextClearBit(i1 + 1))
         {
-            int i1 = ainteger[l1].intValue();
+            int j1 = ainteger[i1].intValue();
 
-            if (i1 != l1)
+            if (j1 != i1)
             {
-                this.rawIntBuffer.limit(i1 * l + l);
-                this.rawIntBuffer.position(i1 * l);
+                this.rawIntBuffer.limit(j1 * l + l);
+                this.rawIntBuffer.position(j1 * l);
                 this.rawIntBuffer.get(aint);
-                int j1 = i1;
+                int k1 = j1;
 
-                for (int k1 = ainteger[i1].intValue(); j1 != l1; k1 = ainteger[k1].intValue())
+                for (int l1 = ainteger[j1].intValue(); k1 != i1; l1 = ainteger[l1].intValue())
                 {
+                    this.rawIntBuffer.limit(l1 * l + l);
+                    this.rawIntBuffer.position(l1 * l);
+                    IntBuffer intbuffer = this.rawIntBuffer.slice();
                     this.rawIntBuffer.limit(k1 * l + l);
                     this.rawIntBuffer.position(k1 * l);
-                    IntBuffer intbuffer = this.rawIntBuffer.slice();
-                    this.rawIntBuffer.limit(j1 * l + l);
-                    this.rawIntBuffer.position(j1 * l);
                     this.rawIntBuffer.put(intbuffer);
-                    bitset.set(j1);
-                    j1 = k1;
+                    bitset.set(k1);
+                    k1 = l1;
                 }
 
-                this.rawIntBuffer.limit(l1 * l + l);
-                this.rawIntBuffer.position(l1 * l);
+                this.rawIntBuffer.limit(i1 * l + l);
+                this.rawIntBuffer.position(i1 * l);
                 this.rawIntBuffer.put(aint);
             }
 
-            bitset.set(l1);
+            bitset.set(i1);
         }
         this.rawIntBuffer.limit(this.rawIntBuffer.capacity());
         this.rawIntBuffer.position(this.getBufferSize());
@@ -171,7 +168,7 @@ public class VertexBuffer
     public void setVertexState(VertexBuffer.State state)
     {
         this.rawIntBuffer.clear();
-        this.growBuffer(state.getRawBuffer().length);
+        this.growBuffer(state.getRawBuffer().length * 4);
         this.rawIntBuffer.put(state.getRawBuffer());
         this.vertexCount = state.getVertexCount();
         this.vertexFormat = new VertexFormat(state.getVertexFormat());
@@ -428,7 +425,7 @@ public class VertexBuffer
 
     public void addVertexData(int[] vertexData)
     {
-        this.growBuffer(vertexData.length);
+        this.growBuffer(vertexData.length * 4);
         this.rawIntBuffer.position(this.getBufferSize());
         this.rawIntBuffer.put(vertexData);
         this.vertexCount += vertexData.length / this.vertexFormat.getIntegerSize();
@@ -437,7 +434,7 @@ public class VertexBuffer
     public void endVertex()
     {
         ++this.vertexCount;
-        this.growBuffer(this.vertexFormat.getIntegerSize());
+        this.growBuffer(this.vertexFormat.getNextOffset());
     }
 
     public VertexBuffer pos(double x, double y, double z)

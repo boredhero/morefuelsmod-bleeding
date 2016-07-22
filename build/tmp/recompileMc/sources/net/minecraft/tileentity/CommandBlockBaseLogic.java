@@ -28,7 +28,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
     private int successCount;
     private boolean trackOutput = true;
     /** The previously run command. */
-    private ITextComponent lastOutput = null;
+    private ITextComponent lastOutput;
     /** The command stored in the command block. */
     private String commandStored = "";
     /** The custom name of the command block. (defaults to "@") */
@@ -265,7 +265,7 @@ public abstract class CommandBlockBaseLogic implements ICommandSender
 
     public boolean tryOpenEditCommandBlock(EntityPlayer playerIn)
     {
-        if (!playerIn.capabilities.isCreativeMode)
+        if (!playerIn.func_189808_dh())
         {
             return false;
         }

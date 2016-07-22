@@ -99,9 +99,9 @@ public class WorldServer extends World implements IThreadListener
     private final Teleporter worldTeleporter;
     private final WorldEntitySpawner entitySpawner = new WorldEntitySpawner();
     protected final VillageSiege villageSiege = new VillageSiege(this);
-    private WorldServer.ServerBlockEventList[] blockEventQueue = new WorldServer.ServerBlockEventList[] {new WorldServer.ServerBlockEventList(), new WorldServer.ServerBlockEventList()};
+    private final WorldServer.ServerBlockEventList[] blockEventQueue = new WorldServer.ServerBlockEventList[] {new WorldServer.ServerBlockEventList(), new WorldServer.ServerBlockEventList()};
     private int blockEventCacheIndex;
-    private List<NextTickListEntry> pendingTickListEntriesThisTick = Lists.<NextTickListEntry>newArrayList();
+    private final List<NextTickListEntry> pendingTickListEntriesThisTick = Lists.<NextTickListEntry>newArrayList();
 
     /** Stores the recently processed (lighting) chunks */
     protected Set<ChunkPos> doneChunks = new java.util.HashSet<ChunkPos>();
@@ -763,7 +763,7 @@ public class WorldServer extends World implements IThreadListener
                     //byte b0 = isForced ? 0 : 8;
                     int k = 0;
 
-                    if (this.isAreaLoaded(nextticklistentry1.position.add(-k, -k, -k), nextticklistentry1.position.add(k, k, k)))
+                    if (this.isAreaLoaded(nextticklistentry1.position.add(0, 0, 0), nextticklistentry1.position.add(0, 0, 0)))
                     {
                         IBlockState iblockstate = this.getBlockState(nextticklistentry1.position);
 
@@ -943,7 +943,7 @@ public class WorldServer extends World implements IThreadListener
         this.worldInfo.setThundering(false);
         this.worldInfo.setCleanWeatherTime(1000000000);
         this.worldInfo.setWorldTime(6000L);
-        this.worldInfo.setGameType(WorldSettings.GameType.SPECTATOR);
+        this.worldInfo.setGameType(GameType.SPECTATOR);
         this.worldInfo.setHardcore(false);
         this.worldInfo.setDifficulty(EnumDifficulty.PEACEFUL);
         this.worldInfo.setDifficultyLocked(true);
@@ -1137,7 +1137,7 @@ public class WorldServer extends World implements IThreadListener
     {
         if (entityIn.isDead)
         {
-            LOGGER.warn("Tried to add entity " + EntityList.getEntityString(entityIn) + " but it was marked as removed already");
+            LOGGER.warn("Tried to add entity {} but it was marked as removed already", new Object[] {EntityList.getEntityString(entityIn)});
             return false;
         }
         else
@@ -1156,11 +1156,11 @@ public class WorldServer extends World implements IThreadListener
                 {
                     if (!(entityIn instanceof EntityPlayer))
                     {
-                        LOGGER.warn("Keeping entity " + EntityList.getEntityString(entity) + " that already exists with UUID " + uuid.toString());
+                        LOGGER.warn("Keeping entity {} that already exists with UUID {}", new Object[] {EntityList.getEntityString(entity), uuid.toString()});
                         return false;
                     }
 
-                    LOGGER.warn("Force-added player with duplicate UUID " + uuid.toString());
+                    LOGGER.warn("Force-added player with duplicate UUID {}", new Object[] {uuid.toString()});
                 }
 
                 this.removeEntityDangerously(entity);
@@ -1179,9 +1179,9 @@ public class WorldServer extends World implements IThreadListener
 
         if (aentity != null)
         {
-            for (int i = 0; i < aentity.length; ++i)
+            for (Entity entity : aentity)
             {
-                this.entitiesById.addKey(aentity[i].getEntityId(), aentity[i]);
+                this.entitiesById.addKey(entity.getEntityId(), entity);
             }
         }
     }
@@ -1195,9 +1195,9 @@ public class WorldServer extends World implements IThreadListener
 
         if (aentity != null)
         {
-            for (int i = 0; i < aentity.length; ++i)
+            for (Entity entity : aentity)
             {
-                this.entitiesById.removeObject(aentity[i].getEntityId());
+                this.entitiesById.removeObject(entity.getEntityId());
             }
         }
     }

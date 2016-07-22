@@ -171,7 +171,7 @@ public class GuiChat extends GuiScreen implements ITabCompleter
         {
             ITextComponent itextcomponent = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
 
-            if (this.handleComponentClick(itextcomponent))
+            if (itextcomponent != null && this.handleComponentClick(itextcomponent))
             {
                 return;
             }
@@ -263,7 +263,7 @@ public class GuiChat extends GuiScreen implements ITabCompleter
     public static class ChatTabCompleter extends TabCompleter
         {
             /** The instance of the Minecraft client */
-            private Minecraft clientInstance = Minecraft.getMinecraft();
+            private final Minecraft clientInstance = Minecraft.getMinecraft();
 
             public ChatTabCompleter(GuiTextField p_i46749_1_)
             {

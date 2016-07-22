@@ -2,7 +2,6 @@ package net.minecraft.world.gen;
 
 import com.google.common.base.Objects;
 import java.util.Random;
-import net.minecraft.block.BlockSand;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -300,11 +299,6 @@ public class MapGenCaves extends MapGenBase
             else
             {
                 data.setBlockState(x, y, z, BLK_AIR);
-
-                if (up.getBlock() == Blocks.SAND)
-                {
-                    data.setBlockState(x, y + 1, z, up.getValue(BlockSand.VARIANT) == BlockSand.EnumType.RED_SAND ? BLK_RED_SANDSTONE : BLK_SANDSTONE);
-                }
 
                 if (foundTop && data.getBlockState(x, y - 1, z).getBlock() == filler.getBlock())
                 {

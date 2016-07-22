@@ -24,7 +24,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockRedstoneTorch extends BlockTorch
 {
-    private static Map<World, List<BlockRedstoneTorch.Toggle>> toggles = Maps.<World, List<BlockRedstoneTorch.Toggle>>newHashMap();
+    private static final Map<World, List<BlockRedstoneTorch.Toggle>> toggles = Maps.<World, List<BlockRedstoneTorch.Toggle>>newHashMap();
     private final boolean isOn;
 
     private boolean isBurnedOut(World worldIn, BlockPos pos, boolean turnOff)

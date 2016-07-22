@@ -50,34 +50,34 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
         double d2 = entityIn.motionY;
         double d3 = entityIn.motionZ;
 
-        if (d1 < -d0)
+        if (d1 < -3.9D)
         {
-            d1 = -d0;
+            d1 = -3.9D;
         }
 
-        if (d2 < -d0)
+        if (d2 < -3.9D)
         {
-            d2 = -d0;
+            d2 = -3.9D;
         }
 
-        if (d3 < -d0)
+        if (d3 < -3.9D)
         {
-            d3 = -d0;
+            d3 = -3.9D;
         }
 
-        if (d1 > d0)
+        if (d1 > 3.9D)
         {
-            d1 = d0;
+            d1 = 3.9D;
         }
 
-        if (d2 > d0)
+        if (d2 > 3.9D)
         {
-            d2 = d0;
+            d2 = 3.9D;
         }
 
-        if (d3 > d0)
+        if (d3 > 3.9D)
         {
-            d3 = d0;
+            d3 = 3.9D;
         }
 
         this.velocityX = (int)(d1 * 8000.0D);

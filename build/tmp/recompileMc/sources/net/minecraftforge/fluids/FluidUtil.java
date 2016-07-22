@@ -1,3 +1,22 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.minecraftforge.fluids;
 
 import javax.annotation.Nullable;
@@ -208,14 +227,14 @@ public class FluidUtil
      * If the inventory does not accept the emptied container, it will be given to the player or dropped at the players feet.
      *      If player is null in this case, the action will be aborted.
      *
-     * @param container   The Fluid Container Itemstack to fill. This stack WILL be modified on success.
-     * @param fluidSource The fluid source to fill from
-     * @param inventory   An inventory where any additionally created item (filled container if multiple empty are present) are put
-     * @param maxAmount   Maximum amount of fluid to take from the tank.
-     * @param player      The player that gets the items the inventory can't take. Can be null, only used if the inventory cannot take the filled stack.
+     * @param container        The filled Fluid Container Itemstack to empty. This stack WILL be modified on success.
+     * @param fluidDestination The fluid destination to fill from the fluid container.
+     * @param inventory        An inventory where any additionally created item (filled container if multiple empty are present) are put
+     * @param maxAmount        Maximum amount of fluid to take from the tank.
+     * @param player           The player that gets the items the inventory can't take. Can be null, only used if the inventory cannot take the filled stack.
      * @return True if the container was filled successfully and stowed, false otherwise.
      */
-    public static boolean tryEmptyContainerAndStow(ItemStack container, IFluidHandler fluidSource, IItemHandler inventory, int maxAmount, @Nullable EntityPlayer player)
+    public static boolean tryEmptyContainerAndStow(ItemStack container, IFluidHandler fluidDestination, IItemHandler inventory, int maxAmount, @Nullable EntityPlayer player)
     {
         if (container == null || container.stackSize < 1)
         {
@@ -224,7 +243,7 @@ public class FluidUtil
 
         if (player != null && player.capabilities.isCreativeMode)
         {
-            ItemStack emptiedReal = tryEmptyContainer(container, fluidSource, maxAmount, player, true);
+            ItemStack emptiedReal = tryEmptyContainer(container, fluidDestination, maxAmount, player, true);
             if (emptiedReal != null)
             {
                 return true;
@@ -232,7 +251,7 @@ public class FluidUtil
         }
         else if (container.stackSize == 1) // don't need to stow anything, just fill and edit the container stack
         {
-            ItemStack emptiedReal = tryEmptyContainer(container, fluidSource, maxAmount, player, true);
+            ItemStack emptiedReal = tryEmptyContainer(container, fluidDestination, maxAmount, player, true);
             if (emptiedReal != null)
             {
                 if (emptiedReal.stackSize <= 0)
@@ -248,12 +267,12 @@ public class FluidUtil
         }
         else
         {
-            ItemStack emptiedSimulated = tryEmptyContainer(container, fluidSource, maxAmount, player, false);
+            ItemStack emptiedSimulated = tryEmptyContainer(container, fluidDestination, maxAmount, player, false);
             if (emptiedSimulated != null)
             {
                 if (emptiedSimulated.stackSize <= 0)
                 {
-                    tryEmptyContainer(container, fluidSource, maxAmount, player, true);
+                    tryEmptyContainer(container, fluidDestination, maxAmount, player, true);
                     container.stackSize--;
                     return true;
                 }
@@ -263,7 +282,7 @@ public class FluidUtil
                     ItemStack remainder = ItemHandlerHelper.insertItemStacked(inventory, emptiedSimulated, true);
                     if (remainder == null || player != null)
                     {
-                        ItemStack emptiedReal = tryEmptyContainer(container, fluidSource, maxAmount, player, true);
+                        ItemStack emptiedReal = tryEmptyContainer(container, fluidDestination, maxAmount, player, true);
                         remainder = ItemHandlerHelper.insertItemStacked(inventory, emptiedReal, false);
 
                         // give it to the player or drop it at their feet

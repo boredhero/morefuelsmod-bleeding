@@ -27,7 +27,7 @@ public abstract class Container
     private int dragEvent;
     private final Set<Slot> dragSlots = Sets.<Slot>newHashSet();
     protected List<IContainerListener> listeners = Lists.<IContainerListener>newArrayList();
-    private Set<EntityPlayer> playerList = Sets.<EntityPlayer>newHashSet();
+    private final Set<EntityPlayer> playerList = Sets.<EntityPlayer>newHashSet();
 
     /**
      * Adds an item slot to this container

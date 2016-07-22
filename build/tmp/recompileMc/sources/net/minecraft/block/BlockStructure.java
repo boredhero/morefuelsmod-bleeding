@@ -39,7 +39,8 @@ public class BlockStructure extends BlockContainer
 
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
     {
-        return false;
+        TileEntity tileentity = worldIn.getTileEntity(pos);
+        return tileentity instanceof TileEntityStructure ? ((TileEntityStructure)tileentity).func_189701_a(playerIn) : false;
     }
 
     /**
@@ -47,12 +48,22 @@ public class BlockStructure extends BlockContainer
      */
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
+        if (!worldIn.isRemote)
+        {
+            TileEntity tileentity = worldIn.getTileEntity(pos);
+
+            if (tileentity instanceof TileEntityStructure)
+            {
+                TileEntityStructure tileentitystructure = (TileEntityStructure)tileentity;
+                tileentitystructure.func_189720_a(placer);
+            }
+        }
     }
 
     @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
-        return null;
+        return super.getItem(worldIn, pos, state);
     }
 
     /**
@@ -99,5 +110,51 @@ public class BlockStructure extends BlockContainer
     protected BlockStateContainer createBlockState()
     {
         return new BlockStateContainer(this, new IProperty[] {MODE});
+    }
+
+    /**
+     * Called when a neighboring block was changed and marks that this state should perform any checks during a neighbor
+     * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
+     * block, etc.
+     */
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    {
+        if (!worldIn.isRemote)
+        {
+            TileEntity tileentity = worldIn.getTileEntity(pos);
+
+            if (tileentity instanceof TileEntityStructure)
+            {
+                TileEntityStructure tileentitystructure = (TileEntityStructure)tileentity;
+                boolean flag = worldIn.isBlockPowered(pos);
+                boolean flag1 = tileentitystructure.func_189722_G();
+
+                if (flag && !flag1)
+                {
+                    tileentitystructure.func_189723_d(true);
+                    this.func_189874_a(tileentitystructure);
+                }
+                else if (!flag && flag1)
+                {
+                    tileentitystructure.func_189723_d(false);
+                }
+            }
+        }
+    }
+
+    private void func_189874_a(TileEntityStructure p_189874_1_)
+    {
+        switch (p_189874_1_.func_189700_k())
+        {
+            case SAVE:
+                p_189874_1_.func_189712_b(false);
+                break;
+            case LOAD:
+                p_189874_1_.func_189714_c(false);
+                break;
+            case CORNER:
+                p_189874_1_.func_189706_E();
+            case DATA:
+        }
     }
 }

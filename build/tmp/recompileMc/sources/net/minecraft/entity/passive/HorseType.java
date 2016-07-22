@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public enum HorseType
 {
-    HORSE("horse", "horse_white", SoundEvents.ENTITY_HORSE_AMBIENT, SoundEvents.ENTITY_HORSE_HURT, SoundEvents.ENTITY_HORSE_DEATH, LootTableList.ENTITIES_HORSE),
-    DONKEY("donkey", "donkey", SoundEvents.ENTITY_DONKEY_AMBIENT, SoundEvents.ENTITY_DONKEY_HURT, SoundEvents.ENTITY_DONKEY_DEATH, LootTableList.ENTITIES_HORSE),
-    MULE("mule", "mule", SoundEvents.ENTITY_MULE_AMBIENT, SoundEvents.ENTITY_MULE_HURT, SoundEvents.ENTITY_MULE_DEATH, LootTableList.ENTITIES_HORSE),
-    ZOMBIE("zombiehorse", "horse_zombie", SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT, SoundEvents.ENTITY_ZOMBIE_HORSE_HURT, SoundEvents.ENTITY_ZOMBIE_HORSE_DEATH, LootTableList.ENTITIES_ZOMBIE_HORSE),
-    SKELETON("skeletonhorse", "horse_skeleton", SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT, SoundEvents.ENTITY_SKELETON_HORSE_HURT, SoundEvents.ENTITY_SKELETON_HORSE_DEATH, LootTableList.ENTITIES_SKELETON_HORSE);
+    HORSE("EntityHorse", "horse_white", SoundEvents.ENTITY_HORSE_AMBIENT, SoundEvents.ENTITY_HORSE_HURT, SoundEvents.ENTITY_HORSE_DEATH, LootTableList.ENTITIES_HORSE),
+    DONKEY("Donkey", "donkey", SoundEvents.ENTITY_DONKEY_AMBIENT, SoundEvents.ENTITY_DONKEY_HURT, SoundEvents.ENTITY_DONKEY_DEATH, LootTableList.ENTITIES_HORSE),
+    MULE("Mule", "mule", SoundEvents.ENTITY_MULE_AMBIENT, SoundEvents.ENTITY_MULE_HURT, SoundEvents.ENTITY_MULE_DEATH, LootTableList.ENTITIES_HORSE),
+    ZOMBIE("ZombieHorse", "horse_zombie", SoundEvents.ENTITY_ZOMBIE_HORSE_AMBIENT, SoundEvents.ENTITY_ZOMBIE_HORSE_HURT, SoundEvents.ENTITY_ZOMBIE_HORSE_DEATH, LootTableList.ENTITIES_ZOMBIE_HORSE),
+    SKELETON("SkeletonHorse", "horse_skeleton", SoundEvents.ENTITY_SKELETON_HORSE_AMBIENT, SoundEvents.ENTITY_SKELETON_HORSE_HURT, SoundEvents.ENTITY_SKELETON_HORSE_DEATH, LootTableList.ENTITIES_SKELETON_HORSE);
 
     /** The default name for this type of horse */
     private final TextComponentTranslation name;
@@ -23,16 +23,16 @@ public enum HorseType
     private final SoundEvent hurtSound;
     private final SoundEvent ambientSound;
     private final SoundEvent deathSound;
-    private ResourceLocation lootTable;
+    private final ResourceLocation lootTable;
 
     private HorseType(String p_i46798_3_, String textureName, SoundEvent ambientSound, SoundEvent hurtSoundIn, SoundEvent deathSoundIn, ResourceLocation lootTableIn)
     {
-        this.lootTable = lootTableIn;
         this.name = new TextComponentTranslation("entity." + p_i46798_3_ + ".name", new Object[0]);
         this.texture = new ResourceLocation("textures/entity/horse/" + textureName + ".png");
         this.hurtSound = hurtSoundIn;
         this.ambientSound = ambientSound;
         this.deathSound = deathSoundIn;
+        this.lootTable = lootTableIn;
     }
 
     public SoundEvent getAmbientSound()

@@ -78,8 +78,8 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
             });
         }
 
-        boolean flag = this.server.version > 110;
-        boolean flag1 = this.server.version < 110;
+        boolean flag = this.server.version > 210;
+        boolean flag1 = this.server.version < 210;
         boolean flag2 = flag || flag1;
         this.mc.fontRendererObj.drawString(this.server.serverName, x + 32 + 3, y + 1, 16777215);
         List<String> list = this.mc.fontRendererObj.listFormattedStringToWidth(net.minecraftforge.fml.client.FMLClientHandler.instance().fixDescription(this.server.serverMOTD), listWidth - 48 - 2);
@@ -272,7 +272,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
                 }
                 catch (Throwable throwable)
                 {
-                    LOGGER.error("Invalid icon for server " + this.server.serverName + " (" + this.server.serverIP + ")", throwable);
+                    LOGGER.error("Invalid icon for server {} ({})", new Object[] {this.server.serverName, this.server.serverIP, throwable});
                     this.server.setBase64EncodedIconData((String)null);
                 }
                 finally

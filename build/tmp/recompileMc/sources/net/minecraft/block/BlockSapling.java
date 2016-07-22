@@ -106,8 +106,8 @@ public class BlockSapling extends BlockBush implements IGrowable
 
                 if (!flag)
                 {
-                    j = 0;
                     i = 0;
+                    j = 0;
                     worldgenerator = new WorldGenTaiga2(true);
                 }
 
@@ -135,8 +135,8 @@ public class BlockSapling extends BlockBush implements IGrowable
 
                 if (!flag)
                 {
-                    j = 0;
                     i = 0;
+                    j = 0;
                     worldgenerator = new WorldGenTrees(true, 4 + rand.nextInt(7), iblockstate, iblockstate1, false);
                 }
 

@@ -17,6 +17,9 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapData;
@@ -229,6 +232,11 @@ public class EntityItemFrame extends EntityHanging
         {
             this.worldObj.updateComparatorOutputLevel(this.hangingPosition, Blocks.AIR);
         }
+    }
+
+    public static void func_189738_a(DataFixer p_189738_0_)
+    {
+        p_189738_0_.registerWalker(FixTypes.ENTITY, new ItemStackData("ItemFrame", new String[] {"Item"}));
     }
 
     /**

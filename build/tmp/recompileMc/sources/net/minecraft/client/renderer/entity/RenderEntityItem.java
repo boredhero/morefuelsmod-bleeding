@@ -20,7 +20,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class RenderEntityItem extends Render<EntityItem>
 {
     private final RenderItem itemRenderer;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public RenderEntityItem(RenderManager renderManagerIn, RenderItem p_i46167_2_)
     {

@@ -157,11 +157,11 @@ public class PlayerChunkMapEntry
             this.changes = 0;
             this.changedSectionFilter = 0;
             this.sentToPlayers = true;
-            SPacketChunkData spacketchunkdata = new SPacketChunkData(this.chunk, 65535);
+            Packet<?> packet = new SPacketChunkData(this.chunk, 65535);
 
             for (EntityPlayerMP entityplayermp : this.players)
             {
-                entityplayermp.connection.sendPacket(spacketchunkdata);
+                entityplayermp.connection.sendPacket(packet);
                 this.playerChunkMap.getWorldServer().getEntityTracker().sendLeashedEntitiesInChunk(entityplayermp, this.chunk);
                 // chunk watch event - delayed to here as the chunk wasn't ready in addPlayer
                 net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkWatchEvent.Watch(this.pos, entityplayermp));
@@ -188,12 +188,14 @@ public class PlayerChunkMapEntry
 
     public void updateChunkInhabitedTime()
     {
+        long i = this.playerChunkMap.getWorldServer().getTotalWorldTime();
+
         if (this.chunk != null)
         {
-            this.chunk.setInhabitedTime(this.chunk.getInhabitedTime() + this.playerChunkMap.getWorldServer().getTotalWorldTime() - this.lastUpdateInhabitedTime);
+            this.chunk.setInhabitedTime(this.chunk.getInhabitedTime() + i - this.lastUpdateInhabitedTime);
         }
 
-        this.lastUpdateInhabitedTime = this.playerChunkMap.getWorldServer().getTotalWorldTime();
+        this.lastUpdateInhabitedTime = i;
     }
 
     public void blockChanged(int x, int y, int z)

@@ -93,13 +93,13 @@ public class FileResourcePack extends AbstractResourcePack implements Closeable
                 {
                     String s1 = (String)list.get(1);
 
-                    if (!s1.equals(s1.toLowerCase()))
+                    if (s1.equals(s1.toLowerCase()))
                     {
-                        this.logNameNotLowercase(s1);
+                        set.add(s1);
                     }
                     else
                     {
-                        set.add(s1);
+                        this.logNameNotLowercase(s1);
                     }
                 }
             }

@@ -19,6 +19,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.particle.ParticleManager;
@@ -63,8 +64,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSettings;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -85,9 +86,9 @@ public class EntityRenderer implements IResourceManagerReloadListener
     /** Anaglyph field (0=R, 1=GB) */
     public static int anaglyphField;
     /** A reference to the Minecraft object. */
-    private Minecraft mc;
+    private final Minecraft mc;
     private final IResourceManager resourceManager;
-    private Random random = new Random();
+    private final Random random = new Random();
     private float farPlaneDistance;
     public final ItemRenderer itemRenderer;
     private final MapItemRenderer theMapItemRenderer;
@@ -95,9 +96,9 @@ public class EntityRenderer implements IResourceManagerReloadListener
     private int rendererUpdateCount;
     /** Pointed entity */
     private Entity pointedEntity;
-    private MouseFilter mouseFilterXAxis = new MouseFilter();
-    private MouseFilter mouseFilterYAxis = new MouseFilter();
-    private float thirdPersonDistance = 4.0F;
+    private final MouseFilter mouseFilterXAxis = new MouseFilter();
+    private final MouseFilter mouseFilterYAxis = new MouseFilter();
+    private final float thirdPersonDistance = 4.0F;
     /** Previous third person distance */
     private float thirdPersonDistancePrev = 4.0F;
     /** Smooth cam yaw */
@@ -137,10 +138,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
     private float torchFlickerDX;
     /** Rain sound counter */
     private int rainSoundCounter;
-    private float[] rainXCoords = new float[1024];
-    private float[] rainYCoords = new float[1024];
+    private final float[] rainXCoords = new float[1024];
+    private final float[] rainYCoords = new float[1024];
     /** Fog color buffer */
-    private FloatBuffer fogColorBuffer = GLAllocation.createDirectFloatBuffer(16);
+    private final FloatBuffer fogColorBuffer = GLAllocation.createDirectFloatBuffer(16);
     private float fogColorRed;
     private float fogColorGreen;
     private float fogColorBlue;
@@ -148,8 +149,8 @@ public class EntityRenderer implements IResourceManagerReloadListener
     private float fogColor2;
     /** Fog color 1 */
     private float fogColor1;
-    private int debugViewDirection = 0;
-    private boolean debugView = false;
+    private int debugViewDirection;
+    private boolean debugView;
     private double cameraZoom = 1.0D;
     private double cameraYaw;
     private double cameraPitch;
@@ -163,8 +164,6 @@ public class EntityRenderer implements IResourceManagerReloadListener
     public EntityRenderer(Minecraft mcIn, IResourceManager resourceManagerIn)
     {
         this.shaderIndex = SHADER_COUNT;
-        this.useShader = false;
-        this.frameCount = 0;
         this.mc = mcIn;
         this.resourceManager = resourceManagerIn;
         this.itemRenderer = mcIn.getItemRenderer();
@@ -248,13 +247,13 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
         catch (IOException ioexception)
         {
-            LOGGER.warn((String)("Failed to load shader: " + resourceLocationIn), (Throwable)ioexception);
+            LOGGER.warn("Failed to load shader: {}", new Object[] {resourceLocationIn, ioexception});
             this.shaderIndex = SHADER_COUNT;
             this.useShader = false;
         }
         catch (JsonSyntaxException jsonsyntaxexception)
         {
-            LOGGER.warn((String)("Failed to load shader: " + resourceLocationIn), (Throwable)jsonsyntaxexception);
+            LOGGER.warn("Failed to load shader: {}", new Object[] {resourceLocationIn, jsonsyntaxexception});
             this.shaderIndex = SHADER_COUNT;
             this.useShader = false;
         }
@@ -269,13 +268,13 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
         this.theShaderGroup = null;
 
-        if (this.shaderIndex != SHADER_COUNT)
+        if (this.shaderIndex == SHADER_COUNT)
         {
-            this.loadShader(SHADERS_TEXTURES[this.shaderIndex]);
+            this.loadEntityShader(this.mc.getRenderViewEntity());
         }
         else
         {
-            this.loadEntityShader(this.mc.getRenderViewEntity());
+            this.loadShader(SHADERS_TEXTURES[this.shaderIndex]);
         }
     }
 
@@ -292,7 +291,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
         this.updateFovModifierHand();
         this.updateTorchFlicker();
         this.fogColor2 = this.fogColor1;
-        this.thirdPersonDistancePrev = this.thirdPersonDistance;
+        this.thirdPersonDistancePrev = 4.0F;
 
         if (this.mc.gameSettings.smoothCamera)
         {
@@ -374,15 +373,15 @@ public class EntityRenderer implements IResourceManagerReloadListener
                 this.mc.pointedEntity = null;
                 double d0 = (double)this.mc.playerController.getBlockReachDistance();
                 this.mc.objectMouseOver = entity.rayTrace(d0, partialTicks);
-                double d1 = d0;
                 Vec3d vec3d = entity.getPositionEyes(partialTicks);
                 boolean flag = false;
                 int i = 3;
+                double d1 = d0;
 
                 if (this.mc.playerController.extendedReach())
                 {
-                    d0 = 6.0D;
                     d1 = 6.0D;
+                    d0 = d1;
                 }
                 else
                 {
@@ -402,7 +401,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                 this.pointedEntity = null;
                 Vec3d vec3d3 = null;
                 float f = 1.0F;
-                List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec3d1.xCoord * d0, vec3d1.yCoord * d0, vec3d1.zCoord * d0).expand((double)f, (double)f, (double)f), Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
+                List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec3d1.xCoord * d0, vec3d1.yCoord * d0, vec3d1.zCoord * d0).expand(1.0D, 1.0D, 1.0D), Predicates.and(EntitySelectors.NOT_SPECTATING, new Predicate<Entity>()
                 {
                     public boolean apply(@Nullable Entity p_apply_1_)
                     {
@@ -609,7 +608,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
         }
         else if (this.mc.gameSettings.thirdPersonView > 0)
         {
-            double d3 = (double)(this.thirdPersonDistancePrev + (this.thirdPersonDistance - this.thirdPersonDistancePrev) * partialTicks);
+            double d3 = (double)(this.thirdPersonDistancePrev + (4.0F - this.thirdPersonDistancePrev) * partialTicks);
 
             if (this.mc.gameSettings.debugCamEnable)
             {
@@ -704,7 +703,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
         if (this.mc.gameSettings.anaglyph)
         {
-            GlStateManager.translate((float)(-(pass * 2 - 1)) * f, 0.0F, 0.0F);
+            GlStateManager.translate((float)(-(pass * 2 - 1)) * 0.07F, 0.0F, 0.0F);
         }
 
         if (this.cameraZoom != 1.0D)
@@ -784,7 +783,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
             if (this.mc.gameSettings.anaglyph)
             {
-                GlStateManager.translate((float)(-(pass * 2 - 1)) * f, 0.0F, 0.0F);
+                GlStateManager.translate((float)(-(pass * 2 - 1)) * 0.07F, 0.0F, 0.0F);
             }
 
             Project.gluPerspective(this.getFOVModifier(partialTicks, false), (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F, this.farPlaneDistance * 2.0F);
@@ -842,7 +841,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
         GlStateManager.matrixMode(5890);
         GlStateManager.loadIdentity();
         float f = 0.00390625F;
-        GlStateManager.scale(f, f, f);
+        GlStateManager.scale(0.00390625F, 0.00390625F, 0.00390625F);
         GlStateManager.translate(8.0F, 8.0F, 8.0F);
         GlStateManager.matrixMode(5888);
         this.mc.getTextureManager().bindTexture(this.locationLightMap);
@@ -997,7 +996,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                     int k = (int)(f8 * 255.0F);
                     int l = (int)(f9 * 255.0F);
                     int i1 = (int)(f10 * 255.0F);
-                    this.lightmapColors[i] = j << 24 | k << 16 | l << 8 | i1;
+                    this.lightmapColors[i] = -16777216 | k << 16 | l << 8 | i1;
                 }
 
                 this.lightmapTexture.updateDynamicTexture();
@@ -1238,7 +1237,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
                     BlockPos blockpos = this.mc.objectMouseOver.getBlockPos();
                     Block block = this.mc.theWorld.getBlockState(blockpos).getBlock();
 
-                    if (this.mc.playerController.getCurrentGameType() == WorldSettings.GameType.SPECTATOR)
+                    if (this.mc.playerController.getCurrentGameType() == GameType.SPECTATOR)
                     {
                         flag = block.hasTileEntity(this.mc.theWorld.getBlockState(blockpos)) && this.mc.theWorld.getTileEntity(blockpos) instanceof IInventory;
                     }
@@ -1385,6 +1384,11 @@ public class EntityRenderer implements IResourceManagerReloadListener
             GlStateManager.enableAlpha();
         }
 
+        if (this.mc.debugRenderer.func_190074_a())
+        {
+            this.mc.debugRenderer.func_190073_a(partialTicks, finishTimeNano);
+        }
+
         this.mc.mcProfiler.endStartSection("destroyProgress");
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -1511,33 +1515,36 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
             for (int l = 0; l < k; ++l)
             {
-                BlockPos blockpos1 = world.getPrecipitationHeight(blockpos.add(this.random.nextInt(i) - this.random.nextInt(i), 0, this.random.nextInt(i) - this.random.nextInt(i)));
+                BlockPos blockpos1 = world.getPrecipitationHeight(blockpos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10)));
                 Biome biome = world.getBiomeGenForCoords(blockpos1);
                 BlockPos blockpos2 = blockpos1.down();
                 IBlockState iblockstate = world.getBlockState(blockpos2);
 
-                if (blockpos1.getY() <= blockpos.getY() + i && blockpos1.getY() >= blockpos.getY() - i && biome.canRain() && biome.getFloatTemperature(blockpos1) >= 0.15F)
+                if (blockpos1.getY() <= blockpos.getY() + 10 && blockpos1.getY() >= blockpos.getY() - 10 && biome.canRain() && biome.getFloatTemperature(blockpos1) >= 0.15F)
                 {
                     double d3 = this.random.nextDouble();
                     double d4 = this.random.nextDouble();
                     AxisAlignedBB axisalignedbb = iblockstate.getBoundingBox(world, blockpos2);
 
-                    if (iblockstate.getMaterial() == Material.LAVA)
+                    if (iblockstate.getMaterial() != Material.LAVA && iblockstate.getBlock() != Blocks.field_189877_df)
+                    {
+                        if (iblockstate.getMaterial() != Material.AIR)
+                        {
+                            ++j;
+
+                            if (this.random.nextInt(j) == 0)
+                            {
+                                d0 = (double)blockpos2.getX() + d3;
+                                d1 = (double)((float)blockpos2.getY() + 0.1F) + axisalignedbb.maxY - 1.0D;
+                                d2 = (double)blockpos2.getZ() + d4;
+                            }
+
+                            this.mc.theWorld.spawnParticle(EnumParticleTypes.WATER_DROP, (double)blockpos2.getX() + d3, (double)((float)blockpos2.getY() + 0.1F) + axisalignedbb.maxY, (double)blockpos2.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
+                        }
+                    }
+                    else
                     {
                         this.mc.theWorld.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double)blockpos1.getX() + d3, (double)((float)blockpos1.getY() + 0.1F) - axisalignedbb.minY, (double)blockpos1.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-                    }
-                    else if (iblockstate.getMaterial() != Material.AIR)
-                    {
-                        ++j;
-
-                        if (this.random.nextInt(j) == 0)
-                        {
-                            d0 = (double)blockpos2.getX() + d3;
-                            d1 = (double)((float)blockpos2.getY() + 0.1F) + axisalignedbb.maxY - 1.0D;
-                            d2 = (double)blockpos2.getZ() + d4;
-                        }
-
-                        this.mc.theWorld.spawnParticle(EnumParticleTypes.WATER_DROP, (double)blockpos2.getX() + d3, (double)((float)blockpos2.getY() + 0.1F) + axisalignedbb.maxY, (double)blockpos2.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
                     }
                 }
             }
@@ -1754,8 +1761,8 @@ public class EntityRenderer implements IResourceManagerReloadListener
 
         if (this.mc.gameSettings.renderDistanceChunks >= 4)
         {
-            double d0 = -1.0D;
-            Vec3d vec3d2 = MathHelper.sin(world.getCelestialAngleRadians(partialTicks)) > 0.0F ? new Vec3d(d0, 0.0D, 0.0D) : new Vec3d(1.0D, 0.0D, 0.0D);
+            double d0 = MathHelper.sin(world.getCelestialAngleRadians(partialTicks)) > 0.0F ? -1.0D : 1.0D;
+            Vec3d vec3d2 = new Vec3d(d0, 0.0D, 0.0D);
             float f5 = (float)entity.getLook(partialTicks).dotProduct(vec3d2);
 
             if (f5 < 0.0F)
@@ -2036,5 +2043,49 @@ public class EntityRenderer implements IResourceManagerReloadListener
     public MapItemRenderer getMapItemRenderer()
     {
         return this.theMapItemRenderer;
+    }
+
+    public static void func_189692_a(FontRenderer p_189692_0_, String p_189692_1_, float p_189692_2_, float p_189692_3_, float p_189692_4_, int p_189692_5_, float p_189692_6_, float p_189692_7_, boolean p_189692_8_, boolean p_189692_9_)
+    {
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(p_189692_2_, p_189692_3_, p_189692_4_);
+        GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-p_189692_6_, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate((float)(p_189692_8_ ? -1 : 1) * p_189692_7_, 1.0F, 0.0F, 0.0F);
+        GlStateManager.scale(-0.025F, -0.025F, 0.025F);
+        GlStateManager.disableLighting();
+        GlStateManager.depthMask(false);
+
+        if (!p_189692_9_)
+        {
+            GlStateManager.disableDepth();
+        }
+
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        int i = p_189692_0_.getStringWidth(p_189692_1_) / 2;
+        GlStateManager.disableTexture2D();
+        Tessellator tessellator = Tessellator.getInstance();
+        VertexBuffer vertexbuffer = tessellator.getBuffer();
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+        vertexbuffer.pos((double)(-i - 1), (double)(-1 + p_189692_5_), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        vertexbuffer.pos((double)(-i - 1), (double)(8 + p_189692_5_), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        vertexbuffer.pos((double)(i + 1), (double)(8 + p_189692_5_), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        vertexbuffer.pos((double)(i + 1), (double)(-1 + p_189692_5_), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+
+        if (!p_189692_9_)
+        {
+            p_189692_0_.drawString(p_189692_1_, -p_189692_0_.getStringWidth(p_189692_1_) / 2, p_189692_5_, 553648127);
+            GlStateManager.enableDepth();
+        }
+
+        GlStateManager.depthMask(true);
+        p_189692_0_.drawString(p_189692_1_, -p_189692_0_.getStringWidth(p_189692_1_) / 2, p_189692_5_, p_189692_9_ ? 553648127 : -1);
+        GlStateManager.enableLighting();
+        GlStateManager.disableBlend();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.popMatrix();
     }
 }

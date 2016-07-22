@@ -34,7 +34,7 @@ public class RenderSlime extends RenderLiving<EntitySlime>
     protected void preRenderCallback(EntitySlime entitylivingbaseIn, float partialTickTime)
     {
         float f = 0.999F;
-        GlStateManager.scale(f, f, f);
+        GlStateManager.scale(0.999F, 0.999F, 0.999F);
         float f1 = (float)entitylivingbaseIn.getSlimeSize();
         float f2 = (entitylivingbaseIn.prevSquishFactor + (entitylivingbaseIn.squishFactor - entitylivingbaseIn.prevSquishFactor) * partialTickTime) / (f1 * 0.5F + 1.0F);
         float f3 = 1.0F / (f2 + 1.0F);

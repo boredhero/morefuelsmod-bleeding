@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiLockIconButton extends GuiButton
 {
-    private boolean locked = false;
+    private boolean locked;
 
     public GuiLockIconButton(int p_i45538_1_, int p_i45538_2_, int p_i45538_3_)
     {

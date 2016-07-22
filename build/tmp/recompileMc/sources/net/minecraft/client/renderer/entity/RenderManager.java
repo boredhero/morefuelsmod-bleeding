@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelChicken;
@@ -13,6 +14,7 @@ import net.minecraft.client.model.ModelCow;
 import net.minecraft.client.model.ModelHorse;
 import net.minecraft.client.model.ModelOcelot;
 import net.minecraft.client.model.ModelPig;
+import net.minecraft.client.model.ModelPolarBear;
 import net.minecraft.client.model.ModelRabbit;
 import net.minecraft.client.model.ModelSheep2;
 import net.minecraft.client.model.ModelShulker;
@@ -69,6 +71,7 @@ import net.minecraft.entity.monster.EntityGuardian;
 import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.monster.EntityPolarBear;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -114,9 +117,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderManager
 {
-    public Map < Class <? extends Entity > , Render <? extends Entity >> entityRenderMap = Maps. < Class <? extends Entity > , Render <? extends Entity >> newHashMap();
-    private Map<String, RenderPlayer> skinMap = Maps.<String, RenderPlayer>newHashMap();
-    private RenderPlayer playerRenderer;
+    public final Map < Class <? extends Entity > , Render <? extends Entity >> entityRenderMap = Maps. < Class <? extends Entity > , Render <? extends Entity >> newHashMap();
+    private final Map<String, RenderPlayer> skinMap = Maps.<String, RenderPlayer>newHashMap();
+    private final RenderPlayer playerRenderer;
     /** Renders fonts */
     private FontRenderer textRenderer;
     private double renderPosX;
@@ -135,10 +138,10 @@ public class RenderManager
     public double viewerPosX;
     public double viewerPosY;
     public double viewerPosZ;
-    private boolean renderOutlines = false;
+    private boolean renderOutlines;
     private boolean renderShadow = true;
     /** whether bounding box should be rendered or not */
-    private boolean debugBoundingBox = false;
+    private boolean debugBoundingBox;
 
     public RenderManager(TextureManager renderEngineIn, RenderItem itemRendererIn)
     {
@@ -173,6 +176,7 @@ public class RenderManager
         this.entityRenderMap.put(EntityBat.class, new RenderBat(this));
         this.entityRenderMap.put(EntityGuardian.class, new RenderGuardian(this));
         this.entityRenderMap.put(EntityShulker.class, new RenderShulker(this, new ModelShulker()));
+        this.entityRenderMap.put(EntityPolarBear.class, new RenderPolarBear(this, new ModelPolarBear(), 0.7F));
         this.entityRenderMap.put(EntityDragon.class, new RenderDragon(this));
         this.entityRenderMap.put(EntityEnderCrystal.class, new RenderEnderCrystal(this));
         this.entityRenderMap.put(EntityWither.class, new RenderWither(this));
@@ -383,7 +387,7 @@ public class RenderManager
                     throw new ReportedException(CrashReport.makeCrashReport(throwable2, "Post-rendering entity in world"));
                 }
 
-                if (this.debugBoundingBox && !entityIn.isInvisible() && !p_188391_10_)
+                if (this.debugBoundingBox && !entityIn.isInvisible() && !p_188391_10_ && !Minecraft.getMinecraft().func_189648_am())
                 {
                     try
                     {
@@ -454,13 +458,12 @@ public class RenderManager
         GlStateManager.disableBlend();
         float f = entityIn.width / 2.0F;
         AxisAlignedBB axisalignedbb = entityIn.getEntityBoundingBox();
-        AxisAlignedBB axisalignedbb1 = new AxisAlignedBB(axisalignedbb.minX - entityIn.posX + x, axisalignedbb.minY - entityIn.posY + y, axisalignedbb.minZ - entityIn.posZ + z, axisalignedbb.maxX - entityIn.posX + x, axisalignedbb.maxY - entityIn.posY + y, axisalignedbb.maxZ - entityIn.posZ + z);
-        RenderGlobal.drawOutlinedBoundingBox(axisalignedbb1, 255, 255, 255, 255);
+        RenderGlobal.func_189694_a(axisalignedbb.minX - entityIn.posX + x, axisalignedbb.minY - entityIn.posY + y, axisalignedbb.minZ - entityIn.posZ + z, axisalignedbb.maxX - entityIn.posX + x, axisalignedbb.maxY - entityIn.posY + y, axisalignedbb.maxZ - entityIn.posZ + z, 1.0F, 1.0F, 1.0F, 1.0F);
 
         if (entityIn instanceof EntityLivingBase)
         {
             float f1 = 0.01F;
-            RenderGlobal.drawOutlinedBoundingBox(new AxisAlignedBB(x - (double)f, y + (double)entityIn.getEyeHeight() - 0.009999999776482582D, z - (double)f, x + (double)f, y + (double)entityIn.getEyeHeight() + 0.009999999776482582D, z + (double)f), 255, 0, 0, 255);
+            RenderGlobal.func_189694_a(x - (double)f, y + (double)entityIn.getEyeHeight() - 0.009999999776482582D, z - (double)f, x + (double)f, y + (double)entityIn.getEyeHeight() + 0.009999999776482582D, z + (double)f, 1.0F, 0.0F, 0.0F, 1.0F);
         }
 
         Tessellator tessellator = Tessellator.getInstance();

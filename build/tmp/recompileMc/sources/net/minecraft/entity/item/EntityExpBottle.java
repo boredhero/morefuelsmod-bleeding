@@ -2,6 +2,7 @@ package net.minecraft.entity.item;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -21,6 +22,11 @@ public class EntityExpBottle extends EntityThrowable
     public EntityExpBottle(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189666_a(DataFixer p_189666_0_)
+    {
+        EntityThrowable.func_189661_a(p_189666_0_, "ThrowableExpBottle");
     }
 
     /**

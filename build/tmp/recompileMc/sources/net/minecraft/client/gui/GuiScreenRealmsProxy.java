@@ -13,7 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiScreenRealmsProxy extends GuiScreen
 {
-    private RealmsScreen proxy;
+    private final RealmsScreen proxy;
 
     public GuiScreenRealmsProxy(RealmsScreen proxyIn)
     {

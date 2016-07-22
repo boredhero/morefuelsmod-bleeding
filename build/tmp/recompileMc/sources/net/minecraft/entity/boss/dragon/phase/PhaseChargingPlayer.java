@@ -10,7 +10,7 @@ public class PhaseChargingPlayer extends PhaseBase
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private Vec3d targetLocation;
-    private int timeSinceCharge = 0;
+    private int timeSinceCharge;
 
     public PhaseChargingPlayer(EntityDragon dragonIn)
     {

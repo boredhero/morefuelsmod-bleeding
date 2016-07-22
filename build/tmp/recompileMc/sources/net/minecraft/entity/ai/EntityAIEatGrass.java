@@ -15,9 +15,9 @@ public class EntityAIEatGrass extends EntityAIBase
 {
     private static final Predicate<IBlockState> IS_TALL_GRASS = BlockStateMatcher.forBlock(Blocks.TALLGRASS).where(BlockTallGrass.TYPE, Predicates.equalTo(BlockTallGrass.EnumType.GRASS));
     /** The entity owner of this AITask */
-    private EntityLiving grassEaterEntity;
+    private final EntityLiving grassEaterEntity;
     /** The world the grass eater entity is eating from */
-    private World entityWorld;
+    private final World entityWorld;
     /** Number of ticks since the entity started to eat grass */
     int eatingGrassTimer;
 

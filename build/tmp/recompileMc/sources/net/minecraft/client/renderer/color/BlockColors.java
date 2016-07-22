@@ -8,6 +8,7 @@ import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.BlockStem;
 import net.minecraft.block.BlockTallGrass;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
@@ -145,6 +146,21 @@ public class BlockColors
         return blockcolors;
     }
 
+    public int func_189991_a(IBlockState p_189991_1_)
+    {
+        IBlockColor iblockcolor = (IBlockColor)this.blockColorMap.get(p_189991_1_.getBlock().delegate);
+
+        if (iblockcolor != null)
+        {
+            return iblockcolor.colorMultiplier(p_189991_1_, (IBlockAccess)null, (BlockPos)null, 0);
+        }
+        else
+        {
+            MapColor mapcolor = p_189991_1_.getMapColor();
+            return mapcolor != null ? mapcolor.colorValue : -1;
+        }
+    }
+
     public int colorMultiplier(IBlockState state, @Nullable IBlockAccess blockAccess, @Nullable BlockPos pos, int renderPass)
     {
         IBlockColor iblockcolor = (IBlockColor)this.blockColorMap.get(state.getBlock().delegate);
@@ -153,13 +169,11 @@ public class BlockColors
 
     public void registerBlockColorHandler(IBlockColor blockColor, Block... blocksIn)
     {
-        int i = 0;
-
-        for (int j = blocksIn.length; i < j; ++i)
+        for (Block block : blocksIn)
         {
-            if (blocksIn[i] == null) throw new IllegalArgumentException("Block registered to block color handler cannot be null!");
-            if (blocksIn[i].getRegistryName() == null) throw new IllegalArgumentException("Block must be registered before assigning color handler.");
-            this.blockColorMap.put(blocksIn[i].delegate, blockColor);
+            if (block == null) throw new IllegalArgumentException("Block registered to block color handler cannot be null!");
+            if (block.getRegistryName() == null) throw new IllegalArgumentException("Block must be registered before assigning color handler.");
+            this.blockColorMap.put(block.delegate, blockColor);
         }
     }
 }

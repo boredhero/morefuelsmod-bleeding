@@ -85,7 +85,7 @@ public class MultipartBakedModel implements IBakedModel
     @SideOnly(Side.CLIENT)
     public static class Builder
         {
-            private Map<Predicate<IBlockState>, IBakedModel> builderSelectors = Maps.<Predicate<IBlockState>, IBakedModel>newLinkedHashMap();
+            private final Map<Predicate<IBlockState>, IBakedModel> builderSelectors = Maps.<Predicate<IBlockState>, IBakedModel>newLinkedHashMap();
 
             public void putModel(Predicate<IBlockState> p_188648_1_, IBakedModel p_188648_2_)
             {

@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
@@ -39,6 +40,7 @@ import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -53,8 +55,8 @@ public class EntityEnderman extends EntityMob
     private static final Set<Block> CARRIABLE_BLOCKS = Sets.<Block>newIdentityHashSet();
     private static final DataParameter<Optional<IBlockState>> CARRIED_BLOCK = EntityDataManager.<Optional<IBlockState>>createKey(EntityEnderman.class, DataSerializers.OPTIONAL_BLOCK_STATE);
     private static final DataParameter<Boolean> SCREAMING = EntityDataManager.<Boolean>createKey(EntityEnderman.class, DataSerializers.BOOLEAN);
-    private int lastCreepySound = 0;
-    private int targetChangeTime = 0;
+    private int lastCreepySound;
+    private int targetChangeTime;
 
     public EntityEnderman(World worldIn)
     {
@@ -147,6 +149,11 @@ public class EntityEnderman extends EntityMob
         }
 
         super.notifyDataManagerChange(key);
+    }
+
+    public static void func_189763_b(DataFixer p_189763_0_)
+    {
+        EntityLiving.func_189752_a(p_189763_0_, "Enderman");
     }
 
     /**
@@ -274,9 +281,9 @@ public class EntityEnderman extends EntityMob
         Vec3d vec3d = new Vec3d(this.posX - p_70816_1_.posX, this.getEntityBoundingBox().minY + (double)(this.height / 2.0F) - p_70816_1_.posY + (double)p_70816_1_.getEyeHeight(), this.posZ - p_70816_1_.posZ);
         vec3d = vec3d.normalize();
         double d0 = 16.0D;
-        double d1 = this.posX + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.xCoord * d0;
-        double d2 = this.posY + (double)(this.rand.nextInt(16) - 8) - vec3d.yCoord * d0;
-        double d3 = this.posZ + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.zCoord * d0;
+        double d1 = this.posX + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.xCoord * 16.0D;
+        double d2 = this.posY + (double)(this.rand.nextInt(16) - 8) - vec3d.yCoord * 16.0D;
+        double d3 = this.posZ + (this.rand.nextDouble() - 0.5D) * 8.0D - vec3d.zCoord * 16.0D;
         return this.teleportTo(d1, d2, d3);
     }
 
@@ -323,7 +330,13 @@ public class EntityEnderman extends EntityMob
 
         if (iblockstate != null)
         {
-            this.entityDropItem(new ItemStack(iblockstate.getBlock(), 1, iblockstate.getBlock().getMetaFromState(iblockstate)), 0.0F);
+            Item item = Item.getItemFromBlock(iblockstate.getBlock());
+
+            if (item != null)
+            {
+                int i = item.getHasSubtypes() ? iblockstate.getBlock().getMetaFromState(iblockstate) : 0;
+                this.entityDropItem(new ItemStack(item, 1, i), 0.0F);
+            }
         }
     }
 
@@ -417,6 +430,7 @@ public class EntityEnderman extends EntityMob
         CARRIABLE_BLOCKS.add(Blocks.PUMPKIN);
         CARRIABLE_BLOCKS.add(Blocks.MELON_BLOCK);
         CARRIABLE_BLOCKS.add(Blocks.MYCELIUM);
+        CARRIABLE_BLOCKS.add(Blocks.NETHERRACK);
     }
 
     static class AIFindPlayer extends EntityAINearestAttackableTarget<EntityPlayer>

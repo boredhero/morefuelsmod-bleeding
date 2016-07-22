@@ -131,13 +131,13 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
             }
             catch (RuntimeException runtimeexception)
             {
-                //logger.error((String)("Unable to parse metadata from " + resourcelocation), (Throwable)runtimeexception);
+                //LOGGER.error("Unable to parse metadata from {}", new Object[] {resourcelocation, runtimeexception});
                 net.minecraftforge.fml.client.FMLClientHandler.instance().trackBrokenTexture(resourcelocation, runtimeexception.getMessage());
                 continue;
             }
             catch (IOException ioexception)
             {
-                //logger.error((String)("Using missing texture, unable to load " + resourcelocation), (Throwable)ioexception);
+                //LOGGER.error("Using missing texture, unable to load {}", new Object[] {resourcelocation, ioexception});
                 net.minecraftforge.fml.client.FMLClientHandler.instance().trackMissingTexture(resourcelocation);
                 continue;
             }
@@ -249,12 +249,12 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
             }
             catch (RuntimeException runtimeexception)
             {
-                LOGGER.error((String)("Unable to parse metadata from " + resourcelocation), (Throwable)runtimeexception);
+                LOGGER.error("Unable to parse metadata from {}", new Object[] {resourcelocation, runtimeexception});
                 flag = false;
             }
             catch (IOException ioexception)
             {
-                LOGGER.error((String)("Using missing texture, unable to load " + resourcelocation), (Throwable)ioexception);
+                LOGGER.error("Using missing texture, unable to load {}", new Object[] {resourcelocation, ioexception});
                 flag = false;
                 return flag;
             }
@@ -387,6 +387,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
      * @param entry Entry instance
      * @return True if the entry was added to the map, false otherwise.
      */
+    @Deprecated //Use non-String version
     public boolean setTextureEntry(String name, TextureAtlasSprite entry)
     {
         if (!mapRegisteredSprites.containsKey(name))
@@ -395,5 +396,9 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
             return true;
         }
         return false;
+    }
+    public boolean setTextureEntry(TextureAtlasSprite entry)
+    {
+        return setTextureEntry(entry.getIconName(), entry);
     }
 }

@@ -33,9 +33,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EntityFishHook extends Entity
 {
     private static final DataParameter<Integer> DATA_HOOKED_ENTITY = EntityDataManager.<Integer>createKey(EntityFishHook.class, DataSerializers.VARINT);
-    private int xTile;
-    private int yTile;
-    private int zTile;
+    private BlockPos field_189740_d;
     private Block inTile;
     private boolean inGround;
     public EntityPlayer angler;
@@ -45,7 +43,6 @@ public class EntityFishHook extends Entity
     private int ticksCaughtDelay;
     private int ticksCatchableDelay;
     private float fishApproachAngle;
-    public Entity caughtEntity;
     private int fishPosRotationIncrements;
     private double fishX;
     private double fishY;
@@ -58,13 +55,12 @@ public class EntityFishHook extends Entity
     private double clientMotionY;
     @SideOnly(Side.CLIENT)
     private double clientMotionZ;
+    public Entity caughtEntity;
 
     public EntityFishHook(World worldIn)
     {
         super(worldIn);
-        this.xTile = -1;
-        this.yTile = -1;
-        this.zTile = -1;
+        this.field_189740_d = new BlockPos(-1, -1, -1);
         this.setSize(0.25F, 0.25F);
         this.ignoreFrustumCheck = true;
     }
@@ -82,9 +78,7 @@ public class EntityFishHook extends Entity
     public EntityFishHook(World worldIn, EntityPlayer fishingPlayer)
     {
         super(worldIn);
-        this.xTile = -1;
-        this.yTile = -1;
-        this.zTile = -1;
+        this.field_189740_d = new BlockPos(-1, -1, -1);
         this.ignoreFrustumCheck = true;
         this.angler = fishingPlayer;
         this.angler.fishEntity = this;
@@ -95,9 +89,9 @@ public class EntityFishHook extends Entity
         this.posZ -= (double)(MathHelper.sin(this.rotationYaw * 0.017453292F) * 0.16F);
         this.setPosition(this.posX, this.posY, this.posZ);
         float f = 0.4F;
-        this.motionX = (double)(-MathHelper.sin(this.rotationYaw * 0.017453292F) * MathHelper.cos(this.rotationPitch * 0.017453292F) * f);
-        this.motionZ = (double)(MathHelper.cos(this.rotationYaw * 0.017453292F) * MathHelper.cos(this.rotationPitch * 0.017453292F) * f);
-        this.motionY = (double)(-MathHelper.sin(this.rotationPitch * 0.017453292F) * f);
+        this.motionX = (double)(-MathHelper.sin(this.rotationYaw * 0.017453292F) * MathHelper.cos(this.rotationPitch * 0.017453292F) * 0.4F);
+        this.motionZ = (double)(MathHelper.cos(this.rotationYaw * 0.017453292F) * MathHelper.cos(this.rotationPitch * 0.017453292F) * 0.4F);
+        this.motionY = (double)(-MathHelper.sin(this.rotationPitch * 0.017453292F) * 0.4F);
         this.handleHookCasting(this.motionX, this.motionY, this.motionZ, 1.5F, 1.0F);
     }
 
@@ -154,8 +148,10 @@ public class EntityFishHook extends Entity
         this.motionY = p_146035_3_;
         this.motionZ = p_146035_5_;
         float f1 = MathHelper.sqrt_double(p_146035_1_ * p_146035_1_ + p_146035_5_ * p_146035_5_);
-        this.prevRotationYaw = this.rotationYaw = (float)(MathHelper.atan2(p_146035_1_, p_146035_5_) * (180D / Math.PI));
-        this.prevRotationPitch = this.rotationPitch = (float)(MathHelper.atan2(p_146035_3_, (double)f1) * (180D / Math.PI));
+        this.rotationYaw = (float)(MathHelper.atan2(p_146035_1_, p_146035_5_) * (180D / Math.PI));
+        this.rotationPitch = (float)(MathHelper.atan2(p_146035_3_, (double)f1) * (180D / Math.PI));
+        this.prevRotationYaw = this.rotationYaw;
+        this.prevRotationPitch = this.rotationPitch;
         this.ticksInGround = 0;
     }
 
@@ -182,9 +178,12 @@ public class EntityFishHook extends Entity
     @SideOnly(Side.CLIENT)
     public void setVelocity(double x, double y, double z)
     {
-        this.clientMotionX = this.motionX = x;
-        this.clientMotionY = this.motionY = y;
-        this.clientMotionZ = this.motionZ = z;
+        this.motionX = x;
+        this.motionY = y;
+        this.motionZ = z;
+        this.clientMotionX = this.motionX;
+        this.clientMotionY = this.motionY;
+        this.clientMotionZ = this.motionZ;
     }
 
     /**
@@ -245,7 +244,7 @@ public class EntityFishHook extends Entity
         {
             if (this.inGround)
             {
-                if (this.worldObj.getBlockState(new BlockPos(this.xTile, this.yTile, this.zTile)).getBlock() == this.inTile)
+                if (this.worldObj.getBlockState(this.field_189740_d).getBlock() == this.inTile)
                 {
                     ++this.ticksInGround;
 
@@ -290,7 +289,7 @@ public class EntityFishHook extends Entity
                 {
                     Entity entity1 = (Entity)list.get(j);
 
-                    if (entity1.canBeCollidedWith() && (entity1 != this.angler || this.ticksInAir >= 5))
+                    if (this.func_189739_a(entity1) && (entity1 != this.angler || this.ticksInAir >= 5))
                     {
                         AxisAlignedBB axisalignedbb1 = entity1.getEntityBoundingBox().expandXyz(0.30000001192092896D);
                         RayTraceResult raytraceresult1 = axisalignedbb1.calculateIntercept(vec3d1, vec3d);
@@ -365,17 +364,17 @@ public class EntityFishHook extends Entity
                 int k = 5;
                 double d5 = 0.0D;
 
-                for (int l = 0; l < k; ++l)
+                for (int l = 0; l < 5; ++l)
                 {
                     AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
                     double d9 = axisalignedbb.maxY - axisalignedbb.minY;
-                    double d10 = axisalignedbb.minY + d9 * (double)l / (double)k;
-                    double d11 = axisalignedbb.minY + d9 * (double)(l + 1) / (double)k;
+                    double d10 = axisalignedbb.minY + d9 * (double)l / 5.0D;
+                    double d11 = axisalignedbb.minY + d9 * (double)(l + 1) / 5.0D;
                     AxisAlignedBB axisalignedbb2 = new AxisAlignedBB(axisalignedbb.minX, d10, axisalignedbb.minZ, axisalignedbb.maxX, d11, axisalignedbb.maxZ);
 
                     if (this.worldObj.isAABBInMaterial(axisalignedbb2, Material.WATER))
                     {
-                        d5 += 1.0D / (double)k;
+                        d5 += 0.2D;
                     }
                 }
 
@@ -511,14 +510,19 @@ public class EntityFishHook extends Entity
         }
     }
 
+    protected boolean func_189739_a(Entity p_189739_1_)
+    {
+        return p_189739_1_.canBeCollidedWith() || p_189739_1_ instanceof EntityItem;
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
     public void writeEntityToNBT(NBTTagCompound compound)
     {
-        compound.setInteger("xTile", this.xTile);
-        compound.setInteger("yTile", this.yTile);
-        compound.setInteger("zTile", this.zTile);
+        compound.setInteger("xTile", this.field_189740_d.getX());
+        compound.setInteger("yTile", this.field_189740_d.getY());
+        compound.setInteger("zTile", this.field_189740_d.getZ());
         ResourceLocation resourcelocation = (ResourceLocation)Block.REGISTRY.getNameForObject(this.inTile);
         compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
         compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
@@ -529,9 +533,7 @@ public class EntityFishHook extends Entity
      */
     public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.xTile = compound.getInteger("xTile");
-        this.yTile = compound.getInteger("yTile");
-        this.zTile = compound.getInteger("zTile");
+        this.field_189740_d = new BlockPos(compound.getInteger("xTile"), compound.getInteger("yTile"), compound.getInteger("zTile"));
 
         if (compound.hasKey("inTile", 8))
         {
@@ -574,9 +576,9 @@ public class EntityFishHook extends Entity
                     double d2 = this.angler.posZ - this.posZ;
                     double d3 = (double)MathHelper.sqrt_double(d0 * d0 + d1 * d1 + d2 * d2);
                     double d4 = 0.1D;
-                    entityitem.motionX = d0 * d4;
-                    entityitem.motionY = d1 * d4 + (double)MathHelper.sqrt_double(d3) * 0.08D;
-                    entityitem.motionZ = d2 * d4;
+                    entityitem.motionX = d0 * 0.1D;
+                    entityitem.motionY = d1 * 0.1D + (double)MathHelper.sqrt_double(d3) * 0.08D;
+                    entityitem.motionZ = d2 * 0.1D;
                     this.worldObj.spawnEntityInWorld(entityitem);
                     this.angler.worldObj.spawnEntityInWorld(new EntityXPOrb(this.angler.worldObj, this.angler.posX, this.angler.posY + 0.5D, this.angler.posZ + 0.5D, this.rand.nextInt(6) + 1));
                 }
@@ -613,9 +615,9 @@ public class EntityFishHook extends Entity
         double d2 = this.angler.posZ - this.posZ;
         double d3 = (double)MathHelper.sqrt_double(d0 * d0 + d1 * d1 + d2 * d2);
         double d4 = 0.1D;
-        this.caughtEntity.motionX += d0 * d4;
-        this.caughtEntity.motionY += d1 * d4 + (double)MathHelper.sqrt_double(d3) * 0.08D;
-        this.caughtEntity.motionZ += d2 * d4;
+        this.caughtEntity.motionX += d0 * 0.1D;
+        this.caughtEntity.motionY += d1 * 0.1D + (double)MathHelper.sqrt_double(d3) * 0.08D;
+        this.caughtEntity.motionZ += d2 * 0.1D;
     }
 
     /**

@@ -16,16 +16,16 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
     private final Predicate<Entity> canBeSeenSelector;
     /** The entity we are attached to */
     protected EntityCreature theEntity;
-    private double farSpeed;
-    private double nearSpeed;
+    private final double farSpeed;
+    private final double nearSpeed;
     protected T closestLivingEntity;
-    private float avoidDistance;
+    private final float avoidDistance;
     /** The PathEntity of our entity */
     private Path entityPathEntity;
     /** The PathNavigate of our entity */
-    private PathNavigate entityPathNavigate;
-    private Class<T> classToAvoid;
-    private Predicate <? super T > avoidTargetSelector;
+    private final PathNavigate entityPathNavigate;
+    private final Class<T> classToAvoid;
+    private final Predicate <? super T > avoidTargetSelector;
 
     public EntityAIAvoidEntity(EntityCreature theEntityIn, Class<T> classToAvoidIn, float avoidDistanceIn, double farSpeedIn, double nearSpeedIn)
     {
@@ -78,7 +78,7 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
             else
             {
                 this.entityPathEntity = this.entityPathNavigate.getPathToXYZ(vec3d.xCoord, vec3d.yCoord, vec3d.zCoord);
-                return this.entityPathEntity == null ? false : this.entityPathEntity.isDestinationSame(vec3d);
+                return this.entityPathEntity != null;
             }
         }
     }

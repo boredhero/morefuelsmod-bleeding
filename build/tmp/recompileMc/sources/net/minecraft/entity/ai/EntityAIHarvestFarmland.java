@@ -2,6 +2,7 @@ package net.minecraft.entity.ai;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Blocks;
@@ -88,7 +89,7 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
             {
                 world.destroyBlock(blockpos, true);
             }
-            else if (this.currentTask == 1 && block == Blocks.AIR)
+            else if (this.currentTask == 1 && iblockstate.getMaterial() == Material.AIR)
             {
                 InventoryBasic inventorybasic = this.theVillager.getVillagerInventory();
 
@@ -159,7 +160,7 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
                 return true;
             }
 
-            if (block == Blocks.AIR && this.hasFarmItem && (this.currentTask == 1 || this.currentTask < 0))
+            if (iblockstate.getMaterial() == Material.AIR && this.hasFarmItem && (this.currentTask == 1 || this.currentTask < 0))
             {
                 this.currentTask = 1;
                 return true;

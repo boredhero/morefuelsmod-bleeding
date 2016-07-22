@@ -11,8 +11,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerHorseInventory extends Container
 {
-    private IInventory horseInventory;
-    private EntityHorse theHorse;
+    private final IInventory horseInventory;
+    private final EntityHorse theHorse;
 
     public ContainerHorseInventory(IInventory playerInventory, final IInventory horseInventoryIn, final EntityHorse horse, EntityPlayer player)
     {
@@ -20,7 +20,7 @@ public class ContainerHorseInventory extends Container
         this.theHorse = horse;
         int i = 3;
         horseInventoryIn.openInventory(player);
-        int j = (i - 4) * 18;
+        int j = -18;
         this.addSlotToContainer(new Slot(horseInventoryIn, 0, 8, 18)
         {
             /**
@@ -53,7 +53,7 @@ public class ContainerHorseInventory extends Container
 
         if (horse.isChested())
         {
-            for (int k = 0; k < i; ++k)
+            for (int k = 0; k < 3; ++k)
             {
                 for (int l = 0; l < 5; ++l)
                 {
@@ -66,13 +66,13 @@ public class ContainerHorseInventory extends Container
         {
             for (int k1 = 0; k1 < 9; ++k1)
             {
-                this.addSlotToContainer(new Slot(playerInventory, k1 + i1 * 9 + 9, 8 + k1 * 18, 102 + i1 * 18 + j));
+                this.addSlotToContainer(new Slot(playerInventory, k1 + i1 * 9 + 9, 8 + k1 * 18, 102 + i1 * 18 + -18));
             }
         }
 
         for (int j1 = 0; j1 < 9; ++j1)
         {
-            this.addSlotToContainer(new Slot(playerInventory, j1, 8 + j1 * 18, 160 + j));
+            this.addSlotToContainer(new Slot(playerInventory, j1, 8 + j1 * 18, 142));
         }
     }
 

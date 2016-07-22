@@ -27,7 +27,7 @@ public class BlockAir extends Block
     @Nullable
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
     {
-        return null;
+        return NULL_AABB;
     }
 
     /**

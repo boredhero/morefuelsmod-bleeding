@@ -13,7 +13,7 @@ public class GuiYesNo extends GuiScreen
     /** A reference to the screen object that created this. Used for navigating between screens. */
     protected GuiYesNoCallback parentScreen;
     protected String messageLine1;
-    private String messageLine2;
+    private final String messageLine2;
     private final List<String> listLines = Lists.<String>newArrayList();
     /** The text shown for the first button in GuiYesNo */
     protected String confirmButtonText;

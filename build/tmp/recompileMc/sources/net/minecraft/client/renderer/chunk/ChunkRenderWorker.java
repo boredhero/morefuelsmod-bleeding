@@ -73,7 +73,7 @@ public class ChunkRenderWorker implements Runnable
             {
                 if (!generator.isFinished())
                 {
-                    LOGGER.warn("Chunk render task was " + generator.getStatus() + " when I expected it to be pending; ignoring task");
+                    LOGGER.warn("Chunk render task was {} when I expected it to be pending; ignoring task", new Object[] {generator.getStatus()});
                 }
 
                 return;
@@ -134,7 +134,7 @@ public class ChunkRenderWorker implements Runnable
                 {
                     if (!generator.isFinished())
                     {
-                        LOGGER.warn("Chunk render task was " + generator.getStatus() + " when I expected it to be compiling; aborting task");
+                        LOGGER.warn("Chunk render task was {} when I expected it to be compiling; aborting task", new Object[] {generator.getStatus()});
                     }
 
                     this.freeRenderBuilder(generator);
@@ -192,7 +192,7 @@ public class ChunkRenderWorker implements Runnable
 
                             if (!generator.isFinished())
                             {
-                                ChunkRenderWorker.LOGGER.warn("Chunk render task was " + generator.getStatus() + " when I expected it to be uploading; aborting task");
+                                ChunkRenderWorker.LOGGER.warn("Chunk render task was {} when I expected it to be uploading; aborting task", new Object[] {generator.getStatus()});
                             }
                         }
                         finally

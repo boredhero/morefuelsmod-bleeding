@@ -12,6 +12,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -117,8 +118,10 @@ public abstract class EntityThrowable extends Entity implements IProjectile
         this.motionY = y;
         this.motionZ = z;
         float f1 = MathHelper.sqrt_double(x * x + z * z);
-        this.prevRotationYaw = this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
-        this.prevRotationPitch = this.rotationPitch = (float)(MathHelper.atan2(y, (double)f1) * (180D / Math.PI));
+        this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
+        this.rotationPitch = (float)(MathHelper.atan2(y, (double)f1) * (180D / Math.PI));
+        this.prevRotationYaw = this.rotationYaw;
+        this.prevRotationPitch = this.rotationPitch;
         this.ticksInGround = 0;
     }
 
@@ -135,8 +138,10 @@ public abstract class EntityThrowable extends Entity implements IProjectile
         if (this.prevRotationPitch == 0.0F && this.prevRotationYaw == 0.0F)
         {
             float f = MathHelper.sqrt_double(x * x + z * z);
-            this.prevRotationYaw = this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
-            this.prevRotationPitch = this.rotationPitch = (float)(MathHelper.atan2(y, (double)f) * (180D / Math.PI));
+            this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
+            this.rotationPitch = (float)(MathHelper.atan2(y, (double)f) * (180D / Math.PI));
+            this.prevRotationYaw = this.rotationYaw;
+            this.prevRotationPitch = this.rotationPitch;
         }
     }
 
@@ -257,6 +262,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
             }
             else
             {
+                if(!net.minecraftforge.common.ForgeHooks.onThrowableImpact(this, raytraceresult))
                 this.onImpact(raytraceresult);
             }
         }
@@ -297,7 +303,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
             for (int j = 0; j < 4; ++j)
             {
                 float f3 = 0.25F;
-                this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * (double)f3, this.posY - this.motionY * (double)f3, this.posZ - this.motionZ * (double)f3, this.motionX, this.motionY, this.motionZ, new int[0]);
+                this.worldObj.spawnParticle(EnumParticleTypes.WATER_BUBBLE, this.posX - this.motionX * 0.25D, this.posY - this.motionY * 0.25D, this.posZ - this.motionZ * 0.25D, this.motionX, this.motionY, this.motionZ, new int[0]);
             }
 
             f1 = 0.8F;
@@ -306,7 +312,12 @@ public abstract class EntityThrowable extends Entity implements IProjectile
         this.motionX *= (double)f1;
         this.motionY *= (double)f1;
         this.motionZ *= (double)f1;
-        this.motionY -= (double)f2;
+
+        if (!this.func_189652_ae())
+        {
+            this.motionY -= (double)f2;
+        }
+
         this.setPosition(this.posX, this.posY, this.posZ);
     }
 
@@ -322,6 +333,10 @@ public abstract class EntityThrowable extends Entity implements IProjectile
      * Called when this EntityThrowable hits a block or entity.
      */
     protected abstract void onImpact(RayTraceResult result);
+
+    public static void func_189661_a(DataFixer p_189661_0_, String p_189661_1_)
+    {
+    }
 
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.

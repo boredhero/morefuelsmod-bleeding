@@ -13,7 +13,10 @@ public class ParticleExplosion extends Particle
         this.motionX = xSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.05000000074505806D;
         this.motionY = ySpeedIn + (Math.random() * 2.0D - 1.0D) * 0.05000000074505806D;
         this.motionZ = zSpeedIn + (Math.random() * 2.0D - 1.0D) * 0.05000000074505806D;
-        this.particleRed = this.particleGreen = this.particleBlue = this.rand.nextFloat() * 0.3F + 0.7F;
+        float f = this.rand.nextFloat() * 0.3F + 0.7F;
+        this.particleRed = f;
+        this.particleGreen = f;
+        this.particleBlue = f;
         this.particleScale = this.rand.nextFloat() * this.rand.nextFloat() * 6.0F + 1.0F;
         this.particleMaxAge = (int)(16.0D / ((double)this.rand.nextFloat() * 0.8D + 0.2D)) + 2;
     }

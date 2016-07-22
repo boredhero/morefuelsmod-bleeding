@@ -18,14 +18,16 @@ public class ParticleFootStep extends Particle
 {
     private static final ResourceLocation FOOTPRINT_TEXTURE = new ResourceLocation("textures/particle/footprint.png");
     private int footstepAge;
-    private int footstepMaxAge;
-    private TextureManager currentFootSteps;
+    private final int footstepMaxAge;
+    private final TextureManager currentFootSteps;
 
     protected ParticleFootStep(TextureManager currentFootStepsIn, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn)
     {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, 0.0D, 0.0D, 0.0D);
         this.currentFootSteps = currentFootStepsIn;
-        this.motionX = this.motionY = this.motionZ = 0.0D;
+        this.motionX = 0.0D;
+        this.motionY = 0.0D;
+        this.motionZ = 0.0D;
         this.footstepMaxAge = 200;
     }
 

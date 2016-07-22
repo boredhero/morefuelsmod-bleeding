@@ -35,6 +35,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.chunk.Chunk;
@@ -49,7 +50,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class WorldClient extends World
 {
     /** The packets that need to be sent to the server. */
-    private NetHandlerPlayClient connection;
+    private final NetHandlerPlayClient connection;
     /** The ChunkProviderClient instance */
     private ChunkProviderClient clientChunkProvider;
     private final Set<Entity> entityList = Sets.<Entity>newHashSet();
@@ -209,13 +210,16 @@ public class WorldClient extends World
         boolean flag = super.spawnEntityInWorld(entityIn);
         this.entityList.add(entityIn);
 
-        if (!flag)
+        if (flag)
+        {
+            if (entityIn instanceof EntityMinecart)
+            {
+                this.mc.getSoundHandler().playSound(new MovingSoundMinecart((EntityMinecart)entityIn));
+            }
+        }
+        else
         {
             this.entitySpawnQueue.add(entityIn);
-        }
-        else if (entityIn instanceof EntityMinecart)
-        {
-            this.mc.getSoundHandler().playSound(new MovingSoundMinecart((EntityMinecart)entityIn));
         }
 
         return flag;
@@ -243,14 +247,12 @@ public class WorldClient extends World
     public void onEntityRemoved(Entity entityIn)
     {
         super.onEntityRemoved(entityIn);
-        boolean flag = false;
 
         if (this.entityList.contains(entityIn))
         {
             if (entityIn.isEntityAlive())
             {
                 this.entitySpawnQueue.add(entityIn);
-                flag = true;
             }
             else
             {
@@ -358,7 +360,7 @@ public class WorldClient extends World
         int i = 32;
         Random random = new Random();
         ItemStack itemstack = this.mc.thePlayer.getHeldItemMainhand();
-        boolean flag = this.mc.playerController.getCurrentGameType() == WorldSettings.GameType.CREATIVE && itemstack != null && Block.getBlockFromItem(itemstack.getItem()) == Blocks.BARRIER;
+        boolean flag = this.mc.playerController.getCurrentGameType() == GameType.CREATIVE && itemstack != null && Block.getBlockFromItem(itemstack.getItem()) == Blocks.BARRIER;
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
         for (int j = 0; j < 667; ++j)
@@ -450,14 +452,14 @@ public class WorldClient extends World
         {
             public String call()
             {
-                return WorldClient.this.entityList.size() + " total; " + WorldClient.this.entityList.toString();
+                return WorldClient.this.entityList.size() + " total; " + WorldClient.this.entityList;
             }
         });
         crashreportcategory.setDetail("Retry entities", new ICrashReportDetail<String>()
         {
             public String call()
             {
-                return WorldClient.this.entitySpawnQueue.size() + " total; " + WorldClient.this.entitySpawnQueue.toString();
+                return WorldClient.this.entitySpawnQueue.size() + " total; " + WorldClient.this.entitySpawnQueue;
             }
         });
         crashreportcategory.setDetail("Server brand", new ICrashReportDetail<String>()

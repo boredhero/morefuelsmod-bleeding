@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -11,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
@@ -21,6 +23,11 @@ public class EntityMooshroom extends EntityCow implements net.minecraftforge.com
         super(worldIn);
         this.setSize(0.9F, 1.4F);
         this.spawnableBlock = Blocks.MYCELIUM;
+    }
+
+    public static void func_189791_c(DataFixer p_189791_0_)
+    {
+        EntityLiving.func_189752_a(p_189791_0_, "MushroomCow");
     }
 
     @SuppressWarnings("unused")

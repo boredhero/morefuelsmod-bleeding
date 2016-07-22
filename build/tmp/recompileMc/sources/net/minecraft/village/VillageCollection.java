@@ -157,11 +157,11 @@ public class VillageCollection extends WorldSavedData
         int j = 4;
         int k = 16;
 
-        for (int l = -i; l < i; ++l)
+        for (int l = -16; l < 16; ++l)
         {
-            for (int i1 = -j; i1 < j; ++i1)
+            for (int i1 = -4; i1 < 4; ++i1)
             {
-                for (int j1 = -k; j1 < k; ++j1)
+                for (int j1 = -16; j1 < 16; ++j1)
                 {
                     BlockPos blockpos = central.add(l, i1, j1);
 

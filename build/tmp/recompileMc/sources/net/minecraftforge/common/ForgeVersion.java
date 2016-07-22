@@ -1,3 +1,22 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 /**
  * This software is provided under the terms of the Minecraft Forge Public
  * License v1.0.
@@ -33,15 +52,15 @@ public class ForgeVersion
     //This number is incremented every time we remove deprecated code/major API changes, never reset
     public static final int majorVersion    = 12;
     //This number is incremented every minecraft release, never reset
-    public static final int minorVersion    = 17;
+    public static final int minorVersion    = 18;
     //This number is incremented every time a interface changes or new major feature is added, and reset every Minecraft version
-    public static final int revisionVersion = 0;
+    public static final int revisionVersion = 1;
     //This number is incremented every time Jenkins builds Forge, and never reset. Should always be 0 in the repo code.
-    public static final int buildVersion    = 1968;
+    public static final int buildVersion    = 2018;
     // This is the minecraft version we're building for - used in various places in Forge/FML code
-    public static final String mcVersion = "1.9.4";
+    public static final String mcVersion = "1.10.2";
     // This is the MCP data version we're using
-    public static final String mcpVersion = "9.28";
+    public static final String mcpVersion = "9.32";
     @SuppressWarnings("unused")
     private static Status status = PENDING;
     @SuppressWarnings("unused")

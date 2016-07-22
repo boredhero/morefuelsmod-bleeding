@@ -7,9 +7,11 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockPistonBase;
 import net.minecraft.block.BlockPistonExtension;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityBodyHelper;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -33,6 +35,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -152,6 +155,11 @@ public class EntityShulker extends EntityGolem implements IMob
         return new EntityShulker.BodyHelper(this);
     }
 
+    public static void func_189757_b(DataFixer p_189757_0_)
+    {
+        EntityLiving.func_189752_a(p_189757_0_, "Shulker");
+    }
+
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
@@ -219,7 +227,7 @@ public class EntityShulker extends EntityGolem implements IMob
         {
             IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
 
-            if (iblockstate.getBlock() != Blocks.AIR)
+            if (iblockstate.getMaterial() != Material.AIR)
             {
                 if (iblockstate.getBlock() == Blocks.PISTON_EXTENSION)
                 {
@@ -297,9 +305,15 @@ public class EntityShulker extends EntityGolem implements IMob
                 }
             }
 
-            this.lastTickPosX = this.prevPosX = this.posX = (double)blockpos.getX() + 0.5D;
-            this.lastTickPosY = this.prevPosY = this.posY = (double)blockpos.getY();
-            this.lastTickPosZ = this.prevPosZ = this.posZ = (double)blockpos.getZ() + 0.5D;
+            this.posX = (double)blockpos.getX() + 0.5D;
+            this.posY = (double)blockpos.getY();
+            this.posZ = (double)blockpos.getZ() + 0.5D;
+            this.prevPosX = this.posX;
+            this.prevPosY = this.posY;
+            this.prevPosZ = this.posZ;
+            this.lastTickPosX = this.posX;
+            this.lastTickPosY = this.posY;
+            this.lastTickPosZ = this.posZ;
             double d3 = 0.5D - (double)MathHelper.sin((0.5F + this.currentPeekAmount) * (float)Math.PI) * 0.5D;
             double d4 = 0.5D - (double)MathHelper.sin((0.5F + this.currentPeekAmount0) * (float)Math.PI) * 0.5D;
             double d5 = d3 - d4;
@@ -311,7 +325,6 @@ public class EntityShulker extends EntityGolem implements IMob
             switch (enumfacing2)
             {
                 case DOWN:
-                default:
                     this.setEntityBoundingBox(new AxisAlignedBB(this.posX - 0.5D, this.posY, this.posZ - 0.5D, this.posX + 0.5D, this.posY + 1.0D + d3, this.posZ + 0.5D));
                     d1 = d5;
                     break;
@@ -450,9 +463,15 @@ public class EntityShulker extends EntityGolem implements IMob
                     this.clientSideTeleportInterpolation = 6;
                 }
 
-                this.lastTickPosX = this.prevPosX = this.posX = (double)blockpos.getX() + 0.5D;
-                this.lastTickPosY = this.prevPosY = this.posY = (double)blockpos.getY();
-                this.lastTickPosZ = this.prevPosZ = this.posZ = (double)blockpos.getZ() + 0.5D;
+                this.posX = (double)blockpos.getX() + 0.5D;
+                this.posY = (double)blockpos.getY();
+                this.posZ = (double)blockpos.getZ() + 0.5D;
+                this.prevPosX = this.posX;
+                this.prevPosY = this.posY;
+                this.prevPosZ = this.posZ;
+                this.lastTickPosX = this.posX;
+                this.lastTickPosY = this.posY;
+                this.lastTickPosZ = this.posZ;
             }
         }
 

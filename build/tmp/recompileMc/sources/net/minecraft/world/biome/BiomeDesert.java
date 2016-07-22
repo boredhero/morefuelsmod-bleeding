@@ -6,6 +6,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.feature.WorldGenDesertWells;
+import net.minecraft.world.gen.feature.WorldGenFossils;
 
 public class BiomeDesert extends Biome
 {
@@ -33,6 +34,11 @@ public class BiomeDesert extends Biome
             int j = rand.nextInt(16) + 8;
             BlockPos blockpos = worldIn.getHeight(pos.add(i, 0, j)).up();
             (new WorldGenDesertWells()).generate(worldIn, rand, blockpos);
+        }
+
+        if (rand.nextInt(64) == 0)
+        {
+            (new WorldGenFossils()).generate(worldIn, rand, pos);
         }
     }
 }

@@ -2,6 +2,7 @@ package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
@@ -27,6 +28,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.fml.relauncher.Side;
@@ -47,7 +49,7 @@ public class EntityCreeper extends EntityMob
     private int fuseTime = 30;
     /** Explosion radius for this creeper. */
     private int explosionRadius = 3;
-    private int droppedSkulls = 0;
+    private int droppedSkulls;
 
     public EntityCreeper(World worldIn)
     {
@@ -99,6 +101,11 @@ public class EntityCreeper extends EntityMob
         this.dataManager.register(STATE, Integer.valueOf(-1));
         this.dataManager.register(POWERED, Boolean.valueOf(false));
         this.dataManager.register(IGNITED, Boolean.valueOf(false));
+    }
+
+    public static void func_189762_b(DataFixer p_189762_0_)
+    {
+        EntityLiving.func_189752_a(p_189762_0_, "Creeper");
     }
 
     /**

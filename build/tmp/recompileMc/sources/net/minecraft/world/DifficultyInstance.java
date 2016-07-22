@@ -20,6 +20,11 @@ public class DifficultyInstance
         return this.additionalDifficulty;
     }
 
+    public boolean func_190083_c()
+    {
+        return this.additionalDifficulty >= (float)EnumDifficulty.HARD.ordinal();
+    }
+
     public float getClampedAdditionalDifficulty()
     {
         return this.additionalDifficulty < 2.0F ? 0.0F : (this.additionalDifficulty > 4.0F ? 1.0F : (this.additionalDifficulty - 2.0F) / 2.0F);

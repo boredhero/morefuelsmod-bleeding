@@ -1,9 +1,6 @@
 package net.minecraft.client.particle;
 
 import java.util.Random;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -33,16 +30,6 @@ public class ParticleSpell extends Particle
     public boolean isTransparent()
     {
         return true;
-    }
-
-    /**
-     * Renders the particle
-     */
-    public void renderParticle(VertexBuffer worldRendererIn, Entity entityIn, float partialTicks, float rotationX, float rotationZ, float rotationYZ, float rotationXY, float rotationXZ)
-    {
-        float f = ((float)this.particleAge + partialTicks) / (float)this.particleMaxAge * 32.0F;
-        f = MathHelper.clamp_float(f, 0.0F, 1.0F);
-        super.renderParticle(worldRendererIn, entityIn, partialTicks, rotationX, rotationZ, rotationYZ, rotationXY, rotationXZ);
     }
 
     public void onUpdate()

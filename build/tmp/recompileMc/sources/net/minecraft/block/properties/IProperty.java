@@ -2,8 +2,6 @@ package net.minecraft.block.properties;
 
 import com.google.common.base.Optional;
 import java.util.Collection;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public interface IProperty<T extends Comparable<T>>
 {
@@ -13,7 +11,6 @@ public interface IProperty<T extends Comparable<T>>
 
     Class<T> getValueClass();
 
-    @SideOnly(Side.CLIENT)
     Optional<T> parseValue(String value);
 
     /**

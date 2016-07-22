@@ -10,8 +10,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiDisconnected extends GuiScreen
 {
-    private String reason;
-    private ITextComponent message;
+    private final String reason;
+    private final ITextComponent message;
     private List<String> multilineMessage;
     private final GuiScreen parentScreen;
     private int textHeight;

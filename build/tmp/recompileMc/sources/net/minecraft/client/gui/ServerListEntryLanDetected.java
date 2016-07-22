@@ -1,7 +1,7 @@
 package net.minecraft.client.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.LanServerDetector;
+import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -11,13 +11,13 @@ public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry
 {
     private final GuiMultiplayer screen;
     protected final Minecraft mc;
-    protected final LanServerDetector.LanServer serverData;
-    private long lastClickTime = 0L;
+    protected final LanServerInfo serverData;
+    private long lastClickTime;
 
-    protected ServerListEntryLanDetected(GuiMultiplayer screenIn, LanServerDetector.LanServer serverDataIn)
+    protected ServerListEntryLanDetected(GuiMultiplayer p_i47141_1_, LanServerInfo p_i47141_2_)
     {
-        this.screen = screenIn;
-        this.serverData = serverDataIn;
+        this.screen = p_i47141_1_;
+        this.serverData = p_i47141_2_;
         this.mc = Minecraft.getMinecraft();
     }
 
@@ -64,7 +64,7 @@ public class ServerListEntryLanDetected implements GuiListExtended.IGuiListEntry
     {
     }
 
-    public LanServerDetector.LanServer getLanServer()
+    public LanServerInfo func_189995_a()
     {
         return this.serverData;
     }

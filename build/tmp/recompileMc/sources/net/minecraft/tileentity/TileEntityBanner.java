@@ -35,7 +35,7 @@ public class TileEntityBanner extends TileEntity
 
             if (nbttagcompound.hasKey("Patterns"))
             {
-                this.patterns = (NBTTagList)nbttagcompound.getTagList("Patterns", 10).copy();
+                this.patterns = nbttagcompound.getTagList("Patterns", 10).copy();
             }
 
             if (nbttagcompound.hasKey("Base", 99))
@@ -261,11 +261,11 @@ public class TileEntityBanner extends TileEntity
         MOJANG("mojang", "moj", new ItemStack(Items.GOLDEN_APPLE, 1, 1));
 
         /** The name used to represent this pattern. */
-        private String patternName;
+        private final String patternName;
         /** A short string used to represent the pattern. */
-        private String patternID;
+        private final String patternID;
         /** An array of three strings where each string represents a layer in the crafting grid. Goes from top to bottom. */
-        private String[] craftingLayers;
+        private final String[] craftingLayers;
         /** An ItemStack used to apply this pattern. */
         private ItemStack patternCraftingStack;
 

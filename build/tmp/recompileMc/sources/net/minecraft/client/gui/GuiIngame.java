@@ -92,12 +92,12 @@ public class GuiIngame extends Gui
     protected int titleDisplayTime;
     /** The time that the title take to fade out */
     protected int titleFadeOut;
-    protected int playerHealth = 0;
-    protected int lastPlayerHealth = 0;
+    protected int playerHealth;
+    protected int lastPlayerHealth;
     /** The last recorded system time */
-    protected long lastSystemTime = 0L;
+    protected long lastSystemTime;
     /** Used with updateCounter to make the heart bar flash */
-    protected long healthUpdateCounter = 0L;
+    protected long healthUpdateCounter;
 
     public GuiIngame(Minecraft mcIn)
     {
@@ -359,7 +359,6 @@ public class GuiIngame extends Gui
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.disableLighting();
         GlStateManager.enableAlpha();
-        String s = this.mc.getVersionType();
     }
 
     protected void renderAttackIndicator(float p_184045_1_, ScaledResolution p_184045_2_)
@@ -446,7 +445,6 @@ public class GuiIngame extends Gui
                     int k = resolution.getScaledWidth();
                     int l = 1;
                     int i1 = potion.getStatusIconIndex();
-                    float f = 1.0F;
 
                     if (potion.isBeneficial())
                     {
@@ -461,6 +459,7 @@ public class GuiIngame extends Gui
                     }
 
                     GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                    float f = 1.0F;
 
                     if (potioneffect.getIsAmbient())
                     {
@@ -577,9 +576,9 @@ public class GuiIngame extends Gui
         this.mc.getTextureManager().bindTexture(Gui.ICONS);
         float f = this.mc.thePlayer.getHorseJumpPower();
         int i = 182;
-        int j = (int)(f * (float)(i + 1));
+        int j = (int)(f * 183.0F);
         int k = scaledRes.getScaledHeight() - 32 + 3;
-        this.drawTexturedModalRect(x, k, 0, 84, i, 5);
+        this.drawTexturedModalRect(x, k, 0, 84, 182, 5);
 
         if (j > 0)
         {
@@ -598,9 +597,9 @@ public class GuiIngame extends Gui
         if (i > 0)
         {
             int j = 182;
-            int k = (int)(this.mc.thePlayer.experience * (float)(j + 1));
+            int k = (int)(this.mc.thePlayer.experience * 183.0F);
             int l = scaledRes.getScaledHeight() - 32 + 3;
-            this.drawTexturedModalRect(x, l, 0, 64, j, 5);
+            this.drawTexturedModalRect(x, l, 0, 64, 182, 5);
 
             if (k > 0)
             {
@@ -613,16 +612,14 @@ public class GuiIngame extends Gui
         if (this.mc.thePlayer.experienceLevel > 0)
         {
             this.mc.mcProfiler.startSection("expLevel");
-            int k1 = 8453920;
             String s = "" + this.mc.thePlayer.experienceLevel;
-            int l1 = (scaledRes.getScaledWidth() - this.getFontRenderer().getStringWidth(s)) / 2;
-            int i1 = scaledRes.getScaledHeight() - 31 - 4;
-            int j1 = 0;
-            this.getFontRenderer().drawString(s, l1 + 1, i1, 0);
-            this.getFontRenderer().drawString(s, l1 - 1, i1, 0);
-            this.getFontRenderer().drawString(s, l1, i1 + 1, 0);
-            this.getFontRenderer().drawString(s, l1, i1 - 1, 0);
-            this.getFontRenderer().drawString(s, l1, i1, k1);
+            int i1 = (scaledRes.getScaledWidth() - this.getFontRenderer().getStringWidth(s)) / 2;
+            int j1 = scaledRes.getScaledHeight() - 31 - 4;
+            this.getFontRenderer().drawString(s, i1 + 1, j1, 0);
+            this.getFontRenderer().drawString(s, i1 - 1, j1, 0);
+            this.getFontRenderer().drawString(s, i1, j1 + 1, 0);
+            this.getFontRenderer().drawString(s, i1, j1 - 1, 0);
+            this.getFontRenderer().drawString(s, i1, j1, 8453920);
             this.mc.mcProfiler.endSection();
         }
     }
@@ -672,7 +669,7 @@ public class GuiIngame extends Gui
     public void renderDemo(ScaledResolution scaledRes)
     {
         this.mc.mcProfiler.startSection("demo");
-        String s = "";
+        String s;
 
         if (this.mc.theWorld.getTotalWorldTime() >= 120500L)
         {
@@ -721,7 +718,7 @@ public class GuiIngame extends Gui
         int i1 = collection.size() * this.getFontRenderer().FONT_HEIGHT;
         int j1 = scaledRes.getScaledHeight() / 2 + i1 / 3;
         int k1 = 3;
-        int l1 = scaledRes.getScaledWidth() - i - k1;
+        int l1 = scaledRes.getScaledWidth() - i - 3;
         int j = 0;
 
         for (Score score1 : collection)
@@ -731,7 +728,7 @@ public class GuiIngame extends Gui
             String s1 = ScorePlayerTeam.formatPlayerName(scoreplayerteam1, score1.getPlayerName());
             String s2 = TextFormatting.RED + "" + score1.getScorePoints();
             int k = j1 - j * this.getFontRenderer().FONT_HEIGHT;
-            int l = scaledRes.getScaledWidth() - k1 + 2;
+            int l = scaledRes.getScaledWidth() - 3 + 2;
             drawRect(l1 - 2, k, l, k + this.getFontRenderer().FONT_HEIGHT, 1342177280);
             this.getFontRenderer().drawString(s1, l1, k, 553648127);
             this.getFontRenderer().drawString(s2, l - this.getFontRenderer().getStringWidth(s2), k, 553648127);
@@ -775,135 +772,133 @@ public class GuiIngame extends Gui
             this.playerHealth = i;
             int j = this.lastPlayerHealth;
             this.rand.setSeed((long)(this.updateCounter * 312871));
-            boolean flag1 = false;
             FoodStats foodstats = entityplayer.getFoodStats();
             int k = foodstats.getFoodLevel();
-            int l = foodstats.getPrevFoodLevel();
             IAttributeInstance iattributeinstance = entityplayer.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-            int i1 = scaledRes.getScaledWidth() / 2 - 91;
-            int j1 = scaledRes.getScaledWidth() / 2 + 91;
-            int k1 = scaledRes.getScaledHeight() - 39;
+            int l = scaledRes.getScaledWidth() / 2 - 91;
+            int i1 = scaledRes.getScaledWidth() / 2 + 91;
+            int j1 = scaledRes.getScaledHeight() - 39;
             float f = (float)iattributeinstance.getAttributeValue();
-            int l1 = MathHelper.ceiling_float_int(entityplayer.getAbsorptionAmount());
-            int i2 = MathHelper.ceiling_float_int((f + (float)l1) / 2.0F / 10.0F);
-            int j2 = Math.max(10 - (i2 - 2), 3);
-            int k2 = k1 - (i2 - 1) * j2 - 10;
-            int l2 = k1 - 10;
-            int i3 = l1;
-            int j3 = entityplayer.getTotalArmorValue();
-            int k3 = -1;
+            int k1 = MathHelper.ceiling_float_int(entityplayer.getAbsorptionAmount());
+            int l1 = MathHelper.ceiling_float_int((f + (float)k1) / 2.0F / 10.0F);
+            int i2 = Math.max(10 - (l1 - 2), 3);
+            int j2 = j1 - (l1 - 1) * i2 - 10;
+            int k2 = j1 - 10;
+            int l2 = k1;
+            int i3 = entityplayer.getTotalArmorValue();
+            int j3 = -1;
 
             if (entityplayer.isPotionActive(MobEffects.REGENERATION))
             {
-                k3 = this.updateCounter % MathHelper.ceiling_float_int(f + 5.0F);
+                j3 = this.updateCounter % MathHelper.ceiling_float_int(f + 5.0F);
             }
 
             this.mc.mcProfiler.startSection("armor");
 
-            for (int l3 = 0; l3 < 10; ++l3)
+            for (int k3 = 0; k3 < 10; ++k3)
             {
-                if (j3 > 0)
+                if (i3 > 0)
                 {
-                    int i4 = i1 + l3 * 8;
+                    int l3 = l + k3 * 8;
 
-                    if (l3 * 2 + 1 < j3)
+                    if (k3 * 2 + 1 < i3)
                     {
-                        this.drawTexturedModalRect(i4, k2, 34, 9, 9, 9);
+                        this.drawTexturedModalRect(l3, j2, 34, 9, 9, 9);
                     }
 
-                    if (l3 * 2 + 1 == j3)
+                    if (k3 * 2 + 1 == i3)
                     {
-                        this.drawTexturedModalRect(i4, k2, 25, 9, 9, 9);
+                        this.drawTexturedModalRect(l3, j2, 25, 9, 9, 9);
                     }
 
-                    if (l3 * 2 + 1 > j3)
+                    if (k3 * 2 + 1 > i3)
                     {
-                        this.drawTexturedModalRect(i4, k2, 16, 9, 9, 9);
+                        this.drawTexturedModalRect(l3, j2, 16, 9, 9, 9);
                     }
                 }
             }
 
             this.mc.mcProfiler.endStartSection("health");
 
-            for (int k5 = MathHelper.ceiling_float_int((f + (float)l1) / 2.0F) - 1; k5 >= 0; --k5)
+            for (int j5 = MathHelper.ceiling_float_int((f + (float)k1) / 2.0F) - 1; j5 >= 0; --j5)
             {
-                int l5 = 16;
+                int k5 = 16;
 
                 if (entityplayer.isPotionActive(MobEffects.POISON))
                 {
-                    l5 += 36;
+                    k5 += 36;
                 }
                 else if (entityplayer.isPotionActive(MobEffects.WITHER))
                 {
-                    l5 += 72;
+                    k5 += 72;
                 }
 
-                int j4 = 0;
+                int i4 = 0;
 
                 if (flag)
                 {
-                    j4 = 1;
+                    i4 = 1;
                 }
 
-                int k4 = MathHelper.ceiling_float_int((float)(k5 + 1) / 10.0F) - 1;
-                int l4 = i1 + k5 % 10 * 8;
-                int i5 = k1 - k4 * j2;
+                int j4 = MathHelper.ceiling_float_int((float)(j5 + 1) / 10.0F) - 1;
+                int k4 = l + j5 % 10 * 8;
+                int l4 = j1 - j4 * i2;
 
                 if (i <= 4)
                 {
-                    i5 += this.rand.nextInt(2);
+                    l4 += this.rand.nextInt(2);
                 }
 
-                if (i3 <= 0 && k5 == k3)
+                if (l2 <= 0 && j5 == j3)
                 {
-                    i5 -= 2;
+                    l4 -= 2;
                 }
 
-                int j5 = 0;
+                int i5 = 0;
 
                 if (entityplayer.worldObj.getWorldInfo().isHardcoreModeEnabled())
                 {
-                    j5 = 5;
+                    i5 = 5;
                 }
 
-                this.drawTexturedModalRect(l4, i5, 16 + j4 * 9, 9 * j5, 9, 9);
+                this.drawTexturedModalRect(k4, l4, 16 + i4 * 9, 9 * i5, 9, 9);
 
                 if (flag)
                 {
-                    if (k5 * 2 + 1 < j)
+                    if (j5 * 2 + 1 < j)
                     {
-                        this.drawTexturedModalRect(l4, i5, l5 + 54, 9 * j5, 9, 9);
+                        this.drawTexturedModalRect(k4, l4, k5 + 54, 9 * i5, 9, 9);
                     }
 
-                    if (k5 * 2 + 1 == j)
+                    if (j5 * 2 + 1 == j)
                     {
-                        this.drawTexturedModalRect(l4, i5, l5 + 63, 9 * j5, 9, 9);
+                        this.drawTexturedModalRect(k4, l4, k5 + 63, 9 * i5, 9, 9);
                     }
                 }
 
-                if (i3 > 0)
+                if (l2 > 0)
                 {
-                    if (i3 == l1 && l1 % 2 == 1)
+                    if (l2 == k1 && k1 % 2 == 1)
                     {
-                        this.drawTexturedModalRect(l4, i5, l5 + 153, 9 * j5, 9, 9);
-                        --i3;
+                        this.drawTexturedModalRect(k4, l4, k5 + 153, 9 * i5, 9, 9);
+                        --l2;
                     }
                     else
                     {
-                        this.drawTexturedModalRect(l4, i5, l5 + 144, 9 * j5, 9, 9);
-                        i3 -= 2;
+                        this.drawTexturedModalRect(k4, l4, k5 + 144, 9 * i5, 9, 9);
+                        l2 -= 2;
                     }
                 }
                 else
                 {
-                    if (k5 * 2 + 1 < i)
+                    if (j5 * 2 + 1 < i)
                     {
-                        this.drawTexturedModalRect(l4, i5, l5 + 36, 9 * j5, 9, 9);
+                        this.drawTexturedModalRect(k4, l4, k5 + 36, 9 * i5, 9, 9);
                     }
 
-                    if (k5 * 2 + 1 == i)
+                    if (j5 * 2 + 1 == i)
                     {
-                        this.drawTexturedModalRect(l4, i5, l5 + 45, 9 * j5, 9, 9);
+                        this.drawTexturedModalRect(k4, l4, k5 + 45, 9 * i5, 9, 9);
                     }
                 }
             }
@@ -914,52 +909,34 @@ public class GuiIngame extends Gui
             {
                 this.mc.mcProfiler.endStartSection("food");
 
-                for (int i6 = 0; i6 < 10; ++i6)
+                for (int l5 = 0; l5 < 10; ++l5)
                 {
-                    int k6 = k1;
-                    int i7 = 16;
-                    int k7 = 0;
+                    int j6 = j1;
+                    int l6 = 16;
+                    int j7 = 0;
 
                     if (entityplayer.isPotionActive(MobEffects.HUNGER))
                     {
-                        i7 += 36;
-                        k7 = 13;
+                        l6 += 36;
+                        j7 = 13;
                     }
 
                     if (entityplayer.getFoodStats().getSaturationLevel() <= 0.0F && this.updateCounter % (k * 3 + 1) == 0)
                     {
-                        k6 = k1 + (this.rand.nextInt(3) - 1);
+                        j6 = j1 + (this.rand.nextInt(3) - 1);
                     }
 
-                    if (flag1)
+                    int l7 = i1 - l5 * 8 - 9;
+                    this.drawTexturedModalRect(l7, j6, 16 + j7 * 9, 27, 9, 9);
+
+                    if (l5 * 2 + 1 < k)
                     {
-                        k7 = 1;
+                        this.drawTexturedModalRect(l7, j6, l6 + 36, 27, 9, 9);
                     }
 
-                    int i8 = j1 - i6 * 8 - 9;
-                    this.drawTexturedModalRect(i8, k6, 16 + k7 * 9, 27, 9, 9);
-
-                    if (flag1)
+                    if (l5 * 2 + 1 == k)
                     {
-                        if (i6 * 2 + 1 < l)
-                        {
-                            this.drawTexturedModalRect(i8, k6, i7 + 54, 27, 9, 9);
-                        }
-
-                        if (i6 * 2 + 1 == l)
-                        {
-                            this.drawTexturedModalRect(i8, k6, i7 + 63, 27, 9, 9);
-                        }
-                    }
-
-                    if (i6 * 2 + 1 < k)
-                    {
-                        this.drawTexturedModalRect(i8, k6, i7 + 36, 27, 9, 9);
-                    }
-
-                    if (i6 * 2 + 1 == k)
-                    {
-                        this.drawTexturedModalRect(i8, k6, i7 + 45, 27, 9, 9);
+                        this.drawTexturedModalRect(l7, j6, l6 + 45, 27, 9, 9);
                     }
                 }
             }
@@ -968,19 +945,19 @@ public class GuiIngame extends Gui
 
             if (entityplayer.isInsideOfMaterial(Material.WATER))
             {
-                int j6 = this.mc.thePlayer.getAir();
-                int l6 = MathHelper.ceiling_double_int((double)(j6 - 2) * 10.0D / 300.0D);
-                int j7 = MathHelper.ceiling_double_int((double)j6 * 10.0D / 300.0D) - l6;
+                int i6 = this.mc.thePlayer.getAir();
+                int k6 = MathHelper.ceiling_double_int((double)(i6 - 2) * 10.0D / 300.0D);
+                int i7 = MathHelper.ceiling_double_int((double)i6 * 10.0D / 300.0D) - k6;
 
-                for (int l7 = 0; l7 < l6 + j7; ++l7)
+                for (int k7 = 0; k7 < k6 + i7; ++k7)
                 {
-                    if (l7 < l6)
+                    if (k7 < k6)
                     {
-                        this.drawTexturedModalRect(j1 - l7 * 8 - 9, l2, 16, 18, 9, 9);
+                        this.drawTexturedModalRect(i1 - k7 * 8 - 9, k2, 16, 18, 9, 9);
                     }
                     else
                     {
-                        this.drawTexturedModalRect(j1 - l7 * 8 - 9, l2, 25, 18, 9, 9);
+                        this.drawTexturedModalRect(i1 - k7 * 8 - 9, k2, 25, 18, 9, 9);
                     }
                 }
             }
@@ -1023,23 +1000,17 @@ public class GuiIngame extends Gui
                     {
                         int i2 = 52;
                         int j2 = 0;
-
-                        if (flag)
-                        {
-                            j2 = 1;
-                        }
-
                         int k2 = l - l1 * 8 - 9;
-                        this.drawTexturedModalRect(k2, i1, i2 + j2 * 9, 9, 9, 9);
+                        this.drawTexturedModalRect(k2, i1, 52 + j2 * 9, 9, 9, 9);
 
                         if (l1 * 2 + 1 + j1 < i)
                         {
-                            this.drawTexturedModalRect(k2, i1, i2 + 36, 9, 9, 9);
+                            this.drawTexturedModalRect(k2, i1, 88, 9, 9, 9);
                         }
 
                         if (l1 * 2 + 1 + j1 == i)
                         {
-                            this.drawTexturedModalRect(k2, i1, i2 + 45, 9, 9, 9);
+                            this.drawTexturedModalRect(k2, i1, 97, 9, 9, 9);
                         }
                     }
 

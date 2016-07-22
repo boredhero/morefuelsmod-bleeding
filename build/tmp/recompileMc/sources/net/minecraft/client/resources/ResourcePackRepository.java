@@ -2,6 +2,7 @@ package net.minecraft.client.resources;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -19,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreenWorking;
@@ -54,6 +56,7 @@ public class ResourcePackRepository
             return flag || flag1;
         }
     };
+    private static final Pattern field_190117_e = Pattern.compile("^[a-fA-F0-9]{40}$");
     private final File dirResourcepacks;
     public final IResourcePack rprDefaultResourcePack;
     private final File dirServerResourcepacks;
@@ -62,7 +65,7 @@ public class ResourcePackRepository
     private final ReentrantLock lock = new ReentrantLock();
     private ListenableFuture<Object> downloadingPacks;
     private List<ResourcePackRepository.Entry> repositoryEntriesAll = Lists.<ResourcePackRepository.Entry>newArrayList();
-    private List<ResourcePackRepository.Entry> repositoryEntries = Lists.<ResourcePackRepository.Entry>newArrayList();
+    private final List<ResourcePackRepository.Entry> repositoryEntries = Lists.<ResourcePackRepository.Entry>newArrayList();
 
     public ResourcePackRepository(File dirResourcepacksIn, File dirServerResourcepacksIn, IResourcePack rprDefaultResourcePackIn, MetadataSerializer rprMetadataSerializerIn, GameSettings settings)
     {
@@ -95,18 +98,27 @@ public class ResourcePackRepository
         }
     }
 
+    public static Map<String, String> func_190115_a()
+    {
+        Map<String, String> map = Maps.<String, String>newHashMap();
+        map.put("X-Minecraft-Username", Minecraft.getMinecraft().getSession().getUsername());
+        map.put("X-Minecraft-UUID", Minecraft.getMinecraft().getSession().getPlayerID());
+        map.put("X-Minecraft-Version", "1.10.2");
+        return map;
+    }
+
     private void fixDirResourcepacks()
     {
         if (this.dirResourcepacks.exists())
         {
             if (!this.dirResourcepacks.isDirectory() && (!this.dirResourcepacks.delete() || !this.dirResourcepacks.mkdirs()))
             {
-                LOGGER.warn("Unable to recreate resourcepack folder, it exists but is not a directory: " + this.dirResourcepacks);
+                LOGGER.warn("Unable to recreate resourcepack folder, it exists but is not a directory: {}", new Object[] {this.dirResourcepacks});
             }
         }
         else if (!this.dirResourcepacks.mkdirs())
         {
-            LOGGER.warn("Unable to create resourcepack folder: " + this.dirResourcepacks);
+            LOGGER.warn("Unable to create resourcepack folder: {}", new Object[] {this.dirResourcepacks});
         }
     }
 
@@ -123,7 +135,16 @@ public class ResourcePackRepository
         {
             ResourcePackRepository.Entry resourcepackrepository$entry = new ResourcePackRepository.Entry(file1);
 
-            if (!this.repositoryEntriesAll.contains(resourcepackrepository$entry))
+            if (this.repositoryEntriesAll.contains(resourcepackrepository$entry))
+            {
+                int i = this.repositoryEntriesAll.indexOf(resourcepackrepository$entry);
+
+                if (i > -1 && i < this.repositoryEntriesAll.size())
+                {
+                    list.add(this.repositoryEntriesAll.get(i));
+                }
+            }
+            else
             {
                 try
                 {
@@ -133,15 +154,6 @@ public class ResourcePackRepository
                 catch (Exception var6)
                 {
                     list.remove(resourcepackrepository$entry);
-                }
-            }
-            else
-            {
-                int i = this.repositoryEntriesAll.indexOf(resourcepackrepository$entry);
-
-                if (i > -1 && i < this.repositoryEntriesAll.size())
-                {
-                    list.add(this.repositoryEntriesAll.get(i));
                 }
             }
         }
@@ -201,7 +213,7 @@ public class ResourcePackRepository
     public ListenableFuture<Object> downloadResourcePack(String url, String hash)
     {
         String s = DigestUtils.sha1Hex(url);
-        String s1 = hash.matches("^[a-f0-9]{40}$") ? hash : "";
+        final String s1 = field_190117_e.matcher(hash).matches() ? hash : "";
         final File file1 = new File(this.dirServerResourcepacks, s);
         this.lock.lock();
 
@@ -211,39 +223,19 @@ public class ResourcePackRepository
 
             if (file1.exists())
             {
-                try
+                if (this.func_190113_a(s1, file1))
                 {
-                    String s2 = DigestUtils.sha1Hex((InputStream)(new FileInputStream(file1)));
-
-                    if (!s1.equals("") && s2.equals(s1))
-                    {
-                        LOGGER.info("Found file " + file1 + " matching requested hash " + s1);
-                        ListenableFuture listenablefuture2 = this.setResourcePackInstance(file1);
-                        return listenablefuture2;
-                    }
-
-                    if (!s1.equals("") && !s2.equals(s1))
-                    {
-                        LOGGER.warn("File " + file1 + " had wrong hash (expected " + s1 + ", found " + s2 + "). Deleting it.");
-                        FileUtils.deleteQuietly(file1);
-                    }
-                    else if (s1.equals(""))
-                    {
-                        LOGGER.info("Found file " + file1 + " without verification hash");
-                        ListenableFuture lvt_7_1_ = this.setResourcePackInstance(file1);
-                        return lvt_7_1_;
-                    }
+                    ListenableFuture listenablefuture1 = this.setResourcePackInstance(file1);
+                    return listenablefuture1;
                 }
-                catch (IOException ioexception)
-                {
-                    LOGGER.warn((String)("File " + file1 + " couldn\'t be hashed. Deleting it."), (Throwable)ioexception);
-                    FileUtils.deleteQuietly(file1);
-                }
+
+                LOGGER.warn("Deleting file {}", new Object[] {file1});
+                FileUtils.deleteQuietly(file1);
             }
 
             this.deleteOldServerResourcesPacks();
             final GuiScreenWorking guiscreenworking = new GuiScreenWorking();
-            Map<String, String> map = Minecraft.getSessionInfo();
+            Map<String, String> map = func_190115_a();
             final Minecraft minecraft = Minecraft.getMinecraft();
             Futures.getUnchecked(minecraft.addScheduledTask(new Runnable()
             {
@@ -258,20 +250,73 @@ public class ResourcePackRepository
             {
                 public void onSuccess(@Nullable Object p_onSuccess_1_)
                 {
-                    ResourcePackRepository.this.setResourcePackInstance(file1);
-                    settablefuture.set((Object)null);
+                    if (ResourcePackRepository.this.func_190113_a(s1, file1))
+                    {
+                        ResourcePackRepository.this.setResourcePackInstance(file1);
+                        settablefuture.set((Object)null);
+                    }
+                    else
+                    {
+                        ResourcePackRepository.LOGGER.warn("Deleting file {}", new Object[] {file1});
+                        FileUtils.deleteQuietly(file1);
+                    }
                 }
                 public void onFailure(Throwable p_onFailure_1_)
                 {
+                    FileUtils.deleteQuietly(file1);
                     settablefuture.setException(p_onFailure_1_);
                 }
             });
-            ListenableFuture listenablefuture1 = this.downloadingPacks;
-            return listenablefuture1;
+            ListenableFuture listenablefuture = this.downloadingPacks;
+            return listenablefuture;
         }
         finally
         {
             this.lock.unlock();
+        }
+    }
+
+    private boolean func_190113_a(String p_190113_1_, File p_190113_2_)
+    {
+        try
+        {
+            String s = DigestUtils.sha1Hex((InputStream)(new FileInputStream(p_190113_2_)));
+
+            if (p_190113_1_.isEmpty())
+            {
+                LOGGER.info("Found file {} without verification hash", new Object[] {p_190113_2_});
+                return true;
+            }
+
+            if (s.toLowerCase().equals(p_190113_1_.toLowerCase()))
+            {
+                LOGGER.info("Found file {} matching requested hash {}", new Object[] {p_190113_2_, p_190113_1_});
+                return true;
+            }
+
+            LOGGER.warn("File {} had wrong hash (expected {}, found {}).", new Object[] {p_190113_2_, p_190113_1_, s});
+        }
+        catch (IOException ioexception)
+        {
+            LOGGER.warn("File {} couldn\'t be hashed.", new Object[] {p_190113_2_, ioexception});
+        }
+
+        return false;
+    }
+
+    private boolean func_190112_b(File p_190112_1_)
+    {
+        ResourcePackRepository.Entry resourcepackrepository$entry = new ResourcePackRepository.Entry(new FileResourcePack(p_190112_1_));
+
+        try
+        {
+            resourcepackrepository$entry.updateResourcePack();
+            return true;
+        }
+        catch (Exception exception)
+        {
+            LOGGER.warn((String)"Server resourcepack is invalid, ignoring it", (Throwable)exception);
+            return false;
         }
     }
 
@@ -290,21 +335,28 @@ public class ResourcePackRepository
             {
                 if (i++ >= 10)
                 {
-                    LOGGER.info("Deleting old server resource pack " + file1.getName());
+                    LOGGER.info("Deleting old server resource pack {}", new Object[] {file1.getName()});
                     FileUtils.deleteQuietly(file1);
                 }
             }
         }
         catch (IllegalArgumentException illegalargumentexception)
         {
-            LOGGER.error("Error while deleting old server resource pack : " + illegalargumentexception.getMessage());
+            LOGGER.error("Error while deleting old server resource pack : {}", new Object[] {illegalargumentexception.getMessage()});
         }
     }
 
     public ListenableFuture<Object> setResourcePackInstance(File resourceFile)
     {
-        this.resourcePackInstance = new FileResourcePack(resourceFile);
-        return Minecraft.getMinecraft().scheduleResourcesRefresh();
+        if (!this.func_190112_b(resourceFile))
+        {
+            return Futures.<Object>immediateFailedFuture(new RuntimeException("Invalid resourcepack"));
+        }
+        else
+        {
+            this.resourcePackInstance = new FileResourcePack(resourceFile);
+            return Minecraft.getMinecraft().scheduleResourcesRefresh();
+        }
     }
 
     /**
@@ -343,7 +395,7 @@ public class ResourcePackRepository
     @SideOnly(Side.CLIENT)
     public class Entry
     {
-        private IResourcePack reResourcePack;
+        private final IResourcePack reResourcePack;
         private PackMetadataSection rePackMetadataSection;
         private ResourceLocation locationTexturePackIcon;
 

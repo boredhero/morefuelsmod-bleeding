@@ -7,7 +7,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RealmsLevelSummary implements Comparable<RealmsLevelSummary>
 {
-    private WorldSummary levelSummary;
+    private final WorldSummary levelSummary;
 
     public RealmsLevelSummary(WorldSummary levelSummaryIn)
     {

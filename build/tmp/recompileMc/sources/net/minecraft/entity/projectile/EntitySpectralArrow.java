@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
 
 public class EntitySpectralArrow extends EntityArrow
@@ -51,6 +52,11 @@ public class EntitySpectralArrow extends EntityArrow
         super.arrowHit(living);
         PotionEffect potioneffect = new PotionEffect(MobEffects.GLOWING, this.duration, 0);
         living.addPotionEffect(potioneffect);
+    }
+
+    public static void func_189659_b(DataFixer p_189659_0_)
+    {
+        EntityArrow.func_189657_a(p_189659_0_, "SpectralArrow");
     }
 
     /**

@@ -5,7 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import net.minecraft.util.math.MathHelper;
 
-public class NBTTagFloat extends NBTBase.NBTPrimitive
+public class NBTTagFloat extends NBTPrimitive
 {
     /** The float value for the tag. */
     private float data;
@@ -49,7 +49,7 @@ public class NBTTagFloat extends NBTBase.NBTPrimitive
     /**
      * Creates a clone of the tag.
      */
-    public NBTBase copy()
+    public NBTTagFloat copy()
     {
         return new NBTTagFloat(this.data);
     }

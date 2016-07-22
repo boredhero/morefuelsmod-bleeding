@@ -110,7 +110,7 @@ public class SaveFormatOld implements ISaveFormat
         }
         catch (Exception exception)
         {
-            LOGGER.error((String)("Exception reading " + p_186353_0_), (Throwable)exception);
+            LOGGER.error("Exception reading {}", new Object[] {p_186353_0_, exception});
             return null;
         }
     }
@@ -210,11 +210,11 @@ public class SaveFormatOld implements ISaveFormat
         }
         else
         {
-            LOGGER.info("Deleting level " + saveName);
+            LOGGER.info("Deleting level {}", new Object[] {saveName});
 
             for (int i = 1; i <= 5; ++i)
             {
-                LOGGER.info("Attempt " + i + "...");
+                LOGGER.info("Attempt {}...", new Object[] {Integer.valueOf(i)});
 
                 if (deleteFiles(file1.listFiles()))
                 {
@@ -246,20 +246,19 @@ public class SaveFormatOld implements ISaveFormat
     @SideOnly(Side.CLIENT)
     protected static boolean deleteFiles(File[] files)
     {
-        for (int i = 0; i < files.length; ++i)
+        for (File file1 : files)
         {
-            File file1 = files[i];
-            LOGGER.debug("Deleting " + file1);
+            LOGGER.debug("Deleting {}", new Object[] {file1});
 
             if (file1.isDirectory() && !deleteFiles(file1.listFiles()))
             {
-                LOGGER.warn("Couldn\'t delete directory " + file1);
+                LOGGER.warn("Couldn\'t delete directory {}", new Object[] {file1});
                 return false;
             }
 
             if (!file1.delete())
             {
-                LOGGER.warn("Couldn\'t delete file " + file1);
+                LOGGER.warn("Couldn\'t delete file {}", new Object[] {file1});
                 return false;
             }
         }

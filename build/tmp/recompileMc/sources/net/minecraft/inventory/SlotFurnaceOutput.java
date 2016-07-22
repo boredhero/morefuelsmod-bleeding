@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 public class SlotFurnaceOutput extends Slot
 {
     /** The player that is using the GUI where this slot resides. */
-    private EntityPlayer thePlayer;
+    private final EntityPlayer thePlayer;
     private int removeCount;
 
     public SlotFurnaceOutput(EntityPlayer player, IInventory inventoryIn, int slotIndex, int xPosition, int yPosition)

@@ -69,7 +69,7 @@ public class CommandCompare extends CommandBase
                 {
                     boolean flag = false;
 
-                    if (args.length > 9 && args[9].equals("masked"))
+                    if (args.length > 9 && "masked".equals(args[9]))
                     {
                         flag = true;
                     }

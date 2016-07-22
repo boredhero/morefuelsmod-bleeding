@@ -233,7 +233,7 @@ public class BlockPos extends Vec3i
             {
                 return new AbstractIterator<BlockPos>()
                 {
-                    private BlockPos lastReturned = null;
+                    private BlockPos lastReturned;
                     protected BlockPos computeNext()
                     {
                         if (this.lastReturned == null)
@@ -297,7 +297,7 @@ public class BlockPos extends Vec3i
             {
                 return new AbstractIterator<BlockPos.MutableBlockPos>()
                 {
-                    private BlockPos.MutableBlockPos theBlockPos = null;
+                    private BlockPos.MutableBlockPos theBlockPos;
                     protected BlockPos.MutableBlockPos computeNext()
                     {
                         if (this.theBlockPos == null)
@@ -484,7 +484,7 @@ public class BlockPos extends Vec3i
                         if (blockpos$pooledmutableblockpos != null && blockpos$pooledmutableblockpos.released)
                         {
                             blockpos$pooledmutableblockpos.released = false;
-                            blockpos$pooledmutableblockpos.set(xIn, yIn, zIn);
+                            blockpos$pooledmutableblockpos.setPos(xIn, yIn, zIn);
                             return blockpos$pooledmutableblockpos;
                         }
                     }
@@ -506,7 +506,10 @@ public class BlockPos extends Vec3i
                 }
             }
 
-            public BlockPos.PooledMutableBlockPos set(int xIn, int yIn, int zIn)
+            /**
+             * Sets the position, MUST not be name 'set' as that causes obfusication conflicts with func_185343_d
+             */
+            public BlockPos.PooledMutableBlockPos setPos(int xIn, int yIn, int zIn)
             {
                 if (this.released)
                 {
@@ -518,29 +521,29 @@ public class BlockPos extends Vec3i
             }
 
             @SideOnly(Side.CLIENT)
-            public BlockPos.PooledMutableBlockPos set(Entity p_189537_1_)
+            public BlockPos.PooledMutableBlockPos setPos(Entity p_189535_1_)
             {
-                return (BlockPos.PooledMutableBlockPos)super.setPos(p_189537_1_);
+                return (BlockPos.PooledMutableBlockPos)super.setPos(p_189535_1_);
             }
 
-            public BlockPos.PooledMutableBlockPos set(double xIn, double yIn, double zIn)
+            public BlockPos.PooledMutableBlockPos setPos(double p_189532_1_, double p_189532_3_, double p_189532_5_)
             {
-                return (BlockPos.PooledMutableBlockPos)super.setPos(xIn, yIn, zIn);
+                return (BlockPos.PooledMutableBlockPos)super.setPos(p_189532_1_, p_189532_3_, p_189532_5_);
             }
 
-            public BlockPos.PooledMutableBlockPos set(Vec3i vec)
+            public BlockPos.PooledMutableBlockPos setPos(Vec3i p_189533_1_)
             {
-                return (BlockPos.PooledMutableBlockPos)super.setPos(vec);
+                return (BlockPos.PooledMutableBlockPos)super.setPos(p_189533_1_);
             }
 
-            public BlockPos.PooledMutableBlockPos offsetMutable(EnumFacing facing)
+            public BlockPos.PooledMutableBlockPos move(EnumFacing p_189536_1_)
             {
-                return (BlockPos.PooledMutableBlockPos)super.move(facing);
+                return (BlockPos.PooledMutableBlockPos)super.move(p_189536_1_);
             }
 
-            public BlockPos.PooledMutableBlockPos movePos(EnumFacing p_189538_1_, int p_189538_2_)
+            public BlockPos.PooledMutableBlockPos move(EnumFacing p_189534_1_, int p_189534_2_)
             {
-                return (BlockPos.PooledMutableBlockPos)super.move(p_189538_1_, p_189538_2_);
+                return (BlockPos.PooledMutableBlockPos)super.move(p_189534_1_, p_189534_2_);
             }
         }
 }

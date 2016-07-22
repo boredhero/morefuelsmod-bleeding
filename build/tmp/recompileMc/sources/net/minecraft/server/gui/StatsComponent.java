@@ -16,9 +16,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class StatsComponent extends JComponent
 {
     private static final DecimalFormat FORMATTER = new DecimalFormat("########0.000");
-    private int[] values = new int[256];
+    private final int[] values = new int[256];
     private int vp;
-    private String[] msgs = new String[11];
+    private final String[] msgs = new String[11];
     private final MinecraftServer server;
 
     public StatsComponent(MinecraftServer serverIn)
@@ -50,9 +50,9 @@ public class StatsComponent extends JComponent
     {
         long i = 0L;
 
-        for (int j = 0; j < values.length; ++j)
+        for (long j : values)
         {
-            i += values[j];
+            i += j;
         }
 
         return (double)i / (double)values.length;

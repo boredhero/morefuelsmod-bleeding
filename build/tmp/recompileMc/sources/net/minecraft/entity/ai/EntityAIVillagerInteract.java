@@ -12,7 +12,7 @@ public class EntityAIVillagerInteract extends EntityAIWatchClosest2
 {
     /** The delay before the villager throws an itemstack (in ticks) */
     private int interactionDelay;
-    private EntityVillager villager;
+    private final EntityVillager villager;
 
     public EntityAIVillagerInteract(EntityVillager villagerIn)
     {
@@ -88,9 +88,9 @@ public class EntityAIVillagerInteract extends EntityAIWatchClosest2
                         float f = 0.3F;
                         float f1 = this.villager.rotationYawHead;
                         float f2 = this.villager.rotationPitch;
-                        entityitem.motionX = (double)(-MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * f);
-                        entityitem.motionZ = (double)(MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * f);
-                        entityitem.motionY = (double)(-MathHelper.sin(f2 * 0.017453292F) * f + 0.1F);
+                        entityitem.motionX = (double)(-MathHelper.sin(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * 0.3F);
+                        entityitem.motionZ = (double)(MathHelper.cos(f1 * 0.017453292F) * MathHelper.cos(f2 * 0.017453292F) * 0.3F);
+                        entityitem.motionY = (double)(-MathHelper.sin(f2 * 0.017453292F) * 0.3F + 0.1F);
                         entityitem.setDefaultPickupDelay();
                         this.villager.worldObj.spawnEntityInWorld(entityitem);
                         break;

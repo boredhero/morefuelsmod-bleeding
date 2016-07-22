@@ -32,6 +32,10 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.BlockEntityTag;
+import net.minecraft.util.datafix.walkers.EntityTag;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -89,14 +93,10 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         this((Item)itemIn, amount, 0);
     }
 
-    public ItemStack(Item itemIn, int amount, int meta) { this (itemIn, amount, meta, null); }
+    public ItemStack(Item itemIn, int amount, int meta){ this(itemIn, amount, meta, null); }
     public ItemStack(Item itemIn, int amount, int meta, NBTTagCompound capNBT)
     {
         this.capNBT = capNBT;
-        this.canDestroyCacheBlock = null;
-        this.canDestroyCacheResult = false;
-        this.canPlaceOnCacheBlock = null;
-        this.canPlaceOnCacheResult = false;
         this.setItem(itemIn);
         this.stackSize = amount;
         this.itemDamage = meta;
@@ -116,10 +116,12 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
     private ItemStack()
     {
-        this.canDestroyCacheBlock = null;
-        this.canDestroyCacheResult = false;
-        this.canPlaceOnCacheBlock = null;
-        this.canPlaceOnCacheResult = false;
+    }
+
+    public static void func_189868_a(DataFixer p_189868_0_)
+    {
+        p_189868_0_.registerWalker(FixTypes.ITEM_INSTANCE, new BlockEntityTag());
+        p_189868_0_.registerWalker(FixTypes.ITEM_INSTANCE, new EntityTag());
     }
 
     /**
@@ -132,7 +134,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         if (this.stackTagCompound != null)
         {
-            itemstack.stackTagCompound = (NBTTagCompound)this.stackTagCompound.copy();
+            itemstack.stackTagCompound = this.stackTagCompound.copy();
         }
 
         this.stackSize -= amount;
@@ -228,6 +230,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 this.item.updateItemStackNBT(this.stackTagCompound);
             }
         }
+        else this.stackTagCompound = null;
     }
 
     /**
@@ -419,7 +422,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         if (this.stackTagCompound != null)
         {
-            itemstack.stackTagCompound = (NBTTagCompound)this.stackTagCompound.copy();
+            itemstack.stackTagCompound = this.stackTagCompound.copy();
         }
 
         return itemstack;
@@ -1187,5 +1190,24 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         NBTTagCompound ret = new NBTTagCompound();
         this.writeToNBT(ret);
         return ret;
+    }
+
+    public boolean areCapsCompatible(ItemStack other)
+    {
+        if (this.capabilities == null)
+        {
+            if (other.capabilities == null)
+            {
+                return true;
+            }
+            else
+            {
+                return other.capabilities.areCompatible(null);
+            }
+        }
+        else
+        {
+            return this.capabilities.areCompatible(other.capabilities);
+        }
     }
 }

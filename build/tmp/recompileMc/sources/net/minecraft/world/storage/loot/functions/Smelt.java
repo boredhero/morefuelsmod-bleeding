@@ -27,7 +27,7 @@ public class Smelt extends LootFunction
 
         if (itemstack == null)
         {
-            LOGGER.warn("Couldn\'t smelt " + stack + " because there is no smelting recipe");
+            LOGGER.warn("Couldn\'t smelt {} because there is no smelting recipe", new Object[] {stack});
             return stack;
         }
         else

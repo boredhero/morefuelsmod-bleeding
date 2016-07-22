@@ -223,7 +223,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         }
         catch (Exception var5)
         {
-            LOGGER.warn("Failed to save player data for " + player.getName());
+            LOGGER.warn("Failed to save player data for {}", new Object[] {player.getName()});
         }
     }
 
@@ -245,7 +245,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         }
         catch (Exception var4)
         {
-            LOGGER.warn("Failed to load player data for " + player.getName());
+            LOGGER.warn("Failed to load player data for {}", new Object[] {player.getName()});
         }
 
         if (nbttagcompound != null)

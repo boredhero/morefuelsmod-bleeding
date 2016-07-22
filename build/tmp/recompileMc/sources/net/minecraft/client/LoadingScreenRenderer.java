@@ -18,15 +18,15 @@ public class LoadingScreenRenderer implements IProgressUpdate
 {
     private String message = "";
     /** A reference to the Minecraft object. */
-    private Minecraft mc;
+    private final Minecraft mc;
     /** The text currently displayed (i.e. the argument to the last call to printText or func_73722_d) */
     private String currentlyDisplayedText = "";
     /** The system's time represented in milliseconds. */
     private long systemTime = Minecraft.getSystemTime();
     /** True if the loading ended with a success */
     private boolean loadingSuccess;
-    private ScaledResolution scaledResolution;
-    private Framebuffer framebuffer;
+    private final ScaledResolution scaledResolution;
+    private final Framebuffer framebuffer;
 
     public LoadingScreenRenderer(Minecraft mcIn)
     {
@@ -165,9 +165,9 @@ public class LoadingScreenRenderer implements IProgressUpdate
                 this.mc.getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
                 float f = 32.0F;
                 vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                vertexbuffer.pos(0.0D, (double)l, 0.0D).tex(0.0D, (double)((float)l / f)).color(64, 64, 64, 255).endVertex();
-                vertexbuffer.pos((double)k, (double)l, 0.0D).tex((double)((float)k / f), (double)((float)l / f)).color(64, 64, 64, 255).endVertex();
-                vertexbuffer.pos((double)k, 0.0D, 0.0D).tex((double)((float)k / f), 0.0D).color(64, 64, 64, 255).endVertex();
+                vertexbuffer.pos(0.0D, (double)l, 0.0D).tex(0.0D, (double)((float)l / 32.0F)).color(64, 64, 64, 255).endVertex();
+                vertexbuffer.pos((double)k, (double)l, 0.0D).tex((double)((float)k / 32.0F), (double)((float)l / 32.0F)).color(64, 64, 64, 255).endVertex();
+                vertexbuffer.pos((double)k, 0.0D, 0.0D).tex((double)((float)k / 32.0F), 0.0D).color(64, 64, 64, 255).endVertex();
                 vertexbuffer.pos(0.0D, 0.0D, 0.0D).tex(0.0D, 0.0D).color(64, 64, 64, 255).endVertex();
                 tessellator.draw();
 
@@ -175,17 +175,17 @@ public class LoadingScreenRenderer implements IProgressUpdate
                 {
                     int i1 = 100;
                     int j1 = 2;
-                    int k1 = k / 2 - i1 / 2;
+                    int k1 = k / 2 - 50;
                     int l1 = l / 2 + 16;
                     GlStateManager.disableTexture2D();
                     vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
                     vertexbuffer.pos((double)k1, (double)l1, 0.0D).color(128, 128, 128, 255).endVertex();
-                    vertexbuffer.pos((double)k1, (double)(l1 + j1), 0.0D).color(128, 128, 128, 255).endVertex();
-                    vertexbuffer.pos((double)(k1 + i1), (double)(l1 + j1), 0.0D).color(128, 128, 128, 255).endVertex();
-                    vertexbuffer.pos((double)(k1 + i1), (double)l1, 0.0D).color(128, 128, 128, 255).endVertex();
+                    vertexbuffer.pos((double)k1, (double)(l1 + 2), 0.0D).color(128, 128, 128, 255).endVertex();
+                    vertexbuffer.pos((double)(k1 + 100), (double)(l1 + 2), 0.0D).color(128, 128, 128, 255).endVertex();
+                    vertexbuffer.pos((double)(k1 + 100), (double)l1, 0.0D).color(128, 128, 128, 255).endVertex();
                     vertexbuffer.pos((double)k1, (double)l1, 0.0D).color(128, 255, 128, 255).endVertex();
-                    vertexbuffer.pos((double)k1, (double)(l1 + j1), 0.0D).color(128, 255, 128, 255).endVertex();
-                    vertexbuffer.pos((double)(k1 + progress), (double)(l1 + j1), 0.0D).color(128, 255, 128, 255).endVertex();
+                    vertexbuffer.pos((double)k1, (double)(l1 + 2), 0.0D).color(128, 255, 128, 255).endVertex();
+                    vertexbuffer.pos((double)(k1 + progress), (double)(l1 + 2), 0.0D).color(128, 255, 128, 255).endVertex();
                     vertexbuffer.pos((double)(k1 + progress), (double)l1, 0.0D).color(128, 255, 128, 255).endVertex();
                     tessellator.draw();
                     GlStateManager.enableTexture2D();

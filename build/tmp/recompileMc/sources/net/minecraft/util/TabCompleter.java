@@ -35,6 +35,7 @@ public abstract class TabCompleter
     {
         if (this.didComplete)
         {
+            this.textField.deleteFromCursor(0);
             this.textField.deleteFromCursor(this.textField.getNthWordFromPosWS(-1, this.textField.getCursorPosition(), false) - this.textField.getCursorPosition());
 
             if (this.completionIdx >= this.completions.size())
@@ -78,7 +79,7 @@ public abstract class TabCompleter
     /**
      * Only actually sets completions if they were requested (via requestCompletions)
      */
-    public void setCompletions(String[] newCompl)
+    public void setCompletions(String... newCompl)
     {
         if (this.requestedCompletions)
         {
@@ -105,6 +106,7 @@ public abstract class TabCompleter
 
             if (!s2.isEmpty() && !s1.equalsIgnoreCase(s2))
             {
+                this.textField.deleteFromCursor(0);
                 this.textField.deleteFromCursor(this.textField.getNthWordFromPosWS(-1, this.textField.getCursorPosition(), false) - this.textField.getCursorPosition());
                 this.textField.writeText(s2);
             }

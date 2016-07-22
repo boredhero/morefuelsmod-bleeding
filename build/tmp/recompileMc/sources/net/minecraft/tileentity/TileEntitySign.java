@@ -46,6 +46,11 @@ public class TileEntitySign extends TileEntity
         return compound;
     }
 
+    protected void func_190201_b(World p_190201_1_)
+    {
+        this.setWorldObj(p_190201_1_);
+    }
+
     public void readFromNBT(NBTTagCompound compound)
     {
         this.isEditable = false;
@@ -277,9 +282,9 @@ public class TileEntitySign extends TileEntity
             }
         };
 
-        for (int i = 0; i < this.signText.length; ++i)
+        for (ITextComponent itextcomponent : this.signText)
         {
-            Style style = this.signText[i] == null ? null : this.signText[i].getStyle();
+            Style style = itextcomponent == null ? null : itextcomponent.getStyle();
 
             if (style != null && style.getClickEvent() != null)
             {

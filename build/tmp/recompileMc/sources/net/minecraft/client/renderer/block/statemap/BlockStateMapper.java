@@ -16,8 +16,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class BlockStateMapper
 {
-    private Map<Block, IStateMapper> blockStateMap = Maps.<Block, IStateMapper>newIdentityHashMap();
-    private Set<Block> setBuiltInBlocks = Sets.<Block>newIdentityHashSet();
+    private final Map<Block, IStateMapper> blockStateMap = Maps.<Block, IStateMapper>newIdentityHashMap();
+    private final Set<Block> setBuiltInBlocks = Sets.<Block>newIdentityHashSet();
 
     public void registerBlockStateMapper(Block blockIn, IStateMapper stateMapper)
     {

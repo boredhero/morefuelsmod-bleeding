@@ -11,10 +11,10 @@ import org.apache.logging.log4j.Logger;
 public class MapGenStructureIO
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static Map < String, Class <? extends StructureStart >> startNameToClassMap = Maps. < String, Class <? extends StructureStart >> newHashMap();
-    private static Map < Class <? extends StructureStart > , String > startClassToNameMap = Maps. < Class <? extends StructureStart > , String > newHashMap();
-    private static Map < String, Class <? extends StructureComponent >> componentNameToClassMap = Maps. < String, Class <? extends StructureComponent >> newHashMap();
-    private static Map < Class <? extends StructureComponent > , String > componentClassToNameMap = Maps. < Class <? extends StructureComponent > , String > newHashMap();
+    private static final Map < String, Class <? extends StructureStart >> startNameToClassMap = Maps. < String, Class <? extends StructureStart >> newHashMap();
+    private static final Map < Class <? extends StructureStart > , String > startClassToNameMap = Maps. < Class <? extends StructureStart > , String > newHashMap();
+    private static final Map < String, Class <? extends StructureComponent >> componentNameToClassMap = Maps. < String, Class <? extends StructureComponent >> newHashMap();
+    private static final Map < Class <? extends StructureComponent > , String > componentClassToNameMap = Maps. < Class <? extends StructureComponent > , String > newHashMap();
 
     public static void registerStructure(Class <? extends StructureStart > startClass, String structureName)
     {
@@ -54,7 +54,7 @@ public class MapGenStructureIO
         }
         catch (Exception exception)
         {
-            LOGGER.warn("Failed Start with id " + tagCompound.getString("id"));
+            LOGGER.warn("Failed Start with id {}", new Object[] {tagCompound.getString("id")});
             exception.printStackTrace();
         }
 
@@ -64,7 +64,7 @@ public class MapGenStructureIO
         }
         else
         {
-            LOGGER.warn("Skipping Structure with id " + tagCompound.getString("id"));
+            LOGGER.warn("Skipping Structure with id {}", new Object[] {tagCompound.getString("id")});
         }
 
         return structurestart;
@@ -85,7 +85,7 @@ public class MapGenStructureIO
         }
         catch (Exception exception)
         {
-            LOGGER.warn("Failed Piece with id " + tagCompound.getString("id"));
+            LOGGER.warn("Failed Piece with id {}", new Object[] {tagCompound.getString("id")});
             exception.printStackTrace();
         }
 
@@ -95,7 +95,7 @@ public class MapGenStructureIO
         }
         else
         {
-            LOGGER.warn("Skipping Piece with id " + tagCompound.getString("id"));
+            LOGGER.warn("Skipping Piece with id {}", new Object[] {tagCompound.getString("id")});
         }
 
         return structurecomponent;

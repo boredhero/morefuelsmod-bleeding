@@ -50,7 +50,7 @@ public class GuiConnecting extends GuiScreen
 
     private void connect(final String ip, final int port)
     {
-        LOGGER.info("Connecting to " + ip + ", " + port);
+        LOGGER.info("Connecting to {}, {}", new Object[] {ip, Integer.valueOf(port)});
         (new Thread("Server Connector #" + CONNECTION_ID.incrementAndGet())
         {
             public void run()
@@ -67,7 +67,7 @@ public class GuiConnecting extends GuiScreen
                     inetaddress = InetAddress.getByName(ip);
                     GuiConnecting.this.networkManager = NetworkManager.createNetworkManagerAndConnect(inetaddress, port, GuiConnecting.this.mc.gameSettings.isUsingNativeTransport());
                     GuiConnecting.this.networkManager.setNetHandler(new NetHandlerLoginClient(GuiConnecting.this.networkManager, GuiConnecting.this.mc, GuiConnecting.this.previousGuiScreen));
-                    GuiConnecting.this.networkManager.sendPacket(new C00Handshake(110, ip, port, EnumConnectionState.LOGIN, true));
+                    GuiConnecting.this.networkManager.sendPacket(new C00Handshake(210, ip, port, EnumConnectionState.LOGIN, true));
                     GuiConnecting.this.networkManager.sendPacket(new CPacketLoginStart(GuiConnecting.this.mc.getSession().getProfile()));
                 }
                 catch (UnknownHostException unknownhostexception)
@@ -92,7 +92,7 @@ public class GuiConnecting extends GuiScreen
 
                     if (inetaddress != null)
                     {
-                        String s1 = inetaddress.toString() + ":" + port;
+                        String s1 = inetaddress + ":" + port;
                         s = s.replaceAll(s1, "");
                     }
 

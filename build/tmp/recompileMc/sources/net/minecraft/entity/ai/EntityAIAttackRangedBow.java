@@ -67,7 +67,7 @@ public class EntityAIAttackRangedBow extends EntityAIBase
      */
     public void resetTask()
     {
-        super.startExecuting();
+        super.resetTask();
         this.entity.setSwingingArms(false);
         this.seeTime = 0;
         this.attackTime = -1;

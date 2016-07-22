@@ -30,7 +30,7 @@ public class GuiBeacon extends GuiContainer
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation BEACON_GUI_TEXTURES = new ResourceLocation("textures/gui/container/beacon.png");
-    private IInventory tileBeacon;
+    private final IInventory tileBeacon;
     private GuiBeacon.ConfirmButton beaconConfirmButton;
     private boolean buttonsNotDrawn;
 
@@ -49,7 +49,8 @@ public class GuiBeacon extends GuiContainer
     public void initGui()
     {
         super.initGui();
-        this.buttonList.add(this.beaconConfirmButton = new GuiBeacon.ConfirmButton(-1, this.guiLeft + 164, this.guiTop + 107));
+        this.beaconConfirmButton = new GuiBeacon.ConfirmButton(-1, this.guiLeft + 164, this.guiTop + 107);
+        this.buttonList.add(this.beaconConfirmButton);
         this.buttonList.add(new GuiBeacon.CancelButton(-2, this.guiLeft + 190, this.guiTop + 107));
         this.buttonsNotDrawn = true;
         this.beaconConfirmButton.enabled = false;
@@ -93,16 +94,16 @@ public class GuiBeacon extends GuiContainer
             }
 
             int k1 = 3;
-            int l1 = TileEntityBeacon.EFFECTS_LIST[k1].length + 1;
+            int l1 = TileEntityBeacon.EFFECTS_LIST[3].length + 1;
             int i2 = l1 * 22 + (l1 - 1) * 2;
 
             for (int j2 = 0; j2 < l1 - 1; ++j2)
             {
-                Potion potion3 = TileEntityBeacon.EFFECTS_LIST[k1][j2];
-                GuiBeacon.PowerButton guibeacon$powerbutton2 = new GuiBeacon.PowerButton(j++, this.guiLeft + 167 + j2 * 24 - i2 / 2, this.guiTop + 47, potion3, k1);
+                Potion potion3 = TileEntityBeacon.EFFECTS_LIST[3][j2];
+                GuiBeacon.PowerButton guibeacon$powerbutton2 = new GuiBeacon.PowerButton(j++, this.guiLeft + 167 + j2 * 24 - i2 / 2, this.guiTop + 47, potion3, 3);
                 this.buttonList.add(guibeacon$powerbutton2);
 
-                if (k1 >= i)
+                if (3 >= i)
                 {
                     guibeacon$powerbutton2.enabled = false;
                 }
@@ -114,10 +115,10 @@ public class GuiBeacon extends GuiContainer
 
             if (potion != null)
             {
-                GuiBeacon.PowerButton guibeacon$powerbutton1 = new GuiBeacon.PowerButton(j++, this.guiLeft + 167 + (l1 - 1) * 24 - i2 / 2, this.guiTop + 47, potion, k1);
+                GuiBeacon.PowerButton guibeacon$powerbutton1 = new GuiBeacon.PowerButton(j++, this.guiLeft + 167 + (l1 - 1) * 24 - i2 / 2, this.guiTop + 47, potion, 3);
                 this.buttonList.add(guibeacon$powerbutton1);
 
-                if (k1 >= i)
+                if (3 >= i)
                 {
                     guibeacon$powerbutton1.enabled = false;
                 }
@@ -147,7 +148,7 @@ public class GuiBeacon extends GuiContainer
             PacketBuffer packetbuffer = new PacketBuffer(Unpooled.buffer());
             packetbuffer.writeInt(this.tileBeacon.getField(1));
             packetbuffer.writeInt(this.tileBeacon.getField(2));
-            this.mc.getConnection().sendPacket(new CPacketCustomPayload(s, packetbuffer));
+            this.mc.getConnection().sendPacket(new CPacketCustomPayload("MC|Beacon", packetbuffer));
             this.mc.thePlayer.connection.sendPacket(new CPacketCloseWindow(this.mc.thePlayer.openContainer.windowId));
             this.mc.displayGuiScreen((GuiScreen)null);
         }
@@ -258,7 +259,7 @@ public class GuiBeacon extends GuiContainer
                         j += this.width * 3;
                     }
 
-                    this.drawTexturedModalRect(this.xPosition, this.yPosition, j, i, this.width, this.height);
+                    this.drawTexturedModalRect(this.xPosition, this.yPosition, j, 219, this.width, this.height);
 
                     if (!GuiBeacon.BEACON_GUI_TEXTURES.equals(this.iconTexture))
                     {

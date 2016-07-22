@@ -190,7 +190,7 @@ public class BlockDoor extends Block
                 flag1 = true;
             }
 
-            if (!worldIn.getBlockState(pos.down()).isFullyOpaque())
+            if (!worldIn.getBlockState(pos.down()).isSideSolid(worldIn,  pos.down(), EnumFacing.UP))
             {
                 worldIn.setBlockToAir(pos);
                 flag1 = true;
@@ -342,7 +342,7 @@ public class BlockDoor extends Block
      */
     public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
     {
-        return state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING)));
+        return mirrorIn == Mirror.NONE ? state : state.withRotation(mirrorIn.toRotation((EnumFacing)state.getValue(FACING))).cycleProperty(HINGE);
     }
 
     /**

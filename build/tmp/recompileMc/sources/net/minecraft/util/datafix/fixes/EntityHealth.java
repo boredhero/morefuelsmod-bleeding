@@ -32,7 +32,7 @@ public class EntityHealth implements IFixableData
                     return compound;
                 }
 
-                f = compound.getFloat("Heath");
+                f = compound.getFloat("Health");
             }
 
             compound.setFloat("Health", f);

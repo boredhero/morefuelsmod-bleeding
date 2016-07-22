@@ -17,13 +17,13 @@ public class EntityAIAttackRanged extends EntityAIBase
      * maxRangedAttackTime.
      */
     private int rangedAttackTime;
-    private double entityMoveSpeed;
+    private final double entityMoveSpeed;
     private int seeTime;
-    private int attackIntervalMin;
+    private final int attackIntervalMin;
     /** The maximum time the AI has to wait before peforming another ranged attack. */
-    private int maxRangedAttackTime;
-    private float attackRadius;
-    private float maxAttackDistance;
+    private final int maxRangedAttackTime;
+    private final float attackRadius;
+    private final float maxAttackDistance;
 
     public EntityAIAttackRanged(IRangedAttackMob attacker, double movespeed, int maxAttackTime, float maxAttackDistanceIn)
     {

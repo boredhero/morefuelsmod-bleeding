@@ -7,6 +7,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
@@ -34,6 +35,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.DifficultyInstance;
@@ -55,9 +57,11 @@ public class EntityOcelot extends EntityTameable
 
     protected void initEntityAI()
     {
+        this.aiSit = new EntityAISit(this);
+        this.aiTempt = new EntityAITempt(this, 0.6D, Items.FISH, true);
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, this.aiSit = new EntityAISit(this));
-        this.tasks.addTask(3, this.aiTempt = new EntityAITempt(this, 0.6D, Items.FISH, true));
+        this.tasks.addTask(2, this.aiSit);
+        this.tasks.addTask(3, this.aiTempt);
         this.tasks.addTask(5, new EntityAIFollowOwner(this, 1.0D, 10.0F, 5.0F));
         this.tasks.addTask(6, new EntityAIOcelotSit(this, 0.8D));
         this.tasks.addTask(7, new EntityAILeapAtTarget(this, 0.3F));
@@ -120,6 +124,11 @@ public class EntityOcelot extends EntityTameable
 
     public void fall(float distance, float damageMultiplier)
     {
+    }
+
+    public static void func_189787_b(DataFixer p_189787_0_)
+    {
+        EntityLiving.func_189752_a(p_189787_0_, "Ozelot");
     }
 
     /**
@@ -363,7 +372,7 @@ public class EntityOcelot extends EntityTameable
     {
         livingdata = super.onInitialSpawn(difficulty, livingdata);
 
-        if (this.worldObj.rand.nextInt(7) == 0)
+        if (this.getTameSkin() == 0 && this.worldObj.rand.nextInt(7) == 0)
         {
             for (int i = 0; i < 2; ++i)
             {

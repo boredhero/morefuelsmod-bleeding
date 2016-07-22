@@ -42,10 +42,9 @@ public class BlockSourceImpl implements IBlockSource
         return this.pos;
     }
 
-    public int getBlockMetadata()
+    public IBlockState func_189992_e()
     {
-        IBlockState iblockstate = this.worldObj.getBlockState(this.pos);
-        return iblockstate.getBlock().getMetaFromState(iblockstate);
+        return this.worldObj.getBlockState(this.pos);
     }
 
     public <T extends TileEntity> T getBlockTileEntity()

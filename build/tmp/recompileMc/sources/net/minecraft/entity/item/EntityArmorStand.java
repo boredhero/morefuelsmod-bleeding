@@ -29,6 +29,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Rotations;
 import net.minecraft.util.math.Vec3d;
@@ -84,7 +87,7 @@ public class EntityArmorStand extends EntityLivingBase
         this.rightArmRotation = DEFAULT_RIGHTARM_ROTATION;
         this.leftLegRotation = DEFAULT_LEFTLEG_ROTATION;
         this.rightLegRotation = DEFAULT_RIGHTLEG_ROTATION;
-        this.noClip = this.hasNoGravity();
+        this.noClip = this.func_189652_ae();
         this.setSize(0.5F, 1.975F);
     }
 
@@ -99,7 +102,7 @@ public class EntityArmorStand extends EntityLivingBase
      */
     public boolean isServerWorld()
     {
-        return super.isServerWorld() && !this.hasNoGravity();
+        return super.isServerWorld() && !this.func_189652_ae();
     }
 
     protected void entityInit()
@@ -200,6 +203,11 @@ public class EntityArmorStand extends EntityLivingBase
         }
     }
 
+    public static void func_189805_a(DataFixer p_189805_0_)
+    {
+        p_189805_0_.registerWalker(FixTypes.ENTITY, new ItemStackDataLists("ArmorStand", new String[] {"ArmorItems", "HandItems"}));
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -208,13 +216,13 @@ public class EntityArmorStand extends EntityLivingBase
         super.writeEntityToNBT(compound);
         NBTTagList nbttaglist = new NBTTagList();
 
-        for (int i = 0; i < this.armorItems.length; ++i)
+        for (ItemStack itemstack : this.armorItems)
         {
             NBTTagCompound nbttagcompound = new NBTTagCompound();
 
-            if (this.armorItems[i] != null)
+            if (itemstack != null)
             {
-                this.armorItems[i].writeToNBT(nbttagcompound);
+                itemstack.writeToNBT(nbttagcompound);
             }
 
             nbttaglist.appendTag(nbttagcompound);
@@ -223,13 +231,13 @@ public class EntityArmorStand extends EntityLivingBase
         compound.setTag("ArmorItems", nbttaglist);
         NBTTagList nbttaglist1 = new NBTTagList();
 
-        for (int j = 0; j < this.handItems.length; ++j)
+        for (ItemStack itemstack1 : this.handItems)
         {
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
-            if (this.handItems[j] != null)
+            if (itemstack1 != null)
             {
-                this.handItems[j].writeToNBT(nbttagcompound1);
+                itemstack1.writeToNBT(nbttagcompound1);
             }
 
             nbttaglist1.appendTag(nbttagcompound1);
@@ -246,7 +254,6 @@ public class EntityArmorStand extends EntityLivingBase
         compound.setBoolean("Small", this.isSmall());
         compound.setBoolean("ShowArms", this.getShowArms());
         compound.setInteger("DisabledSlots", this.disabledSlots);
-        compound.setBoolean("NoGravity", this.hasNoGravity());
         compound.setBoolean("NoBasePlate", this.hasNoBasePlate());
 
         if (this.hasMarker())
@@ -288,11 +295,10 @@ public class EntityArmorStand extends EntityLivingBase
         this.setSmall(compound.getBoolean("Small"));
         this.setShowArms(compound.getBoolean("ShowArms"));
         this.disabledSlots = compound.getInteger("DisabledSlots");
-        this.setNoGravity(compound.getBoolean("NoGravity"));
         this.setNoBasePlate(compound.getBoolean("NoBasePlate"));
         this.setMarker(compound.getBoolean("Marker"));
         this.wasMarker = !this.hasMarker();
-        this.noClip = this.hasNoGravity();
+        this.noClip = this.func_189652_ae();
         NBTTagCompound nbttagcompound = compound.getCompoundTag("Pose");
         this.writePoseToNBT(nbttagcompound);
     }
@@ -720,7 +726,7 @@ public class EntityArmorStand extends EntityLivingBase
      */
     public void moveEntityWithHeading(float strafe, float forward)
     {
-        if (!this.hasNoGravity())
+        if (!this.func_189652_ae())
         {
             super.moveEntityWithHeading(strafe, forward);
         }
@@ -857,16 +863,6 @@ public class EntityArmorStand extends EntityLivingBase
     public boolean isSmall()
     {
         return (((Byte)this.dataManager.get(STATUS)).byteValue() & 1) != 0;
-    }
-
-    private void setNoGravity(boolean noGravity)
-    {
-        this.dataManager.set(STATUS, Byte.valueOf(this.setBit(((Byte)this.dataManager.get(STATUS)).byteValue(), 2, noGravity)));
-    }
-
-    public boolean hasNoGravity()
-    {
-        return (((Byte)this.dataManager.get(STATUS)).byteValue() & 2) != 0;
     }
 
     private void setShowArms(boolean showArms)

@@ -29,7 +29,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class RenderPlayer extends RenderLivingBase<AbstractClientPlayer>
 {
     /** this field is used to indicate the 3-pixel wide arms */
-    private boolean smallArms;
+    private final boolean smallArms;
 
     public RenderPlayer(RenderManager renderManager)
     {
@@ -168,7 +168,7 @@ public class RenderPlayer extends RenderLivingBase<AbstractClientPlayer>
     protected void preRenderCallback(AbstractClientPlayer entitylivingbaseIn, float partialTickTime)
     {
         float f = 0.9375F;
-        GlStateManager.scale(f, f, f);
+        GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
     }
 
     protected void renderEntityName(AbstractClientPlayer entityIn, double x, double y, double z, String name, double p_188296_9_)
@@ -192,7 +192,7 @@ public class RenderPlayer extends RenderLivingBase<AbstractClientPlayer>
     public void renderRightArm(AbstractClientPlayer clientPlayer)
     {
         float f = 1.0F;
-        GlStateManager.color(f, f, f);
+        GlStateManager.color(1.0F, 1.0F, 1.0F);
         float f1 = 0.0625F;
         ModelPlayer modelplayer = this.getMainModel();
         this.setModelVisibilities(clientPlayer);
@@ -210,7 +210,7 @@ public class RenderPlayer extends RenderLivingBase<AbstractClientPlayer>
     public void renderLeftArm(AbstractClientPlayer clientPlayer)
     {
         float f = 1.0F;
-        GlStateManager.color(f, f, f);
+        GlStateManager.color(1.0F, 1.0F, 1.0F);
         float f1 = 0.0625F;
         ModelPlayer modelplayer = this.getMainModel();
         this.setModelVisibilities(clientPlayer);

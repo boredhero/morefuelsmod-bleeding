@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.SkeletonType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
@@ -91,7 +92,7 @@ public class EntityAINearestAttackableTarget<T extends EntityLivingBase> extends
                     if (itemstack != null && itemstack.getItem() == Items.SKULL)
                     {
                         int i = itemstack.getItemDamage();
-                        boolean flag = EntityAINearestAttackableTarget.this.taskOwner instanceof EntitySkeleton && ((EntitySkeleton)EntityAINearestAttackableTarget.this.taskOwner).getSkeletonType() == 0 && i == 0;
+                        boolean flag = EntityAINearestAttackableTarget.this.taskOwner instanceof EntitySkeleton && ((EntitySkeleton)EntityAINearestAttackableTarget.this.taskOwner).func_189771_df() == SkeletonType.NORMAL && i == 0;
                         boolean flag1 = EntityAINearestAttackableTarget.this.taskOwner instanceof EntityZombie && i == 2;
                         boolean flag2 = EntityAINearestAttackableTarget.this.taskOwner instanceof EntityCreeper && i == 4;
 

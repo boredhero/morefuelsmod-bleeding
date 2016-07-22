@@ -20,16 +20,19 @@ public class ParticleSweepAttack extends Particle
     private static final ResourceLocation SWEEP_TEXTURE = new ResourceLocation("textures/entity/sweep.png");
     private static final VertexFormat VERTEX_FORMAT = (new VertexFormat()).addElement(DefaultVertexFormats.POSITION_3F).addElement(DefaultVertexFormats.TEX_2F).addElement(DefaultVertexFormats.COLOR_4UB).addElement(DefaultVertexFormats.TEX_2S).addElement(DefaultVertexFormats.NORMAL_3B).addElement(DefaultVertexFormats.PADDING_1B);
     private int life;
-    private int lifeTime;
-    private TextureManager textureManager;
-    private float size;
+    private final int lifeTime;
+    private final TextureManager textureManager;
+    private final float size;
 
     protected ParticleSweepAttack(TextureManager textureManagerIn, World worldIn, double x, double y, double z, double p_i46582_9_, double p_i46582_11_, double p_i46582_13_)
     {
         super(worldIn, x, y, z, 0.0D, 0.0D, 0.0D);
         this.textureManager = textureManagerIn;
         this.lifeTime = 4;
-        this.particleRed = this.particleGreen = this.particleBlue = this.rand.nextFloat() * 0.6F + 0.4F;
+        float f = this.rand.nextFloat() * 0.6F + 0.4F;
+        this.particleRed = f;
+        this.particleGreen = f;
+        this.particleBlue = f;
         this.size = 1.0F - (float)p_i46582_9_ * 0.5F;
     }
 

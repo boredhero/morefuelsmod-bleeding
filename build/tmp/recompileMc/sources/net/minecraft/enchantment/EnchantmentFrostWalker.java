@@ -65,7 +65,7 @@ public class EnchantmentFrostWalker extends Enchantment
                     blockpos$mutableblockpos.setPos(blockpos$mutableblockpos1.getX(), blockpos$mutableblockpos1.getY() + 1, blockpos$mutableblockpos1.getZ());
                     IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
 
-                    if (iblockstate.getBlock() == Blocks.AIR)
+                    if (iblockstate.getMaterial() == Material.AIR)
                     {
                         IBlockState iblockstate1 = worldIn.getBlockState(blockpos$mutableblockpos1);
 

@@ -30,7 +30,7 @@ public class StatisticsManagerServer extends StatisticsManager
     private final File statsFile;
     private final Set<StatBase> dirty = Sets.<StatBase>newHashSet();
     private int lastStatRequest = -300;
-    private boolean hasUnsentAchievement = false;
+    private boolean hasUnsentAchievement;
 
     public StatisticsManagerServer(MinecraftServer serverIn, File statsFileIn)
     {
@@ -49,11 +49,11 @@ public class StatisticsManagerServer extends StatisticsManager
             }
             catch (IOException ioexception)
             {
-                LOGGER.error((String)("Couldn\'t read statistics file " + this.statsFile), (Throwable)ioexception);
+                LOGGER.error("Couldn\'t read statistics file {}", new Object[] {this.statsFile, ioexception});
             }
             catch (JsonParseException jsonparseexception)
             {
-                LOGGER.error((String)("Couldn\'t parse statistics file " + this.statsFile), (Throwable)jsonparseexception);
+                LOGGER.error("Couldn\'t parse statistics file {}", new Object[] {this.statsFile, jsonparseexception});
             }
         }
     }
@@ -153,7 +153,7 @@ public class StatisticsManagerServer extends StatisticsManager
                             }
                             catch (Throwable throwable)
                             {
-                                LOGGER.warn("Invalid statistic progress in " + this.statsFile, throwable);
+                                LOGGER.warn("Invalid statistic progress in {}", new Object[] {this.statsFile, throwable});
                             }
                         }
                     }
@@ -162,7 +162,7 @@ public class StatisticsManagerServer extends StatisticsManager
                 }
                 else
                 {
-                    LOGGER.warn("Invalid statistic in " + this.statsFile + ": Don\'t know what " + (String)entry.getKey() + " is");
+                    LOGGER.warn("Invalid statistic in {}: Don\'t know what {} is", new Object[] {this.statsFile, entry.getKey()});
                 }
             }
 
@@ -187,7 +187,7 @@ public class StatisticsManagerServer extends StatisticsManager
                 }
                 catch (Throwable throwable)
                 {
-                    LOGGER.warn("Couldn\'t save statistic " + ((StatBase)entry.getKey()).getStatName() + ": error serializing progress", throwable);
+                    LOGGER.warn("Couldn\'t save statistic {}: error serializing progress", new Object[] {((StatBase)entry.getKey()).getStatName(), throwable});
                 }
 
                 jsonobject.add(((StatBase)entry.getKey()).statId, jsonobject1);

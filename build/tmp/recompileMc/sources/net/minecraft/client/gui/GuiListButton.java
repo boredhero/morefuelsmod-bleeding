@@ -10,7 +10,7 @@ public class GuiListButton extends GuiButton
 {
     private boolean value;
     /** The localization string used by this control. */
-    private String localizationStr;
+    private final String localizationStr;
     /** The GuiResponder Object reference. */
     private final GuiPageButtonList.GuiResponder guiResponder;
 
@@ -28,7 +28,7 @@ public class GuiListButton extends GuiButton
      */
     private String buildDisplayString()
     {
-        return I18n.format(this.localizationStr, new Object[0]) + ": " + (this.value ? I18n.format("gui.yes", new Object[0]) : I18n.format("gui.no", new Object[0]));
+        return I18n.format(this.localizationStr, new Object[0]) + ": " + I18n.format(this.value ? "gui.yes" : "gui.no", new Object[0]);
     }
 
     public void setValue(boolean p_175212_1_)

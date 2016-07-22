@@ -54,7 +54,7 @@ public class CommandEntityData extends CommandBase
             else
             {
                 NBTTagCompound nbttagcompound = entityToNBT(entity);
-                NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttagcompound.copy();
+                NBTTagCompound nbttagcompound1 = nbttagcompound.copy();
                 NBTTagCompound nbttagcompound2;
 
                 try

@@ -25,6 +25,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
@@ -84,6 +85,11 @@ public class EntitySlime extends EntityLiving implements IMob
         return ((Integer)this.dataManager.get(SLIME_SIZE)).intValue();
     }
 
+    public static void func_189758_c(DataFixer p_189758_0_)
+    {
+        EntityLiving.func_189752_a(p_189758_0_, "Slime");
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -92,11 +98,6 @@ public class EntitySlime extends EntityLiving implements IMob
         super.writeEntityToNBT(compound);
         compound.setInteger("Size", this.getSlimeSize() - 1);
         compound.setBoolean("wasOnGround", this.wasOnGround);
-    }
-
-    public boolean isSmallSlime()
-    {
-        return this.getSlimeSize() <= 1;
     }
 
     /**
@@ -114,6 +115,11 @@ public class EntitySlime extends EntityLiving implements IMob
 
         this.setSlimeSize(i + 1);
         this.wasOnGround = compound.getBoolean("wasOnGround");
+    }
+
+    public boolean isSmallSlime()
+    {
+        return this.getSlimeSize() <= 1;
     }
 
     protected EnumParticleTypes getParticleType()
@@ -419,7 +425,7 @@ public class EntitySlime extends EntityLiving implements IMob
 
     static class AISlimeAttack extends EntityAIBase
         {
-            private EntitySlime slime;
+            private final EntitySlime slime;
             private int growTieredTimer;
 
             public AISlimeAttack(EntitySlime slimeIn)
@@ -467,7 +473,7 @@ public class EntitySlime extends EntityLiving implements IMob
 
     static class AISlimeFaceRandom extends EntityAIBase
         {
-            private EntitySlime slime;
+            private final EntitySlime slime;
             private float chosenDegrees;
             private int nextRandomizeTime;
 
@@ -502,7 +508,7 @@ public class EntitySlime extends EntityLiving implements IMob
 
     static class AISlimeFloat extends EntityAIBase
         {
-            private EntitySlime slime;
+            private final EntitySlime slime;
 
             public AISlimeFloat(EntitySlime slimeIn)
             {
@@ -535,7 +541,7 @@ public class EntitySlime extends EntityLiving implements IMob
 
     static class AISlimeHop extends EntityAIBase
         {
-            private EntitySlime slime;
+            private final EntitySlime slime;
 
             public AISlimeHop(EntitySlime slimeIn)
             {
@@ -564,7 +570,7 @@ public class EntitySlime extends EntityLiving implements IMob
         {
             private float yRot;
             private int jumpDelay;
-            private EntitySlime slime;
+            private final EntitySlime slime;
             private boolean isAggressive;
 
             public SlimeMoveHelper(EntitySlime slimeIn)
@@ -622,7 +628,8 @@ public class EntitySlime extends EntityLiving implements IMob
                         }
                         else
                         {
-                            this.slime.moveStrafing = this.slime.moveForward = 0.0F;
+                            this.slime.moveStrafing = 0.0F;
+                            this.slime.moveForward = 0.0F;
                             this.entity.setAIMoveSpeed(0.0F);
                         }
                     }

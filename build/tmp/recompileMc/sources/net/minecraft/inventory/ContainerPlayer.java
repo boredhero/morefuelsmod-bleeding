@@ -182,6 +182,13 @@ public class ContainerPlayer extends Container
                     return null;
                 }
             }
+            else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && !((Slot)this.inventorySlots.get(45)).getHasStack())
+            {
+                if (!this.mergeItemStack(itemstack1, 45, 46, false))
+                {
+                    return null;
+                }
+            }
             else if (index >= 9 && index < 36)
             {
                 if (!this.mergeItemStack(itemstack1, 36, 45, false))

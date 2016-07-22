@@ -42,6 +42,7 @@ import net.minecraft.entity.monster.EntityIronGolem;
 import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
+import net.minecraft.entity.monster.EntityPolarBear;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -195,7 +196,7 @@ public class EntityList
         }
         else
         {
-            LOGGER.warn("Skipping Entity with id " + nbt.getString("id"));
+            LOGGER.warn("Skipping Entity with id {}", new Object[] {nbt.getString("id")});
         }
 
         return entity;
@@ -225,7 +226,7 @@ public class EntityList
 
         if (entity == null)
         {
-            LOGGER.warn("Skipping Entity with id " + entityID);
+            LOGGER.warn("Skipping Entity with id {}", new Object[] {Integer.valueOf(entityID)});
         }
 
         return entity;
@@ -302,13 +303,21 @@ public class EntityList
     {
         String s = getEntityString(entityIn);
 
-        if (s == null && entityIn instanceof EntityPlayer)
+        if (s == null)
         {
-            s = "Player";
-        }
-        else if (s == null && entityIn instanceof EntityLightningBolt)
-        {
-            s = "LightningBolt";
+            if (entityIn instanceof EntityPlayer)
+            {
+                s = "Player";
+            }
+            else
+            {
+                if (!(entityIn instanceof EntityLightningBolt))
+                {
+                    return false;
+                }
+
+                s = "LightningBolt";
+            }
         }
 
         return entityName.equals(s);
@@ -386,6 +395,7 @@ public class EntityList
         addMapping(EntityIronGolem.class, "VillagerGolem", 99);
         addMapping(EntityHorse.class, "EntityHorse", 100, 12623485, 15656192);
         addMapping(EntityRabbit.class, "Rabbit", 101, 10051392, 7555121);
+        addMapping(EntityPolarBear.class, "PolarBear", 102, 15921906, 9803152);
         addMapping(EntityVillager.class, "Villager", 120, 5651507, 12422002);
         addMapping(EntityEnderCrystal.class, "EnderCrystal", 200);
     }

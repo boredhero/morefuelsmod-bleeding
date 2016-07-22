@@ -43,7 +43,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
     /** How long has player been trying to login into the server. */
     private int connectionTimer;
     private GameProfile loginGameProfile;
-    private String serverId = "";
+    private final String serverId = "";
     private SecretKey secretKey;
     private EntityPlayerMP player;
 
@@ -85,7 +85,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
     {
         try
         {
-            LOGGER.info("Disconnecting " + this.getConnectionInfo() + ": " + reason);
+            LOGGER.info("Disconnecting {}: {}", new Object[] {this.getConnectionInfo(), reason});
             TextComponentString textcomponentstring = new TextComponentString(reason);
             this.networkManager.sendPacket(new SPacketDisconnect(textcomponentstring));
             this.networkManager.closeChannel(textcomponentstring);
@@ -144,12 +144,12 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
      */
     public void onDisconnect(ITextComponent reason)
     {
-        LOGGER.info(this.getConnectionInfo() + " lost connection: " + reason.getUnformattedText());
+        LOGGER.info("{} lost connection: {}", new Object[] {this.getConnectionInfo(), reason.getUnformattedText()});
     }
 
     public String getConnectionInfo()
     {
-        return this.loginGameProfile != null ? this.loginGameProfile.toString() + " (" + this.networkManager.getRemoteAddress().toString() + ")" : String.valueOf((Object)this.networkManager.getRemoteAddress());
+        return this.loginGameProfile != null ? this.loginGameProfile + " (" + this.networkManager.getRemoteAddress() + ")" : String.valueOf((Object)this.networkManager.getRemoteAddress());
     }
 
     public void processLoginStart(CPacketLoginStart packetIn)
@@ -160,7 +160,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
         if (this.server.isServerInOnlineMode() && !this.networkManager.isLocalChannel())
         {
             this.currentLoginState = NetHandlerLoginServer.LoginState.KEY;
-            this.networkManager.sendPacket(new SPacketEncryptionRequest(this.serverId, this.server.getKeyPair().getPublic(), this.verifyToken));
+            this.networkManager.sendPacket(new SPacketEncryptionRequest("", this.server.getKeyPair().getPublic(), this.verifyToken));
         }
         else
         {
@@ -190,12 +190,12 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
 
                     try
                     {
-                        String s = (new BigInteger(CryptManager.getServerIdHash(NetHandlerLoginServer.this.serverId, NetHandlerLoginServer.this.server.getKeyPair().getPublic(), NetHandlerLoginServer.this.secretKey))).toString(16);
+                        String s = (new BigInteger(CryptManager.getServerIdHash("", NetHandlerLoginServer.this.server.getKeyPair().getPublic(), NetHandlerLoginServer.this.secretKey))).toString(16);
                         NetHandlerLoginServer.this.loginGameProfile = NetHandlerLoginServer.this.server.getMinecraftSessionService().hasJoinedServer(new GameProfile((UUID)null, gameprofile.getName()), s);
 
                         if (NetHandlerLoginServer.this.loginGameProfile != null)
                         {
-                            NetHandlerLoginServer.LOGGER.info("UUID of player " + NetHandlerLoginServer.this.loginGameProfile.getName() + " is " + NetHandlerLoginServer.this.loginGameProfile.getId());
+                            NetHandlerLoginServer.LOGGER.info("UUID of player {} is {}", new Object[] {NetHandlerLoginServer.this.loginGameProfile.getName(), NetHandlerLoginServer.this.loginGameProfile.getId()});
                             NetHandlerLoginServer.this.currentLoginState = NetHandlerLoginServer.LoginState.READY_TO_ACCEPT;
                         }
                         else if (NetHandlerLoginServer.this.server.isSinglePlayer())
@@ -207,7 +207,7 @@ public class NetHandlerLoginServer implements INetHandlerLoginServer, ITickable
                         else
                         {
                             NetHandlerLoginServer.this.closeConnection("Failed to verify username!");
-                            NetHandlerLoginServer.LOGGER.error("Username \'" + gameprofile.getName() + "\' tried to join with an invalid session");
+                            NetHandlerLoginServer.LOGGER.error("Username \'{}\' tried to join with an invalid session", new Object[] {gameprofile.getName()});
                         }
                     }
                     catch (AuthenticationUnavailableException var3)

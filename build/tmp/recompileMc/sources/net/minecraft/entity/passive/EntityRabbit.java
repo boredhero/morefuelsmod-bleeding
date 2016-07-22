@@ -6,6 +6,7 @@ import net.minecraft.block.BlockCarrot;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -39,6 +40,7 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -54,11 +56,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EntityRabbit extends EntityAnimal
 {
     private static final DataParameter<Integer> RABBIT_TYPE = EntityDataManager.<Integer>createKey(EntityRabbit.class, DataSerializers.VARINT);
-    private int jumpTicks = 0;
-    private int jumpDuration = 0;
-    private boolean wasOnGround = false;
-    private int currentMoveTypeDuration = 0;
-    private int carrotTicks = 0;
+    private int jumpTicks;
+    private int jumpDuration;
+    private boolean wasOnGround;
+    private int currentMoveTypeDuration;
+    private int carrotTicks;
 
     public EntityRabbit(World worldIn)
     {
@@ -300,6 +302,11 @@ public class EntityRabbit extends EntityAnimal
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30000001192092896D);
     }
 
+    public static void func_189801_b(DataFixer p_189801_0_)
+    {
+        EntityLiving.func_189752_a(p_189801_0_, "Rabbit");
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -507,7 +514,7 @@ public class EntityRabbit extends EntityAnimal
 
     static class AIAvoidEntity<T extends Entity> extends EntityAIAvoidEntity<T>
         {
-            private EntityRabbit entityInstance;
+            private final EntityRabbit entityInstance;
 
             public AIAvoidEntity(EntityRabbit rabbit, Class<T> p_i46403_2_, float p_i46403_3_, double p_i46403_4_, double p_i46403_6_)
             {
@@ -539,7 +546,7 @@ public class EntityRabbit extends EntityAnimal
 
     static class AIPanic extends EntityAIPanic
         {
-            private EntityRabbit theEntity;
+            private final EntityRabbit theEntity;
 
             public AIPanic(EntityRabbit rabbit, double speedIn)
             {
@@ -561,7 +568,7 @@ public class EntityRabbit extends EntityAnimal
         {
             private final EntityRabbit rabbit;
             private boolean wantsToRaid;
-            private boolean canRaid = false;
+            private boolean canRaid;
 
             public AIRaidFarm(EntityRabbit rabbitIn)
             {
@@ -677,8 +684,8 @@ public class EntityRabbit extends EntityAnimal
 
     public class RabbitJumpHelper extends EntityJumpHelper
     {
-        private EntityRabbit theEntity;
-        private boolean canJump = false;
+        private final EntityRabbit theEntity;
+        private boolean canJump;
 
         public RabbitJumpHelper(EntityRabbit rabbit)
         {
@@ -716,7 +723,7 @@ public class EntityRabbit extends EntityAnimal
 
     static class RabbitMoveHelper extends EntityMoveHelper
         {
-            private EntityRabbit theEntity;
+            private final EntityRabbit theEntity;
             private double nextJumpSpeed;
 
             public RabbitMoveHelper(EntityRabbit rabbit)

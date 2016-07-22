@@ -123,12 +123,13 @@ public class GuiTextField extends Gui
         int i = this.cursorPosition < this.selectionEnd ? this.cursorPosition : this.selectionEnd;
         int j = this.cursorPosition < this.selectionEnd ? this.selectionEnd : this.cursorPosition;
         int k = this.maxStringLength - this.text.length() - (i - j);
-        int l = 0;
 
         if (!this.text.isEmpty())
         {
             s = s + this.text.substring(0, i);
         }
+
+        int l;
 
         if (k < s1.length())
         {

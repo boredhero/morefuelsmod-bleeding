@@ -135,23 +135,23 @@ public class ChunkProviderOverworld implements IChunkGenerator
                     double d2 = this.heightMap[j1 + i2];
                     double d3 = this.heightMap[k1 + i2];
                     double d4 = this.heightMap[l1 + i2];
-                    double d5 = (this.heightMap[i1 + i2 + 1] - d1) * d0;
-                    double d6 = (this.heightMap[j1 + i2 + 1] - d2) * d0;
-                    double d7 = (this.heightMap[k1 + i2 + 1] - d3) * d0;
-                    double d8 = (this.heightMap[l1 + i2 + 1] - d4) * d0;
+                    double d5 = (this.heightMap[i1 + i2 + 1] - d1) * 0.125D;
+                    double d6 = (this.heightMap[j1 + i2 + 1] - d2) * 0.125D;
+                    double d7 = (this.heightMap[k1 + i2 + 1] - d3) * 0.125D;
+                    double d8 = (this.heightMap[l1 + i2 + 1] - d4) * 0.125D;
 
                     for (int j2 = 0; j2 < 8; ++j2)
                     {
                         double d9 = 0.25D;
                         double d10 = d1;
                         double d11 = d2;
-                        double d12 = (d3 - d1) * d9;
-                        double d13 = (d4 - d2) * d9;
+                        double d12 = (d3 - d1) * 0.25D;
+                        double d13 = (d4 - d2) * 0.25D;
 
                         for (int k2 = 0; k2 < 4; ++k2)
                         {
                             double d14 = 0.25D;
-                            double d16 = (d11 - d10) * d14;
+                            double d16 = (d11 - d10) * 0.25D;
                             double lvt_45_1_ = d10 - d16;
 
                             for (int l2 = 0; l2 < 4; ++l2)
@@ -184,7 +184,7 @@ public class ChunkProviderOverworld implements IChunkGenerator
     {
         if (!net.minecraftforge.event.ForgeEventFactory.onReplaceBiomeBlocks(this, x, z, primer, this.worldObj)) return;
         double d0 = 0.03125D;
-        this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, (double)(x * 16), (double)(z * 16), 16, 16, d0 * 2.0D, d0 * 2.0D, 1.0D);
+        this.depthBuffer = this.surfaceNoise.getRegion(this.depthBuffer, (double)(x * 16), (double)(z * 16), 16, 16, 0.0625D, 0.0625D, 1.0D);
 
         for (int i = 0; i < 16; ++i)
         {
@@ -262,8 +262,6 @@ public class ChunkProviderOverworld implements IChunkGenerator
         this.mainNoiseRegion = this.mainPerlinNoise.generateNoiseOctaves(this.mainNoiseRegion, p_185978_1_, p_185978_2_, p_185978_3_, 5, 33, 5, (double)(f / this.settings.mainNoiseScaleX), (double)(f1 / this.settings.mainNoiseScaleY), (double)(f / this.settings.mainNoiseScaleZ));
         this.minLimitRegion = this.minLimitPerlinNoise.generateNoiseOctaves(this.minLimitRegion, p_185978_1_, p_185978_2_, p_185978_3_, 5, 33, 5, (double)f, (double)f1, (double)f);
         this.maxLimitRegion = this.maxLimitPerlinNoise.generateNoiseOctaves(this.maxLimitRegion, p_185978_1_, p_185978_2_, p_185978_3_, 5, 33, 5, (double)f, (double)f1, (double)f);
-        p_185978_3_ = 0;
-        p_185978_1_ = 0;
         int i = 0;
         int j = 0;
 
@@ -277,9 +275,9 @@ public class ChunkProviderOverworld implements IChunkGenerator
                 int i1 = 2;
                 Biome biome = this.biomesForGeneration[k + 2 + (l + 2) * 10];
 
-                for (int j1 = -i1; j1 <= i1; ++j1)
+                for (int j1 = -2; j1 <= 2; ++j1)
                 {
-                    for (int k1 = -i1; k1 <= i1; ++k1)
+                    for (int k1 = -2; k1 <= 2; ++k1)
                     {
                         Biome biome1 = this.biomesForGeneration[k + j1 + 2 + (l + k1 + 2) * 10];
                         float f5 = this.settings.biomeDepthOffSet + biome1.getBaseHeight() * this.settings.biomeDepthWeight;

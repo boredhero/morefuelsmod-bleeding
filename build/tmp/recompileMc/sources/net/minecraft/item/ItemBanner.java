@@ -156,7 +156,7 @@ public class ItemBanner extends ItemBlock
     public static EnumDyeColor getBaseColor(ItemStack stack)
     {
         NBTTagCompound nbttagcompound = stack.getSubCompound("BlockEntityTag", false);
-        EnumDyeColor enumdyecolor = null;
+        EnumDyeColor enumdyecolor;
 
         if (nbttagcompound != null && nbttagcompound.hasKey("Base"))
         {

@@ -65,7 +65,7 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     public void readEntityFromNBT(NBTTagCompound compound)
     {
         super.readEntityFromNBT(compound);
-        String s = "";
+        String s;
 
         if (compound.hasKey("OwnerUUID", 8))
         {

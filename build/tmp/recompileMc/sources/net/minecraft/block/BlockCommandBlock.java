@@ -163,17 +163,10 @@ public class BlockCommandBlock extends BlockContainer
     {
         TileEntity tileentity = worldIn.getTileEntity(pos);
 
-        if (tileentity instanceof TileEntityCommandBlock)
+        if (tileentity instanceof TileEntityCommandBlock && playerIn.func_189808_dh())
         {
-            if (!playerIn.capabilities.isCreativeMode)
-            {
-                return false;
-            }
-            else
-            {
-                playerIn.displayGuiCommandBlock((TileEntityCommandBlock)tileentity);
-                return true;
-            }
+            playerIn.displayGuiCommandBlock((TileEntityCommandBlock)tileentity);
+            return true;
         }
         else
         {

@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 public class EntityAIMate extends EntityAIBase
 {
-    private EntityAnimal theAnimal;
+    private final EntityAnimal theAnimal;
     World theWorld;
     private EntityAnimal targetMate;
     /** Delay preventing a baby from spawning immediately when two mate-able animals find each other. */

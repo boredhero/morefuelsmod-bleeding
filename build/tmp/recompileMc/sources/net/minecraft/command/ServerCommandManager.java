@@ -49,6 +49,7 @@ public class ServerCommandManager extends CommandHandler implements ICommandList
         this.registerCommand(new CommandToggleDownfall());
         this.registerCommand(new CommandWeather());
         this.registerCommand(new CommandXP());
+        this.registerCommand(new CommandTP());
         this.registerCommand(new CommandTeleport());
         this.registerCommand(new CommandGive());
         this.registerCommand(new CommandReplaceItem());

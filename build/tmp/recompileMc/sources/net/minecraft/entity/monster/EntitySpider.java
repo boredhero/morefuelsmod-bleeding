@@ -3,6 +3,7 @@ package net.minecraft.entity.monster;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.IEntityLivingData;
@@ -27,6 +28,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
@@ -41,6 +43,11 @@ public class EntitySpider extends EntityMob
     {
         super(worldIn);
         this.setSize(1.4F, 0.9F);
+    }
+
+    public static void func_189774_d(DataFixer p_189774_0_)
+    {
+        EntityLiving.func_189752_a(p_189774_0_, "Spider");
     }
 
     protected void initEntityAI()

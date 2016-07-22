@@ -10,7 +10,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 public class InventoryCraftResult implements IInventory
 {
     /** A list of one item containing the result of the crafting formula */
-    private ItemStack[] stackResult = new ItemStack[1];
+    private final ItemStack[] stackResult = new ItemStack[1];
 
     /**
      * Returns the number of slots in the inventory.

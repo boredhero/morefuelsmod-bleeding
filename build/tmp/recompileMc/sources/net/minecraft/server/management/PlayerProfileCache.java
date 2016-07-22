@@ -29,10 +29,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.Deque;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -47,7 +46,7 @@ public class PlayerProfileCache
     private static boolean onlineMode;
     private final Map<String, PlayerProfileCache.ProfileEntry> usernameToProfileEntryMap = Maps.<String, PlayerProfileCache.ProfileEntry>newHashMap();
     private final Map<UUID, PlayerProfileCache.ProfileEntry> uuidToProfileEntryMap = Maps.<UUID, PlayerProfileCache.ProfileEntry>newHashMap();
-    private final LinkedList<GameProfile> gameProfiles = Lists.<GameProfile>newLinkedList();
+    private final Deque<GameProfile> gameProfiles = Lists.<GameProfile>newLinkedList();
     private final GameProfileRepository profileRepo;
     protected final Gson gson;
     private final File usercacheFile;
@@ -297,7 +296,7 @@ public class PlayerProfileCache
 
     private List<PlayerProfileCache.ProfileEntry> getEntriesWithLimit(int limitSize)
     {
-        ArrayList<PlayerProfileCache.ProfileEntry> arraylist = Lists.<PlayerProfileCache.ProfileEntry>newArrayList();
+        List<PlayerProfileCache.ProfileEntry> list = Lists.<PlayerProfileCache.ProfileEntry>newArrayList();
 
         for (GameProfile gameprofile : Lists.newArrayList(Iterators.limit(this.gameProfiles.iterator(), limitSize)))
         {
@@ -305,11 +304,11 @@ public class PlayerProfileCache
 
             if (playerprofilecache$profileentry != null)
             {
-                arraylist.add(playerprofilecache$profileentry);
+                list.add(playerprofilecache$profileentry);
             }
         }
 
-        return arraylist;
+        return list;
     }
 
     class ProfileEntry

@@ -41,8 +41,8 @@ public class Village
     private int numVillagers;
     /** Timestamp of tick count when villager last bred */
     private int noBreedTicks;
-    private TreeMap<String, Integer> playerReputation = new TreeMap();
-    private List<Village.VillageAggressor> villageAgressors = Lists.<Village.VillageAggressor>newArrayList();
+    private final TreeMap<String, Integer> playerReputation = new TreeMap();
+    private final List<Village.VillageAggressor> villageAgressors = Lists.<Village.VillageAggressor>newArrayList();
     private int numIronGolems;
 
     public Village()
@@ -489,7 +489,7 @@ public class Village
         {
             NBTTagCompound nbttagcompound1 = nbttaglist1.getCompoundTagAt(j);
 
-            if (nbttagcompound1.hasKey("UUID"))
+            if (nbttagcompound1.hasKey("UUID") && this.worldObj != null && this.worldObj.getMinecraftServer() != null)
             {
                 PlayerProfileCache playerprofilecache = this.worldObj.getMinecraftServer().getPlayerProfileCache();
                 GameProfile gameprofile = playerprofilecache.getProfileByUUID(UUID.fromString(nbttagcompound1.getString("UUID")));

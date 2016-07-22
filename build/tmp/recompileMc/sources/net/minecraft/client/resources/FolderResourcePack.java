@@ -41,13 +41,13 @@ public class FolderResourcePack extends AbstractResourcePack
             {
                 String s = getRelativeName(file1, file2);
 
-                if (!s.equals(s.toLowerCase()))
+                if (s.equals(s.toLowerCase()))
                 {
-                    this.logNameNotLowercase(s);
+                    set.add(s.substring(0, s.length() - 1));
                 }
                 else
                 {
-                    set.add(s.substring(0, s.length() - 1));
+                    this.logNameNotLowercase(s);
                 }
             }
         }

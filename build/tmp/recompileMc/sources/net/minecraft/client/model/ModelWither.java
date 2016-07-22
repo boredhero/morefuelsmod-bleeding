@@ -10,8 +10,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelWither extends ModelBase
 {
-    private ModelRenderer[] upperBodyParts;
-    private ModelRenderer[] heads;
+    private final ModelRenderer[] upperBodyParts;
+    private final ModelRenderer[] heads;
 
     public ModelWither(float p_i46302_1_)
     {

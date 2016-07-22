@@ -57,7 +57,7 @@ public class EnchantRandomly extends LootFunction
 
             if (list.isEmpty())
             {
-                LOGGER.warn("Couldn\'t find a compatible enchantment for " + stack);
+                LOGGER.warn("Couldn\'t find a compatible enchantment for {}", new Object[] {stack});
                 return stack;
             }
 

@@ -60,7 +60,7 @@ public class PhaseStrafePlayer extends PhaseBase
 
             double d13 = 64.0D;
 
-            if (this.attackTarget.getDistanceSqToEntity(this.dragon) < d13 * d13)
+            if (this.attackTarget.getDistanceSqToEntity(this.dragon) < 4096.0D)
             {
                 if (this.dragon.canEntityBeSeen(this.attackTarget))
                 {
@@ -75,9 +75,9 @@ public class PhaseStrafePlayer extends PhaseBase
                     {
                         double d14 = 1.0D;
                         Vec3d vec3d2 = this.dragon.getLook(1.0F);
-                        double d6 = this.dragon.dragonPartHead.posX - vec3d2.xCoord * d14;
+                        double d6 = this.dragon.dragonPartHead.posX - vec3d2.xCoord * 1.0D;
                         double d7 = this.dragon.dragonPartHead.posY + (double)(this.dragon.dragonPartHead.height / 2.0F) + 0.5D;
-                        double d8 = this.dragon.dragonPartHead.posZ - vec3d2.zCoord * d14;
+                        double d8 = this.dragon.dragonPartHead.posZ - vec3d2.zCoord * 1.0D;
                         double d9 = this.attackTarget.posX - d6;
                         double d10 = this.attackTarget.posY + (double)(this.attackTarget.height / 2.0F) - (d7 + (double)(this.dragon.dragonPartHead.height / 2.0F));
                         double d11 = this.attackTarget.posZ - d8;

@@ -210,9 +210,9 @@ public abstract class CommandBase implements ICommand
 
     public static boolean parseBoolean(String input) throws CommandException
     {
-        if (!input.equals("true") && !input.equals("1"))
+        if (!"true".equals(input) && !"1".equals(input))
         {
-            if (!input.equals("false") && !input.equals("0"))
+            if (!"false".equals(input) && !"0".equals(input))
             {
                 throw new CommandException("commands.generic.boolean.invalid", new Object[] {input});
             }

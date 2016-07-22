@@ -36,13 +36,13 @@ public class RenderBat extends RenderLiving<EntityBat>
 
     protected void rotateCorpse(EntityBat entityLiving, float p_77043_2_, float p_77043_3_, float partialTicks)
     {
-        if (!entityLiving.getIsBatHanging())
+        if (entityLiving.getIsBatHanging())
         {
-            GlStateManager.translate(0.0F, MathHelper.cos(p_77043_2_ * 0.3F) * 0.1F, 0.0F);
+            GlStateManager.translate(0.0F, -0.1F, 0.0F);
         }
         else
         {
-            GlStateManager.translate(0.0F, -0.1F, 0.0F);
+            GlStateManager.translate(0.0F, MathHelper.cos(p_77043_2_ * 0.3F) * 0.1F, 0.0F);
         }
 
         super.rotateCorpse(entityLiving, p_77043_2_, p_77043_3_, partialTicks);

@@ -1,3 +1,22 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.minecraftforge.oredict;
 
 import java.util.Collections;
@@ -34,6 +53,9 @@ public class RecipeSorter implements Comparator<IRecipe>
 {
     public enum Category
     {
+        /**
+         * Do not use UNKNOWN - it is for recipe types with no clear driver
+         */
         UNKNOWN,
         SHAPELESS,
         SHAPED
@@ -138,11 +160,17 @@ public class RecipeSorter implements Comparator<IRecipe>
     {
         Category c1 = getCategory(r1);
         Category c2 = getCategory(r2);
-        if (c1 == SHAPELESS && c2 == SHAPED) return  1;
-        if (c1 == SHAPED && c2 == SHAPELESS) return -1;
-        if (r2.getRecipeSize() < r1.getRecipeSize()) return -1;
-        if (r2.getRecipeSize() > r1.getRecipeSize()) return  1;
-        return getPriority(r2) - getPriority(r1); // high priority value first!
+        int categoryComparison = -c1.compareTo(c2);
+        if (categoryComparison != 0)
+        {
+            return categoryComparison;
+        }
+        else
+        {
+            if (r2.getRecipeSize() < r1.getRecipeSize()) return -1;
+            if (r2.getRecipeSize() > r1.getRecipeSize()) return  1;
+            return getPriority(r2) - getPriority(r1); // high priority value first!
+        }
     }
 
     private static Set<Class<?>> warned = Sets.newHashSet();
@@ -206,7 +234,7 @@ public class RecipeSorter implements Comparator<IRecipe>
         {
             if (!warned.contains(cls))
             {
-                FMLLog.info("  Unknown recipe class! %s Modder please refer to %s", cls.getName(), RecipeSorter.class.getName());
+                FMLLog.bigWarning("Unknown recipe class! %s Modders need to register their recipe types with %s", cls.getName(), RecipeSorter.class.getName());
                 warned.add(cls);
             }
             cls = cls.getSuperclass();

@@ -109,7 +109,11 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<TileEntit
         GlStateManager.pushMatrix();
         GlStateManager.disableCull();
 
-        if (facing != EnumFacing.UP)
+        if (facing == EnumFacing.UP)
+        {
+            GlStateManager.translate(x + 0.5F, y, z + 0.5F);
+        }
+        else
         {
             switch (facing)
             {
@@ -130,10 +134,6 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<TileEntit
                     p_188190_5_ = 90.0F;
             }
         }
-        else
-        {
-            GlStateManager.translate(x + 0.5F, y, z + 0.5F);
-        }
 
         float f = 0.0625F;
         GlStateManager.enableRescaleNormal();
@@ -145,13 +145,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<TileEntit
             GlStateManager.enableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
         }
 
-        modelbase.render((Entity)null, animateTicks, 0.0F, 0.0F, p_188190_5_, 0.0F, f);
-
-        if (skullType == 3)
-        {
-            GlStateManager.disableBlendProfile(GlStateManager.Profile.PLAYER_SKIN);
-        }
-
+        modelbase.render((Entity)null, animateTicks, 0.0F, 0.0F, p_188190_5_, 0.0F, 0.0625F);
         GlStateManager.popMatrix();
 
         if (destroyStage >= 0)

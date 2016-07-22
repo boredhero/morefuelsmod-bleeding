@@ -18,6 +18,9 @@ import net.minecraft.stats.AchievementList;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackData;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.translation.I18n;
@@ -112,7 +115,12 @@ public class EntityItem extends Entity
             this.prevPosX = this.posX;
             this.prevPosY = this.posY;
             this.prevPosZ = this.posZ;
-            this.motionY -= 0.03999999910593033D;
+
+            if (!this.func_189652_ae())
+            {
+                this.motionY -= 0.03999999910593033D;
+            }
+
             this.noClip = this.pushOutOfBlocks(this.posX, (this.getEntityBoundingBox().minY + this.getEntityBoundingBox().maxY) / 2.0D, this.posZ);
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             boolean flag = (int)this.prevPosX != (int)this.posX || (int)this.prevPosY != (int)this.posY || (int)this.prevPosZ != (int)this.posZ;
@@ -229,6 +237,10 @@ public class EntityItem extends Entity
                     {
                         return false;
                     }
+                    else if (!itemstack.areCapsCompatible(itemstack1))
+                    {
+                        return false;
+                    }
                     else
                     {
                         itemstack1.stackSize += itemstack.stackSize;
@@ -319,6 +331,11 @@ public class EntityItem extends Entity
 
             return false;
         }
+    }
+
+    public static void func_189742_a(DataFixer p_189742_0_)
+    {
+        p_189742_0_.registerWalker(FixTypes.ENTITY, new ItemStackData("Item", new String[] {"Item"}));
     }
 
     /**

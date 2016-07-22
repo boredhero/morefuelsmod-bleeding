@@ -4,6 +4,10 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IDataFixer;
+import net.minecraft.util.datafix.IDataWalker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -36,6 +40,25 @@ public class EntityMinecartMobSpawner extends EntityMinecart
     public EntityMinecartMobSpawner(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189672_a(DataFixer p_189672_0_)
+    {
+        func_189669_a(p_189672_0_, "MinecartSpawner");
+        p_189672_0_.registerWalker(FixTypes.ENTITY, new IDataWalker()
+        {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
+            {
+                if ("MinecartSpawner".equals(compound.getString("id")))
+                {
+                    compound.setString("id", "MobSpawner");
+                    fixer.process(FixTypes.BLOCK_ENTITY, compound, versionIn);
+                    compound.setString("id", "MinecartSpawner");
+                }
+
+                return compound;
+            }
+        });
     }
 
     public EntityMinecart.Type getType()

@@ -10,8 +10,8 @@ import net.minecraft.world.gen.ChunkProviderEnd;
 
 public class MapGenEndCity extends MapGenStructure
 {
-    private int citySpacing = 20;
-    private int minCitySeparation = 11;
+    private final int citySpacing = 20;
+    private final int minCitySeparation = 11;
     private final ChunkProviderEnd endProvider;
 
     public MapGenEndCity(ChunkProviderEnd p_i46665_1_)
@@ -31,21 +31,21 @@ public class MapGenEndCity extends MapGenStructure
 
         if (chunkX < 0)
         {
-            chunkX -= this.citySpacing - 1;
+            chunkX -= 19;
         }
 
         if (chunkZ < 0)
         {
-            chunkZ -= this.citySpacing - 1;
+            chunkZ -= 19;
         }
 
-        int k = chunkX / this.citySpacing;
-        int l = chunkZ / this.citySpacing;
+        int k = chunkX / 20;
+        int l = chunkZ / 20;
         Random random = this.worldObj.setRandomSeed(k, l, 10387313);
-        k = k * this.citySpacing;
-        l = l * this.citySpacing;
-        k = k + (random.nextInt(this.citySpacing - this.minCitySeparation) + random.nextInt(this.citySpacing - this.minCitySeparation)) / 2;
-        l = l + (random.nextInt(this.citySpacing - this.minCitySeparation) + random.nextInt(this.citySpacing - this.minCitySeparation)) / 2;
+        k = k * 20;
+        l = l * 20;
+        k = k + (random.nextInt(9) + random.nextInt(9)) / 2;
+        l = l + (random.nextInt(9) + random.nextInt(9)) / 2;
         return i == k && j == l && this.endProvider.isIslandChunk(i, j);
     }
 

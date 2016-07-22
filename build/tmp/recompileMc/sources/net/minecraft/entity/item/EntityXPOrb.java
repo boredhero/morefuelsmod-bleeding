@@ -96,7 +96,11 @@ public class EntityXPOrb extends Entity
         this.prevPosX = this.posX;
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
-        this.motionY -= 0.029999999329447746D;
+
+        if (!this.func_189652_ae())
+        {
+            this.motionY -= 0.029999999329447746D;
+        }
 
         if (this.worldObj.getBlockState(new BlockPos(this)).getMaterial() == Material.LAVA)
         {
@@ -111,9 +115,9 @@ public class EntityXPOrb extends Entity
 
         if (this.xpTargetColor < this.xpColor - 20 + this.getEntityId() % 100)
         {
-            if (this.closestPlayer == null || this.closestPlayer.getDistanceSqToEntity(this) > d0 * d0)
+            if (this.closestPlayer == null || this.closestPlayer.getDistanceSqToEntity(this) > 64.0D)
             {
-                this.closestPlayer = this.worldObj.getClosestPlayerToEntity(this, d0);
+                this.closestPlayer = this.worldObj.getClosestPlayerToEntity(this, 8.0D);
             }
 
             this.xpTargetColor = this.xpColor;
@@ -126,9 +130,9 @@ public class EntityXPOrb extends Entity
 
         if (this.closestPlayer != null)
         {
-            double d1 = (this.closestPlayer.posX - this.posX) / d0;
-            double d2 = (this.closestPlayer.posY + (double)this.closestPlayer.getEyeHeight() / 2.0D - this.posY) / d0;
-            double d3 = (this.closestPlayer.posZ - this.posZ) / d0;
+            double d1 = (this.closestPlayer.posX - this.posX) / 8.0D;
+            double d2 = (this.closestPlayer.posY + (double)this.closestPlayer.getEyeHeight() / 2.0D - this.posY) / 8.0D;
+            double d3 = (this.closestPlayer.posZ - this.posZ) / 8.0D;
             double d4 = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
             double d5 = 1.0D - d4;
 

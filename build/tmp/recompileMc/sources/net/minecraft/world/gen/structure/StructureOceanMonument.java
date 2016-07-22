@@ -112,7 +112,7 @@ public class StructureOceanMonument extends MapGenStructure
 
     public static class StartMonument extends StructureStart
         {
-            private Set<ChunkPos> processed = Sets.<ChunkPos>newHashSet();
+            private final Set<ChunkPos> processed = Sets.<ChunkPos>newHashSet();
             private boolean wasCreated;
 
             public StartMonument()

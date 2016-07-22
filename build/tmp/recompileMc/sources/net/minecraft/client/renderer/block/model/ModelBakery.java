@@ -66,13 +66,13 @@ public class ModelBakery
     protected final BlockModelShapes blockModelShapes;
     private final FaceBakery faceBakery = new FaceBakery();
     private final ItemModelGenerator itemModelGenerator = new ItemModelGenerator();
-    protected RegistrySimple<ModelResourceLocation, IBakedModel> bakedRegistry = new RegistrySimple();
+    protected final RegistrySimple<ModelResourceLocation, IBakedModel> bakedRegistry = new RegistrySimple();
     private static final String EMPTY_MODEL_RAW = "{    \'elements\': [        {   \'from\': [0, 0, 0],            \'to\': [16, 16, 16],            \'faces\': {                \'down\': {\'uv\': [0, 0, 16, 16], \'texture\': \'\' }            }        }    ]}".replaceAll("\'", "\"");
     protected static final ModelBlock MODEL_GENERATED = ModelBlock.deserialize(EMPTY_MODEL_RAW);
     protected static final ModelBlock MODEL_ENTITY = ModelBlock.deserialize(EMPTY_MODEL_RAW);
-    private Map<String, ResourceLocation> itemLocations = Maps.<String, ResourceLocation>newLinkedHashMap();
+    private final Map<String, ResourceLocation> itemLocations = Maps.<String, ResourceLocation>newLinkedHashMap();
     private final Map<ResourceLocation, ModelBlockDefinition> blockDefinitions = Maps.<ResourceLocation, ModelBlockDefinition>newHashMap();
-    private Map<Item, List<String>> variantNames = Maps.<Item, List<String>>newIdentityHashMap();
+    private final Map<Item, List<String>> variantNames = Maps.<Item, List<String>>newIdentityHashMap();
 
     public ModelBakery(IResourceManager p_i46085_1_, TextureMap p_i46085_2_, BlockModelShapes p_i46085_3_)
     {
@@ -202,7 +202,7 @@ public class ModelBakery
         }
         catch (IOException ioexception)
         {
-            throw new RuntimeException("Encountered an exception when loading model definition of model " + fileIn.toString(), ioexception);
+            throw new RuntimeException("Encountered an exception when loading model definition of model " + fileIn, ioexception);
         }
 
         return new ModelBlockDefinition(list);
@@ -375,7 +375,7 @@ public class ModelBakery
             }
             catch (Exception exception)
             {
-                LOGGER.warn((String)("Unable to load item model: \'" + p_188634_2_ + "\' for item: \'" + p_188634_3_ + "\'"), (Throwable)exception);
+                LOGGER.warn("Unable to load item model: \'{}\' for item: \'{}\'", new Object[] {p_188634_2_, p_188634_3_, exception});
             }
         }
     }
@@ -511,7 +511,7 @@ public class ModelBakery
                 {
                     if (modelblock.getElements().isEmpty())
                     {
-                        LOGGER.warn("Missing elements for: " + p_188639_2_);
+                        LOGGER.warn("Missing elements for: {}", new Object[] {p_188639_2_});
                     }
                     else
                     {
@@ -526,7 +526,7 @@ public class ModelBakery
                 }
                 else
                 {
-                    LOGGER.warn("Missing model for: " + p_188639_2_);
+                    LOGGER.warn("Missing model for: {}", new Object[] {p_188639_2_});
                 }
             }
 
@@ -534,7 +534,7 @@ public class ModelBakery
 
             if (i == 0)
             {
-                LOGGER.warn("No weighted models for: " + p_188639_2_);
+                LOGGER.warn("No weighted models for: {}", new Object[] {p_188639_2_});
             }
             else if (i == 1)
             {
@@ -561,7 +561,7 @@ public class ModelBakery
             {
                 if (modelblock.getElements().isEmpty())
                 {
-                    LOGGER.warn("Missing elements for: " + resourcelocation);
+                    LOGGER.warn("Missing elements for: {}", new Object[] {resourcelocation});
                 }
                 else if (this.isCustomRenderer(modelblock))
                 {
@@ -579,7 +579,7 @@ public class ModelBakery
             }
             else
             {
-                LOGGER.warn("Missing model for: " + resourcelocation);
+                LOGGER.warn("Missing model for: {}", new Object[] {resourcelocation});
             }
         }
     }
@@ -606,7 +606,7 @@ public class ModelBakery
 
                 if (modelblock == null)
                 {
-                    LOGGER.warn("Missing model for: " + modelresourcelocation);
+                    LOGGER.warn("Missing model for: {}", new Object[] {modelresourcelocation});
                 }
                 else
                 {
@@ -625,7 +625,7 @@ public class ModelBakery
 
                     if (modelblock1 == null)
                     {
-                        LOGGER.warn("Missing model for: " + Block.REGISTRY.getNameForObject(modelblockdefinition.getMultipartData().getStateContainer().getBlock()));
+                        LOGGER.warn("Missing model for: {}", new Object[] {Block.REGISTRY.getNameForObject(modelblockdefinition.getMultipartData().getStateContainer().getBlock())});
                     }
                     else
                     {
@@ -728,7 +728,7 @@ public class ModelBakery
             }
             catch (Exception exception)
             {
-                LOGGER.warn((String)("In parent chain: " + JOINER.join(this.getParentPath(resourcelocation1)) + "; unable to load model: \'" + resourcelocation1 + "\'"), (Throwable)exception);
+                LOGGER.warn("In parent chain: {}; unable to load model: \'{}\'", new Object[] {JOINER.join(this.getParentPath(resourcelocation1)), resourcelocation1, exception});
             }
 
             set.add(resourcelocation1);

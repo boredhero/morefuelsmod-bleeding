@@ -41,6 +41,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BossInfo;
@@ -57,12 +58,12 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
     private static final DataParameter<Integer> THIRD_HEAD_TARGET = EntityDataManager.<Integer>createKey(EntityWither.class, DataSerializers.VARINT);
     private static final DataParameter<Integer>[] HEAD_TARGETS = new DataParameter[] {FIRST_HEAD_TARGET, SECOND_HEAD_TARGET, THIRD_HEAD_TARGET};
     private static final DataParameter<Integer> INVULNERABILITY_TIME = EntityDataManager.<Integer>createKey(EntityWither.class, DataSerializers.VARINT);
-    private float[] xRotationHeads = new float[2];
-    private float[] yRotationHeads = new float[2];
-    private float[] xRotOHeads = new float[2];
-    private float[] yRotOHeads = new float[2];
-    private int[] nextHeadUpdate = new int[2];
-    private int[] idleHeadUpdates = new int[2];
+    private final float[] xRotationHeads = new float[2];
+    private final float[] yRotationHeads = new float[2];
+    private final float[] xRotOHeads = new float[2];
+    private final float[] yRotOHeads = new float[2];
+    private final int[] nextHeadUpdate = new int[2];
+    private final int[] idleHeadUpdates = new int[2];
     /** Time before the Wither tries to break blocks */
     private int blockBreakCounter;
     private final BossInfoServer bossInfo = (BossInfoServer)(new BossInfoServer(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenSky(true);
@@ -103,6 +104,11 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
         this.dataManager.register(SECOND_HEAD_TARGET, Integer.valueOf(0));
         this.dataManager.register(THIRD_HEAD_TARGET, Integer.valueOf(0));
         this.dataManager.register(INVULNERABILITY_TIME, Integer.valueOf(0));
+    }
+
+    public static void func_189782_b(DataFixer p_189782_0_)
+    {
+        EntityLiving.func_189752_a(p_189782_0_, "WitherBoss");
     }
 
     /**
@@ -281,9 +287,9 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
                         {
                             float f = 10.0F;
                             float f1 = 5.0F;
-                            double d0 = MathHelper.getRandomDoubleInRange(this.rand, this.posX - (double)f, this.posX + (double)f);
-                            double d1 = MathHelper.getRandomDoubleInRange(this.rand, this.posY - (double)f1, this.posY + (double)f1);
-                            double d2 = MathHelper.getRandomDoubleInRange(this.rand, this.posZ - (double)f, this.posZ + (double)f);
+                            double d0 = MathHelper.getRandomDoubleInRange(this.rand, this.posX - 10.0D, this.posX + 10.0D);
+                            double d1 = MathHelper.getRandomDoubleInRange(this.rand, this.posY - 5.0D, this.posY + 5.0D);
+                            double d2 = MathHelper.getRandomDoubleInRange(this.rand, this.posZ - 10.0D, this.posZ + 10.0D);
                             this.launchWitherSkullToCoords(i + 1, d0, d1, d2, true);
                             this.idleHeadUpdates[i - 1] = 0;
                         }

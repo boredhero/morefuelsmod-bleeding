@@ -7,5 +7,6 @@ public enum FixTypes implements IFixType
     CHUNK,
     BLOCK_ENTITY,
     ENTITY,
-    ITEM_INSTANCE;
+    ITEM_INSTANCE,
+    OPTIONS;
 }

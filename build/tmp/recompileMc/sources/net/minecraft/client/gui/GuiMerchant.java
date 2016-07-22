@@ -30,7 +30,7 @@ public class GuiMerchant extends GuiContainer
     /** The GUI texture for the villager merchant GUI. */
     private static final ResourceLocation MERCHANT_GUI_TEXTURE = new ResourceLocation("textures/gui/container/villager.png");
     /** The current IMerchant instance in use for this specific merchant. */
-    private IMerchant merchant;
+    private final IMerchant merchant;
     /** The button which proceeds to the next available merchant recipe. */
     private GuiMerchant.MerchantButton nextButton;
     /** Returns to the previous Merchant recipe if one is applicable. */
@@ -38,7 +38,7 @@ public class GuiMerchant extends GuiContainer
     /** The integer value corresponding to the currently selected merchant recipe. */
     private int selectedMerchantRecipe;
     /** The chat component utilized by this GuiMerchant instance. */
-    private ITextComponent chatComponent;
+    private final ITextComponent chatComponent;
 
     public GuiMerchant(InventoryPlayer p_i45500_1_, IMerchant p_i45500_2_, World worldIn)
     {
@@ -56,8 +56,8 @@ public class GuiMerchant extends GuiContainer
         super.initGui();
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
-        this.buttonList.add(this.nextButton = new GuiMerchant.MerchantButton(1, i + 120 + 27, j + 24 - 1, true));
-        this.buttonList.add(this.previousButton = new GuiMerchant.MerchantButton(2, i + 36 - 19, j + 24 - 1, false));
+        this.nextButton = (GuiMerchant.MerchantButton)this.func_189646_b(new GuiMerchant.MerchantButton(1, i + 120 + 27, j + 24 - 1, true));
+        this.previousButton = (GuiMerchant.MerchantButton)this.func_189646_b(new GuiMerchant.MerchantButton(2, i + 36 - 19, j + 24 - 1, false));
         this.nextButton.enabled = false;
         this.previousButton.enabled = false;
     }

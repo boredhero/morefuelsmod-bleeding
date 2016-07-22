@@ -40,7 +40,7 @@ public class GuiStats extends GuiScreen implements IProgressMeter
     private GuiStats.StatsItem itemStats;
     private GuiStats.StatsBlock blockStats;
     private GuiStats.StatsMobsList mobStats;
-    private StatisticsManager stats;
+    private final StatisticsManager stats;
     private GuiSlot displaySlot;
     /** When true, the game will be paused when the gui is shown */
     private boolean doesGuiPauseGame = true;
@@ -91,12 +91,9 @@ public class GuiStats extends GuiScreen implements IProgressMeter
     {
         this.buttonList.add(new GuiButton(0, this.width / 2 + 4, this.height - 28, 150, 20, I18n.format("gui.done", new Object[0])));
         this.buttonList.add(new GuiButton(1, this.width / 2 - 160, this.height - 52, 80, 20, I18n.format("stat.generalButton", new Object[0])));
-        GuiButton guibutton;
-        this.buttonList.add(guibutton = new GuiButton(2, this.width / 2 - 80, this.height - 52, 80, 20, I18n.format("stat.blocksButton", new Object[0])));
-        GuiButton guibutton1;
-        this.buttonList.add(guibutton1 = new GuiButton(3, this.width / 2, this.height - 52, 80, 20, I18n.format("stat.itemsButton", new Object[0])));
-        GuiButton guibutton2;
-        this.buttonList.add(guibutton2 = new GuiButton(4, this.width / 2 + 80, this.height - 52, 80, 20, I18n.format("stat.mobsButton", new Object[0])));
+        GuiButton guibutton = this.func_189646_b(new GuiButton(2, this.width / 2 - 80, this.height - 52, 80, 20, I18n.format("stat.blocksButton", new Object[0])));
+        GuiButton guibutton1 = this.func_189646_b(new GuiButton(3, this.width / 2, this.height - 52, 80, 20, I18n.format("stat.itemsButton", new Object[0])));
+        GuiButton guibutton2 = this.func_189646_b(new GuiButton(4, this.width / 2 + 80, this.height - 52, 80, 20, I18n.format("stat.mobsButton", new Object[0])));
 
         if (this.blockStats.getSize() == 0)
         {
@@ -414,7 +411,7 @@ public class GuiStats extends GuiScreen implements IProgressMeter
             else
             {
                 String s1 = "-";
-                GuiStats.this.drawString(GuiStats.this.fontRendererObj, s1, p_148209_2_ - GuiStats.this.fontRendererObj.getStringWidth(s1), p_148209_3_ + 5, p_148209_4_ ? 16777215 : 9474192);
+                GuiStats.this.drawString(GuiStats.this.fontRendererObj, "-", p_148209_2_ - GuiStats.this.fontRendererObj.getStringWidth("-"), p_148209_3_ + 5, p_148209_4_ ? 16777215 : 9474192);
             }
         }
 
@@ -437,7 +434,7 @@ public class GuiStats extends GuiScreen implements IProgressMeter
                 }
                 else
                 {
-                    String s = "";
+                    String s;
 
                     if (mouseXIn >= j + 115 - 18 && mouseXIn <= j + 115)
                     {

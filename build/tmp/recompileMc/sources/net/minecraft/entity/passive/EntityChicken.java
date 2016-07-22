@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIFollowParent;
@@ -25,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -153,6 +155,19 @@ public class EntityChicken extends EntityAnimal
     }
 
     /**
+     * Get the experience points the entity currently has.
+     */
+    protected int getExperiencePoints(EntityPlayer player)
+    {
+        return this.isChickenJockey() ? 10 : super.getExperiencePoints(player);
+    }
+
+    public static void func_189789_b(DataFixer p_189789_0_)
+    {
+        EntityLiving.func_189752_a(p_189789_0_, "Chicken");
+    }
+
+    /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
     public void readEntityFromNBT(NBTTagCompound compound)
@@ -164,14 +179,6 @@ public class EntityChicken extends EntityAnimal
         {
             this.timeUntilNextEgg = compound.getInteger("EggLayTime");
         }
-    }
-
-    /**
-     * Get the experience points the entity currently has.
-     */
-    protected int getExperiencePoints(EntityPlayer player)
-    {
-        return this.isChickenJockey() ? 10 : super.getExperiencePoints(player);
     }
 
     /**
@@ -199,7 +206,7 @@ public class EntityChicken extends EntityAnimal
         float f1 = MathHelper.cos(this.renderYawOffset * 0.017453292F);
         float f2 = 0.1F;
         float f3 = 0.0F;
-        passenger.setPosition(this.posX + (double)(f2 * f), this.posY + (double)(this.height * 0.5F) + passenger.getYOffset() + (double)f3, this.posZ - (double)(f2 * f1));
+        passenger.setPosition(this.posX + (double)(0.1F * f), this.posY + (double)(this.height * 0.5F) + passenger.getYOffset() + 0.0D, this.posZ - (double)(0.1F * f1));
 
         if (passenger instanceof EntityLivingBase)
         {

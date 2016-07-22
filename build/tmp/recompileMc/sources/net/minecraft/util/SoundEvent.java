@@ -8,7 +8,7 @@ public class SoundEvent extends net.minecraftforge.fml.common.registry.IForgeReg
 {
     public static final RegistryNamespaced<ResourceLocation, SoundEvent> REGISTRY = net.minecraftforge.fml.common.registry.GameData.getSoundEventRegistry();
     private final ResourceLocation soundName;
-    private static int soundEventId = 0;
+    private static int soundEventId;
 
     public SoundEvent(ResourceLocation soundNameIn)
     {
@@ -47,6 +47,7 @@ public class SoundEvent extends net.minecraftforge.fml.common.registry.IForgeReg
         registerSound("block.dispenser.dispense");
         registerSound("block.dispenser.fail");
         registerSound("block.dispenser.launch");
+        registerSound("block.enchantment_table.use");
         registerSound("block.end_gateway.spawn");
         registerSound("block.enderchest.close");
         registerSound("block.enderchest.open");
@@ -271,6 +272,10 @@ public class SoundEvent extends net.minecraftforge.fml.common.registry.IForgeReg
         registerSound("entity.hostile.small_fall");
         registerSound("entity.hostile.splash");
         registerSound("entity.hostile.swim");
+        registerSound("entity.husk.ambient");
+        registerSound("entity.husk.death");
+        registerSound("entity.husk.hurt");
+        registerSound("entity.husk.step");
         registerSound("entity.irongolem.attack");
         registerSound("entity.irongolem.death");
         registerSound("entity.irongolem.hurt");
@@ -319,6 +324,12 @@ public class SoundEvent extends net.minecraftforge.fml.common.registry.IForgeReg
         registerSound("entity.player.small_fall");
         registerSound("entity.player.splash");
         registerSound("entity.player.swim");
+        registerSound("entity.polar_bear.ambient");
+        registerSound("entity.polar_bear.baby_ambient");
+        registerSound("entity.polar_bear.death");
+        registerSound("entity.polar_bear.hurt");
+        registerSound("entity.polar_bear.step");
+        registerSound("entity.polar_bear.warning");
         registerSound("entity.rabbit.ambient");
         registerSound("entity.rabbit.attack");
         registerSound("entity.rabbit.death");
@@ -377,6 +388,10 @@ public class SoundEvent extends net.minecraftforge.fml.common.registry.IForgeReg
         registerSound("entity.squid.ambient");
         registerSound("entity.squid.death");
         registerSound("entity.squid.hurt");
+        registerSound("entity.stray.ambient");
+        registerSound("entity.stray.death");
+        registerSound("entity.stray.hurt");
+        registerSound("entity.stray.step");
         registerSound("entity.tnt.primed");
         registerSound("entity.villager.ambient");
         registerSound("entity.villager.death");
@@ -395,6 +410,10 @@ public class SoundEvent extends net.minecraftforge.fml.common.registry.IForgeReg
         registerSound("entity.wither.hurt");
         registerSound("entity.wither.shoot");
         registerSound("entity.wither.spawn");
+        registerSound("entity.wither_skeleton.ambient");
+        registerSound("entity.wither_skeleton.death");
+        registerSound("entity.wither_skeleton.hurt");
+        registerSound("entity.wither_skeleton.step");
         registerSound("entity.wolf.ambient");
         registerSound("entity.wolf.death");
         registerSound("entity.wolf.growl");

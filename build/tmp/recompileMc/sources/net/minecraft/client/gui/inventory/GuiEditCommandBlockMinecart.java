@@ -51,9 +51,9 @@ public class GuiEditCommandBlockMinecart extends GuiScreen implements ITabComple
     {
         Keyboard.enableRepeatEvents(true);
         this.buttonList.clear();
-        this.buttonList.add(this.doneButton = new GuiButton(0, this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.done", new Object[0])));
-        this.buttonList.add(this.cancelButton = new GuiButton(1, this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.cancel", new Object[0])));
-        this.buttonList.add(this.outputButton = new GuiButton(4, this.width / 2 + 150 - 20, 150, 20, 20, "O"));
+        this.doneButton = this.func_189646_b(new GuiButton(0, this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.done", new Object[0])));
+        this.cancelButton = this.func_189646_b(new GuiButton(1, this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.format("gui.cancel", new Object[0])));
+        this.outputButton = this.func_189646_b(new GuiButton(4, this.width / 2 + 150 - 20, 150, 20, 20, "O"));
         this.commandField = new GuiTextField(2, this.fontRendererObj, this.width / 2 - 150, 50, 300, 20);
         this.commandField.setMaxStringLength(32500);
         this.commandField.setFocused(true);

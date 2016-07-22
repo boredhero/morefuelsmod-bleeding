@@ -2,12 +2,14 @@ package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
@@ -19,6 +21,11 @@ public class EntityCaveSpider extends EntitySpider
     {
         super(worldIn);
         this.setSize(0.7F, 0.5F);
+    }
+
+    public static void func_189775_b(DataFixer p_189775_0_)
+    {
+        EntityLiving.func_189752_a(p_189775_0_, "CaveSpider");
     }
 
     protected void applyEntityAttributes()

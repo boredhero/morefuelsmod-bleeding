@@ -118,11 +118,11 @@ public class WorldType
 
     public static WorldType parseWorldType(String type)
     {
-        for (int i = 0; i < WORLD_TYPES.length; ++i)
+        for (WorldType worldtype : WORLD_TYPES)
         {
-            if (WORLD_TYPES[i] != null && WORLD_TYPES[i].worldType.equalsIgnoreCase(type))
+            if (worldtype != null && worldtype.worldType.equalsIgnoreCase(type))
             {
-                return WORLD_TYPES[i];
+                return worldtype;
             }
         }
 
@@ -180,7 +180,7 @@ public class WorldType
 
     public int getMinimumSpawnHeight(World world)
     {
-        return this == FLAT ? 4 : 64;
+        return this == FLAT ? 4 : world.getSeaLevel() + 1;
     }
 
     public double getHorizon(World world)

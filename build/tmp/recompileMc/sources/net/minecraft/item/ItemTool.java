@@ -16,7 +16,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemTool extends Item
 {
-    private Set<Block> effectiveBlocks;
+    private final Set<Block> effectiveBlocks;
     protected float efficiencyOnProperMaterial;
     /** Damage versus entities. */
     protected float damageVsEntity;

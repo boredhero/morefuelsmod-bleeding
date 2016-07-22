@@ -80,7 +80,7 @@ public abstract class World implements IBlockAccess
     public final List<EntityPlayer> playerEntities = Lists.<EntityPlayer>newArrayList();
     public final List<Entity> weatherEffects = Lists.<Entity>newArrayList();
     protected final IntHashMap<Entity> entitiesById = new IntHashMap();
-    private long cloudColour = 16777215L;
+    private final long cloudColour = 16777215L;
     /** How much light is subtracted from full daylight */
     private int skylightSubtracted;
     /**
@@ -728,13 +728,18 @@ public abstract class World implements IBlockAccess
      */
     public BlockPos getHeight(BlockPos pos)
     {
+        return new BlockPos(pos.getX(), this.func_189649_b(pos.getX(), pos.getZ()), pos.getZ());
+    }
+
+    public int func_189649_b(int p_189649_1_, int p_189649_2_)
+    {
         int i;
 
-        if (pos.getX() >= -30000000 && pos.getZ() >= -30000000 && pos.getX() < 30000000 && pos.getZ() < 30000000)
+        if (p_189649_1_ >= -30000000 && p_189649_2_ >= -30000000 && p_189649_1_ < 30000000 && p_189649_2_ < 30000000)
         {
-            if (this.isChunkLoaded(pos.getX() >> 4, pos.getZ() >> 4, true))
+            if (this.isChunkLoaded(p_189649_1_ >> 4, p_189649_2_ >> 4, true))
             {
-                i = this.getChunkFromChunkCoords(pos.getX() >> 4, pos.getZ() >> 4).getHeightValue(pos.getX() & 15, pos.getZ() & 15);
+                i = this.getChunkFromChunkCoords(p_189649_1_ >> 4, p_189649_2_ >> 4).getHeightValue(p_189649_1_ & 15, p_189649_2_ & 15);
             }
             else
             {
@@ -746,7 +751,7 @@ public abstract class World implements IBlockAccess
             i = this.getSeaLevel() + 1;
         }
 
-        return new BlockPos(pos.getX(), i, pos.getZ());
+        return i;
     }
 
     /**
@@ -770,28 +775,6 @@ public abstract class World implements IBlockAccess
         else
         {
             return this.getSeaLevel() + 1;
-        }
-    }
-
-    public int getLightFor(EnumSkyBlock type, BlockPos pos)
-    {
-        if (pos.getY() < 0)
-        {
-            pos = new BlockPos(pos.getX(), 0, pos.getZ());
-        }
-
-        if (!this.isValid(pos))
-        {
-            return type.defaultLightValue;
-        }
-        else if (!this.isBlockLoaded(pos))
-        {
-            return type.defaultLightValue;
-        }
-        else
-        {
-            Chunk chunk = this.getChunkFromBlockCoords(pos);
-            return chunk.getLightFor(type, pos);
         }
     }
 
@@ -852,6 +835,28 @@ public abstract class World implements IBlockAccess
                 Chunk chunk = this.getChunkFromBlockCoords(pos);
                 return chunk.getLightFor(type, pos);
             }
+        }
+    }
+
+    public int getLightFor(EnumSkyBlock type, BlockPos pos)
+    {
+        if (pos.getY() < 0)
+        {
+            pos = new BlockPos(pos.getX(), 0, pos.getZ());
+        }
+
+        if (!this.isValid(pos))
+        {
+            return type.defaultLightValue;
+        }
+        else if (!this.isBlockLoaded(pos))
+        {
+            return type.defaultLightValue;
+        }
+        else
+        {
+            Chunk chunk = this.getChunkFromBlockCoords(pos);
+            return chunk.getLightFor(type, pos);
         }
     }
 
@@ -1314,13 +1319,13 @@ public abstract class World implements IBlockAccess
             {
                 int i2 = (k1 != i && k1 != j - 1 ? 0 : 1) + (l1 != i1 && l1 != j1 - 1 ? 0 : 1);
 
-                if (i2 != 2 && this.isBlockLoaded(blockpos$pooledmutableblockpos.set(k1, 64, l1)))
+                if (i2 != 2 && this.isBlockLoaded(blockpos$pooledmutableblockpos.setPos(k1, 64, l1)))
                 {
                     for (int j2 = k; j2 < l; ++j2)
                     {
                         if (i2 <= 0 || j2 != k && j2 != l - 1)
                         {
-                            blockpos$pooledmutableblockpos.set(k1, j2, l1);
+                            blockpos$pooledmutableblockpos.setPos(k1, j2, l1);
 
                             if (entityIn != null)
                             {
@@ -1422,13 +1427,13 @@ public abstract class World implements IBlockAccess
             {
                 int i2 = (k1 != i && k1 != j - 1 ? 0 : 1) + (l1 != i1 && l1 != j1 - 1 ? 0 : 1);
 
-                if (i2 != 2 && this.isBlockLoaded(blockpos$pooledmutableblockpos.set(k1, 64, l1)))
+                if (i2 != 2 && this.isBlockLoaded(blockpos$pooledmutableblockpos.setPos(k1, 64, l1)))
                 {
                     for (int j2 = k; j2 < l; ++j2)
                     {
                         if (i2 <= 0 || j2 != k && j2 != l - 1)
                         {
-                            blockpos$pooledmutableblockpos.set(k1, j2, l1);
+                            blockpos$pooledmutableblockpos.setPos(k1, j2, l1);
                             IBlockState iblockstate;
 
                             if (k1 >= -30000000 && k1 < 30000000 && l1 >= -30000000 && l1 < 30000000)
@@ -1481,13 +1486,13 @@ public abstract class World implements IBlockAccess
                 {
                     int i2 = (k1 != i && k1 != j - 1 ? 0 : 1) + (l1 != i1 && l1 != j1 - 1 ? 0 : 1);
 
-                    if (i2 != 2 && this.isBlockLoaded(blockpos$pooledmutableblockpos.set(k1, 64, l1)))
+                    if (i2 != 2 && this.isBlockLoaded(blockpos$pooledmutableblockpos.setPos(k1, 64, l1)))
                     {
                         for (int j2 = k; j2 < l; ++j2)
                         {
                             if (i2 <= 0 || j2 != k && j2 != l - 1)
                             {
-                                blockpos$pooledmutableblockpos.set(k1, j2, l1);
+                                blockpos$pooledmutableblockpos.setPos(k1, j2, l1);
 
                                 if (k1 < -30000000 || k1 >= 30000000 || l1 < -30000000 || l1 >= 30000000)
                                 {
@@ -1680,9 +1685,9 @@ public abstract class World implements IBlockAccess
         float f = this.getCelestialAngle(partialTicks);
         float f1 = MathHelper.cos(f * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
         f1 = MathHelper.clamp_float(f1, 0.0F, 1.0F);
-        float f2 = (float)(this.cloudColour >> 16 & 255L) / 255.0F;
-        float f3 = (float)(this.cloudColour >> 8 & 255L) / 255.0F;
-        float f4 = (float)(this.cloudColour & 255L) / 255.0F;
+        float f2 = 1.0F;
+        float f3 = 1.0F;
+        float f4 = 1.0F;
         float f5 = this.getRainStrength(partialTicks);
 
         if (f5 > 0.0F)
@@ -2030,6 +2035,13 @@ public abstract class World implements IBlockAccess
             this.tickableTileEntities.add(tile);
         }
 
+        if (this.isRemote)
+        {
+            BlockPos blockpos = tile.getPos();
+            IBlockState iblockstate = this.getBlockState(blockpos);
+            this.notifyBlockUpdate(blockpos, iblockstate, iblockstate, 2);
+        }
+
         return flag;
     }
 
@@ -2071,7 +2083,6 @@ public abstract class World implements IBlockAccess
         boolean isForced = getPersistentChunks().containsKey(new net.minecraft.util.math.ChunkPos(i >> 4, j >> 4));
         int k = isForced ? 0 : 32;
         boolean canUpdate = !forceUpdate || this.isAreaLoaded(i - k, 0, j - k, i + k, 0, j + k, true);
-
         if (!canUpdate) canUpdate = net.minecraftforge.event.ForgeEventFactory.canEntityUpdate(entityIn);
 
         if (canUpdate)
@@ -2210,7 +2221,7 @@ public abstract class World implements IBlockAccess
             {
                 for (int i2 = i1; i2 < j1; ++i2)
                 {
-                    IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos.set(k1, l1, i2));
+                    IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos.setPos(k1, l1, i2));
 
                     if (iblockstate.getMaterial() != Material.AIR)
                     {
@@ -2244,7 +2255,7 @@ public abstract class World implements IBlockAccess
             {
                 for (int i2 = i1; i2 < j1; ++i2)
                 {
-                    IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos.set(k1, l1, i2));
+                    IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos.setPos(k1, l1, i2));
 
                     if (iblockstate.getMaterial().isLiquid())
                     {
@@ -2278,7 +2289,7 @@ public abstract class World implements IBlockAccess
                 {
                     for (int i2 = i1; i2 < j1; ++i2)
                     {
-                        Block block = this.getBlockState(blockpos$pooledmutableblockpos.set(k1, l1, i2)).getBlock();
+                        Block block = this.getBlockState(blockpos$pooledmutableblockpos.setPos(k1, l1, i2)).getBlock();
 
                         if (block == Blocks.FIRE || block == Blocks.FLOWING_LAVA || block == Blocks.LAVA)
                         {
@@ -2327,7 +2338,7 @@ public abstract class World implements IBlockAccess
                 {
                     for (int i2 = i1; i2 < j1; ++i2)
                     {
-                        blockpos$pooledmutableblockpos.set(k1, l1, i2);
+                        blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
                         IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos);
                         Block block = iblockstate.getBlock();
 
@@ -2361,9 +2372,9 @@ public abstract class World implements IBlockAccess
             {
                 vec3d = vec3d.normalize();
                 double d1 = 0.014D;
-                entityIn.motionX += vec3d.xCoord * d1;
-                entityIn.motionY += vec3d.yCoord * d1;
-                entityIn.motionZ += vec3d.zCoord * d1;
+                entityIn.motionX += vec3d.xCoord * 0.014D;
+                entityIn.motionY += vec3d.yCoord * 0.014D;
+                entityIn.motionZ += vec3d.zCoord * 0.014D;
             }
 
             return flag;
@@ -2389,7 +2400,7 @@ public abstract class World implements IBlockAccess
             {
                 for (int i2 = i1; i2 < j1; ++i2)
                 {
-                    if (this.getBlockState(blockpos$pooledmutableblockpos.set(k1, l1, i2)).getMaterial() == materialIn)
+                    if (this.getBlockState(blockpos$pooledmutableblockpos.setPos(k1, l1, i2)).getMaterial() == materialIn)
                     {
                         blockpos$pooledmutableblockpos.release();
                         return true;
@@ -2421,7 +2432,7 @@ public abstract class World implements IBlockAccess
             {
                 for (int i2 = i1; i2 < j1; ++i2)
                 {
-                    IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos.set(k1, l1, i2));
+                    IBlockState iblockstate = this.getBlockState(blockpos$pooledmutableblockpos.setPos(k1, l1, i2));
 
                     Boolean result = iblockstate.getBlock().isAABBInsideMaterial(this, blockpos$pooledmutableblockpos, bb, materialIn);
                     if (result != null) return result;
@@ -3017,7 +3028,7 @@ public abstract class World implements IBlockAccess
 
                 for (EnumFacing enumfacing : EnumFacing.values())
                 {
-                    blockpos$pooledmutableblockpos.set(pos).offsetMutable(enumfacing);
+                    blockpos$pooledmutableblockpos.setPos(pos).move(enumfacing);
                     int k = this.getLightFor(lightType, blockpos$pooledmutableblockpos) - j;
 
                     if (k > i)
@@ -3091,7 +3102,7 @@ public abstract class World implements IBlockAccess
                                     int i4 = i2 + enumfacing.getFrontOffsetX();
                                     int j4 = j2 + enumfacing.getFrontOffsetY();
                                     int k4 = k2 + enumfacing.getFrontOffsetZ();
-                                    blockpos$pooledmutableblockpos.set(i4, j4, k4);
+                                    blockpos$pooledmutableblockpos.setPos(i4, j4, k4);
                                     int l4 = Math.max(1, this.getBlockState(blockpos$pooledmutableblockpos).getBlock().getLightOpacity(this.getBlockState(blockpos$pooledmutableblockpos), this, blockpos$pooledmutableblockpos));
                                     i3 = this.getLightFor(lightType, blockpos$pooledmutableblockpos);
 
@@ -3723,9 +3734,9 @@ public abstract class World implements IBlockAccess
         int j = MathHelper.floor_double(entityIn.posZ / 16.0D);
         int k = 2;
 
-        for (int l = -k; l <= k; ++l)
+        for (int l = -2; l <= 2; ++l)
         {
-            for (int i1 = -k; i1 <= k; ++i1)
+            for (int i1 = -2; i1 <= 2; ++i1)
             {
                 this.getChunkFromChunkCoords(i + l, j + i1);
             }
@@ -3982,7 +3993,7 @@ public abstract class World implements IBlockAccess
         {
             public String call()
             {
-                return World.this.playerEntities.size() + " total; " + World.this.playerEntities.toString();
+                return World.this.playerEntities.size() + " total; " + World.this.playerEntities;
             }
         });
         crashreportcategory.setDetail("Chunk stats", new ICrashReportDetail<String>()
@@ -4003,15 +4014,6 @@ public abstract class World implements IBlockAccess
         }
 
         return crashreportcategory;
-    }
-
-    /**
-     * set by !chunk.getAreLevelsEmpty
-     */
-    @SideOnly(Side.CLIENT)
-    public boolean extendedLevelsInChunkCache()
-    {
-        return false;
     }
 
     /**
@@ -4138,7 +4140,7 @@ public abstract class World implements IBlockAccess
         int i = x * 16 + 8 - blockpos.getX();
         int j = z * 16 + 8 - blockpos.getZ();
         int k = 128;
-        return i >= -k && i <= k && j >= -k && j <= k;
+        return i >= -128 && i <= 128 && j >= -128 && j <= 128;
     }
 
     /* ======================================== FORGE START =====================================*/

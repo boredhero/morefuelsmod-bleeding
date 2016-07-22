@@ -25,7 +25,7 @@ import net.minecraft.world.World;
 public class ItemBucket extends Item
 {
     /** field for checking if the bucket has been filled. */
-    private Block isFull;
+    private final Block isFull;
 
     public ItemBucket(Block containedBlock)
     {
@@ -181,6 +181,20 @@ public class ItemBucket extends Item
 
     @Override
     public net.minecraftforge.common.capabilities.ICapabilityProvider initCapabilities(ItemStack stack, net.minecraft.nbt.NBTTagCompound nbt) {
-        return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
+        if (this.getClass() == ItemBucket.class)
+        {
+            if (net.minecraftforge.fluids.FluidRegistry.isUniversalBucketEnabled())
+            {
+                return new net.minecraftforge.fluids.capability.wrappers.FluidBucketWrapper(stack);
+            }
+            else
+            {
+                return new net.minecraftforge.fluids.capability.wrappers.FluidContainerRegistryWrapper(stack); // when fluid container registry is gone, just use FluidBucketWrapper
+            }
+        }
+        else
+        {
+            return super.initCapabilities(stack, nbt);
+        }
     }
 }

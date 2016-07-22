@@ -27,29 +27,29 @@ public class RConThreadQuery extends RConThreadBase
     /** The RCon query port */
     private int queryPort;
     /** Port the server is running on */
-    private int serverPort;
+    private final int serverPort;
     /** The maximum number of players allowed on the server */
-    private int maxPlayers;
+    private final int maxPlayers;
     /** The current server message of the day */
-    private String serverMotd;
+    private final String serverMotd;
     /** The name of the currently loaded world */
-    private String worldName;
+    private final String worldName;
     /** The remote socket querying the server */
     private DatagramSocket querySocket;
     /** A buffer for incoming DatagramPackets */
-    private byte[] buffer = new byte[1460];
+    private final byte[] buffer = new byte[1460];
     /** Storage for incoming DatagramPackets */
     private DatagramPacket incomingPacket;
-    private Map<SocketAddress, String> idents;
+    private final Map<SocketAddress, String> idents;
     /** The hostname of this query server */
     private String queryHostname;
     /** The hostname of the running server */
     private String serverHostname;
-    private Map<SocketAddress, RConThreadQuery.Auth> queryClients;
+    private final Map<SocketAddress, RConThreadQuery.Auth> queryClients;
     /** The time that this RConThreadQuery was constructed, from (new Date()).getTime() */
-    private long time;
+    private final long time;
     /** The RConQuery output stream */
-    private RConOutputStream output;
+    private final RConOutputStream output;
     /** The time of the last query response sent */
     private long lastQueryResponseTime;
 
@@ -355,7 +355,7 @@ public class RConThreadQuery extends RConThreadBase
     {
         if (this.running)
         {
-            this.logWarning("Unexpected exception, buggy JRE? (" + exception.toString() + ")");
+            this.logWarning("Unexpected exception, buggy JRE? (" + exception + ")");
 
             if (!this.initQuerySystem())
             {
@@ -397,15 +397,15 @@ public class RConThreadQuery extends RConThreadBase
     class Auth
     {
         /** The creation timestamp for this auth */
-        private long timestamp = (new Date()).getTime();
+        private final long timestamp = (new Date()).getTime();
         /** A random integer value to be used for client response authentication */
-        private int randomChallenge;
+        private final int randomChallenge;
         /** A client-provided request ID associated with this query. */
-        private byte[] requestId;
+        private final byte[] requestId;
         /** A unique string of bytes used to verify client auth */
-        private byte[] challengeValue;
+        private final byte[] challengeValue;
         /** The request ID stored as a String */
-        private String requestIdAsString;
+        private final String requestIdAsString;
 
         public Auth(DatagramPacket requestPacket)
         {

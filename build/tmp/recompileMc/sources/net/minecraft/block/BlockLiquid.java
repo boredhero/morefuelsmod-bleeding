@@ -145,7 +145,7 @@ public abstract class BlockLiquid extends Block
 
         for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
         {
-            blockpos$pooledmutableblockpos.set(p_189543_2_).offsetMutable(enumfacing);
+            blockpos$pooledmutableblockpos.setPos(p_189543_2_).move(enumfacing);
             int j = this.getRenderedDepth(p_189543_1_.getBlockState(blockpos$pooledmutableblockpos));
 
             if (j < 0)
@@ -178,7 +178,7 @@ public abstract class BlockLiquid extends Block
         {
             for (EnumFacing enumfacing1 : EnumFacing.Plane.HORIZONTAL)
             {
-                blockpos$pooledmutableblockpos.set(p_189543_2_).offsetMutable(enumfacing1);
+                blockpos$pooledmutableblockpos.setPos(p_189543_2_).move(enumfacing1);
 
                 if (this.isBlockSolid(p_189543_1_, blockpos$pooledmutableblockpos, enumfacing1) || this.isBlockSolid(p_189543_1_, blockpos$pooledmutableblockpos.up(), enumfacing1))
                 {

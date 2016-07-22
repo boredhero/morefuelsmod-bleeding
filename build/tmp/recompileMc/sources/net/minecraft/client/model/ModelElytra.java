@@ -11,8 +11,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelElytra extends ModelBase
 {
-    private ModelRenderer rightWing;
-    private ModelRenderer leftWing = new ModelRenderer(this, 22, 0);
+    private final ModelRenderer rightWing;
+    private final ModelRenderer leftWing = new ModelRenderer(this, 22, 0);
 
     public ModelElytra()
     {

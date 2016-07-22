@@ -15,7 +15,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class WorldProviderEnd extends WorldProvider
 {
-    private DragonFightManager dragonFightManager = null;
+    private DragonFightManager dragonFightManager;
 
     /**
      * creates a new world chunk manager for WorldProvider
@@ -59,9 +59,9 @@ public class WorldProviderEnd extends WorldProvider
         int i = 10518688;
         float f = MathHelper.cos(p_76562_1_ * ((float)Math.PI * 2F)) * 2.0F + 0.5F;
         f = MathHelper.clamp_float(f, 0.0F, 1.0F);
-        float f1 = (float)(i >> 16 & 255) / 255.0F;
-        float f2 = (float)(i >> 8 & 255) / 255.0F;
-        float f3 = (float)(i & 255) / 255.0F;
+        float f1 = 0.627451F;
+        float f2 = 0.5019608F;
+        float f3 = 0.627451F;
         f1 = f1 * (f * 0.0F + 0.15F);
         f2 = f2 * (f * 0.0F + 0.15F);
         f3 = f3 * (f * 0.0F + 0.15F);

@@ -6,8 +6,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class Tessellator
 {
-    private VertexBuffer worldRenderer;
-    private WorldVertexBufferUploader vboUploader = new WorldVertexBufferUploader();
+    private final VertexBuffer worldRenderer;
+    private final WorldVertexBufferUploader vboUploader = new WorldVertexBufferUploader();
     /** The static instance of the Tessellator. */
     private static final Tessellator INSTANCE = new Tessellator(2097152);
 

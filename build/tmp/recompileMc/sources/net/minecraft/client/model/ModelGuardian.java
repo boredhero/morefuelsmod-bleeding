@@ -11,10 +11,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ModelGuardian extends ModelBase
 {
-    private ModelRenderer guardianBody;
-    private ModelRenderer guardianEye;
-    private ModelRenderer[] guardianSpines;
-    private ModelRenderer[] guardianTail;
+    private final ModelRenderer guardianBody;
+    private final ModelRenderer guardianEye;
+    private final ModelRenderer[] guardianSpines;
+    private final ModelRenderer[] guardianTail;
 
     public ModelGuardian()
     {

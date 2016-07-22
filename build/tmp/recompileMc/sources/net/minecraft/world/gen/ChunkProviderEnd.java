@@ -23,7 +23,7 @@ import net.minecraft.world.gen.structure.MapGenEndCity;
 public class ChunkProviderEnd implements IChunkGenerator
 {
     /** RNG. */
-    private Random rand;
+    private final Random rand;
     protected static final IBlockState END_STONE = Blocks.END_STONE.getDefaultState();
     protected static final IBlockState AIR = Blocks.AIR.getDefaultState();
     private NoiseGeneratorOctaves lperlinNoise1;
@@ -79,40 +79,40 @@ public class ChunkProviderEnd implements IChunkGenerator
     public void setBlocksInChunk(int x, int z, ChunkPrimer primer)
     {
         int i = 2;
-        int j = i + 1;
+        int j = 3;
         int k = 33;
-        int l = i + 1;
-        this.buffer = this.getHeights(this.buffer, x * i, 0, z * i, j, k, l);
+        int l = 3;
+        this.buffer = this.getHeights(this.buffer, x * 2, 0, z * 2, 3, 33, 3);
 
-        for (int i1 = 0; i1 < i; ++i1)
+        for (int i1 = 0; i1 < 2; ++i1)
         {
-            for (int j1 = 0; j1 < i; ++j1)
+            for (int j1 = 0; j1 < 2; ++j1)
             {
                 for (int k1 = 0; k1 < 32; ++k1)
                 {
                     double d0 = 0.25D;
-                    double d1 = this.buffer[((i1 + 0) * l + j1 + 0) * k + k1 + 0];
-                    double d2 = this.buffer[((i1 + 0) * l + j1 + 1) * k + k1 + 0];
-                    double d3 = this.buffer[((i1 + 1) * l + j1 + 0) * k + k1 + 0];
-                    double d4 = this.buffer[((i1 + 1) * l + j1 + 1) * k + k1 + 0];
-                    double d5 = (this.buffer[((i1 + 0) * l + j1 + 0) * k + k1 + 1] - d1) * d0;
-                    double d6 = (this.buffer[((i1 + 0) * l + j1 + 1) * k + k1 + 1] - d2) * d0;
-                    double d7 = (this.buffer[((i1 + 1) * l + j1 + 0) * k + k1 + 1] - d3) * d0;
-                    double d8 = (this.buffer[((i1 + 1) * l + j1 + 1) * k + k1 + 1] - d4) * d0;
+                    double d1 = this.buffer[((i1 + 0) * 3 + j1 + 0) * 33 + k1 + 0];
+                    double d2 = this.buffer[((i1 + 0) * 3 + j1 + 1) * 33 + k1 + 0];
+                    double d3 = this.buffer[((i1 + 1) * 3 + j1 + 0) * 33 + k1 + 0];
+                    double d4 = this.buffer[((i1 + 1) * 3 + j1 + 1) * 33 + k1 + 0];
+                    double d5 = (this.buffer[((i1 + 0) * 3 + j1 + 0) * 33 + k1 + 1] - d1) * 0.25D;
+                    double d6 = (this.buffer[((i1 + 0) * 3 + j1 + 1) * 33 + k1 + 1] - d2) * 0.25D;
+                    double d7 = (this.buffer[((i1 + 1) * 3 + j1 + 0) * 33 + k1 + 1] - d3) * 0.25D;
+                    double d8 = (this.buffer[((i1 + 1) * 3 + j1 + 1) * 33 + k1 + 1] - d4) * 0.25D;
 
                     for (int l1 = 0; l1 < 4; ++l1)
                     {
                         double d9 = 0.125D;
                         double d10 = d1;
                         double d11 = d2;
-                        double d12 = (d3 - d1) * d9;
-                        double d13 = (d4 - d2) * d9;
+                        double d12 = (d3 - d1) * 0.125D;
+                        double d13 = (d4 - d2) * 0.125D;
 
                         for (int i2 = 0; i2 < 8; ++i2)
                         {
                             double d14 = 0.125D;
                             double d15 = d10;
-                            double d16 = (d11 - d10) * d14;
+                            double d16 = (d11 - d10) * 0.125D;
 
                             for (int j2 = 0; j2 < 8; ++j2)
                             {
@@ -168,13 +168,7 @@ public class ChunkProviderEnd implements IChunkGenerator
                     {
                         if (l == -1)
                         {
-                            if (k <= 0)
-                            {
-                                iblockstate = AIR;
-                                iblockstate1 = END_STONE;
-                            }
-
-                            l = k;
+                            l = 1;
 
                             if (i1 >= 0)
                             {
@@ -292,9 +286,9 @@ public class ChunkProviderEnd implements IChunkGenerator
         double d0 = 684.412D;
         double d1 = 684.412D;
         d0 = d0 * 2.0D;
-        this.pnr = this.perlinNoise1.generateNoiseOctaves(this.pnr, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0 / 80.0D, d1 / 160.0D, d0 / 80.0D);
-        this.ar = this.lperlinNoise1.generateNoiseOctaves(this.ar, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, d1, d0);
-        this.br = this.lperlinNoise2.generateNoiseOctaves(this.br, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, d1, d0);
+        this.pnr = this.perlinNoise1.generateNoiseOctaves(this.pnr, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0 / 80.0D, 4.277575000000001D, d0 / 80.0D);
+        this.ar = this.lperlinNoise1.generateNoiseOctaves(this.ar, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412D, d0);
+        this.br = this.lperlinNoise2.generateNoiseOctaves(this.br, p_185963_2_, p_185963_3_, p_185963_4_, p_185963_5_, p_185963_6_, p_185963_7_, d0, 684.412D, d0);
         int i = p_185963_2_ / 2;
         int j = p_185963_4_ / 2;
         int k = 0;
@@ -307,33 +301,33 @@ public class ChunkProviderEnd implements IChunkGenerator
 
                 for (int j1 = 0; j1 < p_185963_6_; ++j1)
                 {
-                    double d2 = 0.0D;
-                    double d3 = this.ar[k] / 512.0D;
-                    double d4 = this.br[k] / 512.0D;
+                    double d2 = this.ar[k] / 512.0D;
+                    double d3 = this.br[k] / 512.0D;
                     double d5 = (this.pnr[k] / 10.0D + 1.0D) / 2.0D;
+                    double d4;
 
                     if (d5 < 0.0D)
                     {
-                        d2 = d3;
+                        d4 = d2;
                     }
                     else if (d5 > 1.0D)
                     {
-                        d2 = d4;
+                        d4 = d3;
                     }
                     else
                     {
-                        d2 = d3 + (d4 - d3) * d5;
+                        d4 = d2 + (d3 - d2) * d5;
                     }
 
-                    d2 = d2 - 8.0D;
-                    d2 = d2 + (double)f;
+                    d4 = d4 - 8.0D;
+                    d4 = d4 + (double)f;
                     int k1 = 2;
 
                     if (j1 > p_185963_6_ / 2 - k1)
                     {
                         double d6 = (double)((float)(j1 - (p_185963_6_ / 2 - k1)) / 64.0F);
                         d6 = MathHelper.clamp_double(d6, 0.0D, 1.0D);
-                        d2 = d2 * (1.0D - d6) + -3000.0D * d6;
+                        d4 = d4 * (1.0D - d6) + -3000.0D * d6;
                     }
 
                     k1 = 8;
@@ -341,10 +335,10 @@ public class ChunkProviderEnd implements IChunkGenerator
                     if (j1 < k1)
                     {
                         double d7 = (double)((float)(k1 - j1) / ((float)k1 - 1.0F));
-                        d2 = d2 * (1.0D - d7) + -30.0D * d7;
+                        d4 = d4 * (1.0D - d7) + -30.0D * d7;
                     }
 
-                    p_185963_1_[k] = d2;
+                    p_185963_1_[k] = d4;
                     ++k;
                 }
             }

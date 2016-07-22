@@ -1,6 +1,27 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.minecraftforge.server.command;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import net.minecraft.command.CommandBase;
@@ -73,34 +94,6 @@ public class ForgeCommand extends CommandBase {
         {
             throw new WrongUsageException("commands.forge.usage");
         }
-    }
-
-    @Override
-    public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos pos)
-    {
-        if (args.length == 1)
-        {
-            /**
-             * Returns a List of strings (chosen from the given strings) which the last word in the given string array
-             * is a beginning-match for. (Tab completion).
-             */
-            return getListOfStringsMatchingLastWord(args, "tps", "track");
-        }
-        else if (args.length == 2)
-        {
-            if ("tps".equals(args[0])) {
-                return getListOfStringsMatchingLastWord(args, server.worldTickTimes.keySet());
-            }
-            else if ("track".equals(args[0]))
-            {
-                /**
-                 * Returns a List of strings (chosen from the given strings) which the last word in the given string
-                 * array is a beginning-match for. (Tab completion).
-                 */
-                return getListOfStringsMatchingLastWord(args, "te");
-            }
-        }
-        return null;
     }
 
     private void handleTracking(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException

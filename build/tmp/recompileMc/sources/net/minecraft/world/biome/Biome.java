@@ -358,7 +358,7 @@ public abstract class Biome extends net.minecraftforge.fml.common.registry.IForg
                         --j;
                         chunkPrimerIn.setBlockState(i1, j1, l, iblockstate1);
 
-                        if (j == 0 && iblockstate1.getBlock() == Blocks.SAND)
+                        if (j == 0 && iblockstate1.getBlock() == Blocks.SAND && k > 1)
                         {
                             j = rand.nextInt(4) + Math.max(0, j1 - 63);
                             iblockstate1 = iblockstate1.getValue(BlockSand.VARIANT) == BlockSand.EnumType.RED_SAND ? RED_SANDSTONE : SANDSTONE;

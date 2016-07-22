@@ -17,7 +17,7 @@ public class EntityAITasks
     private final Profiler theProfiler;
     private int tickCount;
     private int tickRate = 3;
-    private int disabledControlFlags = 0;
+    private int disabledControlFlags;
 
     public EntityAITasks(Profiler profilerIn)
     {

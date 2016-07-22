@@ -14,7 +14,7 @@ public class TileEntityEnchantmentTableRenderer extends TileEntitySpecialRendere
 {
     /** The texture for the book above the enchantment table. */
     private static final ResourceLocation TEXTURE_BOOK = new ResourceLocation("textures/entity/enchanting_table_book.png");
-    private ModelBook modelBook = new ModelBook();
+    private final ModelBook modelBook = new ModelBook();
 
     public void renderTileEntityAt(TileEntityEnchantmentTable te, double x, double y, double z, float partialTicks, int destroyStage)
     {

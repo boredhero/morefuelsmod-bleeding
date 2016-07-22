@@ -30,7 +30,7 @@ public class BannerTextures
             private final Map<String, BannerTextures.CacheEntry> cacheMap = Maps.<String, BannerTextures.CacheEntry>newLinkedHashMap();
             private final ResourceLocation cacheResourceLocation;
             private final String cacheResourceBase;
-            private String cacheId;
+            private final String cacheId;
 
             public Cache(String p_i46998_1_, ResourceLocation p_i46998_2_, String p_i46998_3_)
             {

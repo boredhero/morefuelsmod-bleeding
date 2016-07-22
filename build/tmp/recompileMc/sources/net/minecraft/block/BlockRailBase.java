@@ -22,7 +22,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class BlockRailBase extends Block
 {
     protected static final AxisAlignedBB FLAT_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D);
-    protected static final AxisAlignedBB ASCENDING_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.15625D, 1.0D);
     protected final boolean isPowered;
 
     public static boolean isRailBlock(World worldIn, BlockPos pos)
@@ -60,7 +59,7 @@ public abstract class BlockRailBase extends Block
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = state.getBlock() == this ? (BlockRailBase.EnumRailDirection)state.getValue(this.getShapeProperty()) : null;
-        return blockrailbase$enumraildirection != null && blockrailbase$enumraildirection.isAscending() ? ASCENDING_AABB : FLAT_AABB;
+        return blockrailbase$enumraildirection != null && blockrailbase$enumraildirection.isAscending() ? FULL_BLOCK_AABB : FLAT_AABB;
     }
 
     public boolean isFullCube(IBlockState state)

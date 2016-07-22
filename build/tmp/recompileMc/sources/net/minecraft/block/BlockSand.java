@@ -72,23 +72,38 @@ public class BlockSand extends BlockFalling
         return new BlockStateContainer(this, new IProperty[] {VARIANT});
     }
 
+    @SideOnly(Side.CLIENT)
+    public int func_189876_x(IBlockState p_189876_1_)
+    {
+        BlockSand.EnumType blocksand$enumtype = (BlockSand.EnumType)p_189876_1_.getValue(VARIANT);
+        return blocksand$enumtype.func_189865_a();
+    }
+
     public static enum EnumType implements IStringSerializable
     {
-        SAND(0, "sand", "default", MapColor.SAND),
-        RED_SAND(1, "red_sand", "red", MapColor.ADOBE);
+        SAND(0, "sand", "default", MapColor.SAND, -2370656),
+        RED_SAND(1, "red_sand", "red", MapColor.ADOBE, -5679071);
 
         private static final BlockSand.EnumType[] META_LOOKUP = new BlockSand.EnumType[values().length];
         private final int meta;
         private final String name;
         private final MapColor mapColor;
         private final String unlocalizedName;
+        private final int field_189866_h;
 
-        private EnumType(int meta, String name, String unlocalizedName, MapColor mapColor)
+        private EnumType(int p_i47157_3_, String p_i47157_4_, String p_i47157_5_, MapColor p_i47157_6_, int p_i47157_7_)
         {
-            this.meta = meta;
-            this.name = name;
-            this.mapColor = mapColor;
-            this.unlocalizedName = unlocalizedName;
+            this.meta = p_i47157_3_;
+            this.name = p_i47157_4_;
+            this.mapColor = p_i47157_6_;
+            this.unlocalizedName = p_i47157_5_;
+            this.field_189866_h = p_i47157_7_;
+        }
+
+        @SideOnly(Side.CLIENT)
+        public int func_189865_a()
+        {
+            return this.field_189866_h;
         }
 
         public int getMetadata()

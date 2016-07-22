@@ -2,6 +2,7 @@ package net.minecraft.command;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
@@ -10,6 +11,7 @@ import javax.annotation.Nullable;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,7 +58,7 @@ public class CommandDebug extends CommandBase
         }
         else
         {
-            if (args[0].equals("start"))
+            if ("start".equals(args[0]))
             {
                 if (args.length != 1)
                 {
@@ -70,7 +72,7 @@ public class CommandDebug extends CommandBase
             }
             else
             {
-                if (!args[0].equals("stop"))
+                if (!"stop".equals(args[0]))
                 {
                     throw new WrongUsageException("commands.debug.usage", new Object[0]);
                 }
@@ -100,16 +102,17 @@ public class CommandDebug extends CommandBase
     {
         File file1 = new File(server.getFile("debug"), "profile-results-" + (new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss")).format(new Date()) + ".txt");
         file1.getParentFile().mkdirs();
+        FileWriter filewriter = null;
 
         try
         {
-            FileWriter filewriter = new FileWriter(file1);
+            filewriter = new FileWriter(file1);
             filewriter.write(this.getProfilerResults(timeSpan, tickSpan, server));
-            filewriter.close();
         }
         catch (Throwable throwable)
         {
-            LOGGER.error("Could not save profiler results to " + file1, throwable);
+            IOUtils.closeQuietly((Writer)filewriter);
+            LOGGER.error("Could not save profiler results to {}", new Object[] {file1, throwable});
         }
     }
 
@@ -147,7 +150,7 @@ public class CommandDebug extends CommandBase
 
                 builder.append(profiler$result.profilerName).append(" - ").append(String.format("%.2f", new Object[] {Double.valueOf(profiler$result.usePercentage)})).append("%/").append(String.format("%.2f", new Object[] {Double.valueOf(profiler$result.totalUsePercentage)})).append("%\n");
 
-                if (!profiler$result.profilerName.equals("unspecified"))
+                if (!"unspecified".equals(profiler$result.profilerName))
                 {
                     try
                     {

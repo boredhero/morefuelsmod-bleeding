@@ -67,13 +67,17 @@ public class FlatGeneratorInfo
                 stringbuilder.append(",");
             }
 
-            stringbuilder.append(((FlatLayerInfo)this.flatLayers.get(i)).toString());
+            stringbuilder.append(this.flatLayers.get(i));
         }
 
         stringbuilder.append(";");
         stringbuilder.append(this.biomeToUse);
 
-        if (!this.worldFeatures.isEmpty())
+        if (this.worldFeatures.isEmpty())
+        {
+            stringbuilder.append(";");
+        }
+        else
         {
             stringbuilder.append(";");
             int k = 0;
@@ -109,10 +113,6 @@ public class FlatGeneratorInfo
                 }
             }
         }
-        else
-        {
-            stringbuilder.append(";");
-        }
 
         return stringbuilder.toString();
     }
@@ -145,7 +145,7 @@ public class FlatGeneratorInfo
             }
         }
 
-        Block block = null;
+        Block block;
 
         try
         {
@@ -283,9 +283,9 @@ public class FlatGeneratorInfo
                                 {
                                     String[] astring3 = astring2[1].substring(0, astring2[1].length() - 1).split(" ");
 
-                                    for (int l = 0; l < astring3.length; ++l)
+                                    for (String s1 : astring3)
                                     {
-                                        String[] astring4 = astring3[l].split("=", 2);
+                                        String[] astring4 = s1.split("=", 2);
 
                                         if (astring4.length == 2)
                                         {

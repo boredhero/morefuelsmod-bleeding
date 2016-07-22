@@ -66,9 +66,9 @@ public class ModelMagmaCube extends ModelBase
         this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
         this.core.render(scale);
 
-        for (int i = 0; i < this.segments.length; ++i)
+        for (ModelRenderer modelrenderer : this.segments)
         {
-            this.segments[i].render(scale);
+            modelrenderer.render(scale);
         }
     }
 }

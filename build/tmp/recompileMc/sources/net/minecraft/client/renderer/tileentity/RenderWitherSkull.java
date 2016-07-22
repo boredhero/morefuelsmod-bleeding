@@ -61,7 +61,7 @@ public class RenderWitherSkull extends Render<EntityWitherSkull>
             GlStateManager.enableOutlineMode(this.getTeamColor(entity));
         }
 
-        this.skeletonHeadModel.render(entity, 0.0F, 0.0F, 0.0F, f, f1, f2);
+        this.skeletonHeadModel.render(entity, 0.0F, 0.0F, 0.0F, f, f1, 0.0625F);
 
         if (this.renderOutlines)
         {

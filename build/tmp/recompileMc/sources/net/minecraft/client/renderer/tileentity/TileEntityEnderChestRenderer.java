@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileEntityEnderChestRenderer extends TileEntitySpecialRenderer<TileEntityEnderChest>
 {
     private static final ResourceLocation ENDER_CHEST_TEXTURE = new ResourceLocation("textures/entity/chest/ender.png");
-    private ModelChest modelChest = new ModelChest();
+    private final ModelChest modelChest = new ModelChest();
 
     public void renderTileEntityAt(TileEntityEnderChest te, double x, double y, double z, float partialTicks, int destroyStage)
     {

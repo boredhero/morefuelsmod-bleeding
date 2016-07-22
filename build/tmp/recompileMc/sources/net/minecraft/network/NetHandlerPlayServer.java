@@ -4,8 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import com.google.common.util.concurrent.Futures;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import java.io.IOException;
@@ -101,13 +99,14 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.GameType;
 import net.minecraft.world.WorldServer;
-import net.minecraft.world.WorldSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -181,7 +180,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         {
             if (++this.floatingTickCount > 80)
             {
-                LOGGER.warn(this.playerEntity.getName() + " was kicked for floating too long!");
+                LOGGER.warn("{} was kicked for floating too long!", new Object[] {this.playerEntity.getName()});
                 this.kickPlayerFromServer("Flying is not enabled on this server");
                 return;
             }
@@ -207,7 +206,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
             {
                 if (++this.vehicleFloatingTickCount > 80)
                 {
-                    LOGGER.warn(this.playerEntity.getName() + " was kicked for floating a vehicle too long!");
+                    LOGGER.warn("{} was kicked for floating a vehicle too long!", new Object[] {this.playerEntity.getName()});
                     this.kickPlayerFromServer("Flying is not enabled on this server");
                     return;
                 }
@@ -342,7 +341,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
                 if (d10 - d9 > 100.0D && (!this.serverController.isSinglePlayer() || !this.serverController.getServerOwner().equals(entity.getName())))
                 {
-                    LOGGER.warn(entity.getName() + " (vehicle of " + this.playerEntity.getName() + ") moved too quickly! " + d6 + "," + d7 + "," + d8);
+                    LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", new Object[] {entity.getName(), this.playerEntity.getName(), Double.valueOf(d6), Double.valueOf(d7), Double.valueOf(d8)});
                     this.netManager.sendPacket(new SPacketMoveVehicle(entity));
                     return;
                 }
@@ -368,7 +367,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                 if (d10 > 0.0625D)
                 {
                     flag1 = true;
-                    LOGGER.warn(entity.getName() + " moved wrongly!");
+                    LOGGER.warn("{} moved wrongly!", new Object[] {entity.getName()});
                 }
 
                 entity.setPositionAndRotation(d3, d4, d5, f, f1);
@@ -471,7 +470,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
                         if (i > 5)
                         {
-                            LOGGER.debug(this.playerEntity.getName() + " is sending move packets too frequently (" + i + " packets since last tick)");
+                            LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", new Object[] {this.playerEntity.getName(), Integer.valueOf(i)});
                             i = 1;
                         }
 
@@ -481,7 +480,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
                             if (d11 - d10 > (double)(f2 * (float)i) && (!this.serverController.isSinglePlayer() || !this.serverController.getServerOwner().equals(this.playerEntity.getName())))
                             {
-                                LOGGER.warn(this.playerEntity.getName() + " moved too quickly! " + d7 + "," + d8 + "," + d9);
+                                LOGGER.warn("{} moved too quickly! {},{},{}", new Object[] {this.playerEntity.getName(), Double.valueOf(d7), Double.valueOf(d8), Double.valueOf(d9)});
                                 this.setPlayerLocation(this.playerEntity.posX, this.playerEntity.posY, this.playerEntity.posZ, this.playerEntity.rotationYaw, this.playerEntity.rotationPitch);
                                 return;
                             }
@@ -512,10 +511,10 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                         d11 = d7 * d7 + d8 * d8 + d9 * d9;
                         boolean flag = false;
 
-                        if (!this.playerEntity.isInvulnerableDimensionChange() && d11 > 0.0625D && !this.playerEntity.isPlayerSleeping() && !this.playerEntity.interactionManager.isCreative() && this.playerEntity.interactionManager.getGameType() != WorldSettings.GameType.SPECTATOR)
+                        if (!this.playerEntity.isInvulnerableDimensionChange() && d11 > 0.0625D && !this.playerEntity.isPlayerSleeping() && !this.playerEntity.interactionManager.isCreative() && this.playerEntity.interactionManager.getGameType() != GameType.SPECTATOR)
                         {
                             flag = true;
-                            LOGGER.warn(this.playerEntity.getName() + " moved wrongly!");
+                            LOGGER.warn("{} moved wrongly!", new Object[] {this.playerEntity.getName()});
                         }
 
                         this.playerEntity.setPositionAndRotation(d4, d5, d6, f, f1);
@@ -722,7 +721,6 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         {
             this.playerEntity.setHeldItem(enumhand, (ItemStack)null);
             net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.playerEntity, itemstack, enumhand);
-            itemstack = null;
         }
     }
 
@@ -777,7 +775,11 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                 this.playerEntity.setSpectatingEntity(this.playerEntity);
                 this.playerEntity.dismountRidingEntity();
 
-                if (entity.worldObj != this.playerEntity.worldObj)
+                if (entity.worldObj == this.playerEntity.worldObj)
+                {
+                    this.playerEntity.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
+                }
+                else
                 {
                     WorldServer worldserver1 = this.playerEntity.getServerWorld();
                     WorldServer worldserver2 = (WorldServer)entity.worldObj;
@@ -801,10 +803,6 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                     this.playerEntity.interactionManager.setWorld(worldserver2);
                     this.serverController.getPlayerList().updateTimeAndWeatherForPlayer(this.playerEntity, worldserver2);
                     this.serverController.getPlayerList().syncPlayerInventory(this.playerEntity);
-                }
-                else
-                {
-                    this.playerEntity.setPositionAndUpdate(entity.posX, entity.posY, entity.posZ);
                 }
             }
         }
@@ -830,7 +828,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
      */
     public void onDisconnect(ITextComponent reason)
     {
-        LOGGER.info(this.playerEntity.getName() + " lost connection: " + reason);
+        LOGGER.info("{} lost connection: {}", new Object[] {this.playerEntity.getName(), reason});
         this.serverController.refreshStatusNextTick();
         TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("multiplayer.player.left", new Object[] {this.playerEntity.getDisplayName()});
         textcomponenttranslation.getStyle().setColor(TextFormatting.YELLOW);
@@ -896,7 +894,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         }
         else
         {
-            LOGGER.warn(this.playerEntity.getName() + " tried to set an invalid carried item");
+            LOGGER.warn("{} tried to set an invalid carried item", new Object[] {this.playerEntity.getName()});
         }
     }
 
@@ -1125,7 +1123,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
                     if (this.serverController.isHardcore())
                     {
-                        this.playerEntity.setGameType(WorldSettings.GameType.SPECTATOR);
+                        this.playerEntity.setGameType(GameType.SPECTATOR);
                         this.playerEntity.getServerWorld().getGameRules().setOrCreateGameRule("spectatorsGenerateChunks", "false");
                     }
                 }
@@ -1396,111 +1394,97 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
         if ("MC|BEdit".equals(s))
         {
-            PacketBuffer packetbuffer6 = new PacketBuffer(Unpooled.wrappedBuffer((ByteBuf)packetIn.getBufferData()));
+            PacketBuffer packetbuffer = packetIn.getBufferData();
 
             try
             {
-                ItemStack itemstack1 = packetbuffer6.readItemStackFromBuffer();
+                ItemStack itemstack = packetbuffer.readItemStackFromBuffer();
 
-                if (itemstack1 != null)
+                if (itemstack == null)
                 {
-                    if (!ItemWritableBook.isNBTValid(itemstack1.getTagCompound()))
-                    {
-                        throw new IOException("Invalid book tag!");
-                    }
-
-                    ItemStack itemstack3 = this.playerEntity.getHeldItemMainhand();
-
-                    if (itemstack3 == null)
-                    {
-                        return;
-                    }
-
-                    if (itemstack1.getItem() == Items.WRITABLE_BOOK && itemstack1.getItem() == itemstack3.getItem())
-                    {
-                        itemstack3.setTagInfo("pages", itemstack1.getTagCompound().getTagList("pages", 8));
-                    }
-
                     return;
+                }
+
+                if (!ItemWritableBook.isNBTValid(itemstack.getTagCompound()))
+                {
+                    throw new IOException("Invalid book tag!");
+                }
+
+                ItemStack itemstack1 = this.playerEntity.getHeldItemMainhand();
+
+                if (itemstack1 == null)
+                {
+                    return;
+                }
+
+                if (itemstack.getItem() == Items.WRITABLE_BOOK && itemstack.getItem() == itemstack1.getItem())
+                {
+                    itemstack1.setTagInfo("pages", itemstack.getTagCompound().getTagList("pages", 8));
                 }
             }
             catch (Exception exception6)
             {
                 LOGGER.error((String)"Couldn\'t handle book info", (Throwable)exception6);
-                return;
             }
-            finally
-            {
-                packetbuffer6.release();
-            }
-
-            return;
         }
         else if ("MC|BSign".equals(s))
         {
-            PacketBuffer packetbuffer5 = new PacketBuffer(Unpooled.wrappedBuffer((ByteBuf)packetIn.getBufferData()));
+            PacketBuffer packetbuffer1 = packetIn.getBufferData();
 
             try
             {
-                ItemStack itemstack = packetbuffer5.readItemStackFromBuffer();
+                ItemStack itemstack2 = packetbuffer1.readItemStackFromBuffer();
 
-                if (itemstack != null)
+                if (itemstack2 == null)
                 {
-                    if (!ItemWrittenBook.validBookTagContents(itemstack.getTagCompound()))
-                    {
-                        throw new IOException("Invalid book tag!");
-                    }
-
-                    ItemStack itemstack2 = this.playerEntity.getHeldItemMainhand();
-
-                    if (itemstack2 == null)
-                    {
-                        return;
-                    }
-
-                    if (itemstack.getItem() == Items.WRITABLE_BOOK && itemstack2.getItem() == Items.WRITABLE_BOOK)
-                    {
-                        itemstack2.setTagInfo("author", new NBTTagString(this.playerEntity.getName()));
-                        itemstack2.setTagInfo("title", new NBTTagString(itemstack.getTagCompound().getString("title")));
-                        NBTTagList nbttaglist = itemstack.getTagCompound().getTagList("pages", 8);
-
-                        for (int j1 = 0; j1 < nbttaglist.tagCount(); ++j1)
-                        {
-                            String s4 = nbttaglist.getStringTagAt(j1);
-                            ITextComponent itextcomponent = new TextComponentString(s4);
-                            s4 = ITextComponent.Serializer.componentToJson(itextcomponent);
-                            nbttaglist.set(j1, new NBTTagString(s4));
-                        }
-
-                        itemstack2.setTagInfo("pages", nbttaglist);
-                        itemstack2.setItem(Items.WRITTEN_BOOK);
-                    }
-
                     return;
+                }
+
+                if (!ItemWrittenBook.validBookTagContents(itemstack2.getTagCompound()))
+                {
+                    throw new IOException("Invalid book tag!");
+                }
+
+                ItemStack itemstack3 = this.playerEntity.getHeldItemMainhand();
+
+                if (itemstack3 == null)
+                {
+                    return;
+                }
+
+                if (itemstack2.getItem() == Items.WRITABLE_BOOK && itemstack3.getItem() == Items.WRITABLE_BOOK)
+                {
+                    itemstack3.setTagInfo("author", new NBTTagString(this.playerEntity.getName()));
+                    itemstack3.setTagInfo("title", new NBTTagString(itemstack2.getTagCompound().getString("title")));
+                    NBTTagList nbttaglist = itemstack2.getTagCompound().getTagList("pages", 8);
+
+                    for (int i = 0; i < nbttaglist.tagCount(); ++i)
+                    {
+                        String s1 = nbttaglist.getStringTagAt(i);
+                        ITextComponent itextcomponent = new TextComponentString(s1);
+                        s1 = ITextComponent.Serializer.componentToJson(itextcomponent);
+                        nbttaglist.set(i, new NBTTagString(s1));
+                    }
+
+                    itemstack3.setTagInfo("pages", nbttaglist);
+                    itemstack3.setItem(Items.WRITTEN_BOOK);
                 }
             }
             catch (Exception exception7)
             {
                 LOGGER.error((String)"Couldn\'t sign book", (Throwable)exception7);
-                return;
             }
-            finally
-            {
-                packetbuffer5.release();
-            }
-
-            return;
         }
         else if ("MC|TrSel".equals(s))
         {
             try
             {
-                int i = packetIn.getBufferData().readInt();
+                int k = packetIn.getBufferData().readInt();
                 Container container = this.playerEntity.openContainer;
 
                 if (container instanceof ContainerMerchant)
                 {
-                    ((ContainerMerchant)container).setCurrentRecipeIndex(i);
+                    ((ContainerMerchant)container).setCurrentRecipeIndex(k);
                 }
             }
             catch (Exception exception5)
@@ -1516,62 +1500,58 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                 return;
             }
 
-            if (!this.playerEntity.canCommandSenderUseCommand(2, "") || !this.playerEntity.capabilities.isCreativeMode)
+            if (!this.playerEntity.func_189808_dh())
             {
                 this.playerEntity.addChatMessage(new TextComponentTranslation("advMode.notAllowed", new Object[0]));
                 return;
             }
 
-            PacketBuffer packetbuffer = packetIn.getBufferData();
+            PacketBuffer packetbuffer2 = packetIn.getBufferData();
 
             try
             {
-                int j = packetbuffer.readByte();
-                CommandBlockBaseLogic commandblockbaselogic = null;
+                int l = packetbuffer2.readByte();
+                CommandBlockBaseLogic commandblockbaselogic1 = null;
 
-                if (j == 0)
+                if (l == 0)
                 {
-                    TileEntity tileentity = this.playerEntity.worldObj.getTileEntity(new BlockPos(packetbuffer.readInt(), packetbuffer.readInt(), packetbuffer.readInt()));
+                    TileEntity tileentity = this.playerEntity.worldObj.getTileEntity(new BlockPos(packetbuffer2.readInt(), packetbuffer2.readInt(), packetbuffer2.readInt()));
 
                     if (tileentity instanceof TileEntityCommandBlock)
                     {
-                        commandblockbaselogic = ((TileEntityCommandBlock)tileentity).getCommandBlockLogic();
+                        commandblockbaselogic1 = ((TileEntityCommandBlock)tileentity).getCommandBlockLogic();
                     }
                 }
-                else if (j == 1)
+                else if (l == 1)
                 {
-                    Entity entity = this.playerEntity.worldObj.getEntityByID(packetbuffer.readInt());
+                    Entity entity = this.playerEntity.worldObj.getEntityByID(packetbuffer2.readInt());
 
                     if (entity instanceof EntityMinecartCommandBlock)
                     {
-                        commandblockbaselogic = ((EntityMinecartCommandBlock)entity).getCommandBlockLogic();
+                        commandblockbaselogic1 = ((EntityMinecartCommandBlock)entity).getCommandBlockLogic();
                     }
                 }
 
-                String s3 = packetbuffer.readStringFromBuffer(packetbuffer.readableBytes());
-                boolean flag = packetbuffer.readBoolean();
+                String s6 = packetbuffer2.readStringFromBuffer(packetbuffer2.readableBytes());
+                boolean flag2 = packetbuffer2.readBoolean();
 
-                if (commandblockbaselogic != null)
+                if (commandblockbaselogic1 != null)
                 {
-                    commandblockbaselogic.setCommand(s3);
-                    commandblockbaselogic.setTrackOutput(flag);
+                    commandblockbaselogic1.setCommand(s6);
+                    commandblockbaselogic1.setTrackOutput(flag2);
 
-                    if (!flag)
+                    if (!flag2)
                     {
-                        commandblockbaselogic.setLastOutput((ITextComponent)null);
+                        commandblockbaselogic1.setLastOutput((ITextComponent)null);
                     }
 
-                    commandblockbaselogic.updateCommand();
-                    this.playerEntity.addChatMessage(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s3}));
+                    commandblockbaselogic1.updateCommand();
+                    this.playerEntity.addChatMessage(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s6}));
                 }
             }
             catch (Exception exception4)
             {
                 LOGGER.error((String)"Couldn\'t set command block", (Throwable)exception4);
-            }
-            finally
-            {
-                packetbuffer.release();
             }
         }
         else if ("MC|AutoCmd".equals(s))
@@ -1582,34 +1562,34 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                 return;
             }
 
-            if (!this.playerEntity.canCommandSenderUseCommand(2, "") || !this.playerEntity.capabilities.isCreativeMode)
+            if (!this.playerEntity.func_189808_dh())
             {
                 this.playerEntity.addChatMessage(new TextComponentTranslation("advMode.notAllowed", new Object[0]));
                 return;
             }
 
-            PacketBuffer packetbuffer1 = packetIn.getBufferData();
+            PacketBuffer packetbuffer3 = packetIn.getBufferData();
 
             try
             {
-                CommandBlockBaseLogic commandblockbaselogic1 = null;
+                CommandBlockBaseLogic commandblockbaselogic = null;
                 TileEntityCommandBlock tileentitycommandblock = null;
-                BlockPos blockpos1 = new BlockPos(packetbuffer1.readInt(), packetbuffer1.readInt(), packetbuffer1.readInt());
+                BlockPos blockpos1 = new BlockPos(packetbuffer3.readInt(), packetbuffer3.readInt(), packetbuffer3.readInt());
                 TileEntity tileentity2 = this.playerEntity.worldObj.getTileEntity(blockpos1);
 
                 if (tileentity2 instanceof TileEntityCommandBlock)
                 {
                     tileentitycommandblock = (TileEntityCommandBlock)tileentity2;
-                    commandblockbaselogic1 = tileentitycommandblock.getCommandBlockLogic();
+                    commandblockbaselogic = tileentitycommandblock.getCommandBlockLogic();
                 }
 
-                String s1 = packetbuffer1.readStringFromBuffer(packetbuffer1.readableBytes());
-                boolean flag1 = packetbuffer1.readBoolean();
-                TileEntityCommandBlock.Mode tileentitycommandblock$mode = TileEntityCommandBlock.Mode.valueOf(packetbuffer1.readStringFromBuffer(16));
-                boolean flag2 = packetbuffer1.readBoolean();
-                boolean flag3 = packetbuffer1.readBoolean();
+                String s7 = packetbuffer3.readStringFromBuffer(packetbuffer3.readableBytes());
+                boolean flag3 = packetbuffer3.readBoolean();
+                TileEntityCommandBlock.Mode tileentitycommandblock$mode = TileEntityCommandBlock.Mode.valueOf(packetbuffer3.readStringFromBuffer(16));
+                boolean flag = packetbuffer3.readBoolean();
+                boolean flag1 = packetbuffer3.readBoolean();
 
-                if (commandblockbaselogic1 != null)
+                if (commandblockbaselogic != null)
                 {
                     EnumFacing enumfacing = (EnumFacing)this.playerEntity.worldObj.getBlockState(blockpos1).getValue(BlockCommandBlock.FACING);
 
@@ -1617,43 +1597,39 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                     {
                         case SEQUENCE:
                             IBlockState iblockstate3 = Blocks.CHAIN_COMMAND_BLOCK.getDefaultState();
-                            this.playerEntity.worldObj.setBlockState(blockpos1, iblockstate3.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag2)), 2);
+                            this.playerEntity.worldObj.setBlockState(blockpos1, iblockstate3.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag)), 2);
                             break;
                         case AUTO:
-                            IBlockState iblockstate2 = Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
-                            this.playerEntity.worldObj.setBlockState(blockpos1, iblockstate2.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag2)), 2);
+                            IBlockState lvt_14_2_ = Blocks.REPEATING_COMMAND_BLOCK.getDefaultState();
+                            this.playerEntity.worldObj.setBlockState(blockpos1, lvt_14_2_.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag)), 2);
                             break;
                         case REDSTONE:
                             IBlockState lvt_14_1_ = Blocks.COMMAND_BLOCK.getDefaultState();
-                            this.playerEntity.worldObj.setBlockState(blockpos1, lvt_14_1_.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag2)), 2);
+                            this.playerEntity.worldObj.setBlockState(blockpos1, lvt_14_1_.withProperty(BlockCommandBlock.FACING, enumfacing).withProperty(BlockCommandBlock.CONDITIONAL, Boolean.valueOf(flag)), 2);
                     }
 
                     tileentity2.validate();
                     this.playerEntity.worldObj.setTileEntity(blockpos1, tileentity2);
-                    commandblockbaselogic1.setCommand(s1);
-                    commandblockbaselogic1.setTrackOutput(flag1);
+                    commandblockbaselogic.setCommand(s7);
+                    commandblockbaselogic.setTrackOutput(flag3);
 
-                    if (!flag1)
+                    if (!flag3)
                     {
-                        commandblockbaselogic1.setLastOutput((ITextComponent)null);
+                        commandblockbaselogic.setLastOutput((ITextComponent)null);
                     }
 
-                    tileentitycommandblock.setAuto(flag3);
-                    commandblockbaselogic1.updateCommand();
+                    tileentitycommandblock.setAuto(flag1);
+                    commandblockbaselogic.updateCommand();
 
-                    if (!net.minecraft.util.StringUtils.isNullOrEmpty(s1))
+                    if (!net.minecraft.util.StringUtils.isNullOrEmpty(s7))
                     {
-                        this.playerEntity.addChatMessage(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s1}));
+                        this.playerEntity.addChatMessage(new TextComponentTranslation("advMode.setCommand.success", new Object[] {s7}));
                     }
                 }
             }
             catch (Exception exception3)
             {
                 LOGGER.error((String)"Couldn\'t set command block", (Throwable)exception3);
-            }
-            finally
-            {
-                packetbuffer1.release();
             }
         }
         else if ("MC|Beacon".equals(s))
@@ -1662,9 +1638,9 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
             {
                 try
                 {
-                    PacketBuffer packetbuffer2 = packetIn.getBufferData();
-                    int k = packetbuffer2.readInt();
-                    int i1 = packetbuffer2.readInt();
+                    PacketBuffer packetbuffer4 = packetIn.getBufferData();
+                    int i1 = packetbuffer4.readInt();
+                    int k1 = packetbuffer4.readInt();
                     ContainerBeacon containerbeacon = (ContainerBeacon)this.playerEntity.openContainer;
                     Slot slot = containerbeacon.getSlot(0);
 
@@ -1672,8 +1648,8 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                     {
                         slot.decrStackSize(1);
                         IInventory iinventory = containerbeacon.getTileEntity();
-                        iinventory.setField(1, k);
-                        iinventory.setField(2, i1);
+                        iinventory.setField(1, i1);
+                        iinventory.setField(2, k1);
                         iinventory.markDirty();
                     }
                 }
@@ -1691,11 +1667,11 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
                 if (packetIn.getBufferData() != null && packetIn.getBufferData().readableBytes() >= 1)
                 {
-                    String s2 = ChatAllowedCharacters.filterAllowedCharacters(packetIn.getBufferData().readStringFromBuffer(32767));
+                    String s5 = ChatAllowedCharacters.filterAllowedCharacters(packetIn.getBufferData().readStringFromBuffer(32767));
 
-                    if (s2.length() <= 30)
+                    if (s5.length() <= 30)
                     {
-                        containerrepair.updateItemName(s2);
+                        containerrepair.updateItemName(s5);
                     }
                 }
                 else
@@ -1706,92 +1682,108 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         }
         else if ("MC|Struct".equals(s))
         {
-            PacketBuffer packetbuffer3 = packetIn.getBufferData();
+            if (!this.playerEntity.func_189808_dh())
+            {
+                return;
+            }
+
+            PacketBuffer packetbuffer5 = packetIn.getBufferData();
 
             try
             {
-                if (this.playerEntity.canCommandSenderUseCommand(4, "") && this.playerEntity.capabilities.isCreativeMode)
+                BlockPos blockpos = new BlockPos(packetbuffer5.readInt(), packetbuffer5.readInt(), packetbuffer5.readInt());
+                IBlockState iblockstate1 = this.playerEntity.worldObj.getBlockState(blockpos);
+                TileEntity tileentity1 = this.playerEntity.worldObj.getTileEntity(blockpos);
+
+                if (tileentity1 instanceof TileEntityStructure)
                 {
-                    BlockPos blockpos = new BlockPos(packetbuffer3.readInt(), packetbuffer3.readInt(), packetbuffer3.readInt());
-                    IBlockState iblockstate1 = this.playerEntity.worldObj.getBlockState(blockpos);
-                    TileEntity tileentity1 = this.playerEntity.worldObj.getTileEntity(blockpos);
+                    TileEntityStructure tileentitystructure = (TileEntityStructure)tileentity1;
+                    int l1 = packetbuffer5.readByte();
+                    String s8 = packetbuffer5.readStringFromBuffer(32);
+                    tileentitystructure.setMode(TileEntityStructure.Mode.valueOf(s8));
+                    tileentitystructure.setName(packetbuffer5.readStringFromBuffer(64));
+                    int i2 = MathHelper.clamp_int(packetbuffer5.readInt(), -32, 32);
+                    int j2 = MathHelper.clamp_int(packetbuffer5.readInt(), -32, 32);
+                    int k2 = MathHelper.clamp_int(packetbuffer5.readInt(), -32, 32);
+                    tileentitystructure.setPosition(new BlockPos(i2, j2, k2));
+                    int l2 = MathHelper.clamp_int(packetbuffer5.readInt(), 0, 32);
+                    int i3 = MathHelper.clamp_int(packetbuffer5.readInt(), 0, 32);
+                    int j = MathHelper.clamp_int(packetbuffer5.readInt(), 0, 32);
+                    tileentitystructure.setSize(new BlockPos(l2, i3, j));
+                    String s2 = packetbuffer5.readStringFromBuffer(32);
+                    tileentitystructure.setMirror(Mirror.valueOf(s2));
+                    String s3 = packetbuffer5.readStringFromBuffer(32);
+                    tileentitystructure.setRotation(Rotation.valueOf(s3));
+                    tileentitystructure.setMetadata(packetbuffer5.readStringFromBuffer(128));
+                    tileentitystructure.setIgnoresEntities(packetbuffer5.readBoolean());
+                    tileentitystructure.func_189703_e(packetbuffer5.readBoolean());
+                    tileentitystructure.func_189710_f(packetbuffer5.readBoolean());
+                    tileentitystructure.func_189718_a(MathHelper.clamp_float(packetbuffer5.readFloat(), 0.0F, 1.0F));
+                    tileentitystructure.func_189725_a(packetbuffer5.readVarLong());
+                    String s4 = tileentitystructure.func_189715_d();
 
-                    if (tileentity1 instanceof TileEntityStructure)
+                    if (l1 == 2)
                     {
-                        TileEntityStructure tileentitystructure = (TileEntityStructure)tileentity1;
-                        int k1 = packetbuffer3.readByte();
-                        String s5 = packetbuffer3.readStringFromBuffer(32);
-                        tileentitystructure.setMode(TileEntityStructure.Mode.valueOf(s5));
-                        tileentitystructure.setName(packetbuffer3.readStringFromBuffer(64));
-                        tileentitystructure.setPosition(new BlockPos(packetbuffer3.readInt(), packetbuffer3.readInt(), packetbuffer3.readInt()));
-                        tileentitystructure.setSize(new BlockPos(packetbuffer3.readInt(), packetbuffer3.readInt(), packetbuffer3.readInt()));
-                        String s6 = packetbuffer3.readStringFromBuffer(32);
-                        tileentitystructure.setMirror(Mirror.valueOf(s6));
-                        String s7 = packetbuffer3.readStringFromBuffer(32);
-                        tileentitystructure.setRotation(Rotation.valueOf(s7));
-                        tileentitystructure.setMetadata(packetbuffer3.readStringFromBuffer(128));
-                        tileentitystructure.setIgnoresEntities(packetbuffer3.readBoolean());
-
-                        if (k1 == 2)
+                        if (tileentitystructure.save())
                         {
-                            if (tileentitystructure.save())
-                            {
-                                this.playerEntity.addChatComponentMessage(new TextComponentString("Structure saved"));
-                            }
-                            else
-                            {
-                                this.playerEntity.addChatComponentMessage(new TextComponentString("Structure NOT saved"));
-                            }
+                            this.playerEntity.addChatComponentMessage(new TextComponentTranslation("structure_block.save_success", new Object[] {s4}));
                         }
-                        else if (k1 == 3)
+                        else
                         {
-                            if (tileentitystructure.load())
-                            {
-                                this.playerEntity.addChatComponentMessage(new TextComponentString("Structure loaded"));
-                            }
-                            else
-                            {
-                                this.playerEntity.addChatComponentMessage(new TextComponentString("Structure prepared"));
-                            }
+                            this.playerEntity.addChatComponentMessage(new TextComponentTranslation("structure_block.save_failure", new Object[] {s4}));
                         }
-                        else if (k1 == 4 && tileentitystructure.detectSize())
-                        {
-                            this.playerEntity.addChatComponentMessage(new TextComponentString("Size detected"));
-                        }
-
-                        tileentitystructure.markDirty();
-                        this.playerEntity.worldObj.notifyBlockUpdate(blockpos, iblockstate1, iblockstate1, 3);
                     }
+                    else if (l1 == 3)
+                    {
+                        if (!tileentitystructure.func_189709_F())
+                        {
+                            this.playerEntity.addChatComponentMessage(new TextComponentTranslation("structure_block.load_not_found", new Object[] {s4}));
+                        }
+                        else if (tileentitystructure.load())
+                        {
+                            this.playerEntity.addChatComponentMessage(new TextComponentTranslation("structure_block.load_success", new Object[] {s4}));
+                        }
+                        else
+                        {
+                            this.playerEntity.addChatComponentMessage(new TextComponentTranslation("structure_block.load_prepare", new Object[] {s4}));
+                        }
+                    }
+                    else if (l1 == 4)
+                    {
+                        if (tileentitystructure.detectSize())
+                        {
+                            this.playerEntity.addChatComponentMessage(new TextComponentTranslation("structure_block.size_success", new Object[] {s4}));
+                        }
+                        else
+                        {
+                            this.playerEntity.addChatComponentMessage(new TextComponentTranslation("structure_block.size_failure", new Object[0]));
+                        }
+                    }
+
+                    tileentitystructure.markDirty();
+                    this.playerEntity.worldObj.notifyBlockUpdate(blockpos, iblockstate1, iblockstate1, 3);
                 }
             }
             catch (Exception exception1)
             {
                 LOGGER.error((String)"Couldn\'t set structure block", (Throwable)exception1);
             }
-            finally
-            {
-                packetbuffer3.release();
-            }
         }
         else if ("MC|PickItem".equals(s))
         {
-            PacketBuffer packetbuffer4 = packetIn.getBufferData();
+            PacketBuffer packetbuffer6 = packetIn.getBufferData();
 
             try
             {
-                int l = packetbuffer4.readVarIntFromBuffer();
-                this.playerEntity.inventory.pickItem(l);
+                int j1 = packetbuffer6.readVarIntFromBuffer();
+                this.playerEntity.inventory.pickItem(j1);
                 this.playerEntity.connection.sendPacket(new SPacketSetSlot(-2, this.playerEntity.inventory.currentItem, this.playerEntity.inventory.getStackInSlot(this.playerEntity.inventory.currentItem)));
-                this.playerEntity.connection.sendPacket(new SPacketSetSlot(-2, l, this.playerEntity.inventory.getStackInSlot(l)));
+                this.playerEntity.connection.sendPacket(new SPacketSetSlot(-2, j1, this.playerEntity.inventory.getStackInSlot(j1)));
                 this.playerEntity.connection.sendPacket(new SPacketHeldItemChange(this.playerEntity.inventory.currentItem));
             }
             catch (Exception exception)
             {
                 LOGGER.error((String)"Couldn\'t pick item", (Throwable)exception);
-            }
-            finally
-            {
-                packetbuffer4.release();
             }
         }
     }

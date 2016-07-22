@@ -34,7 +34,7 @@ public class LayerCreeperCharge implements LayerRenderer<EntityCreeper>
             GlStateManager.matrixMode(5888);
             GlStateManager.enableBlend();
             float f1 = 0.5F;
-            GlStateManager.color(f1, f1, f1, 1.0F);
+            GlStateManager.color(0.5F, 0.5F, 0.5F, 1.0F);
             GlStateManager.disableLighting();
             GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
             this.creeperModel.setModelAttributes(this.creeperRenderer.getMainModel());

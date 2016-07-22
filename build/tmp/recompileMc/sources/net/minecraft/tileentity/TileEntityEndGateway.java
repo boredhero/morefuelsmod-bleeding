@@ -28,8 +28,8 @@ import org.apache.logging.log4j.Logger;
 public class TileEntityEndGateway extends TileEntity implements ITickable
 {
     private static final Logger LOG = LogManager.getLogger();
-    private long age = 0L;
-    private int teleportCooldown = 0;
+    private long age;
+    private int teleportCooldown;
     private BlockPos exitPortal;
     private boolean exactTeleport;
 
@@ -179,7 +179,7 @@ public class TileEntityEndGateway extends TileEntity implements ITickable
     private BlockPos findExitPosition()
     {
         BlockPos blockpos = findHighestBlock(this.worldObj, this.exitPortal, 5, false);
-        LOG.debug("Best exit position for portal at " + this.exitPortal + " is " + blockpos);
+        LOG.debug("Best exit position for portal at {} is {}", new Object[] {this.exitPortal, blockpos});
         return blockpos.up();
     }
 
@@ -190,31 +190,31 @@ public class TileEntityEndGateway extends TileEntity implements ITickable
 
         for (int i = 16; getChunk(this.worldObj, vec3d1).getTopFilledSegment() > 0 && i-- > 0; vec3d1 = vec3d1.add(vec3d.scale(-16.0D)))
         {
-            LOG.debug("Skipping backwards past nonempty chunk at " + vec3d1);
+            LOG.debug("Skipping backwards past nonempty chunk at {}", new Object[] {vec3d1});
         }
 
         for (int j = 16; getChunk(this.worldObj, vec3d1).getTopFilledSegment() == 0 && j-- > 0; vec3d1 = vec3d1.add(vec3d.scale(16.0D)))
         {
-            LOG.debug("Skipping forward past empty chunk at " + vec3d1);
+            LOG.debug("Skipping forward past empty chunk at {}", new Object[] {vec3d1});
         }
 
-        LOG.debug("Found chunk at " + vec3d1);
+        LOG.debug("Found chunk at {}", new Object[] {vec3d1});
         Chunk chunk = getChunk(this.worldObj, vec3d1);
         this.exitPortal = findSpawnpointInChunk(chunk);
 
         if (this.exitPortal == null)
         {
             this.exitPortal = new BlockPos(vec3d1.xCoord + 0.5D, 75.0D, vec3d1.zCoord + 0.5D);
-            LOG.debug("Failed to find suitable block, settling on " + this.exitPortal);
+            LOG.debug("Failed to find suitable block, settling on {}", new Object[] {this.exitPortal});
             (new WorldGenEndIsland()).generate(this.worldObj, new Random(this.exitPortal.toLong()), this.exitPortal);
         }
         else
         {
-            LOG.debug("Found block at " + this.exitPortal);
+            LOG.debug("Found block at {}", new Object[] {this.exitPortal});
         }
 
         this.exitPortal = findHighestBlock(this.worldObj, this.exitPortal, 16, true);
-        LOG.debug("Creating portal at " + this.exitPortal);
+        LOG.debug("Creating portal at {}", new Object[] {this.exitPortal});
         this.exitPortal = this.exitPortal.up(10);
         this.createExitPortal(this.exitPortal);
         this.markDirty();
@@ -294,7 +294,7 @@ public class TileEntityEndGateway extends TileEntity implements ITickable
         }
         else
         {
-            LOG.warn("Couldn\'t save exit portal at " + posIn);
+            LOG.warn("Couldn\'t save exit portal at {}", new Object[] {posIn});
         }
     }
 

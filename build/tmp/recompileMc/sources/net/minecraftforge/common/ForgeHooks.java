@@ -1,3 +1,22 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.minecraftforge.common;
 
 import java.net.URI;
@@ -32,6 +51,7 @@ import net.minecraft.entity.item.EntityMinecartContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
@@ -71,7 +91,7 @@ import net.minecraft.util.text.event.ClickEvent;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
-import net.minecraft.world.WorldSettings.GameType;
+import net.minecraft.world.GameType;
 import net.minecraft.world.storage.loot.LootEntry;
 import net.minecraft.world.storage.loot.LootTable;
 import net.minecraft.world.storage.loot.LootTableManager;
@@ -81,6 +101,7 @@ import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
+import net.minecraftforge.event.entity.ThrowableImpactEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -90,10 +111,10 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
+import net.minecraftforge.event.entity.living.LootingLevelEvent;
 import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.entity.player.PlayerOpenContainerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.fluids.IFluidBlock;
@@ -497,6 +518,12 @@ public class ForgeHooks
         return (MinecraftForge.EVENT_BUS.post(event) ? null : new float[]{event.getDistance(), event.getDamageMultiplier()});
     }
 
+    public static int getLootingLevel(EntityLivingBase target, DamageSource cause, int level) {
+        LootingLevelEvent event = new LootingLevelEvent(target, cause, level);
+        MinecraftForge.EVENT_BUS.post(event);
+        return event.getLootingLevel();
+    }
+
     public static boolean isLivingOnLadder(IBlockState state, World world, BlockPos pos, EntityLivingBase entity)
     {
         boolean isSpectator = (entity instanceof EntityPlayer && ((EntityPlayer)entity).isSpectator());
@@ -655,13 +682,6 @@ public class ForgeHooks
         return ichat;
     }
 
-    public static boolean canInteractWith(EntityPlayer player, Container openContainer)
-    {
-        PlayerOpenContainerEvent event = new PlayerOpenContainerEvent(player, openContainer);
-        MinecraftForge.EVENT_BUS.post(event);
-        return event.getResult() == Event.Result.DEFAULT ? event.isCanInteractWith() : event.getResult() == Event.Result.ALLOW ? true : false;
-    }
-
     public static int onBlockBreakEvent(World world, GameType gameType, EntityPlayerMP entityPlayer, BlockPos pos)
     {
         // Logic from tryHarvestBlock for pre-canceling the event
@@ -671,7 +691,7 @@ public class ForgeHooks
 
         if (gameType.isAdventure())
         {
-            if (gameType == WorldSettings.GameType.SPECTATOR)
+            if (gameType == GameType.SPECTATOR)
                 preCancelEvent = true;
 
             if (!entityPlayer.isAllowEdit())
@@ -1122,4 +1142,9 @@ public class ForgeHooks
     //TODO: Some registry to support custom LootEntry types?
     public static LootEntry deserializeJsonLootEntry(String type, JsonObject json, int weight, int quality, LootCondition[] conditions){ return null; }
     public static String getLootEntryType(LootEntry entry){ return null; } //Companion to above function
+
+    public static boolean onThrowableImpact(EntityThrowable throwable, RayTraceResult ray)
+    {
+        return MinecraftForge.EVENT_BUS.post(new ThrowableImpactEvent(throwable, ray));
+    }
 }

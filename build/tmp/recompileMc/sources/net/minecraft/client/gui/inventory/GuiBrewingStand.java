@@ -16,7 +16,7 @@ public class GuiBrewingStand extends GuiContainer
     private static final int[] BUBBLELENGTHS = new int[] {29, 24, 20, 16, 11, 6, 0};
     /** The player inventory bound to this GUI. */
     private final InventoryPlayer playerInventory;
-    private IInventory tileBrewingStand;
+    private final IInventory tileBrewingStand;
 
     public GuiBrewingStand(InventoryPlayer playerInv, IInventory p_i45506_2_)
     {

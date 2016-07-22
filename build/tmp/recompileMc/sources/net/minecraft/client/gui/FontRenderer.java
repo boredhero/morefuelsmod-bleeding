@@ -31,17 +31,17 @@ public class FontRenderer implements IResourceManagerReloadListener
 {
     private static final ResourceLocation[] UNICODE_PAGE_LOCATIONS = new ResourceLocation[256];
     /** Array of width of all the characters in default.png */
-    protected int[] charWidth = new int[256];
+    protected final int[] charWidth = new int[256];
     /** the height in pixels of default text */
     public int FONT_HEIGHT = 9;
     public Random fontRandom = new Random();
     /** Array of the start/end column (in upper/lower nibble) for every glyph in the /font directory. */
-    protected byte[] glyphWidth = new byte[65536];
+    protected final byte[] glyphWidth = new byte[65536];
     /**
      * Array of RGB triplets defining the 16 standard chat colors followed by 16 darker version of the same colors for
      * drop shadows.
      */
-    private int[] colorCode = new int[32];
+    private final int[] colorCode = new int[32];
     protected final ResourceLocation locationFontTexture;
     /** The RenderEngine used to load and setup glyph textures. */
     private final TextureManager renderEngine;
@@ -147,7 +147,7 @@ public class FontRenderer implements IResourceManagerReloadListener
         bufferedimage.getRGB(0, 0, lvt_3_1_, lvt_4_1_, lvt_5_1_, 0, lvt_3_1_);
         int lvt_6_1_ = lvt_4_1_ / 16;
         int lvt_7_1_ = lvt_3_1_ / 16;
-        byte lvt_8_1_ = 1;
+        boolean lvt_8_1_ = true;
         float lvt_9_1_ = 8.0F / (float)lvt_7_1_;
 
         for (int lvt_10_1_ = 0; lvt_10_1_ < 256; ++lvt_10_1_)
@@ -157,7 +157,7 @@ public class FontRenderer implements IResourceManagerReloadListener
 
             if (lvt_10_1_ == 32)
             {
-                this.charWidth[lvt_10_1_] = 3 + lvt_8_1_;
+                this.charWidth[lvt_10_1_] = 4;
             }
 
             int l1;
@@ -165,26 +165,26 @@ public class FontRenderer implements IResourceManagerReloadListener
             for (l1 = lvt_7_1_ - 1; l1 >= 0; --l1)
             {
                 int i2 = j1 * lvt_7_1_ + l1;
-                boolean flag = true;
+                boolean flag1 = true;
 
-                for (int j2 = 0; j2 < lvt_6_1_ && flag; ++j2)
+                for (int j2 = 0; j2 < lvt_6_1_ && flag1; ++j2)
                 {
                     int k2 = (k1 * lvt_7_1_ + j2) * lvt_3_1_;
 
                     if ((lvt_5_1_[i2 + k2] >> 24 & 255) != 0)
                     {
-                        flag = false;
+                        flag1 = false;
                     }
                 }
 
-                if (!flag)
+                if (!flag1)
                 {
                     break;
                 }
             }
 
             ++l1;
-            this.charWidth[lvt_10_1_] = (int)(0.5D + (double)((float)l1 * lvt_9_1_)) + lvt_8_1_;
+            this.charWidth[lvt_10_1_] = (int)(0.5D + (double)((float)l1 * lvt_9_1_)) + 1;
         }
     }
 

@@ -2,6 +2,7 @@ package net.minecraft.client.renderer.entity;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -33,6 +34,7 @@ public class RenderXPOrb extends Render<EntityXPOrb>
             GlStateManager.pushMatrix();
             GlStateManager.translate((float)x, (float)y, (float)z);
             this.bindEntityTexture(entity);
+            RenderHelper.enableStandardItemLighting();
             int i = entity.getTextureByXP();
             float f = (float)(i % 4 * 16 + 0) / 64.0F;
             float f1 = (float)(i % 4 * 16 + 16) / 64.0F;
@@ -59,10 +61,10 @@ public class RenderXPOrb extends Render<EntityXPOrb>
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
-            vertexbuffer.pos((double)(0.0F - f5), (double)(0.0F - f6), 0.0D).tex((double)f, (double)f3).color(l, 255, j1, 128).normal(0.0F, 1.0F, 0.0F).endVertex();
-            vertexbuffer.pos((double)(f4 - f5), (double)(0.0F - f6), 0.0D).tex((double)f1, (double)f3).color(l, 255, j1, 128).normal(0.0F, 1.0F, 0.0F).endVertex();
-            vertexbuffer.pos((double)(f4 - f5), (double)(1.0F - f6), 0.0D).tex((double)f1, (double)f2).color(l, 255, j1, 128).normal(0.0F, 1.0F, 0.0F).endVertex();
-            vertexbuffer.pos((double)(0.0F - f5), (double)(1.0F - f6), 0.0D).tex((double)f, (double)f2).color(l, 255, j1, 128).normal(0.0F, 1.0F, 0.0F).endVertex();
+            vertexbuffer.pos(-0.5D, -0.25D, 0.0D).tex((double)f, (double)f3).color(l, 255, j1, 128).normal(0.0F, 1.0F, 0.0F).endVertex();
+            vertexbuffer.pos(0.5D, -0.25D, 0.0D).tex((double)f1, (double)f3).color(l, 255, j1, 128).normal(0.0F, 1.0F, 0.0F).endVertex();
+            vertexbuffer.pos(0.5D, 0.75D, 0.0D).tex((double)f1, (double)f2).color(l, 255, j1, 128).normal(0.0F, 1.0F, 0.0F).endVertex();
+            vertexbuffer.pos(-0.5D, 0.75D, 0.0D).tex((double)f, (double)f2).color(l, 255, j1, 128).normal(0.0F, 1.0F, 0.0F).endVertex();
             tessellator.draw();
             GlStateManager.disableBlend();
             GlStateManager.disableRescaleNormal();

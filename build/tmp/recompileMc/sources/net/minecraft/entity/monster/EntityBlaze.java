@@ -1,6 +1,7 @@
 package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -21,6 +22,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -45,6 +47,11 @@ public class EntityBlaze extends EntityMob
         this.setPathPriority(PathNodeType.DAMAGE_FIRE, 0.0F);
         this.isImmuneToFire = true;
         this.experienceValue = 10;
+    }
+
+    public static void func_189761_b(DataFixer p_189761_0_)
+    {
+        EntityLiving.func_189752_a(p_189761_0_, "Blaze");
     }
 
     protected void initEntityAI()
@@ -203,7 +210,7 @@ public class EntityBlaze extends EntityMob
 
     static class AIFireballAttack extends EntityAIBase
         {
-            private EntityBlaze blaze;
+            private final EntityBlaze blaze;
             private int attackStep;
             private int attackTime;
 

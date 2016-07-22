@@ -27,9 +27,9 @@ public class PathPoint
     public PathPoint previous;
     /** True if the pathfinder has already visited this point */
     public boolean visited;
-    public float distanceFromOrigin = 0.0F;
-    public float cost = 0.0F;
-    public float costMalus = 0.0F;
+    public float distanceFromOrigin;
+    public float cost;
+    public float costMalus;
     public PathNodeType nodeType = PathNodeType.BLOCKED;
 
     public PathPoint(int x, int y, int z)

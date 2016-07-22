@@ -88,13 +88,13 @@ public class ItemBlock extends Item
 
                 if (tileentity != null)
                 {
-                    if (!worldIn.isRemote && tileentity.onlyOpsCanSetNbt() && (player == null || !minecraftserver.getPlayerList().canSendCommands(player.getGameProfile())))
+                    if (!worldIn.isRemote && tileentity.onlyOpsCanSetNbt() && (player == null || !player.func_189808_dh()))
                     {
                         return false;
                     }
 
                     NBTTagCompound nbttagcompound = tileentity.writeToNBT(new NBTTagCompound());
-                    NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttagcompound.copy();
+                    NBTTagCompound nbttagcompound1 = nbttagcompound.copy();
                     NBTTagCompound nbttagcompound2 = (NBTTagCompound)stackIn.getTagCompound().getTag("BlockEntityTag");
                     nbttagcompound.merge(nbttagcompound2);
                     nbttagcompound.setInteger("x", pos.getX());

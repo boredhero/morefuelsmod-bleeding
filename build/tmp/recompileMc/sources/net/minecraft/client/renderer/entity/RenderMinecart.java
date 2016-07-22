@@ -49,8 +49,8 @@ public class RenderMinecart<T extends EntityMinecart> extends Render<T>
 
         if (vec3d != null)
         {
-            Vec3d vec3d1 = entity.getPosOffset(d0, d1, d2, d3);
-            Vec3d vec3d2 = entity.getPosOffset(d0, d1, d2, -d3);
+            Vec3d vec3d1 = entity.getPosOffset(d0, d1, d2, 0.30000001192092896D);
+            Vec3d vec3d2 = entity.getPosOffset(d0, d1, d2, -0.30000001192092896D);
 
             if (vec3d1 == null)
             {
@@ -106,7 +106,7 @@ public class RenderMinecart<T extends EntityMinecart> extends Render<T>
             GlStateManager.pushMatrix();
             this.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             float f4 = 0.75F;
-            GlStateManager.scale(f4, f4, f4);
+            GlStateManager.scale(0.75F, 0.75F, 0.75F);
             GlStateManager.translate(-0.5F, (float)(j - 8) / 16.0F, 0.5F);
             this.renderCartContents(entity, partialTicks, iblockstate);
             GlStateManager.popMatrix();

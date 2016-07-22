@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -46,6 +47,11 @@ public class EntityLargeFireball extends EntityFireball
             this.worldObj.newExplosion((Entity)null, this.posX, this.posY, this.posZ, (float)this.explosionPower, flag, flag);
             this.setDead();
         }
+    }
+
+    public static void func_189744_a(DataFixer p_189744_0_)
+    {
+        EntityFireball.func_189743_a(p_189744_0_, "Fireball");
     }
 
     /**

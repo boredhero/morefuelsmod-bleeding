@@ -3,6 +3,7 @@ package net.minecraft.client.renderer.entity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -31,7 +32,7 @@ public abstract class Render<T extends Entity>
     protected float shadowSize;
     /** Determines the darkness of the object's shadow. Higher value makes a darker shadow. */
     protected float shadowOpaque = 1.0F;
-    protected boolean renderOutlines = false;
+    protected boolean renderOutlines;
 
     protected Render(RenderManager renderManager)
     {
@@ -169,10 +170,10 @@ public abstract class Render<T extends Entity>
                 f6 = f10;
             }
 
-            vertexbuffer.pos((double)(f1 - f2), (double)(0.0F - f4), (double)f5).tex((double)f8, (double)f9).endVertex();
-            vertexbuffer.pos((double)(-f1 - f2), (double)(0.0F - f4), (double)f5).tex((double)f6, (double)f9).endVertex();
-            vertexbuffer.pos((double)(-f1 - f2), (double)(1.4F - f4), (double)f5).tex((double)f6, (double)f7).endVertex();
-            vertexbuffer.pos((double)(f1 - f2), (double)(1.4F - f4), (double)f5).tex((double)f8, (double)f7).endVertex();
+            vertexbuffer.pos((double)(f1 - 0.0F), (double)(0.0F - f4), (double)f5).tex((double)f8, (double)f9).endVertex();
+            vertexbuffer.pos((double)(-f1 - 0.0F), (double)(0.0F - f4), (double)f5).tex((double)f6, (double)f9).endVertex();
+            vertexbuffer.pos((double)(-f1 - 0.0F), (double)(1.4F - f4), (double)f5).tex((double)f6, (double)f7).endVertex();
+            vertexbuffer.pos((double)(f1 - 0.0F), (double)(1.4F - f4), (double)f5).tex((double)f8, (double)f7).endVertex();
             f3 -= 0.45F;
             f4 -= 0.45F;
             f1 *= 0.9F;
@@ -364,49 +365,12 @@ public abstract class Render<T extends Entity>
         if (d0 <= (double)(maxDistance * maxDistance))
         {
             boolean flag = entityIn.isSneaking();
-            GlStateManager.pushMatrix();
-            float f = flag ? 0.25F : 0.0F;
-            GlStateManager.translate((float)x, (float)y + entityIn.height + 0.5F - f, (float)z);
-            GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-            GlStateManager.rotate((float)(this.renderManager.options.thirdPersonView == 2 ? -1 : 1) * this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-            GlStateManager.scale(-0.025F, -0.025F, 0.025F);
-            GlStateManager.disableLighting();
-            GlStateManager.depthMask(false);
-
-            if (!flag)
-            {
-                GlStateManager.disableDepth();
-            }
-
-            GlStateManager.enableBlend();
-            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            int i = str.equals("deadmau5") ? -10 : 0;
-            FontRenderer fontrenderer = this.getFontRendererFromRenderManager();
-            int j = fontrenderer.getStringWidth(str) / 2;
-            GlStateManager.disableTexture2D();
-            Tessellator tessellator = Tessellator.getInstance();
-            VertexBuffer vertexbuffer = tessellator.getBuffer();
-            vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            vertexbuffer.pos((double)(-j - 1), (double)(-1 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            vertexbuffer.pos((double)(-j - 1), (double)(8 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            vertexbuffer.pos((double)(j + 1), (double)(8 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            vertexbuffer.pos((double)(j + 1), (double)(-1 + i), 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-            tessellator.draw();
-            GlStateManager.enableTexture2D();
-
-            if (!flag)
-            {
-                fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, i, 553648127);
-                GlStateManager.enableDepth();
-            }
-
-            GlStateManager.depthMask(true);
-            fontrenderer.drawString(str, -fontrenderer.getStringWidth(str) / 2, i, flag ? 553648127 : -1);
-            GlStateManager.enableLighting();
-            GlStateManager.disableBlend();
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.popMatrix();
+            float f = this.renderManager.playerViewY;
+            float f1 = this.renderManager.playerViewX;
+            boolean flag1 = this.renderManager.options.thirdPersonView == 2;
+            float f2 = entityIn.height + 0.5F - (flag ? 0.25F : 0.0F);
+            int i = "deadmau5".equals(str) ? -10 : 0;
+            EntityRenderer.func_189692_a(this.getFontRendererFromRenderManager(), str, (float)x, (float)y + f2, (float)z, i, f, f1, flag1, flag);
         }
     }
 

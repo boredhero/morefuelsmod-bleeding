@@ -19,7 +19,7 @@ public class RealmsConnect
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final RealmsScreen onlineScreen;
-    private volatile boolean aborted = false;
+    private volatile boolean aborted;
     private NetworkManager connection;
 
     public RealmsConnect(RealmsScreen onlineScreenIn)
@@ -60,7 +60,7 @@ public class RealmsConnect
                         return;
                     }
 
-                    RealmsConnect.this.connection.sendPacket(new C00Handshake(110, p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN, true));
+                    RealmsConnect.this.connection.sendPacket(new C00Handshake(210, p_connect_1_, p_connect_2_, EnumConnectionState.LOGIN, true));
 
                     if (RealmsConnect.this.aborted)
                     {
@@ -95,7 +95,7 @@ public class RealmsConnect
 
                     if (inetaddress != null)
                     {
-                        String s1 = inetaddress.toString() + ":" + p_connect_2_;
+                        String s1 = inetaddress + ":" + p_connect_2_;
                         s = s.replaceAll(s1, "");
                     }
 

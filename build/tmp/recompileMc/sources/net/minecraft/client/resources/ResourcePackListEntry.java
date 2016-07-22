@@ -183,7 +183,12 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                 final int j = ((ResourcePackListEntry)this.resourcePacksGUI.getSelectedResourcePacks().get(0)).isServerPack() ? 1 : 0;
                 int l = this.getResourcePackFormat();
 
-                if (l != 2)
+                if (l == 2)
+                {
+                    this.resourcePacksGUI.getListContaining(this).remove(this);
+                    this.resourcePacksGUI.getSelectedResourcePacks().add(j, this);
+                }
+                else
                 {
                     String s = I18n.format("resourcePack.incompatible.confirm.title", new Object[0]);
                     String s1 = I18n.format("resourcePack.incompatible.confirm." + (l > 2 ? "new" : "old"), new Object[0]);
@@ -201,11 +206,6 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                             }
                         }
                     }, s, s1, 0));
-                }
-                else
-                {
-                    this.resourcePacksGUI.getListContaining(this).remove(this);
-                    this.resourcePacksGUI.getSelectedResourcePacks().add(j, this);
                 }
 
                 return true;

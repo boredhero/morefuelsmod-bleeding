@@ -48,7 +48,7 @@ public abstract class Team
         HIDE_FOR_OTHER_TEAMS("pushOtherTeams", 2),
         HIDE_FOR_OWN_TEAM("pushOwnTeam", 3);
 
-        private static Map<String, Team.CollisionRule> nameMap = Maps.<String, Team.CollisionRule>newHashMap();
+        private static final Map<String, Team.CollisionRule> nameMap = Maps.<String, Team.CollisionRule>newHashMap();
         public final String name;
         public final int id;
 
@@ -84,7 +84,7 @@ public abstract class Team
         HIDE_FOR_OTHER_TEAMS("hideForOtherTeams", 2),
         HIDE_FOR_OWN_TEAM("hideForOwnTeam", 3);
 
-        private static Map<String, Team.EnumVisible> nameMap = Maps.<String, Team.EnumVisible>newHashMap();
+        private static final Map<String, Team.EnumVisible> nameMap = Maps.<String, Team.EnumVisible>newHashMap();
         public final String internalName;
         public final int id;
 

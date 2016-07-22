@@ -24,12 +24,15 @@ public class ParticleCloud extends Particle
         this.motionX += p_i1221_8_;
         this.motionY += p_i1221_10_;
         this.motionZ += p_i1221_12_;
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F - (float)(Math.random() * 0.30000001192092896D);
+        float f1 = 1.0F - (float)(Math.random() * 0.30000001192092896D);
+        this.particleRed = f1;
+        this.particleGreen = f1;
+        this.particleBlue = f1;
         this.particleScale *= 0.75F;
-        this.particleScale *= f;
+        this.particleScale *= 2.5F;
         this.oSize = this.particleScale;
         this.particleMaxAge = (int)(8.0D / (Math.random() * 0.8D + 0.3D));
-        this.particleMaxAge = (int)((float)this.particleMaxAge * f);
+        this.particleMaxAge = (int)((float)this.particleMaxAge * 2.5F);
     }
 
     /**

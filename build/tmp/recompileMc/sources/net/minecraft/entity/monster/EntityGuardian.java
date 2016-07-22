@@ -4,6 +4,7 @@ import com.google.common.base.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -32,6 +33,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -61,15 +63,17 @@ public class EntityGuardian extends EntityMob
         this.experienceValue = 10;
         this.setSize(0.85F, 0.85F);
         this.moveHelper = new EntityGuardian.GuardianMoveHelper(this);
-        this.clientSideTailAnimationO = this.clientSideTailAnimation = this.rand.nextFloat();
+        this.clientSideTailAnimation = this.rand.nextFloat();
+        this.clientSideTailAnimationO = this.clientSideTailAnimation;
     }
 
     protected void initEntityAI()
     {
+        EntityAIMoveTowardsRestriction entityaimovetowardsrestriction = new EntityAIMoveTowardsRestriction(this, 1.0D);
+        this.wander = new EntityAIWander(this, 1.0D, 80);
         this.tasks.addTask(4, new EntityGuardian.AIGuardianAttack(this));
-        EntityAIMoveTowardsRestriction entityaimovetowardsrestriction;
-        this.tasks.addTask(5, entityaimovetowardsrestriction = new EntityAIMoveTowardsRestriction(this, 1.0D));
-        this.tasks.addTask(7, this.wander = new EntityAIWander(this, 1.0D, 80));
+        this.tasks.addTask(5, entityaimovetowardsrestriction);
+        this.tasks.addTask(7, this.wander);
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityGuardian.class, 12.0F, 0.01F));
         this.tasks.addTask(9, new EntityAILookIdle(this));
@@ -85,6 +89,11 @@ public class EntityGuardian extends EntityMob
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(16.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
+    }
+
+    public static void func_189766_b(DataFixer p_189766_0_)
+    {
+        EntityLiving.func_189752_a(p_189766_0_, "Guardian");
     }
 
     /**
@@ -191,7 +200,8 @@ public class EntityGuardian extends EntityMob
     public void setElder()
     {
         this.setElder(true);
-        this.clientSideSpikesAnimationO = this.clientSideSpikesAnimation = 1.0F;
+        this.clientSideSpikesAnimation = 1.0F;
+        this.clientSideSpikesAnimationO = this.clientSideSpikesAnimation;
     }
 
     private void setTargetedEntity(int entityId)
@@ -564,7 +574,7 @@ public class EntityGuardian extends EntityMob
 
     static class AIGuardianAttack extends EntityAIBase
         {
-            private EntityGuardian theEntity;
+            private final EntityGuardian theEntity;
             private int tickCounter;
 
             public AIGuardianAttack(EntityGuardian guardian)
@@ -659,7 +669,7 @@ public class EntityGuardian extends EntityMob
 
     static class GuardianMoveHelper extends EntityMoveHelper
         {
-            private EntityGuardian entityGuardian;
+            private final EntityGuardian entityGuardian;
 
             public GuardianMoveHelper(EntityGuardian guardian)
             {
@@ -718,7 +728,7 @@ public class EntityGuardian extends EntityMob
 
     static class GuardianTargetSelector implements Predicate<EntityLivingBase>
         {
-            private EntityGuardian parentEntity;
+            private final EntityGuardian parentEntity;
 
             public GuardianTargetSelector(EntityGuardian guardian)
             {

@@ -17,6 +17,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
@@ -133,6 +136,11 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     public void setCustomName(String name)
     {
         this.customName = name;
+    }
+
+    public static void func_189677_a(DataFixer p_189677_0_)
+    {
+        p_189677_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists("Chest", new String[] {"Items"}));
     }
 
     public void readFromNBT(NBTTagCompound compound)
@@ -324,7 +332,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
             this.numPlayersUsing = 0;
             float f = 5.0F;
 
-            for (EntityPlayer entityplayer : this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB((double)((float)i - f), (double)((float)j - f), (double)((float)k - f), (double)((float)(i + 1) + f), (double)((float)(j + 1) + f), (double)((float)(k + 1) + f))))
+            for (EntityPlayer entityplayer : this.worldObj.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB((double)((float)i - 5.0F), (double)((float)j - 5.0F), (double)((float)k - 5.0F), (double)((float)(i + 1) + 5.0F), (double)((float)(j + 1) + 5.0F), (double)((float)(k + 1) + 5.0F))))
             {
                 if (entityplayer.openContainer instanceof ContainerChest)
                 {
@@ -365,11 +373,11 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 
             if (this.numPlayersUsing > 0)
             {
-                this.lidAngle += f1;
+                this.lidAngle += 0.1F;
             }
             else
             {
-                this.lidAngle -= f1;
+                this.lidAngle -= 0.1F;
             }
 
             if (this.lidAngle > 1.0F)
@@ -379,7 +387,7 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 
             float f3 = 0.5F;
 
-            if (this.lidAngle < f3 && f2 >= f3 && this.adjacentChestZNeg == null && this.adjacentChestXNeg == null)
+            if (this.lidAngle < 0.5F && f2 >= 0.5F && this.adjacentChestZNeg == null && this.adjacentChestXNeg == null)
             {
                 double d3 = (double)i + 0.5D;
                 double d0 = (double)k + 0.5D;

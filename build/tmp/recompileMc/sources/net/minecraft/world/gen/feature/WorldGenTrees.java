@@ -99,10 +99,10 @@ public class WorldGenTrees extends WorldGenAbstractTree
                     int k2 = 3;
                     int l2 = 0;
 
-                    for (int i3 = position.getY() - k2 + i; i3 <= position.getY() + i; ++i3)
+                    for (int i3 = position.getY() - 3 + i; i3 <= position.getY() + i; ++i3)
                     {
                         int i4 = i3 - (position.getY() + i);
-                        int j1 = l2 + 1 - i4 / 2;
+                        int j1 = 1 - i4 / 2;
 
                         for (int k1 = position.getX() - j1; k1 <= position.getX() + j1; ++k1)
                         {

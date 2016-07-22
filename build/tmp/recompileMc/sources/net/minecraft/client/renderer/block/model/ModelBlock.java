@@ -36,7 +36,7 @@ public class ModelBlock
     private final List<BlockPart> elements;
     private final boolean gui3d;
     public final boolean ambientOcclusion;
-    private ItemCameraTransforms cameraTransforms;
+    private final ItemCameraTransforms cameraTransforms;
     private final List<ItemOverride> overrides;
     public String name = "";
     @VisibleForTesting
@@ -143,7 +143,7 @@ public class ModelBlock
         {
             if (this == p_178302_2_.modelExt)
             {
-                LOGGER.warn("Unable to resolve texture due to upward reference: " + textureName + " in " + this.name);
+                LOGGER.warn("Unable to resolve texture due to upward reference: {} in {}", new Object[] {textureName, this.name});
                 return "missingno";
             }
             else

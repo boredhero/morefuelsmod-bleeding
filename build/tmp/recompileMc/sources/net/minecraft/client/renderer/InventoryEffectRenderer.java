@@ -38,16 +38,16 @@ public abstract class InventoryEffectRenderer extends GuiContainer
             Potion potion = potioneffect.getPotion();
             if(potion.shouldRender(potioneffect)) { hasVisibleEffect = true; break; }
         }
-        if (!this.mc.thePlayer.getActivePotionEffects().isEmpty() && hasVisibleEffect)
+        if (this.mc.thePlayer.getActivePotionEffects().isEmpty() || !hasVisibleEffect)
+        {
+            this.guiLeft = (this.width - this.xSize) / 2;
+            this.hasActivePotionEffects = false;
+        }
+        else
         {
             if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.PotionShiftEvent(this))) this.guiLeft = (this.width - this.xSize) / 2; else
             this.guiLeft = 160 + (this.width - this.xSize - 200) / 2;
             this.hasActivePotionEffects = true;
-        }
-        else
-        {
-            this.guiLeft = (this.width - this.xSize) / 2;
-            this.hasActivePotionEffects = false;
         }
     }
 

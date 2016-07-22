@@ -1,12 +1,13 @@
 package net.minecraft.client;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListenableFutureTask;
+import com.mojang.authlib.AuthenticationService;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -28,7 +29,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
@@ -184,6 +184,7 @@ import net.minecraft.world.storage.ISaveHandler;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
@@ -218,26 +219,28 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     public TextureManager renderEngine;
     /** Set to 'this' in Minecraft constructor; used by some settings get methods */
     private static Minecraft theMinecraft;
-    private final DataFixer dataFixer = DataFixesManager.createFixer();
+    private final DataFixer dataFixer;
+    @Nullable
     public PlayerControllerMP playerController;
     private boolean fullscreen;
-    private boolean enableGLErrorChecking = true;
+    private final boolean enableGLErrorChecking = true;
     private boolean hasCrashed;
     /** Instance of CrashReport. */
     private CrashReport crashReporter;
     public int displayWidth;
     public int displayHeight;
     /** True if the player is connected to a realms server */
-    private boolean connectedToRealms = false;
-    private Timer timer = new Timer(20.0F);
+    private boolean connectedToRealms;
+    private final Timer timer = new Timer(20.0F);
     /** Instance of PlayerUsageSnooper. */
-    private Snooper usageSnooper = new Snooper("client", this, MinecraftServer.getCurrentTimeMillis());
+    private final Snooper usageSnooper = new Snooper("client", this, MinecraftServer.getCurrentTimeMillis());
     public WorldClient theWorld;
     public RenderGlobal renderGlobal;
     private RenderManager renderManager;
     private RenderItem renderItem;
     private ItemRenderer itemRenderer;
     public EntityPlayerSP thePlayer;
+    @Nullable
     private Entity renderViewEntity;
     public Entity pointedEntity;
     public ParticleManager effectRenderer;
@@ -255,10 +258,11 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     /** Mouse left click counter */
     private int leftClickCounter;
     /** Display width */
-    private int tempDisplayWidth;
+    private final int tempDisplayWidth;
     /** Display height */
-    private int tempDisplayHeight;
+    private final int tempDisplayHeight;
     /** Instance of IntegratedServer. */
+    @Nullable
     private IntegratedServer theIntegratedServer;
     /** Gui achievement */
     public GuiAchievement guiAchievement;
@@ -297,6 +301,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     long startNanoTime = System.nanoTime();
     private final boolean jvm64bit;
     private final boolean isDemo;
+    @Nullable
     private NetworkManager myNetworkManager;
     private boolean integratedServerIsRunning;
     /** The profiler instance */
@@ -319,7 +324,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private final MinecraftSessionService sessionService;
     private SkinManager skinManager;
     private final Queue < FutureTask<? >> scheduledTasks = Queues. < FutureTask<? >> newArrayDeque();
-    private long lastFrameTime = 0L;
     private final Thread mcThread = Thread.currentThread();
     private ModelManager modelManager;
     /** The BlockRenderDispatcher instance that will be used based off gamesettings */
@@ -328,14 +332,11 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     volatile boolean running = true;
     /** String that shows the debug information */
     public String debug = "";
-    public boolean wireframe = false;
-    public boolean chunkPath = false;
-    public boolean chunkVisibility = false;
     public boolean renderChunksMany = true;
     /** Approximate time (in ms) of last update to debug string */
-    long debugUpdateTime = getSystemTime();
+    private long debugUpdateTime = getSystemTime();
     /** holds the current fps */
-    int fpsCounter;
+    private int fpsCounter;
     private boolean actionKeyF3;
     long prevFrameTime = -1L;
     /** Profiler currently displayed in the debug screen pie chart */
@@ -355,7 +356,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         this.proxy = gameConfig.userInfo.proxy == null ? Proxy.NO_PROXY : gameConfig.userInfo.proxy;
         this.sessionService = (new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString())).createMinecraftSessionService();
         this.session = gameConfig.userInfo.session;
-        LOGGER.info("Setting user: " + this.session.getUsername());
+        LOGGER.info("Setting user: {}", new Object[] {this.session.getUsername()});
         this.isDemo = gameConfig.gameInfo.isDemo;
         this.displayWidth = gameConfig.displayInfo.width > 0 ? gameConfig.displayInfo.width : 1;
         this.displayHeight = gameConfig.displayInfo.height > 0 ? gameConfig.displayInfo.height : 1;
@@ -373,6 +374,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         ImageIO.setUseCache(false);
         Bootstrap.register();
+        this.dataFixer = DataFixesManager.createFixer();
     }
 
     public void run()
@@ -460,7 +462,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             this.displayHeight = this.gameSettings.overrideHeight;
         }
 
-        LOGGER.info("LWJGL Version: " + Sys.getVersion());
+        LOGGER.info("LWJGL Version: {}", new Object[] {Sys.getVersion()});
         this.setWindowIcon();
         this.setInitialDisplayMode();
         this.createDisplay();
@@ -605,7 +607,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private void createDisplay() throws LWJGLException
     {
         Display.setResizable(true);
-        Display.setTitle("Minecraft 1.9.4");
+        Display.setTitle("Minecraft 1.10.2");
 
         try
         {
@@ -910,7 +912,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
         catch (IOException ioexception)
         {
-            LOGGER.error((String)("Unable to load logo: " + LOCATION_MOJANG_PNG), (Throwable)ioexception);
+            LOGGER.error("Unable to load logo: {}", new Object[] {LOCATION_MOJANG_PNG, ioexception});
         }
         finally
         {
@@ -928,7 +930,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         int j = 256;
         int k = 256;
-        this.draw((scaledresolution.getScaledWidth() - j) / 2, (scaledresolution.getScaledHeight() - k) / 2, 0, 0, j, k, 255, 255, 255, 255);
+        this.draw((scaledresolution.getScaledWidth() - 256) / 2, (scaledresolution.getScaledHeight() - 256) / 2, 0, 0, 256, 256, 255, 255, 255, 255);
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
         framebuffer.unbindFramebuffer();
@@ -943,14 +945,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     public void draw(int posX, int posY, int texU, int texV, int width, int height, int red, int green, int blue, int alpha)
     {
-        float f = 0.00390625F;
-        float f1 = 0.00390625F;
         VertexBuffer vertexbuffer = Tessellator.getInstance().getBuffer();
         vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        vertexbuffer.pos((double)posX, (double)(posY + height), 0.0D).tex((double)((float)texU * f), (double)((float)(texV + height) * f1)).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos((double)(posX + width), (double)(posY + height), 0.0D).tex((double)((float)(texU + width) * f), (double)((float)(texV + height) * f1)).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos((double)(posX + width), (double)posY, 0.0D).tex((double)((float)(texU + width) * f), (double)((float)texV * f1)).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos((double)posX, (double)posY, 0.0D).tex((double)((float)texU * f), (double)((float)texV * f1)).color(red, green, blue, alpha).endVertex();
+        float f = 0.00390625F;
+        float f1 = 0.00390625F;
+        vertexbuffer.pos((double)posX, (double)(posY + height), 0.0D).tex((double)((float)texU * 0.00390625F), (double)((float)(texV + height) * 0.00390625F)).color(red, green, blue, alpha).endVertex();
+        vertexbuffer.pos((double)(posX + width), (double)(posY + height), 0.0D).tex((double)((float)(texU + width) * 0.00390625F), (double)((float)(texV + height) * 0.00390625F)).color(red, green, blue, alpha).endVertex();
+        vertexbuffer.pos((double)(posX + width), (double)posY, 0.0D).tex((double)((float)(texU + width) * 0.00390625F), (double)((float)texV * 0.00390625F)).color(red, green, blue, alpha).endVertex();
+        vertexbuffer.pos((double)posX, (double)posY, 0.0D).tex((double)((float)texU * 0.00390625F), (double)((float)texV * 0.00390625F)).color(red, green, blue, alpha).endVertex();
         Tessellator.getInstance().draw();
     }
 
@@ -1028,17 +1030,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
      */
     private void checkGLError(String message)
     {
-        if (this.enableGLErrorChecking)
-        {
-            int i = GlStateManager.glGetError();
+        int i = GlStateManager.glGetError();
 
-            if (i != 0)
-            {
-                String s = GLU.gluErrorString(i);
-                LOGGER.error("########## GL ERROR ##########");
-                LOGGER.error("@ " + message);
-                LOGGER.error(i + ": " + s);
-            }
+        if (i != 0)
+        {
+            String s = GLU.gluErrorString(i);
+            LOGGER.error("########## GL ERROR ##########");
+            LOGGER.error("@ {}", new Object[] {message});
+            LOGGER.error("{}: {}", new Object[] {Integer.valueOf(i), s});
         }
     }
 
@@ -1182,7 +1181,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         while (getSystemTime() >= this.debugUpdateTime + 1000L)
         {
             debugFPS = this.fpsCounter;
-            this.debug = String.format("%d fps (%d chunk update%s) T: %s%s%s%s%s", new Object[] {Integer.valueOf(debugFPS), Integer.valueOf(RenderChunk.renderChunksUpdated), RenderChunk.renderChunksUpdated != 1 ? "s" : "", (float)this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : Integer.valueOf(this.gameSettings.limitFramerate), this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : ""});
+            this.debug = String.format("%d fps (%d chunk update%s) T: %s%s%s%s%s", new Object[] {Integer.valueOf(debugFPS), Integer.valueOf(RenderChunk.renderChunksUpdated), RenderChunk.renderChunksUpdated == 1 ? "" : "s", (float)this.gameSettings.limitFramerate == GameSettings.Options.FRAMERATE_LIMIT.getValueMax() ? "inf" : Integer.valueOf(this.gameSettings.limitFramerate), this.gameSettings.enableVsync ? " vsync" : "", this.gameSettings.fancyGraphics ? "" : " fast", this.gameSettings.clouds == 0 ? "" : (this.gameSettings.clouds == 1 ? " fast-clouds" : " fancy-clouds"), OpenGlHelper.useVbo() ? " vbo" : ""});
             RenderChunk.renderChunksUpdated = 0;
             this.debugUpdateTime += 1000L;
             this.fpsCounter = 0;
@@ -1288,7 +1287,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             {
                 if (!profiler$result.profilerName.isEmpty())
                 {
-                    int i = this.debugProfilerName.lastIndexOf(".");
+                    int i = this.debugProfilerName.lastIndexOf(46);
 
                     if (i >= 0)
                     {
@@ -1300,7 +1299,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             {
                 --keyCount;
 
-                if (keyCount < list.size() && !((Profiler.Result)list.get(keyCount)).profilerName.equals("unspecified"))
+                if (keyCount < list.size() && !"unspecified".equals(((Profiler.Result)list.get(keyCount)).profilerName))
                 {
                     if (!this.debugProfilerName.isEmpty())
                     {
@@ -1335,14 +1334,14 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer vertexbuffer = tessellator.getBuffer();
             int i = 160;
-            int j = this.displayWidth - i - 10;
-            int k = this.displayHeight - i * 2;
+            int j = this.displayWidth - 160 - 10;
+            int k = this.displayHeight - 320;
             GlStateManager.enableBlend();
             vertexbuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-            vertexbuffer.pos((double)((float)j - (float)i * 1.1F), (double)((float)k - (float)i * 0.6F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
-            vertexbuffer.pos((double)((float)j - (float)i * 1.1F), (double)(k + i * 2), 0.0D).color(200, 0, 0, 0).endVertex();
-            vertexbuffer.pos((double)((float)j + (float)i * 1.1F), (double)(k + i * 2), 0.0D).color(200, 0, 0, 0).endVertex();
-            vertexbuffer.pos((double)((float)j + (float)i * 1.1F), (double)((float)k - (float)i * 0.6F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
+            vertexbuffer.pos((double)((float)j - 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
+            vertexbuffer.pos((double)((float)j - 176.0F), (double)(k + 320), 0.0D).color(200, 0, 0, 0).endVertex();
+            vertexbuffer.pos((double)((float)j + 176.0F), (double)(k + 320), 0.0D).color(200, 0, 0, 0).endVertex();
+            vertexbuffer.pos((double)((float)j + 176.0F), (double)((float)k - 96.0F - 16.0F), 0.0D).color(200, 0, 0, 0).endVertex();
             tessellator.draw();
             GlStateManager.disableBlend();
             double d0 = 0.0D;
@@ -1361,8 +1360,8 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 for (int j2 = i1; j2 >= 0; --j2)
                 {
                     float f = (float)((d0 + profiler$result1.usePercentage * (double)j2 / (double)i1) * (Math.PI * 2D) / 100.0D);
-                    float f1 = MathHelper.sin(f) * (float)i;
-                    float f2 = MathHelper.cos(f) * (float)i * 0.5F;
+                    float f1 = MathHelper.sin(f) * 160.0F;
+                    float f2 = MathHelper.cos(f) * 160.0F * 0.5F;
                     vertexbuffer.pos((double)((float)j + f1), (double)((float)k - f2), 0.0D).color(k1, l1, i2, 255).endVertex();
                 }
 
@@ -1372,8 +1371,8 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 for (int i3 = i1; i3 >= 0; --i3)
                 {
                     float f3 = (float)((d0 + profiler$result1.usePercentage * (double)i3 / (double)i1) * (Math.PI * 2D) / 100.0D);
-                    float f4 = MathHelper.sin(f3) * (float)i;
-                    float f5 = MathHelper.cos(f3) * (float)i * 0.5F;
+                    float f4 = MathHelper.sin(f3) * 160.0F;
+                    float f5 = MathHelper.cos(f3) * 160.0F * 0.5F;
                     vertexbuffer.pos((double)((float)j + f4), (double)((float)k - f5), 0.0D).color(k1 >> 1, l1 >> 1, i2 >> 1, 255).endVertex();
                     vertexbuffer.pos((double)((float)j + f4), (double)((float)k - f5 + 10.0F), 0.0D).color(k1 >> 1, l1 >> 1, i2 >> 1, 255).endVertex();
                 }
@@ -1386,7 +1385,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             GlStateManager.enableTexture2D();
             String s = "";
 
-            if (!profiler$result.profilerName.equals("unspecified"))
+            if (!"unspecified".equals(profiler$result.profilerName))
             {
                 s = s + "[0] ";
             }
@@ -1397,31 +1396,34 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             }
             else
             {
-                s = s + profiler$result.profilerName + " ";
+                s = s + profiler$result.profilerName + ' ';
             }
 
             int l2 = 16777215;
-            this.fontRendererObj.drawStringWithShadow(s, (float)(j - i), (float)(k - i / 2 - 16), l2);
-            this.fontRendererObj.drawStringWithShadow(s = decimalformat.format(profiler$result.totalUsePercentage) + "%", (float)(j + i - this.fontRendererObj.getStringWidth(s)), (float)(k - i / 2 - 16), l2);
+            this.fontRendererObj.drawStringWithShadow(s, (float)(j - 160), (float)(k - 80 - 16), 16777215);
+            s = decimalformat.format(profiler$result.totalUsePercentage) + "%";
+            this.fontRendererObj.drawStringWithShadow(s, (float)(j + 160 - this.fontRendererObj.getStringWidth(s)), (float)(k - 80 - 16), 16777215);
 
             for (int k2 = 0; k2 < list.size(); ++k2)
             {
                 Profiler.Result profiler$result2 = (Profiler.Result)list.get(k2);
-                String s1 = "";
+                StringBuilder stringbuilder = new StringBuilder();
 
-                if (profiler$result2.profilerName.equals("unspecified"))
+                if ("unspecified".equals(profiler$result2.profilerName))
                 {
-                    s1 = s1 + "[?] ";
+                    stringbuilder.append("[?] ");
                 }
                 else
                 {
-                    s1 = s1 + "[" + (k2 + 1) + "] ";
+                    stringbuilder.append("[").append(k2 + 1).append("] ");
                 }
 
-                s1 = s1 + profiler$result2.profilerName;
-                this.fontRendererObj.drawStringWithShadow(s1, (float)(j - i), (float)(k + i / 2 + k2 * 8 + 20), profiler$result2.getColor());
-                this.fontRendererObj.drawStringWithShadow(s1 = decimalformat.format(profiler$result2.usePercentage) + "%", (float)(j + i - 50 - this.fontRendererObj.getStringWidth(s1)), (float)(k + i / 2 + k2 * 8 + 20), profiler$result2.getColor());
-                this.fontRendererObj.drawStringWithShadow(s1 = decimalformat.format(profiler$result2.totalUsePercentage) + "%", (float)(j + i - this.fontRendererObj.getStringWidth(s1)), (float)(k + i / 2 + k2 * 8 + 20), profiler$result2.getColor());
+                String s1 = stringbuilder.append(profiler$result2.profilerName).toString();
+                this.fontRendererObj.drawStringWithShadow(s1, (float)(j - 160), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
+                s1 = decimalformat.format(profiler$result2.usePercentage) + "%";
+                this.fontRendererObj.drawStringWithShadow(s1, (float)(j + 160 - 50 - this.fontRendererObj.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
+                s1 = decimalformat.format(profiler$result2.totalUsePercentage) + "%";
+                this.fontRendererObj.drawStringWithShadow(s1, (float)(j + 160 - this.fontRendererObj.getStringWidth(s1)), (float)(k + 80 + k2 * 8 + 20), profiler$result2.getColor());
             }
         }
     }
@@ -1541,7 +1543,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                         }
 
                     case MISS:
-                    default:
 
                         if (this.playerController.isNotCreative())
                         {
@@ -2067,9 +2068,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
         else if (p_184122_1_ == 48)
         {
-            boolean flag = !this.renderManager.isDebugBoundingBox();
-            this.renderManager.setDebugBoundingBox(flag);
-            this.debugChatMessage("Hitboxes: {0}", new Object[] {flag ? "shown" : "hidden"});
+            boolean flag1 = !this.renderManager.isDebugBoundingBox();
+            this.renderManager.setDebugBoundingBox(flag1);
+            this.debugChatMessage("Hitboxes: {0}", new Object[] {flag1 ? "shown" : "hidden"});
             return true;
         }
         else if (p_184122_1_ == 32)
@@ -2085,6 +2086,12 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         {
             this.gameSettings.setOptionValue(GameSettings.Options.RENDER_DISTANCE, GuiScreen.isShiftKeyDown() ? -1 : 1);
             this.debugChatMessage("RenderDistance: {0}", new Object[] {Integer.valueOf(this.gameSettings.renderDistanceChunks)});
+            return true;
+        }
+        else if (p_184122_1_ == 34)
+        {
+            boolean flag = this.debugRenderer.func_190075_b();
+            this.debugChatMessage("Chunk borders: {0}", new Object[] {flag ? "shown" : "hidden"});
             return true;
         }
         else if (p_184122_1_ == 35)
@@ -2126,6 +2133,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             guinewchat.printChatMessage(new TextComponentString("F3 + B = Show hitboxes"));
             guinewchat.printChatMessage(new TextComponentString("F3 + D = Clear chat"));
             guinewchat.printChatMessage(new TextComponentString("F3 + F = Cycle renderdistance (Shift to inverse)"));
+            guinewchat.printChatMessage(new TextComponentString("F3 + G = Show chunk boundaries"));
             guinewchat.printChatMessage(new TextComponentString("F3 + H = Advanced tooltips"));
             guinewchat.printChatMessage(new TextComponentString("F3 + N = Cycle creative <-> spectator"));
             guinewchat.printChatMessage(new TextComponentString("F3 + P = Pause on lost focus"));
@@ -2435,7 +2443,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         SocketAddress socketaddress = this.theIntegratedServer.getNetworkSystem().addLocalEndpoint();
         NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
         networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, (GuiScreen)null));
-        networkmanager.sendPacket(new C00Handshake(110, socketaddress.toString(), 0, EnumConnectionState.LOGIN, true));
+        networkmanager.sendPacket(new C00Handshake(210, socketaddress.toString(), 0, EnumConnectionState.LOGIN, true));
         com.mojang.authlib.GameProfile gameProfile = this.getSession().getProfile();
         if (!this.getSession().hasCachedProperties())
         {
@@ -2530,9 +2538,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         {
             if (!this.integratedServerIsRunning)
             {
-                YggdrasilAuthenticationService yggdrasilauthenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
-                MinecraftSessionService minecraftsessionservice = yggdrasilauthenticationservice.createMinecraftSessionService();
-                GameProfileRepository gameprofilerepository = yggdrasilauthenticationservice.createProfileRepository();
+                AuthenticationService authenticationservice = new YggdrasilAuthenticationService(this.proxy, UUID.randomUUID().toString());
+                MinecraftSessionService minecraftsessionservice = authenticationservice.createMinecraftSessionService();
+                GameProfileRepository gameprofilerepository = authenticationservice.createProfileRepository();
                 PlayerProfileCache playerprofilecache = new PlayerProfileCache(gameprofilerepository, new File(this.mcDataDir, MinecraftServer.USER_CACHE_FILE.getName()));
                 TileEntitySkull.setProfileCache(playerprofilecache);
                 TileEntitySkull.setSessionService(minecraftsessionservice);
@@ -2604,9 +2612,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return this.isDemo;
     }
 
+    @Nullable
     public NetHandlerPlayClient getConnection()
     {
-        return this.thePlayer != null ? this.thePlayer.connection : null;
+        return this.thePlayer == null ? null : this.thePlayer.connection;
     }
 
     public static boolean isGuiEnabled()
@@ -2709,7 +2718,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             public String call() throws Exception
             {
                 String s = ClientBrandRetriever.getClientModName();
-                return !s.equals("vanilla") ? "Definitely; Client brand changed to \'" + s + "\'" : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated" : "Probably not. Jar signature remains and client brand is untouched.");
+                return !"vanilla".equals(s) ? "Definitely; Client brand changed to \'" + s + "\'" : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated" : "Probably not. Jar signature remains and client brand is untouched.");
             }
         });
         theCrash.getCategory().setDetail("Type", new ICrashReportDetail<String>()
@@ -2757,7 +2766,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
                 return Minecraft.this.mcProfiler.profilingEnabled ? Minecraft.this.mcProfiler.getNameOfLastSection() : "N/A (disabled)";
             }
         });
-        theCrash.getCategory().addCrashSection("CPU", new Callable<String>()
+        theCrash.getCategory().setDetail("CPU", new ICrashReportDetail<String>()
         {
             public String call()
             {
@@ -2938,6 +2947,12 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         playerSnooper.addStatToSnooper("gl_caps[gl_max_array_texture_layers]", Integer.valueOf(GlStateManager.glGetInteger(35071)));
         GlStateManager.glGetError();
         playerSnooper.addStatToSnooper("gl_max_texture_size", Integer.valueOf(getGLMaximumTextureSize()));
+        GameProfile gameprofile = this.session.getProfile();
+
+        if (gameprofile != null && gameprofile.getId() != null)
+        {
+            playerSnooper.addStatToSnooper("uuid", Hashing.sha1().hashBytes(gameprofile.getId().toString().getBytes(Charsets.ISO_8859_1)).toString());
+        }
     }
 
     /**
@@ -2965,6 +2980,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         this.currentServerData = serverDataIn;
     }
 
+    @Nullable
     public ServerData getCurrentServerData()
     {
         return this.currentServerData;
@@ -2986,6 +3002,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     /**
      * Returns the currently running integrated server
      */
+    @Nullable
     public IntegratedServer getIntegratedServer()
     {
         return this.theIntegratedServer;
@@ -3131,6 +3148,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return this.skinManager;
     }
 
+    @Nullable
     public Entity getRenderViewEntity()
     {
         return this.renderViewEntity;
@@ -3146,17 +3164,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     {
         Validate.notNull(callableToSchedule);
 
-        if (!this.isCallingFromMinecraftThread())
-        {
-            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.<V>create(callableToSchedule);
-
-            synchronized (this.scheduledTasks)
-            {
-                this.scheduledTasks.add(listenablefuturetask);
-                return listenablefuturetask;
-            }
-        }
-        else
+        if (this.isCallingFromMinecraftThread())
         {
             try
             {
@@ -3165,6 +3173,16 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             catch (Exception exception)
             {
                 return Futures.immediateFailedCheckedFuture(exception);
+            }
+        }
+        else
+        {
+            ListenableFutureTask<V> listenablefuturetask = ListenableFutureTask.<V>create(callableToSchedule);
+
+            synchronized (this.scheduledTasks)
+            {
+                this.scheduledTasks.add(listenablefuturetask);
+                return listenablefuturetask;
             }
         }
     }
@@ -3217,15 +3235,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return this.frameTimer;
     }
 
-    public static Map<String, String> getSessionInfo()
-    {
-        Map<String, String> map = Maps.<String, String>newHashMap();
-        map.put("X-Minecraft-Username", getMinecraft().getSession().getUsername());
-        map.put("X-Minecraft-UUID", getMinecraft().getSession().getPlayerID());
-        map.put("X-Minecraft-Version", "1.9.4");
-        return map;
-    }
-
     /**
      * Return true if the player is connected to a realms server
      */
@@ -3261,5 +3270,10 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     public ItemColors getItemColors()
     {
         return this.itemColors;
+    }
+
+    public boolean func_189648_am()
+    {
+        return this.thePlayer != null && this.thePlayer.hasReducedDebug() || this.gameSettings.reducedDebugInfo;
     }
 }

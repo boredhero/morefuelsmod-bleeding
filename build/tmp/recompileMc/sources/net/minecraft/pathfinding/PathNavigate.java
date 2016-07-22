@@ -14,7 +14,6 @@ import net.minecraft.world.World;
 
 public abstract class PathNavigate
 {
-    private static int updatePathDelay = 20;
     protected EntityLiving theEntity;
     protected World worldObj;
     /** The PathEntity being followed. */
@@ -30,8 +29,8 @@ public abstract class PathNavigate
     /** Coordinates of the entity's position last time a check was done (part of monitoring getting 'stuck') */
     private Vec3d lastPosCheck = Vec3d.ZERO;
     private Vec3d timeoutCachedNode = Vec3d.ZERO;
-    private long timeoutTimer = 0L;
-    private long lastTimeoutCheck = 0L;
+    private long timeoutTimer;
+    private long lastTimeoutCheck;
     private double timeoutLimit;
     private float maxDistanceToWaypoint = 0.5F;
     private boolean tryUpdatePath;
@@ -77,7 +76,7 @@ public abstract class PathNavigate
 
     public void updatePath()
     {
-        if (this.worldObj.getTotalWorldTime() - this.lastTimeUpdated > (long)updatePathDelay)
+        if (this.worldObj.getTotalWorldTime() - this.lastTimeUpdated > 20L)
         {
             if (this.targetPos != null)
             {
@@ -99,7 +98,7 @@ public abstract class PathNavigate
     @Nullable
     public final Path getPathToXYZ(double x, double y, double z)
     {
-        return this.getPathToPos(new BlockPos(MathHelper.floor_double(x), (int)y, MathHelper.floor_double(z)));
+        return this.getPathToPos(new BlockPos(x, y, z));
     }
 
     /**
@@ -168,8 +167,7 @@ public abstract class PathNavigate
      */
     public boolean tryMoveToXYZ(double x, double y, double z, double speedIn)
     {
-        Path path = this.getPathToXYZ((double)MathHelper.floor_double(x), (double)((int)y), (double)MathHelper.floor_double(z));
-        return this.setPath(path, speedIn);
+        return this.setPath(this.getPathToXYZ(x, y, z), speedIn);
     }
 
     /**
@@ -178,7 +176,7 @@ public abstract class PathNavigate
     public boolean tryMoveToEntityLiving(Entity entityIn, double speedIn)
     {
         Path path = this.getPathToEntityLiving(entityIn);
-        return path != null ? this.setPath(path, speedIn) : false;
+        return path != null && this.setPath(path, speedIn);
     }
 
     /**
@@ -283,7 +281,7 @@ public abstract class PathNavigate
         this.maxDistanceToWaypoint = this.theEntity.width > 0.75F ? this.theEntity.width / 2.0F : 0.75F - this.theEntity.width / 2.0F;
         Vec3d vec3d1 = this.currentPath.getCurrentPos();
 
-        if (MathHelper.abs((float)(this.theEntity.posX - (vec3d1.xCoord + 0.5D))) < this.maxDistanceToWaypoint && MathHelper.abs((float)(this.theEntity.posZ - (vec3d1.zCoord + 0.5D))) < this.maxDistanceToWaypoint)
+        if (MathHelper.abs((float)(this.theEntity.posX - (vec3d1.xCoord + 0.5D))) < this.maxDistanceToWaypoint && MathHelper.abs((float)(this.theEntity.posZ - (vec3d1.zCoord + 0.5D))) < this.maxDistanceToWaypoint && Math.abs(this.theEntity.posY - vec3d1.yCoord) < 1.0D)
         {
             this.currentPath.setCurrentPathIndex(this.currentPath.getCurrentPathIndex() + 1);
         }
@@ -325,15 +323,15 @@ public abstract class PathNavigate
         {
             Vec3d vec3d = this.currentPath.getCurrentPos();
 
-            if (!vec3d.equals(this.timeoutCachedNode))
+            if (vec3d.equals(this.timeoutCachedNode))
+            {
+                this.timeoutTimer += System.currentTimeMillis() - this.lastTimeoutCheck;
+            }
+            else
             {
                 this.timeoutCachedNode = vec3d;
                 double d0 = positionVec3.distanceTo(this.timeoutCachedNode);
                 this.timeoutLimit = this.theEntity.getAIMoveSpeed() > 0.0F ? d0 / (double)this.theEntity.getAIMoveSpeed() * 1000.0D : 0.0D;
-            }
-            else
-            {
-                this.timeoutTimer += System.currentTimeMillis() - this.lastTimeoutCheck;
             }
 
             if (this.timeoutLimit > 0.0D && (double)this.timeoutTimer > this.timeoutLimit * 3.0D)

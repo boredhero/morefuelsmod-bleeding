@@ -10,8 +10,6 @@ import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Map;
 import net.minecraft.util.IStringSerializable;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PropertyEnum<T extends Enum<T> & IStringSerializable> extends PropertyHelper<T>
 {
@@ -41,7 +39,6 @@ public class PropertyEnum<T extends Enum<T> & IStringSerializable> extends Prope
         return this.allowedValues;
     }
 
-    @SideOnly(Side.CLIENT)
     public Optional<T> parseValue(String value)
     {
         return Optional.<T>fromNullable(this.nameToValue.get(value));

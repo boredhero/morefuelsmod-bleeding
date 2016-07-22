@@ -28,12 +28,9 @@ public class LootEntryItem extends LootEntry
     public void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context)
     {
         ItemStack itemstack = new ItemStack(this.item);
-        int i = 0;
 
-        for (int j = this.functions.length; i < j; ++i)
+        for (LootFunction lootfunction : this.functions)
         {
-            LootFunction lootfunction = this.functions[i];
-
             if (LootConditionManager.testAllConditions(lootfunction.getConditions(), rand, context))
             {
                 itemstack = lootfunction.apply(itemstack, rand, context);
@@ -48,7 +45,7 @@ public class LootEntryItem extends LootEntry
             }
             else
             {
-                i = itemstack.stackSize;
+                int i = itemstack.stackSize;
 
                 while (i > 0)
                 {

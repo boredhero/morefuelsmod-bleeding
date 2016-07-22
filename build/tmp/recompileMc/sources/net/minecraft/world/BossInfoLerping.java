@@ -9,8 +9,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class BossInfoLerping extends BossInfo
 {
-    protected float rawPercent = 0.0F;
-    protected long percentSetTime = 0L;
+    protected float rawPercent;
+    protected long percentSetTime;
 
     public BossInfoLerping(SPacketUpdateBossInfo packetIn)
     {
@@ -37,6 +37,7 @@ public class BossInfoLerping extends BossInfo
         return this.percent + (this.rawPercent - this.percent) * f;
     }
 
+    @SuppressWarnings("incomplete-switch")
     public void updateFromPacket(SPacketUpdateBossInfo packetIn)
     {
         switch (packetIn.getOperation())

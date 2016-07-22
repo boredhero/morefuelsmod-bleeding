@@ -7,8 +7,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntityAIRunAroundLikeCrazy extends EntityAIBase
 {
-    private EntityHorse horseHost;
-    private double speed;
+    private final EntityHorse horseHost;
+    private final double speed;
     private double targetX;
     private double targetY;
     private double targetZ;

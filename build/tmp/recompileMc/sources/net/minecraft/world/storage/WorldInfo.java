@@ -9,10 +9,15 @@ import net.minecraft.crash.ICrashReportDetail;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IDataFixer;
+import net.minecraft.util.datafix.IDataWalker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.GameType;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
@@ -58,7 +63,7 @@ public class WorldInfo
     /** Number of ticks untils next thunderbolt. */
     private int thunderTime;
     /** The Game Type. */
-    private WorldSettings.GameType theGameType;
+    private GameType theGameType;
     /** Whether the map features (e.g. strongholds) generation is enabled or disabled. */
     private boolean mapFeaturesEnabled;
     /** Hardcore mode flag */
@@ -67,11 +72,11 @@ public class WorldInfo
     private boolean initialized;
     private EnumDifficulty difficulty;
     private boolean difficultyLocked;
-    private double borderCenterX = 0.0D;
-    private double borderCenterZ = 0.0D;
+    private double borderCenterX;
+    private double borderCenterZ;
     private double borderSize = 6.0E7D;
-    private long borderSizeLerpTime = 0L;
-    private double borderSizeLerpTarget = 0.0D;
+    private long borderSizeLerpTime;
+    private double borderSizeLerpTarget;
     private double borderSafeZone = 5.0D;
     private double borderDamagePerBlock = 0.2D;
     private int borderWarningDistance = 5;
@@ -82,6 +87,22 @@ public class WorldInfo
 
     protected WorldInfo()
     {
+    }
+
+    public static void func_189967_a(DataFixer p_189967_0_)
+    {
+        p_189967_0_.registerWalker(FixTypes.LEVEL, new IDataWalker()
+        {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
+            {
+                if (compound.hasKey("Player", 10))
+                {
+                    compound.setTag("Player", fixer.process(FixTypes.PLAYER, compound.getCompoundTag("Player"), versionIn));
+                }
+
+                return compound;
+            }
+        });
     }
 
     public WorldInfo(NBTTagCompound nbt)
@@ -123,7 +144,7 @@ public class WorldInfo
             }
         }
 
-        this.theGameType = WorldSettings.GameType.getByID(nbt.getInteger("GameType"));
+        this.theGameType = GameType.getByID(nbt.getInteger("GameType"));
 
         if (nbt.hasKey("MapFeatures", 99))
         {
@@ -174,7 +195,7 @@ public class WorldInfo
         }
         else
         {
-            this.allowCommands = this.theGameType == WorldSettings.GameType.CREATIVE;
+            this.allowCommands = this.theGameType == GameType.CREATIVE;
         }
 
         if (nbt.hasKey("Player", 10))
@@ -330,11 +351,11 @@ public class WorldInfo
     private void updateTagCompound(NBTTagCompound nbt, NBTTagCompound playerNbt)
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
-        nbttagcompound.setString("Name", "1.9.4");
-        nbttagcompound.setInteger("Id", 184);
+        nbttagcompound.setString("Name", "1.10.2");
+        nbttagcompound.setInteger("Id", 512);
         nbttagcompound.setBoolean("Snapshot", false);
         nbt.setTag("Version", nbttagcompound);
-        nbt.setInteger("DataVersion", 184);
+        nbt.setInteger("DataVersion", 512);
         nbt.setLong("RandomSeed", this.randomSeed);
         nbt.setString("generatorName", this.terrainType.getWorldTypeName());
         nbt.setInteger("generatorVersion", this.terrainType.getGeneratorVersion());
@@ -611,7 +632,7 @@ public class WorldInfo
     /**
      * Gets the GameType.
      */
-    public WorldSettings.GameType getGameType()
+    public GameType getGameType()
     {
         return this.theGameType;
     }
@@ -632,7 +653,7 @@ public class WorldInfo
     /**
      * Sets the GameType.
      */
-    public void setGameType(WorldSettings.GameType type)
+    public void setGameType(GameType type)
     {
         this.theGameType = type;
     }

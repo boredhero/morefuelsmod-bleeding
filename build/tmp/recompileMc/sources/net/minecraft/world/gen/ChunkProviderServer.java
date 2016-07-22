@@ -117,16 +117,13 @@ public class ChunkProviderServer implements IChunkProvider
             else
             {
                 net.minecraft.world.chunk.storage.AnvilChunkLoader loader = (net.minecraft.world.chunk.storage.AnvilChunkLoader) this.chunkLoader;
-
-                // We can only use the queue for already generated chunks
-                if (loader.chunkExists(this.worldObj, x, z))
+                if (runnable == null)
+                    chunk = net.minecraftforge.common.chunkio.ChunkIOExecutor.syncChunkLoad(this.worldObj, loader, this, x, z);
+                else if (loader.chunkExists(this.worldObj, x, z))
                 {
-                    if (runnable != null)
-                    {
-                        net.minecraftforge.common.chunkio.ChunkIOExecutor.queueChunkLoad(this.worldObj, loader, this, x, z, runnable);
-                        return null;
-                    }
-                    else chunk = net.minecraftforge.common.chunkio.ChunkIOExecutor.syncChunkLoad(this.worldObj, loader, this, x, z);
+                    // We can only use the async queue for already generated chunks
+                    net.minecraftforge.common.chunkio.ChunkIOExecutor.queueChunkLoad(this.worldObj, loader, this, x, z, runnable);
+                    return null;
                 }
             }
         }

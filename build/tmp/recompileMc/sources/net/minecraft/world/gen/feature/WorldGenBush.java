@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 
 public class WorldGenBush extends WorldGenerator
 {
-    private BlockBush block;
+    private final BlockBush block;
 
     public WorldGenBush(BlockBush blockIn)
     {

@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class GuiDownloadTerrain extends GuiScreen
 {
-    private NetHandlerPlayClient connection;
+    private final NetHandlerPlayClient connection;
     private int progress;
 
     public GuiDownloadTerrain(NetHandlerPlayClient netHandler)

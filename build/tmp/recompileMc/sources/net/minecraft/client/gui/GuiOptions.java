@@ -33,8 +33,8 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback
      */
     public void initGui()
     {
-        int i = 0;
         this.title = I18n.format("options.title", new Object[0]);
+        int i = 0;
 
         for (GameSettings.Options gamesettings$options : SCREEN_OPTIONS)
         {

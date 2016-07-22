@@ -26,8 +26,8 @@ public class ScreenChatOptions extends GuiScreen
      */
     public void initGui()
     {
-        int i = 0;
         this.chatTitle = I18n.format("options.chat.title", new Object[0]);
+        int i = 0;
 
         for (GameSettings.Options gamesettings$options : CHAT_OPTIONS)
         {

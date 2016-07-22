@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.SERVER)
 public class PlayerListComponent extends JList implements ITickable
 {
-    private MinecraftServer server;
+    private final MinecraftServer server;
     private int ticks;
 
     public PlayerListComponent(MinecraftServer server)

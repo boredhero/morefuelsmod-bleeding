@@ -5,7 +5,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -32,8 +32,8 @@ public class GuiShareToLan extends GuiScreen
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(101, this.width / 2 - 155, this.height - 28, 150, 20, I18n.format("lanServer.start", new Object[0])));
         this.buttonList.add(new GuiButton(102, this.width / 2 + 5, this.height - 28, 150, 20, I18n.format("gui.cancel", new Object[0])));
-        this.buttonList.add(this.gameModeButton = new GuiButton(104, this.width / 2 - 155, 100, 150, 20, I18n.format("selectWorld.gameMode", new Object[0])));
-        this.buttonList.add(this.allowCheatsButton = new GuiButton(103, this.width / 2 + 5, 100, 150, 20, I18n.format("selectWorld.allowCommands", new Object[0])));
+        this.gameModeButton = this.func_189646_b(new GuiButton(104, this.width / 2 - 155, 100, 150, 20, I18n.format("selectWorld.gameMode", new Object[0])));
+        this.allowCheatsButton = this.func_189646_b(new GuiButton(103, this.width / 2 + 5, 100, 150, 20, I18n.format("selectWorld.allowCommands", new Object[0])));
         this.updateDisplayNames();
     }
 
@@ -63,15 +63,15 @@ public class GuiShareToLan extends GuiScreen
         }
         else if (button.id == 104)
         {
-            if (this.gameMode.equals("spectator"))
+            if ("spectator".equals(this.gameMode))
             {
                 this.gameMode = "creative";
             }
-            else if (this.gameMode.equals("creative"))
+            else if ("creative".equals(this.gameMode))
             {
                 this.gameMode = "adventure";
             }
-            else if (this.gameMode.equals("adventure"))
+            else if ("adventure".equals(this.gameMode))
             {
                 this.gameMode = "survival";
             }
@@ -90,7 +90,7 @@ public class GuiShareToLan extends GuiScreen
         else if (button.id == 101)
         {
             this.mc.displayGuiScreen((GuiScreen)null);
-            String s = this.mc.getIntegratedServer().shareToLAN(WorldSettings.GameType.getByName(this.gameMode), this.allowCheats);
+            String s = this.mc.getIntegratedServer().shareToLAN(GameType.getByName(this.gameMode), this.allowCheats);
             ITextComponent itextcomponent;
 
             if (s != null)

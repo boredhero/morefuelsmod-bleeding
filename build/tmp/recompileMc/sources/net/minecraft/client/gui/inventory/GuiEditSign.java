@@ -21,7 +21,7 @@ import org.lwjgl.input.Keyboard;
 public class GuiEditSign extends GuiScreen
 {
     /** Reference to the sign object. */
-    private TileEntitySign tileSign;
+    private final TileEntitySign tileSign;
     /** Counts the number of screen updates. */
     private int updateCounter;
     /** The index of the line that is being edited. */
@@ -42,7 +42,7 @@ public class GuiEditSign extends GuiScreen
     {
         this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
-        this.buttonList.add(this.doneBtn = new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, I18n.format("gui.done", new Object[0])));
+        this.doneBtn = this.func_189646_b(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 120, I18n.format("gui.done", new Object[0])));
         this.tileSign.setEditable(false);
     }
 
@@ -132,7 +132,7 @@ public class GuiEditSign extends GuiScreen
         GlStateManager.pushMatrix();
         GlStateManager.translate((float)(this.width / 2), 0.0F, 50.0F);
         float f = 93.75F;
-        GlStateManager.scale(-f, -f, -f);
+        GlStateManager.scale(-93.75F, -93.75F, -93.75F);
         GlStateManager.rotate(180.0F, 0.0F, 1.0F, 0.0F);
         Block block = this.tileSign.getBlockType();
 

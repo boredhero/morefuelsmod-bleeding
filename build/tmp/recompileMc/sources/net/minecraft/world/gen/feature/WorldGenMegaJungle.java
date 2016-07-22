@@ -125,7 +125,7 @@ public class WorldGenMegaJungle extends WorldGenHugeTrees
     {
         int i = 2;
 
-        for (int j = -i; j <= 0; ++j)
+        for (int j = -2; j <= 0; ++j)
         {
             this.growLeavesLayerStrict(worldIn, p_175930_2_.up(j), p_175930_3_ + 1 - j);
         }

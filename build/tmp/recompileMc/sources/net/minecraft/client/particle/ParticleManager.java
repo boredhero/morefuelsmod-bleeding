@@ -98,6 +98,7 @@ public class ParticleManager
         this.registerParticle(EnumParticleTypes.FOOTSTEP.getParticleID(), new ParticleFootStep.Factory());
         this.registerParticle(EnumParticleTypes.CLOUD.getParticleID(), new ParticleCloud.Factory());
         this.registerParticle(EnumParticleTypes.REDSTONE.getParticleID(), new ParticleRedstone.Factory());
+        this.registerParticle(EnumParticleTypes.FALLING_DUST.getParticleID(), new ParticleFallingDust.Factory());
         this.registerParticle(EnumParticleTypes.SNOWBALL.getParticleID(), new ParticleBreaking.SnowballFactory());
         this.registerParticle(EnumParticleTypes.SNOW_SHOVEL.getParticleID(), new ParticleSnowShovel.Factory());
         this.registerParticle(EnumParticleTypes.SLIME.getParticleID(), new ParticleBreaking.SlimeFactory());
@@ -270,6 +271,7 @@ public class ParticleManager
         Particle.interpPosX = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double)partialTicks;
         Particle.interpPosY = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double)partialTicks;
         Particle.interpPosZ = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double)partialTicks;
+        Particle.field_190016_K = entityIn.getLook(partialTicks);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.alphaFunc(516, 0.003921569F);
@@ -392,15 +394,15 @@ public class ParticleManager
             state = state.getActualState(this.worldObj, pos);
             int i = 4;
 
-            for (int j = 0; j < i; ++j)
+            for (int j = 0; j < 4; ++j)
             {
-                for (int k = 0; k < i; ++k)
+                for (int k = 0; k < 4; ++k)
                 {
-                    for (int l = 0; l < i; ++l)
+                    for (int l = 0; l < 4; ++l)
                     {
-                        double d0 = (double)pos.getX() + ((double)j + 0.5D) / (double)i;
-                        double d1 = (double)pos.getY() + ((double)k + 0.5D) / (double)i;
-                        double d2 = (double)pos.getZ() + ((double)l + 0.5D) / (double)i;
+                        double d0 = (double)pos.getX() + ((double)j + 0.5D) / 4.0D;
+                        double d1 = (double)pos.getY() + ((double)k + 0.5D) / 4.0D;
+                        double d2 = (double)pos.getZ() + ((double)l + 0.5D) / 4.0D;
                         this.addEffect((new ParticleDigging(this.worldObj, d0, d1, d2, d0 - (double)pos.getX() - 0.5D, d1 - (double)pos.getY() - 0.5D, d2 - (double)pos.getZ() - 0.5D, state)).setBlockPos(pos));
                     }
                 }
@@ -422,38 +424,38 @@ public class ParticleManager
             int k = pos.getZ();
             float f = 0.1F;
             AxisAlignedBB axisalignedbb = iblockstate.getBoundingBox(this.worldObj, pos);
-            double d0 = (double)i + this.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - (double)(f * 2.0F)) + (double)f + axisalignedbb.minX;
-            double d1 = (double)j + this.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - (double)(f * 2.0F)) + (double)f + axisalignedbb.minY;
-            double d2 = (double)k + this.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - (double)(f * 2.0F)) + (double)f + axisalignedbb.minZ;
+            double d0 = (double)i + this.rand.nextDouble() * (axisalignedbb.maxX - axisalignedbb.minX - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minX;
+            double d1 = (double)j + this.rand.nextDouble() * (axisalignedbb.maxY - axisalignedbb.minY - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minY;
+            double d2 = (double)k + this.rand.nextDouble() * (axisalignedbb.maxZ - axisalignedbb.minZ - 0.20000000298023224D) + 0.10000000149011612D + axisalignedbb.minZ;
 
             if (side == EnumFacing.DOWN)
             {
-                d1 = (double)j + axisalignedbb.minY - (double)f;
+                d1 = (double)j + axisalignedbb.minY - 0.10000000149011612D;
             }
 
             if (side == EnumFacing.UP)
             {
-                d1 = (double)j + axisalignedbb.maxY + (double)f;
+                d1 = (double)j + axisalignedbb.maxY + 0.10000000149011612D;
             }
 
             if (side == EnumFacing.NORTH)
             {
-                d2 = (double)k + axisalignedbb.minZ - (double)f;
+                d2 = (double)k + axisalignedbb.minZ - 0.10000000149011612D;
             }
 
             if (side == EnumFacing.SOUTH)
             {
-                d2 = (double)k + axisalignedbb.maxZ + (double)f;
+                d2 = (double)k + axisalignedbb.maxZ + 0.10000000149011612D;
             }
 
             if (side == EnumFacing.WEST)
             {
-                d0 = (double)i + axisalignedbb.minX - (double)f;
+                d0 = (double)i + axisalignedbb.minX - 0.10000000149011612D;
             }
 
             if (side == EnumFacing.EAST)
             {
-                d0 = (double)i + axisalignedbb.maxX + (double)f;
+                d0 = (double)i + axisalignedbb.maxX + 0.10000000149011612D;
             }
 
             this.addEffect((new ParticleDigging(this.worldObj, d0, d1, d2, 0.0D, 0.0D, 0.0D, iblockstate)).setBlockPos(pos).multiplyVelocity(0.2F).multipleParticleScaleBy(0.6F));

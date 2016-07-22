@@ -25,7 +25,7 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
     private final Map<ResourceLocation, ITextureObject> mapTextureObjects = Maps.<ResourceLocation, ITextureObject>newHashMap();
     private final List<ITickable> listTickables = Lists.<ITickable>newArrayList();
     private final Map<String, Integer> mapTextureCounters = Maps.<String, Integer>newHashMap();
-    private IResourceManager theResourceManager;
+    private final IResourceManager theResourceManager;
 
     public TextureManager(IResourceManager resourceManager)
     {
@@ -68,7 +68,7 @@ public class TextureManager implements ITickable, IResourceManagerReloadListener
         }
         catch (IOException ioexception)
         {
-            LOGGER.warn((String)("Failed to load texture: " + textureLocation), (Throwable)ioexception);
+            LOGGER.warn("Failed to load texture: {}", new Object[] {textureLocation, ioexception});
             textureObj = TextureUtil.MISSING_TEXTURE;
             this.mapTextureObjects.put(textureLocation, (ITextureObject)textureObj);
             flag = false;

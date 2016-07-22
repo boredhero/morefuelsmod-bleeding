@@ -104,6 +104,12 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         }
     }
 
+    protected <T extends GuiButton> T func_189646_b(T p_189646_1_)
+    {
+        this.buttonList.add(p_189646_1_);
+        return (T)p_189646_1_;
+    }
+
     /**
      * Returns a string stored in the system clipboard.
      */
@@ -225,17 +231,17 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
             this.zLevel = 300.0F;
             this.itemRender.zLevel = 300.0F;
             int l = -267386864;
-            this.drawGradientRect(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, l, l);
-            this.drawGradientRect(l1 - 3, i2 + k + 3, l1 + i + 3, i2 + k + 4, l, l);
-            this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 + k + 3, l, l);
-            this.drawGradientRect(l1 - 4, i2 - 3, l1 - 3, i2 + k + 3, l, l);
-            this.drawGradientRect(l1 + i + 3, i2 - 3, l1 + i + 4, i2 + k + 3, l, l);
+            this.drawGradientRect(l1 - 3, i2 - 4, l1 + i + 3, i2 - 3, -267386864, -267386864);
+            this.drawGradientRect(l1 - 3, i2 + k + 3, l1 + i + 3, i2 + k + 4, -267386864, -267386864);
+            this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 + k + 3, -267386864, -267386864);
+            this.drawGradientRect(l1 - 4, i2 - 3, l1 - 3, i2 + k + 3, -267386864, -267386864);
+            this.drawGradientRect(l1 + i + 3, i2 - 3, l1 + i + 4, i2 + k + 3, -267386864, -267386864);
             int i1 = 1347420415;
-            int j1 = (i1 & 16711422) >> 1 | i1 & -16777216;
-            this.drawGradientRect(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, i1, j1);
-            this.drawGradientRect(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, i1, j1);
-            this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, i1, i1);
-            this.drawGradientRect(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, j1, j1);
+            int j1 = 1344798847;
+            this.drawGradientRect(l1 - 3, i2 - 3 + 1, l1 - 3 + 1, i2 + k + 3 - 1, 1347420415, 1344798847);
+            this.drawGradientRect(l1 + i + 2, i2 - 3 + 1, l1 + i + 3, i2 + k + 3 - 1, 1347420415, 1344798847);
+            this.drawGradientRect(l1 - 3, i2 - 3, l1 + i + 3, i2 - 3 + 1, 1347420415, 1347420415);
+            this.drawGradientRect(l1 - 3, i2 + k + 2, l1 + i + 3, i2 + k + 3, 1344798847, 1344798847);
 
             for (int k1 = 0; k1 < textLines.size(); ++k1)
             {
@@ -425,7 +431,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                     }
                     catch (URISyntaxException urisyntaxexception)
                     {
-                        LOGGER.error((String)("Can\'t open url for " + clickevent), (Throwable)urisyntaxexception);
+                        LOGGER.error("Can\'t open url for {}", new Object[] {clickevent, urisyntaxexception});
                     }
                 }
                 else if (clickevent.getAction() == ClickEvent.Action.OPEN_FILE)
@@ -443,7 +449,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                 }
                 else
                 {
-                    LOGGER.error("Don\'t know how to handle " + clickevent);
+                    LOGGER.error("Don\'t know how to handle {}", new Object[] {clickevent});
                 }
 
                 return true;

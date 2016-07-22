@@ -42,32 +42,37 @@ public class EntityAIHurtByTarget extends EntityAITarget
 
         if (this.entityCallsForHelp)
         {
-            double d0 = this.getTargetDistance();
-
-            for (EntityCreature entitycreature : this.taskOwner.worldObj.getEntitiesWithinAABB(this.taskOwner.getClass(), (new AxisAlignedBB(this.taskOwner.posX, this.taskOwner.posY, this.taskOwner.posZ, this.taskOwner.posX + 1.0D, this.taskOwner.posY + 1.0D, this.taskOwner.posZ + 1.0D)).expand(d0, 10.0D, d0)))
-            {
-                if (this.taskOwner != entitycreature && entitycreature.getAttackTarget() == null && (!(this.taskOwner instanceof EntityTameable) || ((EntityTameable)this.taskOwner).getOwner() == ((EntityTameable)entitycreature).getOwner()) && !entitycreature.isOnSameTeam(this.taskOwner.getAITarget()))
-                {
-                    boolean flag = false;
-
-                    for (Class<?> oclass : this.targetClasses)
-                    {
-                        if (entitycreature.getClass() == oclass)
-                        {
-                            flag = true;
-                            break;
-                        }
-                    }
-
-                    if (!flag)
-                    {
-                        this.setEntityAttackTarget(entitycreature, this.taskOwner.getAITarget());
-                    }
-                }
-            }
+            this.func_190105_f();
         }
 
         super.startExecuting();
+    }
+
+    protected void func_190105_f()
+    {
+        double d0 = this.getTargetDistance();
+
+        for (EntityCreature entitycreature : this.taskOwner.worldObj.getEntitiesWithinAABB(this.taskOwner.getClass(), (new AxisAlignedBB(this.taskOwner.posX, this.taskOwner.posY, this.taskOwner.posZ, this.taskOwner.posX + 1.0D, this.taskOwner.posY + 1.0D, this.taskOwner.posZ + 1.0D)).expand(d0, 10.0D, d0)))
+        {
+            if (this.taskOwner != entitycreature && entitycreature.getAttackTarget() == null && (!(this.taskOwner instanceof EntityTameable) || ((EntityTameable)this.taskOwner).getOwner() == ((EntityTameable)entitycreature).getOwner()) && !entitycreature.isOnSameTeam(this.taskOwner.getAITarget()))
+            {
+                boolean flag = false;
+
+                for (Class<?> oclass : this.targetClasses)
+                {
+                    if (entitycreature.getClass() == oclass)
+                    {
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (!flag)
+                {
+                    this.setEntityAttackTarget(entitycreature, this.taskOwner.getAITarget());
+                }
+            }
+        }
     }
 
     protected void setEntityAttackTarget(EntityCreature creatureIn, EntityLivingBase entityLivingBaseIn)

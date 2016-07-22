@@ -6,7 +6,7 @@ import net.minecraft.pathfinding.PathNavigateGround;
 
 public class EntityAIRestrictSun extends EntityAIBase
 {
-    private EntityCreature theEntity;
+    private final EntityCreature theEntity;
 
     public EntityAIRestrictSun(EntityCreature creature)
     {

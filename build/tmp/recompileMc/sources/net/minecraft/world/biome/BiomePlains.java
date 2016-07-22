@@ -6,6 +6,7 @@ import net.minecraft.block.BlockFlower;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.feature.WorldGenAbstractTree;
 
 public class BiomePlains extends Biome
 {
@@ -16,7 +17,8 @@ public class BiomePlains extends Biome
         super(properties);
         this.sunflowers = p_i46699_1_;
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityHorse.class, 5, 2, 6));
-        this.theBiomeDecorator.treesPerChunk = -999;
+        this.theBiomeDecorator.treesPerChunk = 0;
+        this.theBiomeDecorator.field_189870_A = 0.05F;
         this.theBiomeDecorator.flowersPerChunk = 4;
         this.theBiomeDecorator.grassPerChunk = 10;
     }
@@ -106,5 +108,10 @@ public class BiomePlains extends Biome
         addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.HOUSTONIA), 20);
         addFlower(red.getDefaultState().withProperty(red.getTypeProperty(), BlockFlower.EnumFlowerType.OXEYE_DAISY), 20);
         addFlower(yel.getDefaultState().withProperty(yel.getTypeProperty(), BlockFlower.EnumFlowerType.DANDELION), 30);
+    }
+
+    public WorldGenAbstractTree genBigTreeChance(Random rand)
+    {
+        return (WorldGenAbstractTree)(rand.nextInt(3) == 0 ? BIG_TREE_FEATURE : TREE_FEATURE);
     }
 }

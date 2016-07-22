@@ -36,7 +36,7 @@ public class PropertyManager
             }
             catch (Exception exception)
             {
-                LOGGER.warn((String)("Failed to load " + propertiesFile), (Throwable)exception);
+                LOGGER.warn("Failed to load {}", new Object[] {propertiesFile, exception});
                 this.generateNewProperties();
             }
             finally
@@ -56,7 +56,7 @@ public class PropertyManager
         }
         else
         {
-            LOGGER.warn(propertiesFile + " does not exist");
+            LOGGER.warn("{} does not exist", new Object[] {propertiesFile});
             this.generateNewProperties();
         }
     }
@@ -84,7 +84,7 @@ public class PropertyManager
         }
         catch (Exception exception)
         {
-            LOGGER.warn((String)("Failed to save " + this.serverPropertiesFile), (Throwable)exception);
+            LOGGER.warn("Failed to save {}", new Object[] {this.serverPropertiesFile, exception});
             this.generateNewProperties();
         }
         finally

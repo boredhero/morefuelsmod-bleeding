@@ -36,8 +36,8 @@ public class GuiEnchantment extends GuiContainer
     /** The player inventory currently bound to this GuiEnchantment instance. */
     private final InventoryPlayer playerInventory;
     /** A Random instance for use with the enchantment gui */
-    private Random random = new Random();
-    private ContainerEnchantment container;
+    private final Random random = new Random();
+    private final ContainerEnchantment container;
     public int ticks;
     public float flip;
     public float oFlip;
@@ -118,9 +118,9 @@ public class GuiEnchantment extends GuiContainer
         GlStateManager.loadIdentity();
         RenderHelper.enableStandardItemLighting();
         GlStateManager.translate(0.0F, 3.3F, -16.0F);
-        GlStateManager.scale(f, f, f);
+        GlStateManager.scale(1.0F, 1.0F, 1.0F);
         float f1 = 5.0F;
-        GlStateManager.scale(f1, f1, f1);
+        GlStateManager.scale(5.0F, 5.0F, 5.0F);
         GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
         this.mc.getTextureManager().bindTexture(ENCHANTMENT_TABLE_BOOK_TEXTURE);
         GlStateManager.rotate(20.0F, 1.0F, 0.0F, 0.0F);
@@ -240,7 +240,7 @@ public class GuiEnchantment extends GuiContainer
             if (this.isPointInRegion(60, 14 + 19 * j, 108, 17, mouseX, mouseY) && k > 0 && l >= 0 && enchantment != null)
             {
                 List<String> list = Lists.<String>newArrayList();
-                list.add(TextFormatting.WHITE.toString() + TextFormatting.ITALIC.toString() + I18n.format("container.enchant.clue", new Object[] {enchantment.getTranslatedName(l)}));
+                list.add("" + TextFormatting.WHITE + TextFormatting.ITALIC + I18n.format("container.enchant.clue", new Object[] {enchantment.getTranslatedName(l)}));
 
                 if (!flag)
                 {
@@ -248,7 +248,7 @@ public class GuiEnchantment extends GuiContainer
 
                     if (this.mc.thePlayer.experienceLevel < k)
                     {
-                        list.add(TextFormatting.RED.toString() + "Level Requirement: " + this.container.enchantLevels[j]);
+                        list.add(TextFormatting.RED + "Level Requirement: " + this.container.enchantLevels[j]);
                     }
                     else
                     {
@@ -264,7 +264,7 @@ public class GuiEnchantment extends GuiContainer
                         }
 
                         TextFormatting textformatting = i >= i1 ? TextFormatting.GRAY : TextFormatting.RED;
-                        list.add(textformatting.toString() + "" + s);
+                        list.add(textformatting + "" + s);
 
                         if (i1 == 1)
                         {
@@ -275,7 +275,7 @@ public class GuiEnchantment extends GuiContainer
                             s = I18n.format("container.enchant.level.many", new Object[] {Integer.valueOf(i1)});
                         }
 
-                        list.add(TextFormatting.GRAY.toString() + "" + s);
+                        list.add(TextFormatting.GRAY + "" + s);
                     }
                 }
 
@@ -329,7 +329,7 @@ public class GuiEnchantment extends GuiContainer
         this.open = MathHelper.clamp_float(this.open, 0.0F, 1.0F);
         float f1 = (this.flipT - this.flip) * 0.4F;
         float f = 0.2F;
-        f1 = MathHelper.clamp_float(f1, -f, f);
+        f1 = MathHelper.clamp_float(f1, -0.2F, 0.2F);
         this.flipA += (f1 - this.flipA) * 0.9F;
         this.flip += this.flipA;
     }

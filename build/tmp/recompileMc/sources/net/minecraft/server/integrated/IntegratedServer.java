@@ -23,6 +23,7 @@ import net.minecraft.util.CryptManager;
 import net.minecraft.util.HttpUtil;
 import net.minecraft.util.Util;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.GameType;
 import net.minecraft.world.ServerWorldEventHandler;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.WorldServerMulti;
@@ -61,12 +62,12 @@ public class IntegratedServer extends MinecraftServer
         this.theWorldSettings = this.isDemo() ? DemoWorldServer.DEMO_WORLD_SETTINGS : worldSettingsIn;
     }
 
-    protected ServerCommandManager createNewCommandManager()
+    public ServerCommandManager createNewCommandManager()
     {
         return new IntegratedServerCommandManager(this);
     }
 
-    protected void loadAllWorlds(String saveName, String worldNameIn, long seed, WorldType type, String generatorOptions)
+    public void loadAllWorlds(String saveName, String worldNameIn, long seed, WorldType type, String generatorOptions)
     {
         this.convertMapIfNeeded(saveName);
         ISaveHandler isavehandler = this.getActiveAnvilConverter().getSaveLoader(saveName, true);
@@ -109,9 +110,9 @@ public class IntegratedServer extends MinecraftServer
     /**
      * Initialises the server and starts it.
      */
-    protected boolean startServer() throws IOException
+    public boolean startServer() throws IOException
     {
-        LOGGER.info("Starting integrated minecraft server version 1.9.4");
+        LOGGER.info("Starting integrated minecraft server version 1.10.2");
         this.setOnlineMode(true);
         this.setCanSpawnAnimals(true);
         this.setCanSpawnNPCs(true);
@@ -191,7 +192,7 @@ public class IntegratedServer extends MinecraftServer
         return false;
     }
 
-    public WorldSettings.GameType getGameType()
+    public GameType getGameType()
     {
         return this.theWorldSettings.getGameType();
     }
@@ -259,7 +260,7 @@ public class IntegratedServer extends MinecraftServer
     /**
      * Called on exit from the main run() loop.
      */
-    protected void finalTick(CrashReport report)
+    public void finalTick(CrashReport report)
     {
         this.mc.crashed(report);
     }
@@ -290,7 +291,7 @@ public class IntegratedServer extends MinecraftServer
                 else
                 {
                     s = IntegratedServer.this.getServerModName();
-                    return !s.equals("vanilla") ? "Definitely; Server brand changed to \'" + s + "\'" : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated" : "Probably not. Jar signature remains and both client + server brands are untouched.");
+                    return !"vanilla".equals(s) ? "Definitely; Server brand changed to \'" + s + "\'" : (Minecraft.class.getSigners() == null ? "Very likely; Jar signature invalidated" : "Probably not. Jar signature remains and both client + server brands are untouched.");
                 }
             }
         });
@@ -324,7 +325,7 @@ public class IntegratedServer extends MinecraftServer
     /**
      * On dedicated does nothing. On integrated, sets commandsAllowedForAll, gameType and allows external connections.
      */
-    public String shareToLAN(WorldSettings.GameType type, boolean allowCheats)
+    public String shareToLAN(GameType type, boolean allowCheats)
     {
         try
         {
@@ -345,7 +346,7 @@ public class IntegratedServer extends MinecraftServer
             }
 
             this.getNetworkSystem().addLanEndpoint((InetAddress)null, i);
-            LOGGER.info("Started on " + i);
+            LOGGER.info("Started on {}", new Object[] {Integer.valueOf(i)});
             this.isPublic = true;
             this.lanServerPing = new ThreadLanServerPing(this.getMOTD(), i + "");
             this.lanServerPing.start();
@@ -379,6 +380,7 @@ public class IntegratedServer extends MinecraftServer
      */
     public void initiateShutdown()
     {
+        if (isServerRunning())
         Futures.getUnchecked(this.addScheduledTask(new Runnable()
         {
             public void run()
@@ -409,7 +411,7 @@ public class IntegratedServer extends MinecraftServer
     /**
      * Sets the game type for all worlds.
      */
-    public void setGameType(WorldSettings.GameType gameMode)
+    public void setGameType(GameType gameMode)
     {
         super.setGameType(gameMode);
         this.getPlayerList().setGameType(gameMode);

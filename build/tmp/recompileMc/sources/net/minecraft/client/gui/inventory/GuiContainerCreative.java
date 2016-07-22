@@ -41,7 +41,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer
 {
     /** The location of the creative inventory tabs texture */
     private static final ResourceLocation CREATIVE_INVENTORY_TABS = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
-    private static InventoryBasic basicInventory = new InventoryBasic("tmp", true, 45);
+    private static final InventoryBasic basicInventory = new InventoryBasic("tmp", true, 45);
     /** Currently selected creative inventory tab index. */
     private static int selectedTabIndex = CreativeTabs.BUILDING_BLOCKS.getTabIndex();
     /** Amount scrolled in Creative mode inventory (0 = top, 1 = bottom) */
@@ -911,7 +911,7 @@ public class GuiContainerCreative extends InventoryEffectRenderer
         GlStateManager.disableLighting();
         GlStateManager.color(1F, 1F, 1F); //Forge: Reset color in case Items change it.
         GlStateManager.enableBlend(); //Forge: Make sure blend is enabled else tabs show a white border.
-        this.drawTexturedModalRect(l, i1, j, k, 28, j1);
+        this.drawTexturedModalRect(l, i1, j, k, 28, 32);
         this.zLevel = 100.0F;
         this.itemRender.zLevel = 100.0F;
         l = l + 6;

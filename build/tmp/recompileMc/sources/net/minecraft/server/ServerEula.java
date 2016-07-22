@@ -39,7 +39,7 @@ public class ServerEula
         }
         catch (Exception var8)
         {
-            LOG.warn("Failed to load " + inFile);
+            LOG.warn("Failed to load {}", new Object[] {inFile});
             this.createEULAFile();
         }
         finally
@@ -68,7 +68,7 @@ public class ServerEula
         }
         catch (Exception exception)
         {
-            LOG.warn((String)("Failed to save " + this.eulaFile), (Throwable)exception);
+            LOG.warn("Failed to save {}", new Object[] {this.eulaFile, exception});
         }
         finally
         {

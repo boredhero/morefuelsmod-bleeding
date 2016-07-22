@@ -1,3 +1,22 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.minecraftforge.fml.common.registry;
 
 import java.lang.reflect.Field;
@@ -50,6 +69,10 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
      * Persistent substitutions are the mechanism to allow mods to override specific behaviours with new behaviours.
      */
     private final BiMap<ResourceLocation, I> persistentSubstitutions = HashBiMap.create();
+    /**
+     * Substitution originals - these are the originals that are being substituted
+     */
+    private final BiMap<ResourceLocation, I> substitutionOriginals = HashBiMap.create();
     /**
      * This is the current active substitution set for a particular world. It will change as worlds come and go.
      */
@@ -599,6 +622,11 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
             I sub = getPersistentSubstitutions().get(nameToReplace);
             getExistingDelegate(original).changeReference(sub);
             activeSubstitutions.put(nameToReplace, sub);
+            int id = getIDForObjectBypass(original);
+            // force the new object into the existing map
+            addObjectRaw(id, nameToReplace, sub);
+            // Track the original in the substitution originals collection
+            substitutionOriginals.put(nameToReplace, original);
             return original;
         }
         return null;
@@ -747,7 +775,11 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
                 remappedIds.put(itemName, new Integer[] {currId, newId});
             }
             I obj = currentRegistry.getRaw(itemName);
-
+            // If we have an object in the originals set, we use that for initial adding - substitute activation will readd the substitute if neceessary later
+            if (currentRegistry.substitutionOriginals.containsKey(itemName))
+            {
+                obj = currentRegistry.substitutionOriginals.get(itemName);
+            }
             add(newId, itemName, obj);
         }
     }

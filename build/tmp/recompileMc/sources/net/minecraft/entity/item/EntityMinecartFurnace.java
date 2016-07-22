@@ -15,6 +15,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -34,6 +35,11 @@ public class EntityMinecartFurnace extends EntityMinecart
     public EntityMinecartFurnace(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189671_a(DataFixer p_189671_0_)
+    {
+        EntityMinecart.func_189669_a(p_189671_0_, "MinecartFurnace");
     }
 
     public EntityMinecart.Type getType()
@@ -61,7 +67,8 @@ public class EntityMinecartFurnace extends EntityMinecart
 
         if (this.fuel <= 0)
         {
-            this.pushX = this.pushZ = 0.0D;
+            this.pushX = 0.0D;
+            this.pushZ = 0.0D;
         }
 
         this.setMinecartPowered(this.fuel > 0);
@@ -128,8 +135,8 @@ public class EntityMinecartFurnace extends EntityMinecart
             this.motionX *= 0.800000011920929D;
             this.motionY *= 0.0D;
             this.motionZ *= 0.800000011920929D;
-            this.motionX += this.pushX * d1;
-            this.motionZ += this.pushZ * d1;
+            this.motionX += this.pushX * 1.0D;
+            this.motionZ += this.pushZ * 1.0D;
         }
         else
         {

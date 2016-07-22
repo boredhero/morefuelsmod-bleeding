@@ -40,7 +40,7 @@ public class RegistrySimple<K, V> implements IRegistry<K, V>
 
         if (this.registryObjects.containsKey(key))
         {
-            LOGGER.debug("Adding duplicate key \'" + key + "\' to registry");
+            LOGGER.debug("Adding duplicate key \'{}\' to registry", new Object[] {key});
         }
 
         this.registryObjects.put(key, value);

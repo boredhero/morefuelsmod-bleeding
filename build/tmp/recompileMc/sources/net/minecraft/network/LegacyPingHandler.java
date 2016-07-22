@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 public class LegacyPingHandler extends ChannelInboundHandlerAdapter
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private NetworkSystem networkSystem;
+    private final NetworkSystem networkSystem;
 
     public LegacyPingHandler(NetworkSystem networkSystemIn)
     {

@@ -83,14 +83,12 @@ public class ItemColors
                             int i = 0;
                             int j = 0;
                             int k = 0;
-                            int l = 0;
 
-                            for (int i1 = aint.length; l < i1; ++l)
+                            for (int l : aint)
                             {
-                                int j1 = aint[l];
-                                i += (j1 & 16711680) >> 16;
-                                j += (j1 & 65280) >> 8;
-                                k += (j1 & 255) >> 0;
+                                i += (l & 16711680) >> 16;
+                                j += (l & 65280) >> 8;
+                                k += (l & 255) >> 0;
                             }
 
                             i = i / aint.length;
@@ -143,25 +141,21 @@ public class ItemColors
 
     public void registerItemColorHandler(IItemColor itemColor, Block... blocksIn)
     {
-        int i = 0;
-
-        for (int j = blocksIn.length; i < j; ++i)
+        for (Block block : blocksIn)
         {
-            if (blocksIn[i] == null) throw new IllegalArgumentException("Block registered to item color handler cannot be null!");
-            if (blocksIn[i].getRegistryName() == null) throw new IllegalArgumentException("Block must be registered before assigning color handler.");
-            this.itemColorMap.put(Item.getItemFromBlock(blocksIn[i]).delegate, itemColor);
+            if (block == null) throw new IllegalArgumentException("Block registered to item color handler cannot be null!");
+            if (block.getRegistryName() == null) throw new IllegalArgumentException("Block must be registered before assigning color handler.");
+            this.itemColorMap.put(Item.getItemFromBlock(block).delegate, itemColor);
         }
     }
 
     public void registerItemColorHandler(IItemColor itemColor, Item... itemsIn)
     {
-        int i = 0;
-
-        for (int j = itemsIn.length; i < j; ++i)
+        for (Item item : itemsIn)
         {
-            if (itemsIn[i] == null) throw new IllegalArgumentException("Item registered to item color handler cannot be null!");
-            if (itemsIn[i].getRegistryName() == null) throw new IllegalArgumentException("Item must be registered before assigning color handler.");
-            this.itemColorMap.put(itemsIn[i].delegate, itemColor);
+            if (item == null) throw new IllegalArgumentException("Item registered to item color handler cannot be null!");
+            if (item.getRegistryName() == null) throw new IllegalArgumentException("Item must be registered before assigning color handler.");
+            this.itemColorMap.put(item.delegate, itemColor);
         }
     }
 }

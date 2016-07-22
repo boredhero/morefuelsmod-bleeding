@@ -60,11 +60,11 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
                 f5 = 0.5F;
             }
 
-            float f7 = (float)(-(y + (double)f3));
+            float f7 = (float)(-(y + 0.75D));
             float f8 = f7 + (float)ActiveRenderInfo.getPosition().yCoord;
             float f9 = f7 + f4 + (float)ActiveRenderInfo.getPosition().yCoord;
             float f10 = f8 / f9;
-            f10 = (float)(y + (double)f3) + f10;
+            f10 = (float)(y + 0.75D) + f10;
             GlStateManager.translate(f, f10, f2);
             GlStateManager.texGen(GlStateManager.TexGen.S, 9217);
             GlStateManager.texGen(GlStateManager.TexGen.T, 9217);
@@ -96,16 +96,10 @@ public class TileEntityEndPortalRenderer extends TileEntitySpecialRenderer<TileE
             float f11 = (RANDOM.nextFloat() * 0.5F + 0.1F) * f6;
             float f12 = (RANDOM.nextFloat() * 0.5F + 0.4F) * f6;
             float f13 = (RANDOM.nextFloat() * 0.5F + 0.5F) * f6;
-
-            if (i == 0)
-            {
-                f11 = f12 = f13 = 1.0F * f6;
-            }
-
-            vertexbuffer.pos(x, y + (double)f3, z).color(f11, f12, f13, 1.0F).endVertex();
-            vertexbuffer.pos(x, y + (double)f3, z + 1.0D).color(f11, f12, f13, 1.0F).endVertex();
-            vertexbuffer.pos(x + 1.0D, y + (double)f3, z + 1.0D).color(f11, f12, f13, 1.0F).endVertex();
-            vertexbuffer.pos(x + 1.0D, y + (double)f3, z).color(f11, f12, f13, 1.0F).endVertex();
+            vertexbuffer.pos(x, y + 0.75D, z).color(f11, f12, f13, 1.0F).endVertex();
+            vertexbuffer.pos(x, y + 0.75D, z + 1.0D).color(f11, f12, f13, 1.0F).endVertex();
+            vertexbuffer.pos(x + 1.0D, y + 0.75D, z + 1.0D).color(f11, f12, f13, 1.0F).endVertex();
+            vertexbuffer.pos(x + 1.0D, y + 0.75D, z).color(f11, f12, f13, 1.0F).endVertex();
             tessellator.draw();
             GlStateManager.popMatrix();
             GlStateManager.matrixMode(5888);

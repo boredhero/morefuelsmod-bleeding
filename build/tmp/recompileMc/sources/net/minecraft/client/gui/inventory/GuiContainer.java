@@ -105,7 +105,7 @@ public abstract class GuiContainer extends GuiScreen
         this.theSlot = null;
         int k = 240;
         int l = 240;
-        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float)k, (float)l);
+        OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0F, 240.0F);
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 
         for (int i1 = 0; i1 < this.inventorySlots.inventorySlots.size(); ++i1)
@@ -156,7 +156,7 @@ public abstract class GuiContainer extends GuiScreen
                 }
             }
 
-            this.drawItemStack(itemstack, mouseX - i - j2, mouseY - j - k2, s);
+            this.drawItemStack(itemstack, mouseX - i - 8, mouseY - j - k2, s);
         }
 
         if (this.returningStack != null)

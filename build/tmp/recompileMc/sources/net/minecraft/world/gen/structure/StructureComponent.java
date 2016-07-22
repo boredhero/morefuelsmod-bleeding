@@ -17,6 +17,7 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
 public abstract class StructureComponent
@@ -284,6 +285,15 @@ public abstract class StructureComponent
         return !boundingboxIn.isVecInside(blockpos) ? Blocks.AIR.getDefaultState() : worldIn.getBlockState(blockpos);
     }
 
+    protected int func_189916_b(World p_189916_1_, int p_189916_2_, int p_189916_3_, int p_189916_4_, StructureBoundingBox p_189916_5_)
+    {
+        int i = this.getXWithOffset(p_189916_2_, p_189916_4_);
+        int j = this.getYWithOffset(p_189916_3_ + 1);
+        int k = this.getZWithOffset(p_189916_2_, p_189916_4_);
+        BlockPos blockpos = new BlockPos(i, j, k);
+        return !p_189916_5_.isVecInside(blockpos) ? EnumSkyBlock.SKY.defaultLightValue : p_189916_1_.getLightFor(EnumSkyBlock.SKY, blockpos);
+    }
+
     /**
      * arguments: (World worldObj, StructureBoundingBox structBB, int minX, int minY, int minZ, int maxX, int maxY, int
      * maxZ)
@@ -351,26 +361,23 @@ public abstract class StructureComponent
         }
     }
 
-    /**
-     * Randomly fill the given area with the blockstate2 and cover them with blockstate1
-     */
-    protected void fillWithBlocksRandomly(World worldIn, StructureBoundingBox boundingboxIn, Random rand, float chance, int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState blockstate1, IBlockState blockstate2, boolean excludeAir)
+    protected void func_189914_a(World p_189914_1_, StructureBoundingBox p_189914_2_, Random p_189914_3_, float p_189914_4_, int p_189914_5_, int p_189914_6_, int p_189914_7_, int p_189914_8_, int p_189914_9_, int p_189914_10_, IBlockState p_189914_11_, IBlockState p_189914_12_, boolean p_189914_13_, int p_189914_14_)
     {
-        for (int i = minY; i <= maxY; ++i)
+        for (int i = p_189914_6_; i <= p_189914_9_; ++i)
         {
-            for (int j = minX; j <= maxX; ++j)
+            for (int j = p_189914_5_; j <= p_189914_8_; ++j)
             {
-                for (int k = minZ; k <= maxZ; ++k)
+                for (int k = p_189914_7_; k <= p_189914_10_; ++k)
                 {
-                    if (rand.nextFloat() <= chance && (!excludeAir || this.getBlockStateFromPos(worldIn, j, i, k, boundingboxIn).getMaterial() != Material.AIR))
+                    if (p_189914_3_.nextFloat() <= p_189914_4_ && (!p_189914_13_ || this.getBlockStateFromPos(p_189914_1_, j, i, k, p_189914_2_).getMaterial() != Material.AIR) && (p_189914_14_ <= 0 || this.func_189916_b(p_189914_1_, j, i, k, p_189914_2_) < p_189914_14_))
                     {
-                        if (i != minY && i != maxY && j != minX && j != maxX && k != minZ && k != maxZ)
+                        if (i != p_189914_6_ && i != p_189914_9_ && j != p_189914_5_ && j != p_189914_8_ && k != p_189914_7_ && k != p_189914_10_)
                         {
-                            this.setBlockState(worldIn, blockstate2, j, i, k, boundingboxIn);
+                            this.setBlockState(p_189914_1_, p_189914_12_, j, i, k, p_189914_2_);
                         }
                         else
                         {
-                            this.setBlockState(worldIn, blockstate1, j, i, k, boundingboxIn);
+                            this.setBlockState(p_189914_1_, p_189914_11_, j, i, k, p_189914_2_);
                         }
                     }
                 }
@@ -504,13 +511,10 @@ public abstract class StructureComponent
         }
     }
 
-    /**
-     * Places door on given position
-     */
-    protected void placeDoorCurrentPosition(World worldIn, StructureBoundingBox boundingBoxIn, Random rand, int x, int y, int z, EnumFacing facing)
+    protected void func_189915_a(World p_189915_1_, StructureBoundingBox p_189915_2_, Random p_189915_3_, int p_189915_4_, int p_189915_5_, int p_189915_6_, EnumFacing p_189915_7_, BlockDoor p_189915_8_)
     {
-        this.setBlockState(worldIn, Blocks.OAK_DOOR.getDefaultState().withProperty(BlockDoor.FACING, facing), x, y, z, boundingBoxIn);
-        this.setBlockState(worldIn, Blocks.OAK_DOOR.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), x, y + 1, z, boundingBoxIn);
+        this.setBlockState(p_189915_1_, p_189915_8_.getDefaultState().withProperty(BlockDoor.FACING, p_189915_7_), p_189915_4_, p_189915_5_, p_189915_6_, p_189915_2_);
+        this.setBlockState(p_189915_1_, p_189915_8_.getDefaultState().withProperty(BlockDoor.FACING, p_189915_7_).withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), p_189915_4_, p_189915_5_ + 1, p_189915_6_, p_189915_2_);
     }
 
     public void offset(int x, int y, int z)

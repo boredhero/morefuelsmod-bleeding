@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 public class GenLayerHills extends GenLayer
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private GenLayer riverLayer;
+    private final GenLayer riverLayer;
 
     public GenLayerHills(long p_i45479_1_, GenLayer p_i45479_3_, GenLayer p_i45479_4_)
     {
@@ -38,7 +38,7 @@ public class GenLayerHills extends GenLayer
 
                 if (k > 255)
                 {
-                    LOGGER.debug("old! " + k);
+                    LOGGER.debug("old! {}", new Object[] {Integer.valueOf(k)});
                 }
 
                 Biome biome = Biome.getBiomeForId(k);

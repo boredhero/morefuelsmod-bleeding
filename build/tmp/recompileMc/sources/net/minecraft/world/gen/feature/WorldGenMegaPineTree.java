@@ -19,7 +19,7 @@ public class WorldGenMegaPineTree extends WorldGenHugeTrees
     private static final IBlockState TRUNK = Blocks.LOG.getDefaultState().withProperty(BlockOldLog.VARIANT, BlockPlanks.EnumType.SPRUCE);
     private static final IBlockState LEAF = Blocks.LEAVES.getDefaultState().withProperty(BlockOldLeaf.VARIANT, BlockPlanks.EnumType.SPRUCE).withProperty(BlockLeaves.CHECK_DECAY, Boolean.valueOf(false));
     private static final IBlockState PODZOL = Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.PODZOL);
-    private boolean useBaseHeight;
+    private final boolean useBaseHeight;
 
     public WorldGenMegaPineTree(boolean p_i45457_1_, boolean p_i45457_2_)
     {

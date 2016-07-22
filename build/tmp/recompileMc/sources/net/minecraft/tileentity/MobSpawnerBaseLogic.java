@@ -129,10 +129,7 @@ public abstract class MobSpawnerBaseLogic
                     EntityLiving entityliving = entity instanceof EntityLiving ? (EntityLiving)entity : null;
                     entity.setLocationAndAngles(entity.posX, entity.posY, entity.posZ, world.rand.nextFloat() * 360.0F, 0.0F);
 
-                    net.minecraftforge.fml.common.eventhandler.Event.Result canSpawn = net.minecraftforge.event.ForgeEventFactory.canEntitySpawn(entityliving, this.getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ);
-                    boolean force = canSpawn == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW ||
-                                (canSpawn == net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT && (entityliving.getCanSpawnHere() && entityliving.isNotColliding()));
-                    if (entityliving == null || force)
+                    if (entityliving == null || net.minecraftforge.event.ForgeEventFactory.canEntitySpawnSpawner(entityliving, getSpawnerWorld(), (float)entity.posX, (float)entity.posY, (float)entity.posZ))
                     {
                         if (this.randomEntity.getNbt().getSize() == 1 && this.randomEntity.getNbt().hasKey("id", 8) && entity instanceof EntityLiving)
                         {
@@ -248,16 +245,16 @@ public abstract class MobSpawnerBaseLogic
             p_189530_1_.setTag("SpawnData", this.randomEntity.getNbt().copy());
             NBTTagList nbttaglist = new NBTTagList();
 
-            if (!this.minecartToSpawn.isEmpty())
+            if (this.minecartToSpawn.isEmpty())
+            {
+                nbttaglist.appendTag(this.randomEntity.toCompoundTag());
+            }
+            else
             {
                 for (WeightedSpawnerEntity weightedspawnerentity : this.minecartToSpawn)
                 {
                     nbttaglist.appendTag(weightedspawnerentity.toCompoundTag());
                 }
-            }
-            else
-            {
-                nbttaglist.appendTag(this.randomEntity.toCompoundTag());
             }
 
             p_189530_1_.setTag("SpawnPotentials", nbttaglist);

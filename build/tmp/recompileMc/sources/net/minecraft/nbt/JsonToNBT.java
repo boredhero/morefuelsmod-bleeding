@@ -122,7 +122,7 @@ public class JsonToNBT
                 if (s1.length() > 0)
                 {
                     boolean flag1 = false;
-                    jsontonbt$compound.tagList.add(getTagFromNameValue(s1, flag1));
+                    jsontonbt$compound.tagList.add(getTagFromNameValue(s1, false));
                 }
 
                 if (value.length() < s1.length() + 1)
@@ -153,7 +153,7 @@ public class JsonToNBT
                 if (s.length() > 0)
                 {
                     boolean flag = true;
-                    jsontonbt$list.tagList.add(getTagFromNameValue(s, flag));
+                    jsontonbt$list.tagList.add(getTagFromNameValue(s, true));
                 }
 
                 if (value.length() < s.length() + 1)
@@ -508,7 +508,7 @@ public class JsonToNBT
                         return new NBTTagDouble(Double.parseDouble(this.jsonValue));
                     }
 
-                    if (this.jsonValue.equalsIgnoreCase("true") || this.jsonValue.equalsIgnoreCase("false"))
+                    if ("true".equalsIgnoreCase(this.jsonValue) || "false".equalsIgnoreCase(this.jsonValue))
                     {
                         return new NBTTagByte((byte)(Boolean.parseBoolean(this.jsonValue) ? 1 : 0));
                     }

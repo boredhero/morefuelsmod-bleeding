@@ -86,7 +86,7 @@ public class PreYggdrasilConverter
                     }
                     public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_, Exception p_onProfileLookupFailed_2_)
                     {
-                        PreYggdrasilConverter.LOGGER.warn((String)("Could not lookup user whitelist entry for " + p_onProfileLookupFailed_1_.getName()), (Throwable)p_onProfileLookupFailed_2_);
+                        PreYggdrasilConverter.LOGGER.warn("Could not lookup user whitelist entry for {}", new Object[] {p_onProfileLookupFailed_1_.getName(), p_onProfileLookupFailed_2_});
                     }
                 };
                 lookupNames(server, Lists.newArrayList(new String[] {username}), profilelookupcallback);
@@ -137,7 +137,7 @@ public class PreYggdrasilConverter
                 }
                 catch (FileNotFoundException filenotfoundexception)
                 {
-                    LOGGER.warn((String)("Could not load existing file " + userlistbans.getSaveFile().getName()), (Throwable)filenotfoundexception);
+                    LOGGER.warn("Could not load existing file {}", new Object[] {userlistbans.getSaveFile().getName(), filenotfoundexception});
                 }
             }
 
@@ -154,7 +154,7 @@ public class PreYggdrasilConverter
 
                         if (astring == null)
                         {
-                            PreYggdrasilConverter.LOGGER.warn("Could not convert user banlist entry for " + p_onProfileLookupSucceeded_1_.getName());
+                            PreYggdrasilConverter.LOGGER.warn("Could not convert user banlist entry for {}", new Object[] {p_onProfileLookupSucceeded_1_.getName()});
                             throw new PreYggdrasilConverter.ConversionError("Profile not in the conversionlist");
                         }
                         else
@@ -168,7 +168,7 @@ public class PreYggdrasilConverter
                     }
                     public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_, Exception p_onProfileLookupFailed_2_)
                     {
-                        PreYggdrasilConverter.LOGGER.warn((String)("Could not lookup user banlist entry for " + p_onProfileLookupFailed_1_.getName()), (Throwable)p_onProfileLookupFailed_2_);
+                        PreYggdrasilConverter.LOGGER.warn("Could not lookup user banlist entry for {}", new Object[] {p_onProfileLookupFailed_1_.getName(), p_onProfileLookupFailed_2_});
 
                         if (!(p_onProfileLookupFailed_2_ instanceof ProfileNotFoundException))
                         {
@@ -213,7 +213,7 @@ public class PreYggdrasilConverter
                 }
                 catch (FileNotFoundException filenotfoundexception)
                 {
-                    LOGGER.warn((String)("Could not load existing file " + userlistipbans.getSaveFile().getName()), (Throwable)filenotfoundexception);
+                    LOGGER.warn("Could not load existing file {}", new Object[] {userlistipbans.getSaveFile().getName(), filenotfoundexception});
                 }
             }
 
@@ -263,7 +263,7 @@ public class PreYggdrasilConverter
                 }
                 catch (FileNotFoundException filenotfoundexception)
                 {
-                    LOGGER.warn((String)("Could not load existing file " + userlistops.getSaveFile().getName()), (Throwable)filenotfoundexception);
+                    LOGGER.warn("Could not load existing file {}", new Object[] {userlistops.getSaveFile().getName(), filenotfoundexception});
                 }
             }
 
@@ -279,7 +279,7 @@ public class PreYggdrasilConverter
                     }
                     public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_, Exception p_onProfileLookupFailed_2_)
                     {
-                        PreYggdrasilConverter.LOGGER.warn((String)("Could not lookup oplist entry for " + p_onProfileLookupFailed_1_.getName()), (Throwable)p_onProfileLookupFailed_2_);
+                        PreYggdrasilConverter.LOGGER.warn("Could not lookup oplist entry for {}", new Object[] {p_onProfileLookupFailed_1_.getName(), p_onProfileLookupFailed_2_});
 
                         if (!(p_onProfileLookupFailed_2_ instanceof ProfileNotFoundException))
                         {
@@ -324,7 +324,7 @@ public class PreYggdrasilConverter
                 }
                 catch (FileNotFoundException filenotfoundexception)
                 {
-                    LOGGER.warn((String)("Could not load existing file " + userlistwhitelist.getSaveFile().getName()), (Throwable)filenotfoundexception);
+                    LOGGER.warn("Could not load existing file {}", new Object[] {userlistwhitelist.getSaveFile().getName(), filenotfoundexception});
                 }
             }
 
@@ -340,7 +340,7 @@ public class PreYggdrasilConverter
                     }
                     public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_, Exception p_onProfileLookupFailed_2_)
                     {
-                        PreYggdrasilConverter.LOGGER.warn((String)("Could not lookup user whitelist entry for " + p_onProfileLookupFailed_1_.getName()), (Throwable)p_onProfileLookupFailed_2_);
+                        PreYggdrasilConverter.LOGGER.warn("Could not lookup user whitelist entry for {}", new Object[] {p_onProfileLookupFailed_1_.getName(), p_onProfileLookupFailed_2_});
 
                         if (!(p_onProfileLookupFailed_2_ instanceof ProfileNotFoundException))
                         {
@@ -418,7 +418,7 @@ public class PreYggdrasilConverter
                     }
                     public void onProfileLookupFailed(GameProfile p_onProfileLookupFailed_1_, Exception p_onProfileLookupFailed_2_)
                     {
-                        PreYggdrasilConverter.LOGGER.warn((String)("Could not lookup user uuid for " + p_onProfileLookupFailed_1_.getName()), (Throwable)p_onProfileLookupFailed_2_);
+                        PreYggdrasilConverter.LOGGER.warn("Could not lookup user uuid for {}", new Object[] {p_onProfileLookupFailed_1_.getName(), p_onProfileLookupFailed_2_});
 
                         if (p_onProfileLookupFailed_2_ instanceof ProfileNotFoundException)
                         {
@@ -445,11 +445,11 @@ public class PreYggdrasilConverter
                     {
                         String s2 = null;
 
-                        for (int i = 0; i < astring.length; ++i)
+                        for (String s3 : astring)
                         {
-                            if (astring[i] != null && astring[i].equalsIgnoreCase(p_152744_1_.getName()))
+                            if (s3 != null && s3.equalsIgnoreCase(p_152744_1_.getName()))
                             {
-                                s2 = astring[i];
+                                s2 = s3;
                                 break;
                             }
                         }
@@ -545,22 +545,22 @@ public class PreYggdrasilConverter
 
             if (flag)
             {
-                LOGGER.warn("* " + OLD_PLAYERBAN_FILE.getName());
+                LOGGER.warn("* {}", new Object[] {OLD_PLAYERBAN_FILE.getName()});
             }
 
             if (flag1)
             {
-                LOGGER.warn("* " + OLD_IPBAN_FILE.getName());
+                LOGGER.warn("* {}", new Object[] {OLD_IPBAN_FILE.getName()});
             }
 
             if (flag2)
             {
-                LOGGER.warn("* " + OLD_OPS_FILE.getName());
+                LOGGER.warn("* {}", new Object[] {OLD_OPS_FILE.getName()});
             }
 
             if (flag3)
             {
-                LOGGER.warn("* " + OLD_WHITELIST_FILE.getName());
+                LOGGER.warn("* {}", new Object[] {OLD_WHITELIST_FILE.getName()});
             }
 
             return false;

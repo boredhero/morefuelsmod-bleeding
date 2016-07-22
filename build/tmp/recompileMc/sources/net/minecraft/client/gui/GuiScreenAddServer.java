@@ -19,7 +19,7 @@ public class GuiScreenAddServer extends GuiScreen
     private GuiTextField serverIPField;
     private GuiTextField serverNameField;
     private GuiButton serverResourcePacks;
-    private Predicate<String> addressFilter = new Predicate<String>()
+    private final Predicate<String> addressFilter = new Predicate<String>()
     {
         public boolean apply(@Nullable String p_apply_1_)
         {
@@ -76,7 +76,7 @@ public class GuiScreenAddServer extends GuiScreen
         this.buttonList.clear();
         this.buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 96 + 18, I18n.format("addServer.add", new Object[0])));
         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 120 + 18, I18n.format("gui.cancel", new Object[0])));
-        this.buttonList.add(this.serverResourcePacks = new GuiButton(2, this.width / 2 - 100, this.height / 4 + 72, I18n.format("addServer.resourcePack", new Object[0]) + ": " + this.serverData.getResourceMode().getMotd().getFormattedText()));
+        this.serverResourcePacks = this.func_189646_b(new GuiButton(2, this.width / 2 - 100, this.height / 4 + 72, I18n.format("addServer.resourcePack", new Object[0]) + ": " + this.serverData.getResourceMode().getMotd().getFormattedText()));
         this.serverNameField = new GuiTextField(0, this.fontRendererObj, this.width / 2 - 100, 66, 200, 20);
         this.serverNameField.setFocused(true);
         this.serverNameField.setText(this.serverData.serverName);

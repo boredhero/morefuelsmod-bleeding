@@ -1,3 +1,22 @@
+/*
+ * Minecraft Forge
+ * Copyright (c) 2016.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation version 2.1
+ * of the License.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 package net.minecraftforge.fluids;
 
 import net.minecraft.block.BlockDispenser;
@@ -47,7 +66,7 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
     private ItemStack fillContainer(IBlockSource source, ItemStack stack)
     {
         World world = source.getWorld();
-        EnumFacing dispenserFacing = BlockDispenser.getFacing(source.getBlockMetadata());
+        EnumFacing dispenserFacing = source.func_189992_e().getValue(BlockDispenser.FACING);
         BlockPos blockpos = source.getBlockPos().offset(dispenserFacing);
 
         ItemStack result = FluidUtil.tryPickUpFluid(stack, null, world, blockpos, dispenserFacing.getOpposite());
@@ -84,7 +103,7 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
         }
 
         FluidStack fluidStack = fluidHandler.drain(Fluid.BUCKET_VOLUME, false);
-        EnumFacing dispenserFacing = BlockDispenser.getFacing(source.getBlockMetadata());
+        EnumFacing dispenserFacing = source.func_189992_e().getValue(BlockDispenser.FACING);
         BlockPos blockpos = source.getBlockPos().offset(dispenserFacing);
 
         if (fluidStack != null && fluidStack.amount == Fluid.BUCKET_VOLUME && FluidUtil.tryPlaceFluid(null, source.getWorld(), fluidStack, blockpos))

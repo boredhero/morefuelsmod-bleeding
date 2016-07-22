@@ -35,6 +35,12 @@ public class AxisAlignedBB
         this((double)pos1.getX(), (double)pos1.getY(), (double)pos1.getZ(), (double)pos2.getX(), (double)pos2.getY(), (double)pos2.getZ());
     }
 
+    @SideOnly(Side.CLIENT)
+    public AxisAlignedBB(Vec3d p_i47144_1_, Vec3d p_i47144_2_)
+    {
+        this(p_i47144_1_.xCoord, p_i47144_1_.yCoord, p_i47144_1_.zCoord, p_i47144_2_.xCoord, p_i47144_2_.yCoord, p_i47144_2_.zCoord);
+    }
+
     public AxisAlignedBB setMaxY(double y2)
     {
         return new AxisAlignedBB(this.minX, this.minY, this.minZ, this.maxX, y2, this.maxZ);
@@ -280,6 +286,12 @@ public class AxisAlignedBB
         return this.minX < x2 && this.maxX > x1 && this.minY < y2 && this.maxY > y1 && this.minZ < z2 && this.maxZ > z1;
     }
 
+    @SideOnly(Side.CLIENT)
+    public boolean func_189973_a(Vec3d p_189973_1_, Vec3d p_189973_2_)
+    {
+        return this.intersects(Math.min(p_189973_1_.xCoord, p_189973_2_.xCoord), Math.min(p_189973_1_.yCoord, p_189973_2_.yCoord), Math.min(p_189973_1_.zCoord, p_189973_2_.zCoord), Math.max(p_189973_1_.xCoord, p_189973_2_.xCoord), Math.max(p_189973_1_.yCoord, p_189973_2_.yCoord), Math.max(p_189973_1_.zCoord, p_189973_2_.zCoord));
+    }
+
     /**
      * Returns if the supplied Vec3D is completely inside the bounding box
      */
@@ -409,5 +421,11 @@ public class AxisAlignedBB
     public boolean hasNaN()
     {
         return Double.isNaN(this.minX) || Double.isNaN(this.minY) || Double.isNaN(this.minZ) || Double.isNaN(this.maxX) || Double.isNaN(this.maxY) || Double.isNaN(this.maxZ);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public Vec3d func_189972_c()
+    {
+        return new Vec3d(this.minX + (this.maxX - this.minX) * 0.5D, this.minY + (this.maxY - this.minY) * 0.5D, this.minZ + (this.maxZ - this.minZ) * 0.5D);
     }
 }

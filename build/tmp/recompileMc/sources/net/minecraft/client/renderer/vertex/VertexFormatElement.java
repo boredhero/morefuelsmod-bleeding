@@ -11,19 +11,19 @@ public class VertexFormatElement
     private static final Logger LOGGER = LogManager.getLogger();
     private final VertexFormatElement.EnumType type;
     private final VertexFormatElement.EnumUsage usage;
-    private int index;
-    private int elementCount;
+    private final int index;
+    private final int elementCount;
 
     public VertexFormatElement(int indexIn, VertexFormatElement.EnumType typeIn, VertexFormatElement.EnumUsage usageIn, int count)
     {
-        if (!this.isFirstOrUV(indexIn, usageIn))
+        if (this.isFirstOrUV(indexIn, usageIn))
         {
-            LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
-            this.usage = VertexFormatElement.EnumUsage.UV;
+            this.usage = usageIn;
         }
         else
         {
-            this.usage = usageIn;
+            LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
+            this.usage = VertexFormatElement.EnumUsage.UV;
         }
 
         this.type = typeIn;

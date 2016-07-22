@@ -32,6 +32,7 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -56,15 +57,15 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
     /** An array containing all body parts of this dragon */
     public EntityDragonPart[] dragonPartArray;
     /** The head bounding box of a dragon */
-    public EntityDragonPart dragonPartHead;
-    public EntityDragonPart dragonPartNeck;
+    public EntityDragonPart dragonPartHead = new EntityDragonPart(this, "head", 6.0F, 6.0F);
+    public EntityDragonPart dragonPartNeck = new EntityDragonPart(this, "neck", 6.0F, 6.0F);
     /** The body bounding box of a dragon */
-    public EntityDragonPart dragonPartBody;
-    public EntityDragonPart dragonPartTail1;
-    public EntityDragonPart dragonPartTail2;
-    public EntityDragonPart dragonPartTail3;
-    public EntityDragonPart dragonPartWing1;
-    public EntityDragonPart dragonPartWing2;
+    public EntityDragonPart dragonPartBody = new EntityDragonPart(this, "body", 8.0F, 8.0F);
+    public EntityDragonPart dragonPartTail1 = new EntityDragonPart(this, "tail", 4.0F, 4.0F);
+    public EntityDragonPart dragonPartTail2 = new EntityDragonPart(this, "tail", 4.0F, 4.0F);
+    public EntityDragonPart dragonPartTail3 = new EntityDragonPart(this, "tail", 4.0F, 4.0F);
+    public EntityDragonPart dragonPartWing1 = new EntityDragonPart(this, "wing", 4.0F, 4.0F);
+    public EntityDragonPart dragonPartWing2 = new EntityDragonPart(this, "wing", 4.0F, 4.0F);
     /** Animation time at previous tick. */
     public float prevAnimTime;
     /** Animation time, used to control the speed of the animation cycles (wings flapping, jaw opening, etc.) */
@@ -95,7 +96,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
     public EntityDragon(World worldIn)
     {
         super(worldIn);
-        this.dragonPartArray = new EntityDragonPart[] {this.dragonPartHead = new EntityDragonPart(this, "head", 6.0F, 6.0F), this.dragonPartNeck = new EntityDragonPart(this, "neck", 6.0F, 6.0F), this.dragonPartBody = new EntityDragonPart(this, "body", 8.0F, 8.0F), this.dragonPartTail1 = new EntityDragonPart(this, "tail", 4.0F, 4.0F), this.dragonPartTail2 = new EntityDragonPart(this, "tail", 4.0F, 4.0F), this.dragonPartTail3 = new EntityDragonPart(this, "tail", 4.0F, 4.0F), this.dragonPartWing1 = new EntityDragonPart(this, "wing", 4.0F, 4.0F), this.dragonPartWing2 = new EntityDragonPart(this, "wing", 4.0F, 4.0F)};
+        this.dragonPartArray = new EntityDragonPart[] {this.dragonPartHead, this.dragonPartNeck, this.dragonPartBody, this.dragonPartTail1, this.dragonPartTail2, this.dragonPartTail3, this.dragonPartWing1, this.dragonPartWing2};
         this.setHealth(this.getMaxHealth());
         this.setSize(16.0F, 8.0F);
         this.noClip = true;
@@ -282,7 +283,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
                         this.rotationYaw += this.randomYawVelocity * 0.1F;
                         float f9 = (float)(2.0D / (d3 + 1.0D));
                         float f10 = 0.06F;
-                        this.moveRelative(0.0F, -1.0F, f10 * (f8 * f9 + (1.0F - f9)));
+                        this.moveRelative(0.0F, -1.0F, 0.06F * (f8 * f9 + (1.0F - f9)));
 
                         if (this.slowed)
                         {
@@ -303,11 +304,16 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
                 }
 
                 this.renderYawOffset = this.rotationYaw;
-                this.dragonPartHead.width = this.dragonPartHead.height = 1.0F;
-                this.dragonPartNeck.width = this.dragonPartNeck.height = 3.0F;
-                this.dragonPartTail1.width = this.dragonPartTail1.height = 2.0F;
-                this.dragonPartTail2.width = this.dragonPartTail2.height = 2.0F;
-                this.dragonPartTail3.width = this.dragonPartTail3.height = 2.0F;
+                this.dragonPartHead.width = 1.0F;
+                this.dragonPartHead.height = 1.0F;
+                this.dragonPartNeck.width = 3.0F;
+                this.dragonPartNeck.height = 3.0F;
+                this.dragonPartTail1.width = 2.0F;
+                this.dragonPartTail1.height = 2.0F;
+                this.dragonPartTail2.width = 2.0F;
+                this.dragonPartTail2.height = 2.0F;
+                this.dragonPartTail3.width = 2.0F;
+                this.dragonPartTail3.height = 2.0F;
                 this.dragonPartBody.height = 3.0F;
                 this.dragonPartBody.width = 5.0F;
                 this.dragonPartWing1.height = 2.0F;
@@ -370,7 +376,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
                     float f23 = 1.5F;
                     float f24 = (float)(j + 1) * 2.0F;
                     entitydragonpart.onUpdate();
-                    entitydragonpart.setLocationAndAngles(this.posX - (double)((f19 * f23 + f22 * f24) * f16), this.posY + (adouble1[1] - adouble[1]) - (double)((f24 + f23) * f18) + 1.5D, this.posZ + (double)((f3 * f23 + f7 * f24) * f16), 0.0F, 0.0F);
+                    entitydragonpart.setLocationAndAngles(this.posX - (double)((f19 * 1.5F + f22 * f24) * f16), this.posY + (adouble1[1] - adouble[1]) - (double)((f24 + 1.5F) * f18) + 1.5D, this.posZ + (double)((f3 * 1.5F + f7 * f24) * f16), 0.0F, 0.0F);
                 }
 
                 if (!this.worldObj.isRemote)
@@ -388,7 +394,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
 
     private float getHeadYOffset(float p_184662_1_)
     {
-        double d0 = 0.0D;
+        double d0;
 
         if (this.phaseManager.getCurrentPhase().getIsStationary())
         {
@@ -673,7 +679,8 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
         }
 
         this.moveEntity(0.0D, 0.10000000149011612D, 0.0D);
-        this.renderYawOffset = this.rotationYaw += 20.0F;
+        this.rotationYaw += 20.0F;
+        this.renderYawOffset = this.rotationYaw;
 
         if (this.deathTicks == 200 && !this.worldObj.isRemote)
         {
@@ -709,36 +716,33 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
     {
         if (this.pathPoints[0] == null)
         {
-            int i = 0;
-            int j = 0;
-            int k = 0;
-            int l = 0;
-
-            for (int i1 = 0; i1 < 24; ++i1)
+            for (int i = 0; i < 24; ++i)
             {
-                int j1 = 5;
+                int j = 5;
+                int l;
+                int i1;
 
-                if (i1 < 12)
+                if (i < 12)
                 {
-                    i = (int)(60.0F * MathHelper.cos(2.0F * (-(float)Math.PI + 0.2617994F * (float)i1)));
-                    k = (int)(60.0F * MathHelper.sin(2.0F * (-(float)Math.PI + 0.2617994F * (float)i1)));
+                    l = (int)(60.0F * MathHelper.cos(2.0F * (-(float)Math.PI + 0.2617994F * (float)i)));
+                    i1 = (int)(60.0F * MathHelper.sin(2.0F * (-(float)Math.PI + 0.2617994F * (float)i)));
                 }
-                else if (i1 < 20)
+                else if (i < 20)
                 {
-                    l = i1 - 12;
-                    i = (int)(40.0F * MathHelper.cos(2.0F * (-(float)Math.PI + 0.3926991F * (float)l)));
-                    k = (int)(40.0F * MathHelper.sin(2.0F * (-(float)Math.PI + 0.3926991F * (float)l)));
-                    j1 += 10;
+                    int lvt_3_1_ = i - 12;
+                    l = (int)(40.0F * MathHelper.cos(2.0F * (-(float)Math.PI + 0.3926991F * (float)lvt_3_1_)));
+                    i1 = (int)(40.0F * MathHelper.sin(2.0F * (-(float)Math.PI + 0.3926991F * (float)lvt_3_1_)));
+                    j += 10;
                 }
                 else
                 {
-                    l = i1 - 20;
-                    i = (int)(20.0F * MathHelper.cos(2.0F * (-(float)Math.PI + ((float)Math.PI / 4F) * (float)l)));
-                    k = (int)(20.0F * MathHelper.sin(2.0F * (-(float)Math.PI + ((float)Math.PI / 4F) * (float)l)));
+                    int k1 = i - 20;
+                    l = (int)(20.0F * MathHelper.cos(2.0F * (-(float)Math.PI + ((float)Math.PI / 4F) * (float)k1)));
+                    i1 = (int)(20.0F * MathHelper.sin(2.0F * (-(float)Math.PI + ((float)Math.PI / 4F) * (float)k1)));
                 }
 
-                j = Math.max(this.worldObj.getSeaLevel() + 10, this.worldObj.getTopSolidOrLiquidBlock(new BlockPos(i, 0, k)).getY() + j1);
-                this.pathPoints[i1] = new PathPoint(i, j, k);
+                int j1 = Math.max(this.worldObj.getSeaLevel() + 10, this.worldObj.getTopSolidOrLiquidBlock(new BlockPos(l, 0, i1)).getY() + j);
+                this.pathPoints[i] = new PathPoint(l, j1, i1);
             }
 
             this.neighbors[0] = 6146;
@@ -945,6 +949,11 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
         return new Path(apathpoint);
     }
 
+    public static void func_189755_b(DataFixer p_189755_0_)
+    {
+        EntityLiving.func_189752_a(p_189755_0_, "EnderDragon");
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -1062,7 +1071,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
             {
                 float f4 = this.rotationPitch;
                 float f5 = 1.5F;
-                this.rotationPitch = -6.0F * f5 * 5.0F;
+                this.rotationPitch = -45.0F;
                 vec3d = this.getLook(p_184665_1_);
                 this.rotationPitch = f4;
             }
@@ -1078,7 +1087,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
             float f1 = 6.0F / f;
             float f2 = this.rotationPitch;
             float f3 = 1.5F;
-            this.rotationPitch = -f1 * f3 * 5.0F;
+            this.rotationPitch = -f1 * 1.5F * 5.0F;
             vec3d = this.getLook(p_184665_1_);
             this.rotationPitch = f2;
         }

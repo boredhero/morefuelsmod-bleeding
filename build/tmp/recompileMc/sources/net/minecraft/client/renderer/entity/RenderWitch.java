@@ -47,6 +47,6 @@ public class RenderWitch extends RenderLiving<EntityWitch>
     protected void preRenderCallback(EntityWitch entitylivingbaseIn, float partialTickTime)
     {
         float f = 0.9375F;
-        GlStateManager.scale(f, f, f);
+        GlStateManager.scale(0.9375F, 0.9375F, 0.9375F);
     }
 }

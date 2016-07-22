@@ -6,6 +6,8 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockGravel extends BlockFalling
 {
@@ -29,5 +31,11 @@ public class BlockGravel extends BlockFalling
     public MapColor getMapColor(IBlockState state)
     {
         return MapColor.STONE;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int func_189876_x(IBlockState p_189876_1_)
+    {
+        return -8356741;
     }
 }

@@ -3,6 +3,7 @@ package net.minecraft.entity.monster;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityFlying;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -20,6 +21,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -166,6 +168,11 @@ public class EntityGhast extends EntityFlying implements IMob
         return 1;
     }
 
+    public static void func_189756_b(DataFixer p_189756_0_)
+    {
+        EntityLiving.func_189752_a(p_189756_0_, "Ghast");
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -195,7 +202,7 @@ public class EntityGhast extends EntityFlying implements IMob
 
     static class AIFireballAttack extends EntityAIBase
         {
-            private EntityGhast parentEntity;
+            private final EntityGhast parentEntity;
             public int attackTimer;
 
             public AIFireballAttack(EntityGhast ghast)
@@ -235,7 +242,7 @@ public class EntityGhast extends EntityFlying implements IMob
                 EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
                 double d0 = 64.0D;
 
-                if (entitylivingbase.getDistanceSqToEntity(this.parentEntity) < d0 * d0 && this.parentEntity.canEntityBeSeen(entitylivingbase))
+                if (entitylivingbase.getDistanceSqToEntity(this.parentEntity) < 4096.0D && this.parentEntity.canEntityBeSeen(entitylivingbase))
                 {
                     World world = this.parentEntity.worldObj;
                     ++this.attackTimer;
@@ -249,15 +256,15 @@ public class EntityGhast extends EntityFlying implements IMob
                     {
                         double d1 = 4.0D;
                         Vec3d vec3d = this.parentEntity.getLook(1.0F);
-                        double d2 = entitylivingbase.posX - (this.parentEntity.posX + vec3d.xCoord * d1);
+                        double d2 = entitylivingbase.posX - (this.parentEntity.posX + vec3d.xCoord * 4.0D);
                         double d3 = entitylivingbase.getEntityBoundingBox().minY + (double)(entitylivingbase.height / 2.0F) - (0.5D + this.parentEntity.posY + (double)(this.parentEntity.height / 2.0F));
-                        double d4 = entitylivingbase.posZ - (this.parentEntity.posZ + vec3d.zCoord * d1);
+                        double d4 = entitylivingbase.posZ - (this.parentEntity.posZ + vec3d.zCoord * 4.0D);
                         world.playEvent((EntityPlayer)null, 1016, new BlockPos(this.parentEntity), 0);
                         EntityLargeFireball entitylargefireball = new EntityLargeFireball(world, this.parentEntity, d2, d3, d4);
                         entitylargefireball.explosionPower = this.parentEntity.getFireballStrength();
-                        entitylargefireball.posX = this.parentEntity.posX + vec3d.xCoord * d1;
+                        entitylargefireball.posX = this.parentEntity.posX + vec3d.xCoord * 4.0D;
                         entitylargefireball.posY = this.parentEntity.posY + (double)(this.parentEntity.height / 2.0F) + 0.5D;
-                        entitylargefireball.posZ = this.parentEntity.posZ + vec3d.zCoord * d1;
+                        entitylargefireball.posZ = this.parentEntity.posZ + vec3d.zCoord * 4.0D;
                         world.spawnEntityInWorld(entitylargefireball);
                         this.attackTimer = -40;
                     }
@@ -273,7 +280,7 @@ public class EntityGhast extends EntityFlying implements IMob
 
     static class AILookAround extends EntityAIBase
         {
-            private EntityGhast parentEntity;
+            private final EntityGhast parentEntity;
 
             public AILookAround(EntityGhast ghast)
             {
@@ -296,18 +303,20 @@ public class EntityGhast extends EntityFlying implements IMob
             {
                 if (this.parentEntity.getAttackTarget() == null)
                 {
-                    this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw = -((float)MathHelper.atan2(this.parentEntity.motionX, this.parentEntity.motionZ)) * (180F / (float)Math.PI);
+                    this.parentEntity.rotationYaw = -((float)MathHelper.atan2(this.parentEntity.motionX, this.parentEntity.motionZ)) * (180F / (float)Math.PI);
+                    this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
                 }
                 else
                 {
                     EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
                     double d0 = 64.0D;
 
-                    if (entitylivingbase.getDistanceSqToEntity(this.parentEntity) < d0 * d0)
+                    if (entitylivingbase.getDistanceSqToEntity(this.parentEntity) < 4096.0D)
                     {
                         double d1 = entitylivingbase.posX - this.parentEntity.posX;
                         double d2 = entitylivingbase.posZ - this.parentEntity.posZ;
-                        this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw = -((float)MathHelper.atan2(d1, d2)) * (180F / (float)Math.PI);
+                        this.parentEntity.rotationYaw = -((float)MathHelper.atan2(d1, d2)) * (180F / (float)Math.PI);
+                        this.parentEntity.renderYawOffset = this.parentEntity.rotationYaw;
                     }
                 }
             }
@@ -315,7 +324,7 @@ public class EntityGhast extends EntityFlying implements IMob
 
     static class AIRandomFly extends EntityAIBase
         {
-            private EntityGhast parentEntity;
+            private final EntityGhast parentEntity;
 
             public AIRandomFly(EntityGhast ghast)
             {
@@ -367,7 +376,7 @@ public class EntityGhast extends EntityFlying implements IMob
 
     static class GhastMoveHelper extends EntityMoveHelper
         {
-            private EntityGhast parentEntity;
+            private final EntityGhast parentEntity;
             private int courseChangeCooldown;
 
             public GhastMoveHelper(EntityGhast ghast)

@@ -1,12 +1,14 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -41,6 +43,11 @@ public class EntitySquid extends EntityWaterMob
         this.setSize(0.8F, 0.8F);
         this.rand.setSeed((long)(1 + this.getEntityId()));
         this.rotationVelocity = 1.0F / (this.rand.nextFloat() + 1.0F) * 0.2F;
+    }
+
+    public static void func_189804_b(DataFixer p_189804_0_)
+    {
+        EntityLiving.func_189752_a(p_189804_0_, "Squid");
     }
 
     protected void initEntityAI()
@@ -188,7 +195,7 @@ public class EntitySquid extends EntityWaterMob
                 {
                     this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
                 }
-                else
+                else if (!this.func_189652_ae())
                 {
                     this.motionY -= 0.08D;
                 }
@@ -243,7 +250,7 @@ public class EntitySquid extends EntityWaterMob
 
     static class AIMoveRandom extends EntityAIBase
         {
-            private EntitySquid squid;
+            private final EntitySquid squid;
 
             public AIMoveRandom(EntitySquid p_i45859_1_)
             {

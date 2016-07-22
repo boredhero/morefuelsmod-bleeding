@@ -41,8 +41,6 @@ public class BlockTrapDoor extends Block
     {
         super(materialIn);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(OPEN, Boolean.valueOf(false)).withProperty(HALF, BlockTrapDoor.DoorHalf.BOTTOM));
-        float f = 0.5F;
-        float f1 = 1.0F;
         this.setCreativeTab(CreativeTabs.REDSTONE);
     }
 

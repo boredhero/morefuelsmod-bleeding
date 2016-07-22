@@ -116,7 +116,7 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
     private int glSkyList = -1;
     /** OpenGL sky list 2 */
     private int glSkyList2 = -1;
-    private VertexFormat vertexBufferFormat;
+    private final VertexFormat vertexBufferFormat;
     private net.minecraft.client.renderer.vertex.VertexBuffer starVBO;
     private net.minecraft.client.renderer.vertex.VertexBuffer skyVBO;
     private net.minecraft.client.renderer.vertex.VertexBuffer sky2VBO;
@@ -139,7 +139,7 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
     private double lastViewEntityZ = Double.MIN_VALUE;
     private double lastViewEntityPitch = Double.MIN_VALUE;
     private double lastViewEntityYaw = Double.MIN_VALUE;
-    private ChunkRenderDispatcher renderDispatcher = null;
+    private ChunkRenderDispatcher renderDispatcher;
     private ChunkRenderContainer renderContainer;
     private int renderDistanceChunks = -1;
     /** Render entities startup counter (init value=2) */
@@ -150,17 +150,17 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
     private int countEntitiesRendered;
     /** Count entities hidden */
     private int countEntitiesHidden;
-    private boolean debugFixTerrainFrustum = false;
+    private boolean debugFixTerrainFrustum;
     private ClippingHelper debugFixedClippingHelper;
     private final Vector4f[] debugTerrainMatrix = new Vector4f[8];
     private final Vector3d debugTerrainFrustumPosition = new Vector3d();
-    private boolean vboEnabled = false;
+    private boolean vboEnabled;
     IRenderChunkFactory renderChunkFactory;
     private double prevRenderSortX;
     private double prevRenderSortY;
     private double prevRenderSortZ;
     private boolean displayListEntitiesDirty = true;
-    private boolean entityOutlinesRendered = false;
+    private boolean entityOutlinesRendered;
     private final Set<BlockPos> setLightUpdates = Sets.<BlockPos>newHashSet();
 
     public RenderGlobal(Minecraft mcIn)
@@ -230,13 +230,13 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
             }
             catch (IOException ioexception)
             {
-                LOGGER.warn((String)("Failed to load shader: " + resourcelocation), (Throwable)ioexception);
+                LOGGER.warn("Failed to load shader: {}", new Object[] {resourcelocation, ioexception});
                 this.entityOutlineShader = null;
                 this.entityOutlineFramebuffer = null;
             }
             catch (JsonSyntaxException jsonsyntaxexception)
             {
-                LOGGER.warn((String)("Failed to load shader: " + resourcelocation), (Throwable)jsonsyntaxexception);
+                LOGGER.warn("Failed to load shader: {}", new Object[] {resourcelocation, jsonsyntaxexception});
                 this.entityOutlineShader = null;
                 this.entityOutlineFramebuffer = null;
             }
@@ -580,7 +580,7 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
             double d1 = renderViewEntity.prevPosY + (renderViewEntity.posY - renderViewEntity.prevPosY) * (double)partialTicks;
             double d2 = renderViewEntity.prevPosZ + (renderViewEntity.posZ - renderViewEntity.prevPosZ) * (double)partialTicks;
             this.theWorld.theProfiler.startSection("prepare");
-            TileEntityRendererDispatcher.instance.cacheActiveRenderInfo(this.theWorld, this.mc.getTextureManager(), this.mc.fontRendererObj, this.mc.getRenderViewEntity(), partialTicks);
+            TileEntityRendererDispatcher.instance.func_190056_a(this.theWorld, this.mc.getTextureManager(), this.mc.fontRendererObj, this.mc.getRenderViewEntity(), this.mc.objectMouseOver, partialTicks);
             this.renderManager.cacheActiveRenderInfo(this.theWorld, this.mc.fontRendererObj, this.mc.getRenderViewEntity(), this.mc.pointedEntity, this.mc.gameSettings, partialTicks);
             if(pass == 0)
             {
@@ -637,7 +637,7 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
                         {
                             boolean flag1 = this.mc.getRenderViewEntity() instanceof EntityLivingBase ? ((EntityLivingBase)this.mc.getRenderViewEntity()).isPlayerSleeping() : false;
 
-                            if ((entity2 != this.mc.getRenderViewEntity() || this.mc.gameSettings.thirdPersonView != 0 || flag1) && (entity2.posY < 0.0D || entity2.posY >= 256.0D || this.theWorld.isBlockLoaded(blockpos$pooledmutableblockpos.set(entity2))))
+                            if ((entity2 != this.mc.getRenderViewEntity() || this.mc.gameSettings.thirdPersonView != 0 || flag1) && (entity2.posY < 0.0D || entity2.posY >= 256.0D || this.theWorld.isBlockLoaded(blockpos$pooledmutableblockpos.setPos(entity2))))
                             {
                                 ++this.countEntitiesRendered;
                                 this.renderManager.renderEntityStatic(entity2, partialTicks, false);
@@ -927,7 +927,6 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
                 RenderGlobal.ContainerLocalRenderInformation renderglobal$containerlocalrenderinformation1 = (RenderGlobal.ContainerLocalRenderInformation)queue.poll();
                 RenderChunk renderchunk3 = renderglobal$containerlocalrenderinformation1.renderChunk;
                 EnumFacing enumfacing2 = renderglobal$containerlocalrenderinformation1.facing;
-                BlockPos blockpos3 = renderchunk3.getPosition();
                 this.renderInfos.add(renderglobal$containerlocalrenderinformation1);
 
                 for (EnumFacing enumfacing1 : EnumFacing.values())
@@ -1959,7 +1958,6 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
         {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            GlStateManager.color(0.0F, 0.0F, 0.0F, 0.4F);
             GlStateManager.glLineWidth(2.0F);
             GlStateManager.disableTexture2D();
             GlStateManager.depthMask(false);
@@ -1971,7 +1969,7 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
                 double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * (double)partialTicks;
                 double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * (double)partialTicks;
                 double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * (double)partialTicks;
-                drawSelectionBoundingBox(iblockstate.getSelectedBoundingBox(this.theWorld, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2));
+                func_189697_a(iblockstate.getSelectedBoundingBox(this.theWorld, blockpos).expandXyz(0.0020000000949949026D).offset(-d0, -d1, -d2), 0.0F, 0.0F, 0.0F, 0.4F);
             }
 
             GlStateManager.depthMask(true);
@@ -1980,64 +1978,88 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
         }
     }
 
-    public static void drawSelectionBoundingBox(AxisAlignedBB boundingBox)
+    public static void func_189697_a(AxisAlignedBB p_189697_0_, float p_189697_1_, float p_189697_2_, float p_189697_3_, float p_189697_4_)
+    {
+        func_189694_a(p_189697_0_.minX, p_189697_0_.minY, p_189697_0_.minZ, p_189697_0_.maxX, p_189697_0_.maxY, p_189697_0_.maxZ, p_189697_1_, p_189697_2_, p_189697_3_, p_189697_4_);
+    }
+
+    public static void func_189694_a(double p_189694_0_, double p_189694_2_, double p_189694_4_, double p_189694_6_, double p_189694_8_, double p_189694_10_, float p_189694_12_, float p_189694_13_, float p_189694_14_, float p_189694_15_)
     {
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
-        vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
-        tessellator.draw();
-        vertexbuffer.begin(3, DefaultVertexFormats.POSITION);
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
-        tessellator.draw();
-        vertexbuffer.begin(1, DefaultVertexFormats.POSITION);
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex();
+        vertexbuffer.begin(3, DefaultVertexFormats.POSITION_COLOR);
+        func_189698_a(vertexbuffer, p_189694_0_, p_189694_2_, p_189694_4_, p_189694_6_, p_189694_8_, p_189694_10_, p_189694_12_, p_189694_13_, p_189694_14_, p_189694_15_);
         tessellator.draw();
     }
 
-    public static void drawOutlinedBoundingBox(AxisAlignedBB boundingBox, int red, int green, int blue, int alpha)
+    public static void func_189698_a(VertexBuffer p_189698_0_, double p_189698_1_, double p_189698_3_, double p_189698_5_, double p_189698_7_, double p_189698_9_, double p_189698_11_, float p_189698_13_, float p_189698_14_, float p_189698_15_, float p_189698_16_)
+    {
+        p_189698_0_.pos(p_189698_1_, p_189698_3_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, 0.0F).endVertex();
+        p_189698_0_.pos(p_189698_1_, p_189698_3_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_3_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_3_, p_189698_11_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_1_, p_189698_3_, p_189698_11_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_1_, p_189698_3_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_1_, p_189698_9_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_9_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_9_, p_189698_11_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_1_, p_189698_9_, p_189698_11_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_1_, p_189698_9_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_1_, p_189698_9_, p_189698_11_).color(p_189698_13_, p_189698_14_, p_189698_15_, 0.0F).endVertex();
+        p_189698_0_.pos(p_189698_1_, p_189698_3_, p_189698_11_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_9_, p_189698_11_).color(p_189698_13_, p_189698_14_, p_189698_15_, 0.0F).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_3_, p_189698_11_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_9_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, 0.0F).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_3_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, p_189698_16_).endVertex();
+        p_189698_0_.pos(p_189698_7_, p_189698_3_, p_189698_5_).color(p_189698_13_, p_189698_14_, p_189698_15_, 0.0F).endVertex();
+    }
+
+    public static void func_189696_b(AxisAlignedBB p_189696_0_, float p_189696_1_, float p_189696_2_, float p_189696_3_, float p_189696_4_)
+    {
+        func_189695_b(p_189696_0_.minX, p_189696_0_.minY, p_189696_0_.minZ, p_189696_0_.maxX, p_189696_0_.maxY, p_189696_0_.maxZ, p_189696_1_, p_189696_2_, p_189696_3_, p_189696_4_);
+    }
+
+    public static void func_189695_b(double p_189695_0_, double p_189695_2_, double p_189695_4_, double p_189695_6_, double p_189695_8_, double p_189695_10_, float p_189695_12_, float p_189695_13_, float p_189695_14_, float p_189695_15_)
     {
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
-        vertexbuffer.begin(3, DefaultVertexFormats.POSITION_COLOR);
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
+        vertexbuffer.begin(5, DefaultVertexFormats.POSITION_COLOR);
+        func_189693_b(vertexbuffer, p_189695_0_, p_189695_2_, p_189695_4_, p_189695_6_, p_189695_8_, p_189695_10_, p_189695_12_, p_189695_13_, p_189695_14_, p_189695_15_);
         tessellator.draw();
-        vertexbuffer.begin(3, DefaultVertexFormats.POSITION_COLOR);
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        tessellator.draw();
-        vertexbuffer.begin(1, DefaultVertexFormats.POSITION_COLOR);
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).color(red, green, blue, alpha).endVertex();
-        vertexbuffer.pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).color(red, green, blue, alpha).endVertex();
-        tessellator.draw();
+    }
+
+    public static void func_189693_b(VertexBuffer p_189693_0_, double p_189693_1_, double p_189693_3_, double p_189693_5_, double p_189693_7_, double p_189693_9_, double p_189693_11_, float p_189693_13_, float p_189693_14_, float p_189693_15_, float p_189693_16_)
+    {
+        p_189693_0_.pos(p_189693_1_, p_189693_3_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_3_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_3_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_3_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_9_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_9_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_9_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_3_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_9_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_3_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_3_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_3_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_9_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_9_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_9_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_3_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_9_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_3_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_3_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_3_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_3_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_3_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_3_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_9_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_9_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_1_, p_189693_9_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_9_, p_189693_5_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_9_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_9_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
+        p_189693_0_.pos(p_189693_7_, p_189693_9_, p_189693_11_).color(p_189693_13_, p_189693_14_, p_189693_15_, p_189693_16_).endVertex();
     }
 
     private void markBlocksForUpdate(int p_184385_1_, int p_184385_2_, int p_184385_3_, int p_184385_4_, int p_184385_5_, int p_184385_6_, boolean p_184385_7_)

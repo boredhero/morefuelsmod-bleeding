@@ -21,7 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class BlockRendererDispatcher implements IResourceManagerReloadListener
 {
-    private BlockModelShapes blockModelShapes;
+    private final BlockModelShapes blockModelShapes;
     private final BlockModelRenderer blockModelRenderer;
     private final ChestRenderer chestRenderer = new ChestRenderer();
     private final BlockFluidRenderer fluidRenderer;

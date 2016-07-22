@@ -16,14 +16,14 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class GuiAchievement extends Gui
 {
     private static final ResourceLocation ACHIEVEMENT_BG = new ResourceLocation("textures/gui/achievement/achievement_background.png");
-    private Minecraft mc;
+    private final Minecraft mc;
     private int width;
     private int height;
     private String achievementTitle;
     private String achievementDescription;
     private Achievement theAchievement;
     private long notificationTime;
-    private RenderItem renderItem;
+    private final RenderItem renderItem;
     private boolean permanentNotification;
 
     public GuiAchievement(Minecraft mc)
@@ -77,17 +77,17 @@ public class GuiAchievement extends Gui
         {
             double d0 = (double)(Minecraft.getSystemTime() - this.notificationTime) / 3000.0D;
 
-            if (!this.permanentNotification)
+            if (this.permanentNotification)
             {
-                if (d0 < 0.0D || d0 > 1.0D)
+                if (d0 > 0.5D)
                 {
-                    this.notificationTime = 0L;
-                    return;
+                    d0 = 0.5D;
                 }
             }
-            else if (d0 > 0.5D)
+            else if (d0 < 0.0D || d0 > 1.0D)
             {
-                d0 = 0.5D;
+                this.notificationTime = 0L;
+                return;
             }
 
             this.updateAchievementWindowScale();

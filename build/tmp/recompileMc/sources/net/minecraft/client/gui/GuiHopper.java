@@ -16,9 +16,9 @@ public class GuiHopper extends GuiContainer
     /** The ResourceLocation containing the gui texture for the hopper */
     private static final ResourceLocation HOPPER_GUI_TEXTURE = new ResourceLocation("textures/gui/container/hopper.png");
     /** The player inventory currently bound to this GUI instance */
-    private IInventory playerInventory;
+    private final IInventory playerInventory;
     /** The hopper inventory bound to this GUI instance */
-    private IInventory hopperInventory;
+    private final IInventory hopperInventory;
 
     public GuiHopper(InventoryPlayer playerInv, IInventory hopperInv)
     {

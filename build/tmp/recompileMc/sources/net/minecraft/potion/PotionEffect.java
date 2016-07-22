@@ -155,7 +155,7 @@ public class PotionEffect implements Comparable<PotionEffect>
 
     public String toString()
     {
-        String s = "";
+        String s;
 
         if (this.amplifier > 0)
         {

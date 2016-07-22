@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityAgeable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIFollowParent;
 import net.minecraft.entity.ai.EntityAILookIdle;
@@ -31,6 +32,7 @@ import net.minecraft.stats.AchievementList;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -113,6 +115,11 @@ public class EntityPig extends EntityAnimal
     {
         super.entityInit();
         this.dataManager.register(SADDLED, Boolean.valueOf(false));
+    }
+
+    public static void func_189792_b(DataFixer p_189792_0_)
+    {
+        EntityLiving.func_189752_a(p_189792_0_, "Pig");
     }
 
     /**
@@ -260,10 +267,12 @@ public class EntityPig extends EntityAnimal
 
         if (this.isBeingRidden() && this.canBeSteered())
         {
-            this.prevRotationYaw = this.rotationYaw = entity.rotationYaw;
+            this.rotationYaw = entity.rotationYaw;
+            this.prevRotationYaw = this.rotationYaw;
             this.rotationPitch = entity.rotationPitch * 0.5F;
             this.setRotation(this.rotationYaw, this.rotationPitch);
-            this.rotationYawHead = this.renderYawOffset = this.rotationYaw;
+            this.renderYawOffset = this.rotationYaw;
+            this.rotationYawHead = this.rotationYaw;
             this.stepHeight = 1.0F;
             this.jumpMovementFactor = this.getAIMoveSpeed() * 0.1F;
 

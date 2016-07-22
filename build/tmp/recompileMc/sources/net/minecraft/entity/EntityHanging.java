@@ -15,6 +15,7 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.Validate;
 
@@ -57,7 +58,8 @@ public abstract class EntityHanging extends Entity
         Validate.notNull(facingDirectionIn);
         Validate.isTrue(facingDirectionIn.getAxis().isHorizontal());
         this.facingDirection = facingDirectionIn;
-        this.prevRotationYaw = this.rotationYaw = (float)(this.facingDirection.getHorizontalIndex() * 90);
+        this.rotationYaw = (float)(this.facingDirection.getHorizontalIndex() * 90);
+        this.prevRotationYaw = this.rotationYaw;
         this.updateBoundingBox();
     }
 
@@ -72,8 +74,8 @@ public abstract class EntityHanging extends Entity
             double d1 = (double)this.hangingPosition.getY() + 0.5D;
             double d2 = (double)this.hangingPosition.getZ() + 0.5D;
             double d3 = 0.46875D;
-            double d4 = this.offs(this.getWidthPixels());
-            double d5 = this.offs(this.getHeightPixels());
+            double d4 = this.func_190202_a(this.getWidthPixels());
+            double d5 = this.func_190202_a(this.getHeightPixels());
             d0 = d0 - (double)this.facingDirection.getFrontOffsetX() * 0.46875D;
             d2 = d2 - (double)this.facingDirection.getFrontOffsetZ() * 0.46875D;
             d1 = d1 + d5;
@@ -103,9 +105,9 @@ public abstract class EntityHanging extends Entity
         }
     }
 
-    private double offs(int p_174858_1_)
+    private double func_190202_a(int p_190202_1_)
     {
-        return p_174858_1_ % 32 == 0 ? 0.5D : 0.0D;
+        return p_190202_1_ % 32 == 0 ? 0.5D : 0.0D;
     }
 
     /**
@@ -144,17 +146,18 @@ public abstract class EntityHanging extends Entity
             int j = Math.max(1, this.getHeightPixels() / 16);
             BlockPos blockpos = this.hangingPosition.offset(this.facingDirection.getOpposite());
             EnumFacing enumfacing = this.facingDirection.rotateYCCW();
+            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
             for (int k = 0; k < i; ++k)
             {
                 for (int l = 0; l < j; ++l)
                 {
-                    int i1 = i > 2 ? -1 : 0;
-                    int j1 = j > 2 ? -1 : 0;
-                    BlockPos blockpos1 = blockpos.offset(enumfacing, k + i1).up(l + j1);
-                    IBlockState iblockstate = this.worldObj.getBlockState(blockpos1);
+                    int i1 = (i - 1) / -2;
+                    int j1 = (j - 1) / -2;
+                    blockpos$mutableblockpos.setPos(blockpos).move(enumfacing, k + i1).move(EnumFacing.UP, l + j1);
+                    IBlockState iblockstate = this.worldObj.getBlockState(blockpos$mutableblockpos);
 
-                    if (iblockstate.isSideSolid(this.worldObj, blockpos1, this.facingDirection))
+                    if (iblockstate.isSideSolid(this.worldObj, blockpos$mutableblockpos, this.facingDirection))
                         continue;
 
                     if (!iblockstate.getMaterial().isSolid() && !BlockRedstoneDiode.isDiode(iblockstate))
@@ -322,7 +325,19 @@ public abstract class EntityHanging extends Entity
             }
         }
 
-        return super.getRotatedYaw(transformRotation);
+        float f = MathHelper.wrapDegrees(this.rotationYaw);
+
+        switch (transformRotation)
+        {
+            case CLOCKWISE_180:
+                return f + 180.0F;
+            case COUNTERCLOCKWISE_90:
+                return f + 90.0F;
+            case CLOCKWISE_90:
+                return f + 270.0F;
+            default:
+                return f;
+        }
     }
 
     /**

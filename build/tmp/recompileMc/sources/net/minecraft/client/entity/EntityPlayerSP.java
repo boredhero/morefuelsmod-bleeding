@@ -1,6 +1,8 @@
 package net.minecraft.client.entity;
 
+import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ElytraSound;
 import net.minecraft.client.audio.MovingSoundMinecartRiding;
@@ -19,6 +21,7 @@ import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.client.gui.inventory.GuiEditCommandBlockMinecart;
 import net.minecraft.client.gui.inventory.GuiEditSign;
+import net.minecraft.client.gui.inventory.GuiEditStructure;
 import net.minecraft.client.gui.inventory.GuiFurnace;
 import net.minecraft.client.gui.inventory.GuiScreenHorseInventory;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -55,6 +58,7 @@ import net.minecraft.stats.StatisticsManager;
 import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.tileentity.TileEntitySign;
+import net.minecraft.tileentity.TileEntityStructure;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -64,6 +68,8 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IInteractionObject;
 import net.minecraft.world.World;
@@ -136,6 +142,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
     private boolean handActive;
     private EnumHand activeHand;
     private boolean rowingBoat;
+    private boolean field_189811_cr = true;
+    private int field_189812_cs;
+    private boolean field_189813_ct;
 
     public EntityPlayerSP(Minecraft mcIn, World worldIn, NetHandlerPlayClient netHandler, StatisticsManager statFile)
     {
@@ -304,6 +313,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
             }
 
             this.prevOnGround = this.onGround;
+            this.field_189811_cr = this.mc.gameSettings.field_189989_R;
         }
     }
 
@@ -396,7 +406,8 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 this.setHealth(this.getHealth());
                 this.hurtResistantTime = this.maxHurtResistantTime;
                 this.damageEntity(DamageSource.generic, f);
-                this.hurtTime = this.maxHurtTime = 10;
+                this.maxHurtTime = 10;
+                this.hurtTime = this.maxHurtTime;
             }
         }
         else
@@ -543,22 +554,22 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
                 if (i == 0)
                 {
-                    this.motionX = (double)(-f);
+                    this.motionX = -0.10000000149011612D;
                 }
 
                 if (i == 1)
                 {
-                    this.motionX = (double)f;
+                    this.motionX = 0.10000000149011612D;
                 }
 
                 if (i == 4)
                 {
-                    this.motionZ = (double)(-f);
+                    this.motionZ = -0.10000000149011612D;
                 }
 
                 if (i == 5)
                 {
-                    this.motionZ = (double)f;
+                    this.motionZ = 0.10000000149011612D;
                 }
             }
 
@@ -695,6 +706,11 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 this.resetActiveHand();
             }
         }
+
+        if (FLAGS.equals(key) && this.isElytraFlying() && !this.field_189813_ct)
+        {
+            this.mc.getSoundHandler().playSound(new ElytraSound(this));
+        }
     }
 
     public boolean isRidingHorse()
@@ -715,18 +731,17 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void displayGuiEditCommandCart(CommandBlockBaseLogic p_184809_1_)
     {
-        if (this.canCommandSenderUseCommand(2, ""))
-        {
-            this.mc.displayGuiScreen(new GuiEditCommandBlockMinecart(p_184809_1_));
-        }
+        this.mc.displayGuiScreen(new GuiEditCommandBlockMinecart(p_184809_1_));
     }
 
     public void displayGuiCommandBlock(TileEntityCommandBlock p_184824_1_)
     {
-        if (this.canCommandSenderUseCommand(2, ""))
-        {
-            this.mc.displayGuiScreen(new GuiCommandBlock(p_184824_1_));
-        }
+        this.mc.displayGuiScreen(new GuiCommandBlock(p_184824_1_));
+    }
+
+    public void func_189807_a(TileEntityStructure p_189807_1_)
+    {
+        this.mc.displayGuiScreen(new GuiEditStructure(p_189807_1_));
     }
 
     public void openBook(ItemStack stack, EnumHand hand)
@@ -913,7 +928,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
         boolean flag = this.movementInput.jump;
         boolean flag1 = this.movementInput.sneak;
         float f = 0.8F;
-        boolean flag2 = this.movementInput.moveForward >= f;
+        boolean flag2 = this.movementInput.moveForward >= 0.8F;
         this.movementInput.updatePlayerMoveState();
 
         if (this.isHandActive() && !this.isRiding())
@@ -923,14 +938,23 @@ public class EntityPlayerSP extends AbstractClientPlayer
             this.sprintToggleTimer = 0;
         }
 
+        boolean flag3 = false;
+
+        if (this.field_189812_cs > 0)
+        {
+            --this.field_189812_cs;
+            flag3 = true;
+            this.movementInput.jump = true;
+        }
+
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
-        boolean flag3 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
+        boolean flag4 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
-        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= f && !this.isSprinting() && flag3 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS))
+        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= 0.8F && !this.isSprinting() && flag4 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS))
         {
             if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown())
             {
@@ -942,12 +966,12 @@ public class EntityPlayerSP extends AbstractClientPlayer
             }
         }
 
-        if (!this.isSprinting() && this.movementInput.moveForward >= f && flag3 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS) && this.mc.gameSettings.keyBindSprint.isKeyDown())
+        if (!this.isSprinting() && this.movementInput.moveForward >= 0.8F && flag4 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS) && this.mc.gameSettings.keyBindSprint.isKeyDown())
         {
             this.setSprinting(true);
         }
 
-        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3))
+        if (this.isSprinting() && (this.movementInput.moveForward < 0.8F || this.isCollidedHorizontally || !flag4))
         {
             this.setSprinting(false);
         }
@@ -962,7 +986,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
                     this.sendPlayerAbilities();
                 }
             }
-            else if (!flag && this.movementInput.jump)
+            else if (!flag && this.movementInput.jump && !flag3)
             {
                 if (this.flyToggleTimer == 0)
                 {
@@ -984,9 +1008,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
             if (itemstack != null && itemstack.getItem() == Items.ELYTRA && ItemElytra.isBroken(itemstack))
             {
                 this.connection.sendPacket(new CPacketEntityAction(this, CPacketEntityAction.Action.START_FALL_FLYING));
-                this.mc.getSoundHandler().playSound(new ElytraSound(this));
             }
         }
+
+        this.field_189813_ct = this.isElytraFlying();
 
         if (this.capabilities.isFlying && this.isCurrentViewEntity())
         {
@@ -1091,5 +1116,165 @@ public class EntityPlayerSP extends AbstractClientPlayer
         }
 
         return super.removeActivePotionEffect(potioneffectin);
+    }
+
+    /**
+     * Tries to move the entity towards the specified location.
+     */
+    public void moveEntity(double x, double y, double z)
+    {
+        double d0 = this.posX;
+        double d1 = this.posZ;
+        super.moveEntity(x, y, z);
+        this.func_189810_i((float)(this.posX - d0), (float)(this.posZ - d1));
+    }
+
+    public boolean func_189809_N()
+    {
+        return this.field_189811_cr;
+    }
+
+    protected void func_189810_i(float p_189810_1_, float p_189810_2_)
+    {
+        if (this.func_189809_N())
+        {
+            if (this.field_189812_cs <= 0 && this.onGround && !this.isSneaking() && !this.isRiding())
+            {
+                Vec2f vec2f = this.movementInput.func_190020_b();
+
+                if (vec2f.field_189982_i != 0.0F || vec2f.field_189983_j != 0.0F)
+                {
+                    Vec3d vec3d = new Vec3d(this.posX, this.getEntityBoundingBox().minY, this.posZ);
+                    double d0 = this.posX + (double)p_189810_1_;
+                    double d1 = this.posZ + (double)p_189810_2_;
+                    Vec3d vec3d1 = new Vec3d(d0, this.getEntityBoundingBox().minY, d1);
+                    Vec3d vec3d2 = new Vec3d((double)p_189810_1_, 0.0D, (double)p_189810_2_);
+                    float f = this.getAIMoveSpeed();
+                    float f1 = (float)vec3d2.func_189985_c();
+
+                    if (f1 <= 0.001F)
+                    {
+                        float f2 = f * vec2f.field_189982_i;
+                        float f3 = f * vec2f.field_189983_j;
+                        float f4 = MathHelper.sin(this.rotationYaw * 0.017453292F);
+                        float f5 = MathHelper.cos(this.rotationYaw * 0.017453292F);
+                        vec3d2 = new Vec3d((double)(f2 * f5 - f3 * f4), vec3d2.yCoord, (double)(f3 * f5 + f2 * f4));
+                        f1 = (float)vec3d2.func_189985_c();
+
+                        if (f1 <= 0.001F)
+                        {
+                            return;
+                        }
+                    }
+
+                    float f12 = (float)MathHelper.fastInvSqrt((double)f1);
+                    Vec3d vec3d12 = vec3d2.scale((double)f12);
+                    Vec3d vec3d13 = this.func_189651_aD();
+                    float f13 = (float)(vec3d13.xCoord * vec3d12.xCoord + vec3d13.zCoord * vec3d12.zCoord);
+
+                    if (f13 >= -0.15F)
+                    {
+                        BlockPos blockpos = new BlockPos(this.posX, this.getEntityBoundingBox().maxY, this.posZ);
+                        IBlockState iblockstate = this.worldObj.getBlockState(blockpos);
+
+                        if (iblockstate.getCollisionBoundingBox(this.worldObj, blockpos) == null)
+                        {
+                            blockpos = blockpos.up();
+                            IBlockState iblockstate1 = this.worldObj.getBlockState(blockpos);
+
+                            if (iblockstate1.getCollisionBoundingBox(this.worldObj, blockpos) == null)
+                            {
+                                float f6 = 7.0F;
+                                float f7 = 1.2F;
+
+                                if (this.isPotionActive(MobEffects.JUMP_BOOST))
+                                {
+                                    f7 += (float)(this.getActivePotionEffect(MobEffects.JUMP_BOOST).getAmplifier() + 1) * 0.75F;
+                                }
+
+                                float f8 = Math.max(f * 7.0F, 1.0F / f12);
+                                Vec3d vec3d4 = vec3d1.add(vec3d12.scale((double)f8));
+                                float f9 = this.width;
+                                float f10 = this.height;
+                                AxisAlignedBB axisalignedbb = (new AxisAlignedBB(vec3d, vec3d4.addVector(0.0D, (double)f10, 0.0D))).expand((double)f9, 0.0D, (double)f9);
+                                Vec3d lvt_19_1_ = vec3d.addVector(0.0D, 0.5099999904632568D, 0.0D);
+                                vec3d4 = vec3d4.addVector(0.0D, 0.5099999904632568D, 0.0D);
+                                Vec3d vec3d5 = vec3d12.crossProduct(new Vec3d(0.0D, 1.0D, 0.0D));
+                                Vec3d vec3d6 = vec3d5.scale((double)(f9 * 0.5F));
+                                Vec3d vec3d7 = lvt_19_1_.subtract(vec3d6);
+                                Vec3d vec3d8 = vec3d4.subtract(vec3d6);
+                                Vec3d vec3d9 = lvt_19_1_.add(vec3d6);
+                                Vec3d vec3d10 = vec3d4.add(vec3d6);
+                                List<AxisAlignedBB> list = this.worldObj.getCollisionBoxes(this, axisalignedbb);
+
+                                if (!list.isEmpty())
+                                {
+                                    ;
+                                }
+
+                                float f11 = Float.MIN_VALUE;
+                                label659:
+
+                                for (AxisAlignedBB axisalignedbb2 : list)
+                                {
+                                    if (axisalignedbb2.func_189973_a(vec3d7, vec3d8) || axisalignedbb2.func_189973_a(vec3d9, vec3d10))
+                                    {
+                                        f11 = (float)axisalignedbb2.maxY;
+                                        Vec3d vec3d11 = axisalignedbb2.func_189972_c();
+                                        BlockPos blockpos1 = new BlockPos(vec3d11);
+                                        int i = 1;
+
+                                        while (true)
+                                        {
+                                            if ((float)i >= f7)
+                                            {
+                                                break label659;
+                                            }
+
+                                            BlockPos blockpos2 = blockpos1.up(i);
+                                            IBlockState iblockstate2 = this.worldObj.getBlockState(blockpos2);
+                                            AxisAlignedBB axisalignedbb1;
+
+                                            if ((axisalignedbb1 = iblockstate2.getCollisionBoundingBox(this.worldObj, blockpos2)) != null)
+                                            {
+                                                f11 = (float)axisalignedbb1.maxY + (float)blockpos2.getY();
+
+                                                if ((double)f11 - this.getEntityBoundingBox().minY > (double)f7)
+                                                {
+                                                    return;
+                                                }
+                                            }
+
+                                            if (i > 1)
+                                            {
+                                                blockpos = blockpos.up();
+                                                IBlockState iblockstate3 = this.worldObj.getBlockState(blockpos);
+
+                                                if (iblockstate3.getCollisionBoundingBox(this.worldObj, blockpos) != null)
+                                                {
+                                                    return;
+                                                }
+                                            }
+
+                                            ++i;
+                                        }
+                                    }
+                                }
+
+                                if (f11 != Float.MIN_VALUE)
+                                {
+                                    float f14 = (float)((double)f11 - this.getEntityBoundingBox().minY);
+
+                                    if (f14 > 0.5F && f14 <= f7)
+                                    {
+                                        this.field_189812_cs = 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -109,7 +109,6 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
 
             this.drawSelectionBox(k, l, mouseXIn, mouseYIn);
             GlStateManager.disableDepth();
-            int i1 = 4;
             this.overlayBackground(0, this.top, 255, 255);
             this.overlayBackground(this.bottom, this.height, 255, 255);
             GlStateManager.enableBlend();
@@ -117,17 +116,17 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
             GlStateManager.disableAlpha();
             GlStateManager.shadeModel(7425);
             GlStateManager.disableTexture2D();
-            int j1 = this.getMaxScroll();
+            int i1 = this.getMaxScroll();
 
-            if (j1 > 0)
+            if (i1 > 0)
             {
-                int k1 = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
-                k1 = MathHelper.clamp_int(k1, 32, this.bottom - this.top - 8);
-                int l1 = (int)this.amountScrolled * (this.bottom - this.top - k1) / j1 + this.top;
+                int j1 = (this.bottom - this.top) * (this.bottom - this.top) / this.getContentHeight();
+                j1 = MathHelper.clamp_int(j1, 32, this.bottom - this.top - 8);
+                int k1 = (int)this.amountScrolled * (this.bottom - this.top - j1) / i1 + this.top;
 
-                if (l1 < this.top)
+                if (k1 < this.top)
                 {
-                    l1 = this.top;
+                    k1 = this.top;
                 }
 
                 vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
@@ -137,16 +136,16 @@ public class GuiSimpleScrolledSelectionListProxy extends GuiSlot
                 vertexbuffer.pos((double)i, (double)this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
                 tessellator.draw();
                 vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                vertexbuffer.pos((double)i, (double)(l1 + k1), 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
-                vertexbuffer.pos((double)j, (double)(l1 + k1), 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
-                vertexbuffer.pos((double)j, (double)l1, 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
-                vertexbuffer.pos((double)i, (double)l1, 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
+                vertexbuffer.pos((double)i, (double)(k1 + j1), 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
+                vertexbuffer.pos((double)j, (double)(k1 + j1), 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
+                vertexbuffer.pos((double)j, (double)k1, 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
+                vertexbuffer.pos((double)i, (double)k1, 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
                 tessellator.draw();
                 vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-                vertexbuffer.pos((double)i, (double)(l1 + k1 - 1), 0.0D).tex(0.0D, 1.0D).color(192, 192, 192, 255).endVertex();
-                vertexbuffer.pos((double)(j - 1), (double)(l1 + k1 - 1), 0.0D).tex(1.0D, 1.0D).color(192, 192, 192, 255).endVertex();
-                vertexbuffer.pos((double)(j - 1), (double)l1, 0.0D).tex(1.0D, 0.0D).color(192, 192, 192, 255).endVertex();
-                vertexbuffer.pos((double)i, (double)l1, 0.0D).tex(0.0D, 0.0D).color(192, 192, 192, 255).endVertex();
+                vertexbuffer.pos((double)i, (double)(k1 + j1 - 1), 0.0D).tex(0.0D, 1.0D).color(192, 192, 192, 255).endVertex();
+                vertexbuffer.pos((double)(j - 1), (double)(k1 + j1 - 1), 0.0D).tex(1.0D, 1.0D).color(192, 192, 192, 255).endVertex();
+                vertexbuffer.pos((double)(j - 1), (double)k1, 0.0D).tex(1.0D, 0.0D).color(192, 192, 192, 255).endVertex();
+                vertexbuffer.pos((double)i, (double)k1, 0.0D).tex(0.0D, 0.0D).color(192, 192, 192, 255).endVertex();
                 tessellator.draw();
             }
 

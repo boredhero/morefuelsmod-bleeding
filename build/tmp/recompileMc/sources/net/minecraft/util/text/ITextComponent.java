@@ -93,7 +93,7 @@ public interface ITextComponent extends Iterable<ITextComponent>
                     }
                     else
                     {
-                        throw new JsonParseException("Don\'t know how to turn " + p_deserialize_1_.toString() + " into a Component");
+                        throw new JsonParseException("Don\'t know how to turn " + p_deserialize_1_ + " into a Component");
                     }
                 }
                 else
@@ -156,7 +156,7 @@ public interface ITextComponent extends Iterable<ITextComponent>
                     {
                         if (!jsonobject.has("selector"))
                         {
-                            throw new JsonParseException("Don\'t know how to turn " + p_deserialize_1_.toString() + " into a Component");
+                            throw new JsonParseException("Don\'t know how to turn " + p_deserialize_1_ + " into a Component");
                         }
 
                         itextcomponent = new TextComponentSelector(JsonUtils.getString(jsonobject, "selector"));

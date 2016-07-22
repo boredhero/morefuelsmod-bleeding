@@ -59,7 +59,7 @@ public class LootTableManager
         {
             if (p_load_1_.getResourcePath().contains("."))
             {
-                LootTableManager.LOGGER.debug("Invalid loot table name \'" + p_load_1_ + "\' (can\'t contain periods)");
+                LootTableManager.LOGGER.debug("Invalid loot table name \'{}\' (can\'t contain periods)", new Object[] {p_load_1_});
                 return LootTable.EMPTY_LOOT_TABLE;
             }
             else
@@ -98,7 +98,7 @@ public class LootTableManager
                     }
                     catch (IOException ioexception)
                     {
-                        LootTableManager.LOGGER.warn((String)("Couldn\'t load loot table " + resource + " from " + file1), (Throwable)ioexception);
+                        LootTableManager.LOGGER.warn("Couldn\'t load loot table {} from {}", new Object[] {resource, file1, ioexception});
                         return LootTable.EMPTY_LOOT_TABLE;
                     }
 
@@ -108,13 +108,13 @@ public class LootTableManager
                     }
                     catch (JsonParseException jsonparseexception)
                     {
-                        LootTableManager.LOGGER.error((String)("Couldn\'t load loot table " + resource + " from " + file1), (Throwable)jsonparseexception);
+                        LootTableManager.LOGGER.error("Couldn\'t load loot table {} from {}", new Object[] {resource, file1, jsonparseexception});
                         return LootTable.EMPTY_LOOT_TABLE;
                     }
                 }
                 else
                 {
-                    LootTableManager.LOGGER.warn("Expected to find loot table " + resource + " at " + file1 + " but it was a folder.");
+                    LootTableManager.LOGGER.warn("Expected to find loot table {} at {} but it was a folder.", new Object[] {resource, file1});
                     return LootTable.EMPTY_LOOT_TABLE;
                 }
             }
@@ -139,7 +139,7 @@ public class LootTableManager
                 }
                 catch (IOException ioexception)
                 {
-                    LootTableManager.LOGGER.warn((String)("Couldn\'t load loot table " + resource + " from " + url), (Throwable)ioexception);
+                    LootTableManager.LOGGER.warn("Couldn\'t load loot table {} from {}", new Object[] {resource, url, ioexception});
                     return LootTable.EMPTY_LOOT_TABLE;
                 }
 
@@ -149,7 +149,7 @@ public class LootTableManager
                 }
                 catch (JsonParseException jsonparseexception)
                 {
-                    LootTableManager.LOGGER.error((String)("Couldn\'t load loot table " + resource + " from " + url), (Throwable)jsonparseexception);
+                    LootTableManager.LOGGER.error("Couldn\'t load loot table {} from {}", new Object[] {resource, url, jsonparseexception});
                     return LootTable.EMPTY_LOOT_TABLE;
                 }
             }

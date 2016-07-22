@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.ai.EntityJumpHelper;
@@ -43,6 +44,9 @@ import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
@@ -61,11 +65,11 @@ public abstract class EntityLiving extends EntityLivingBase
     public int livingSoundTime;
     /** The experience points the Entity gives. */
     protected int experienceValue;
-    private EntityLookHelper lookHelper;
+    private final EntityLookHelper lookHelper;
     protected EntityMoveHelper moveHelper;
     /** Entity jumping helper */
     protected EntityJumpHelper jumpHelper;
-    private EntityBodyHelper bodyHelper;
+    private final EntityBodyHelper bodyHelper;
     protected PathNavigate navigator;
     /** Passive tasks (wandering, look, idle, ...) */
     public final EntityAITasks tasks;
@@ -73,18 +77,18 @@ public abstract class EntityLiving extends EntityLivingBase
     public final EntityAITasks targetTasks;
     /** The active target the Task system uses for tracking */
     private EntityLivingBase attackTarget;
-    private EntitySenses senses;
-    private ItemStack[] inventoryHands = new ItemStack[2];
+    private final EntitySenses senses;
+    private final ItemStack[] inventoryHands = new ItemStack[2];
     /** Chances for equipment in hands dropping when this entity dies. */
     protected float[] inventoryHandsDropChances = new float[2];
-    private ItemStack[] inventoryArmor = new ItemStack[4];
+    private final ItemStack[] inventoryArmor = new ItemStack[4];
     /** Chances for armor dropping when this entity dies. */
     protected float[] inventoryArmorDropChances = new float[4];
     /** Whether this entity can pick up items from the ground. */
     private boolean canPickUpLoot;
     /** Whether this entity should NOT despawn. */
     private boolean persistenceRequired;
-    private Map<PathNodeType, Float> mapPathPriority = Maps.newEnumMap(PathNodeType.class);
+    private final Map<PathNodeType, Float> mapPathPriority = Maps.newEnumMap(PathNodeType.class);
     private ResourceLocation deathLootTable;
     private long deathLootTableSeed;
     private boolean isLeashed;
@@ -102,16 +106,8 @@ public abstract class EntityLiving extends EntityLivingBase
         this.bodyHelper = this.createBodyHelper();
         this.navigator = this.getNewNavigator(worldIn);
         this.senses = new EntitySenses(this);
-
-        for (int i = 0; i < this.inventoryArmorDropChances.length; ++i)
-        {
-            this.inventoryArmorDropChances[i] = 0.085F;
-        }
-
-        for (int j = 0; j < this.inventoryHandsDropChances.length; ++j)
-        {
-            this.inventoryHandsDropChances[j] = 0.085F;
-        }
+        Arrays.fill(this.inventoryArmorDropChances, 0.085F);
+        Arrays.fill(this.inventoryHandsDropChances, 0.085F);
 
         if (worldIn != null && !worldIn.isRemote)
         {
@@ -316,7 +312,7 @@ public abstract class EntityLiving extends EntityLivingBase
                 double d1 = this.rand.nextGaussian() * 0.02D;
                 double d2 = this.rand.nextGaussian() * 0.02D;
                 double d3 = 10.0D;
-                this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d0 * d3, this.posY + (double)(this.rand.nextFloat() * this.height) - d1 * d3, this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d2 * d3, d0, d1, d2, new int[0]);
+                this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, this.posX + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d0 * 10.0D, this.posY + (double)(this.rand.nextFloat() * this.height) - d1 * 10.0D, this.posZ + (double)(this.rand.nextFloat() * this.width * 2.0F) - (double)this.width - d2 * 10.0D, d0, d1, d2, new int[0]);
             }
         }
         else
@@ -353,7 +349,8 @@ public abstract class EntityLiving extends EntityLivingBase
             {
                 boolean flag = !(this.getControllingPassenger() instanceof EntityLiving);
                 boolean flag1 = !(this.getRidingEntity() instanceof EntityBoat);
-                this.tasks.setControlFlag(5, flag && flag1);
+                this.tasks.setControlFlag(1, flag);
+                this.tasks.setControlFlag(4, flag && flag1);
                 this.tasks.setControlFlag(2, flag);
             }
         }
@@ -400,6 +397,16 @@ public abstract class EntityLiving extends EntityLivingBase
         }
     }
 
+    public static void func_189752_a(DataFixer p_189752_0_, String p_189752_1_)
+    {
+        p_189752_0_.registerWalker(FixTypes.ENTITY, new ItemStackDataLists(p_189752_1_, new String[] {"ArmorItems", "HandItems"}));
+    }
+
+    public static void func_189753_a(DataFixer p_189753_0_)
+    {
+        func_189752_a(p_189753_0_, "Mob");
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -410,13 +417,13 @@ public abstract class EntityLiving extends EntityLivingBase
         compound.setBoolean("PersistenceRequired", this.persistenceRequired);
         NBTTagList nbttaglist = new NBTTagList();
 
-        for (int i = 0; i < this.inventoryArmor.length; ++i)
+        for (ItemStack itemstack : this.inventoryArmor)
         {
             NBTTagCompound nbttagcompound = new NBTTagCompound();
 
-            if (this.inventoryArmor[i] != null)
+            if (itemstack != null)
             {
-                this.inventoryArmor[i].writeToNBT(nbttagcompound);
+                itemstack.writeToNBT(nbttagcompound);
             }
 
             nbttaglist.appendTag(nbttagcompound);
@@ -425,13 +432,13 @@ public abstract class EntityLiving extends EntityLivingBase
         compound.setTag("ArmorItems", nbttaglist);
         NBTTagList nbttaglist1 = new NBTTagList();
 
-        for (int k = 0; k < this.inventoryHands.length; ++k)
+        for (ItemStack itemstack1 : this.inventoryHands)
         {
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
 
-            if (this.inventoryHands[k] != null)
+            if (itemstack1 != null)
             {
-                this.inventoryHands[k].writeToNBT(nbttagcompound1);
+                itemstack1.writeToNBT(nbttagcompound1);
             }
 
             nbttaglist1.appendTag(nbttagcompound1);
@@ -440,17 +447,17 @@ public abstract class EntityLiving extends EntityLivingBase
         compound.setTag("HandItems", nbttaglist1);
         NBTTagList nbttaglist2 = new NBTTagList();
 
-        for (int l = 0; l < this.inventoryArmorDropChances.length; ++l)
+        for (float f1 : this.inventoryArmorDropChances)
         {
-            nbttaglist2.appendTag(new NBTTagFloat(this.inventoryArmorDropChances[l]));
+            nbttaglist2.appendTag(new NBTTagFloat(f1));
         }
 
         compound.setTag("ArmorDropChances", nbttaglist2);
         NBTTagList nbttaglist3 = new NBTTagList();
 
-        for (int j = 0; j < this.inventoryHandsDropChances.length; ++j)
+        for (float f : this.inventoryHandsDropChances)
         {
-            nbttaglist3.appendTag(new NBTTagFloat(this.inventoryHandsDropChances[j]));
+            nbttaglist3.appendTag(new NBTTagFloat(f));
         }
 
         compound.setTag("HandDropChances", nbttaglist3);
@@ -935,7 +942,8 @@ public abstract class EntityLiving extends EntityLivingBase
      */
     public boolean getCanSpawnHere()
     {
-        return true;
+        IBlockState iblockstate = this.worldObj.getBlockState((new BlockPos(this)).down());
+        return iblockstate.func_189884_a(this);
     }
 
     /**
@@ -1129,7 +1137,7 @@ public abstract class EntityLiving extends EntityLivingBase
 
     public static EntityEquipmentSlot getSlotForItemStack(ItemStack stack)
     {
-        return stack.getItem() != Item.getItemFromBlock(Blocks.PUMPKIN) && stack.getItem() != Items.SKULL ? (stack.getItem() == Items.ELYTRA ? EntityEquipmentSlot.CHEST : (stack.getItem() instanceof ItemArmor ? ((ItemArmor)stack.getItem()).armorType : (stack.getItem() == Items.ELYTRA ? EntityEquipmentSlot.CHEST : EntityEquipmentSlot.MAINHAND))) : EntityEquipmentSlot.HEAD;
+        return stack.getItem() != Item.getItemFromBlock(Blocks.PUMPKIN) && stack.getItem() != Items.SKULL ? (stack.getItem() instanceof ItemArmor ? ((ItemArmor)stack.getItem()).armorType : (stack.getItem() == Items.ELYTRA ? EntityEquipmentSlot.CHEST : (stack.getItem() == Items.SHIELD ? EntityEquipmentSlot.OFFHAND : EntityEquipmentSlot.MAINHAND))) : EntityEquipmentSlot.HEAD;
     }
 
     public static Item getArmorByChance(EntityEquipmentSlot slotIn, int chance)
@@ -1526,7 +1534,7 @@ public abstract class EntityLiving extends EntityLivingBase
     public static boolean isItemStackInSlot(EntityEquipmentSlot slotIn, ItemStack stack)
     {
         EntityEquipmentSlot entityequipmentslot = getSlotForItemStack(stack);
-        return entityequipmentslot == slotIn || entityequipmentslot == EntityEquipmentSlot.MAINHAND && slotIn == EntityEquipmentSlot.OFFHAND;
+        return entityequipmentslot == slotIn || entityequipmentslot == EntityEquipmentSlot.MAINHAND && slotIn == EntityEquipmentSlot.OFFHAND || entityequipmentslot == EntityEquipmentSlot.OFFHAND && slotIn == EntityEquipmentSlot.MAINHAND;
     }
 
     /**

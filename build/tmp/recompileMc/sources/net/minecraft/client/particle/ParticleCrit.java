@@ -26,7 +26,10 @@ public class ParticleCrit extends Particle
         this.motionX += p_i46285_8_ * 0.4D;
         this.motionY += p_i46285_10_ * 0.4D;
         this.motionZ += p_i46285_12_ * 0.4D;
-        this.particleRed = this.particleGreen = this.particleBlue = (float)(Math.random() * 0.30000001192092896D + 0.6000000238418579D);
+        float f = (float)(Math.random() * 0.30000001192092896D + 0.6000000238418579D);
+        this.particleRed = f;
+        this.particleGreen = f;
+        this.particleBlue = f;
         this.particleScale *= 0.75F;
         this.particleScale *= p_i46285_14_;
         this.oSize = this.particleScale;

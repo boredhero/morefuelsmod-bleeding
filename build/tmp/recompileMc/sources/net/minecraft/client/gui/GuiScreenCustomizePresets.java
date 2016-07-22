@@ -21,7 +21,7 @@ public class GuiScreenCustomizePresets extends GuiScreen
     private GuiScreenCustomizePresets.ListPreset list;
     private GuiButton select;
     private GuiTextField export;
-    private GuiCustomizeWorldScreen parent;
+    private final GuiCustomizeWorldScreen parent;
     protected String title = "Customize World Presets";
     private String shareText;
     private String listText;
@@ -46,7 +46,7 @@ public class GuiScreenCustomizePresets extends GuiScreen
         this.list = new GuiScreenCustomizePresets.ListPreset();
         this.export.setMaxStringLength(2000);
         this.export.setText(this.parent.saveValues());
-        this.buttonList.add(this.select = new GuiButton(0, this.width / 2 - 102, this.height - 27, 100, 20, I18n.format("createWorld.customize.presets.select", new Object[0])));
+        this.select = this.func_189646_b(new GuiButton(0, this.width / 2 - 102, this.height - 27, 100, 20, I18n.format("createWorld.customize.presets.select", new Object[0])));
         this.buttonList.add(new GuiButton(1, this.width / 2 + 3, this.height - 27, 100, 20, I18n.format("gui.cancel", new Object[0])));
         this.updateButtonValidity();
     }

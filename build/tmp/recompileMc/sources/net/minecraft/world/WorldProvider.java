@@ -59,7 +59,7 @@ public abstract class WorldProvider
         for (int i = 0; i <= 15; ++i)
         {
             float f1 = 1.0F - (float)i / 15.0F;
-            this.lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * (1.0F - f) + f;
+            this.lightBrightnessTable[i] = (1.0F - f1) / (f1 * 3.0F + 1.0F) * 1.0F + 0.0F;
         }
     }
 
@@ -132,9 +132,9 @@ public abstract class WorldProvider
         float f1 = MathHelper.cos(celestialAngle * ((float)Math.PI * 2F)) - 0.0F;
         float f2 = -0.0F;
 
-        if (f1 >= f2 - f && f1 <= f2 + f)
+        if (f1 >= -0.4F && f1 <= 0.4F)
         {
-            float f3 = (f1 - f2) / f * 0.5F + 0.5F;
+            float f3 = (f1 - -0.0F) / 0.4F * 0.5F + 0.5F;
             float f4 = 1.0F - (1.0F - MathHelper.sin(f3 * (float)Math.PI)) * 0.99F;
             f4 = f4 * f4;
             this.colorsSunriseSunset[0] = f3 * 0.3F + 0.7F;
@@ -367,7 +367,7 @@ public abstract class WorldProvider
     {
         BlockPos ret = this.worldObj.getSpawnPoint();
 
-        boolean isAdventure = worldObj.getWorldInfo().getGameType() == WorldSettings.GameType.ADVENTURE;
+        boolean isAdventure = worldObj.getWorldInfo().getGameType() == GameType.ADVENTURE;
         int spawnFuzz = this.worldObj instanceof WorldServer ? terrainType.getSpawnFuzz((WorldServer)this.worldObj, this.worldObj.getMinecraftServer()) : 1;
         int border = MathHelper.floor_double(worldObj.getWorldBorder().getClosestDistance(ret.getX(), ret.getZ()));
         if (border < spawnFuzz) spawnFuzz = border;

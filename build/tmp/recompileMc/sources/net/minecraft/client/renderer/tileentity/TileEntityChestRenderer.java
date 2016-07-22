@@ -20,8 +20,8 @@ public class TileEntityChestRenderer extends TileEntitySpecialRenderer<TileEntit
     private static final ResourceLocation TEXTURE_TRAPPED = new ResourceLocation("textures/entity/chest/trapped.png");
     private static final ResourceLocation TEXTURE_CHRISTMAS = new ResourceLocation("textures/entity/chest/christmas.png");
     private static final ResourceLocation TEXTURE_NORMAL = new ResourceLocation("textures/entity/chest/normal.png");
-    private ModelChest simpleChest = new ModelChest();
-    private ModelChest largeChest = new ModelLargeChest();
+    private final ModelChest simpleChest = new ModelChest();
+    private final ModelChest largeChest = new ModelLargeChest();
     private boolean isChristmas;
 
     public TileEntityChestRenderer()
@@ -41,11 +41,7 @@ public class TileEntityChestRenderer extends TileEntitySpecialRenderer<TileEntit
         GlStateManager.depthMask(true);
         int i;
 
-        if (!te.hasWorldObj())
-        {
-            i = 0;
-        }
-        else
+        if (te.hasWorldObj())
         {
             Block block = te.getBlockType();
             i = te.getBlockMetadata();
@@ -57,6 +53,10 @@ public class TileEntityChestRenderer extends TileEntitySpecialRenderer<TileEntit
             }
 
             te.checkForAdjacentChests();
+        }
+        else
+        {
+            i = 0;
         }
 
         if (te.adjacentChestZNeg == null && te.adjacentChestXNeg == null)

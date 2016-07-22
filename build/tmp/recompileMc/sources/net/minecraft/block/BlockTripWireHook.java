@@ -229,7 +229,7 @@ public class BlockTripWireHook extends Block
                 BlockPos blockpos2 = pos.offset(enumfacing, k);
                 IBlockState iblockstate2 = aiblockstate[k];
 
-                if (iblockstate2 != null && worldIn.getBlockState(blockpos2).getBlock() != Blocks.AIR)
+                if (iblockstate2 != null && worldIn.getBlockState(blockpos2).getMaterial() != Material.AIR)
                 {
                     worldIn.setBlockState(blockpos2, iblockstate2.withProperty(ATTACHED, Boolean.valueOf(flag2)), 3);
                 }

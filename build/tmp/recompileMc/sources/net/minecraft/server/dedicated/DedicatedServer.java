@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ICrashReportDetail;
@@ -34,6 +35,7 @@ import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
+import net.minecraft.world.GameType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSettings;
 import net.minecraft.world.WorldType;
@@ -46,6 +48,7 @@ import org.apache.logging.log4j.Logger;
 public class DedicatedServer extends MinecraftServer implements IServer
 {
     private static final Logger LOGGER = LogManager.getLogger();
+    private static final Pattern field_189647_l = Pattern.compile("^[a-fA-F0-9]{40}$");
     public final List<PendingCommand> pendingCommandList = Collections.<PendingCommand>synchronizedList(Lists.<PendingCommand>newArrayList());
     private RConThreadQuery theRConThreadQuery;
     private final RConConsoleSource rconConsoleSource = new RConConsoleSource(this);
@@ -53,7 +56,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     private PropertyManager settings;
     private ServerEula eula;
     private boolean canSpawnStructures;
-    private WorldSettings.GameType gameType;
+    private GameType gameType;
     private boolean guiIsEnabled;
     public static boolean allowPlayerLogins = false;
 
@@ -86,7 +89,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     /**
      * Initialises the server and starts it.
      */
-    protected boolean startServer() throws IOException
+    public boolean startServer() throws IOException
     {
         Thread thread = new Thread("Server console handler")
         {
@@ -111,7 +114,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         };
         thread.setDaemon(true);
         thread.start();
-        LOGGER.info("Starting minecraft server version 1.9.4");
+        LOGGER.info("Starting minecraft server version 1.10.2");
 
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
         {
@@ -161,9 +164,9 @@ public class DedicatedServer extends MinecraftServer implements IServer
             }
 
             this.canSpawnStructures = this.settings.getBooleanProperty("generate-structures", true);
-            int i = this.settings.getIntProperty("gamemode", WorldSettings.GameType.SURVIVAL.getID());
+            int i = this.settings.getIntProperty("gamemode", GameType.SURVIVAL.getID());
             this.gameType = WorldSettings.getGameTypeById(i);
-            LOGGER.info("Default game type: " + this.gameType);
+            LOGGER.info("Default game type: {}", new Object[] {this.gameType});
             InetAddress inetaddress = null;
 
             if (!this.getServerHostname().isEmpty())
@@ -178,7 +181,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
             LOGGER.info("Generating keypair");
             this.setKeyPair(CryptManager.generateKeyPair());
-            LOGGER.info("Starting Minecraft server on " + (this.getServerHostname().isEmpty() ? "*" : this.getServerHostname()) + ":" + this.getServerPort());
+            LOGGER.info("Starting Minecraft server on {}:{}", new Object[] {this.getServerHostname().isEmpty() ? "*" : this.getServerHostname(), Integer.valueOf(this.getServerPort())});
 
             try
             {
@@ -262,11 +265,11 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 TileEntitySkull.setSessionService(this.getMinecraftSessionService());
                 PlayerProfileCache.setOnlineMode(this.isServerInOnlineMode());
                 if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerAboutToStart(this)) return false;
-                LOGGER.info("Preparing level \"" + this.getFolderName() + "\"");
+                LOGGER.info("Preparing level \"{}\"", new Object[] {this.getFolderName()});
                 this.loadAllWorlds(this.getFolderName(), this.getFolderName(), k, worldtype, s2);
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", new Object[] {Double.valueOf((double)i1 / 1.0E9D)});
-                LOGGER.info("Done (" + s3 + ")! For help, type \"help\" or \"?\"");
+                LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", new Object[] {s3});
 
                 if (this.settings.getBooleanProperty("enable-query", false))
                 {
@@ -297,29 +300,28 @@ public class DedicatedServer extends MinecraftServer implements IServer
 
     public String loadResourcePackSHA()
     {
-        String s = "";
-
-        if (this.settings.hasProperty("resource-pack-hash") && !this.settings.hasProperty("resource-pack-sha1"))
+        if (this.settings.hasProperty("resource-pack-hash"))
         {
-            LOGGER.warn("ressource-pack-hash is depricated. Please use ressource-pack-sha1 instead.");
-            s = this.settings.getStringProperty("resource-pack-hash", "");
-            this.settings.getStringProperty("resource-pack-sha1", s);
-            this.settings.removeProperty("resource-pack-hash");
+            if (this.settings.hasProperty("resource-pack-sha1"))
+            {
+                LOGGER.warn("resource-pack-hash is deprecated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
+            }
+            else
+            {
+                LOGGER.warn("resource-pack-hash is deprecated. Please use resource-pack-sha1 instead.");
+                this.settings.getStringProperty("resource-pack-sha1", this.settings.getStringProperty("resource-pack-hash", ""));
+                this.settings.removeProperty("resource-pack-hash");
+            }
         }
 
-        if (this.settings.hasProperty("resource-pack-hash") && this.settings.hasProperty("resource-pack-sha1"))
-        {
-            LOGGER.warn("ressource-pack-hash is depricated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
-        }
+        String s = this.settings.getStringProperty("resource-pack-sha1", "");
 
-        s = this.settings.getStringProperty("resource-pack-sha1", "");
-
-        if (!s.equals("") && !s.matches("^[a-f0-9]{40}$"))
+        if (!s.isEmpty() && !field_189647_l.matcher(s).matches())
         {
             LOGGER.warn("Invalid sha1 for ressource-pack-sha1");
         }
 
-        if (!this.settings.getStringProperty("resource-pack", "").equals("") && s.equals(""))
+        if (!this.settings.getStringProperty("resource-pack", "").isEmpty() && s.isEmpty())
         {
             LOGGER.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
         }
@@ -330,7 +332,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     /**
      * Sets the game type for all worlds.
      */
-    public void setGameType(WorldSettings.GameType gameMode)
+    public void setGameType(GameType gameMode)
     {
         super.setGameType(gameMode);
         this.gameType = gameMode;
@@ -341,7 +343,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         return this.canSpawnStructures;
     }
 
-    public WorldSettings.GameType getGameType()
+    public GameType getGameType()
     {
         return this.gameType;
     }
@@ -365,7 +367,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     /**
      * Called on exit from the main run() loop.
      */
-    protected void finalTick(CrashReport report)
+    public void finalTick(CrashReport report)
     {
     }
 
@@ -380,7 +382,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
             public String call() throws Exception
             {
                 String s = DedicatedServer.this.getServerModName();
-                return !s.equals("vanilla") ? "Definitely; Server brand changed to \'" + s + "\'" : "Unknown (can\'t tell)";
+                return !"vanilla".equals(s) ? "Definitely; Server brand changed to \'" + s + "\'" : "Unknown (can\'t tell)";
             }
         });
         report.getCategory().setDetail("Type", new ICrashReportDetail<String>()
@@ -396,7 +398,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     /**
      * Directly calls System.exit(0), instantly killing the program.
      */
-    protected void systemExitNow()
+    public void systemExitNow()
     {
         System.exit(0);
     }
@@ -552,7 +554,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
     /**
      * On dedicated does nothing. On integrated, sets commandsAllowedForAll, gameType and allows external connections.
      */
-    public String shareToLAN(WorldSettings.GameType type, boolean allowCheats)
+    public String shareToLAN(GameType type, boolean allowCheats)
     {
         return "";
     }

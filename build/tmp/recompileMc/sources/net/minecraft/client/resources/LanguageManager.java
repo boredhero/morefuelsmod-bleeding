@@ -22,7 +22,7 @@ public class LanguageManager implements IResourceManagerReloadListener
     private final MetadataSerializer theMetadataSerializer;
     private String currentLanguage;
     protected static final Locale CURRENT_LOCALE = new Locale();
-    private Map<String, Language> languageMap = Maps.<String, Language>newHashMap();
+    private final Map<String, Language> languageMap = Maps.<String, Language>newHashMap();
 
     public LanguageManager(MetadataSerializer theMetadataSerializerIn, String currentLanguageIn)
     {
@@ -54,11 +54,11 @@ public class LanguageManager implements IResourceManagerReloadListener
             }
             catch (RuntimeException runtimeexception)
             {
-                LOGGER.warn((String)("Unable to parse metadata section of resourcepack: " + iresourcepack.getPackName()), (Throwable)runtimeexception);
+                LOGGER.warn("Unable to parse metadata section of resourcepack: {}", new Object[] {iresourcepack.getPackName(), runtimeexception});
             }
             catch (IOException ioexception)
             {
-                LOGGER.warn((String)("Unable to parse metadata section of resourcepack: " + iresourcepack.getPackName()), (Throwable)ioexception);
+                LOGGER.warn("Unable to parse metadata section of resourcepack: {}", new Object[] {iresourcepack.getPackName(), ioexception});
             }
         }
     }
@@ -93,7 +93,8 @@ public class LanguageManager implements IResourceManagerReloadListener
 
     public Language getCurrentLanguage()
     {
-        return this.languageMap.containsKey(this.currentLanguage) ? (Language)this.languageMap.get(this.currentLanguage) : (Language)this.languageMap.get("en_US");
+        String s = this.languageMap.containsKey(this.currentLanguage) ? this.currentLanguage : "en_US";
+        return (Language)this.languageMap.get(s);
     }
 
     public SortedSet<Language> getLanguages()

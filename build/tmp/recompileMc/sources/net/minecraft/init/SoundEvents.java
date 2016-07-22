@@ -94,6 +94,7 @@ public class SoundEvents
     public static final SoundEvent ENTITY_ELDER_GUARDIAN_HURT;
     public static final SoundEvent ENTITY_ELDER_GUARDIAN_HURT_LAND;
     public static final SoundEvent ITEM_ELYTRA_FLYING;
+    public static final SoundEvent field_190021_aL;
     public static final SoundEvent BLOCK_ENDERCHEST_CLOSE;
     public static final SoundEvent BLOCK_ENDERCHEST_OPEN;
     public static final SoundEvent ENTITY_ENDERDRAGON_AMBIENT;
@@ -194,6 +195,10 @@ public class SoundEvents
     public static final SoundEvent ENTITY_HOSTILE_SMALL_FALL;
     public static final SoundEvent ENTITY_HOSTILE_SPLASH;
     public static final SoundEvent ENTITY_HOSTILE_SWIM;
+    public static final SoundEvent field_190022_cI;
+    public static final SoundEvent field_190023_cJ;
+    public static final SoundEvent field_190024_cK;
+    public static final SoundEvent field_190025_cL;
     public static final SoundEvent ENTITY_IRONGOLEM_ATTACK;
     public static final SoundEvent ENTITY_IRONGOLEM_DEATH;
     public static final SoundEvent ENTITY_IRONGOLEM_HURT;
@@ -277,6 +282,12 @@ public class SoundEvents
     public static final SoundEvent ENTITY_PLAYER_SMALL_FALL;
     public static final SoundEvent ENTITY_PLAYER_SPLASH;
     public static final SoundEvent ENTITY_PLAYER_SWIM;
+    public static final SoundEvent field_190026_er;
+    public static final SoundEvent field_190027_es;
+    public static final SoundEvent field_190028_et;
+    public static final SoundEvent field_190029_eu;
+    public static final SoundEvent field_190030_ev;
+    public static final SoundEvent field_190031_ew;
     public static final SoundEvent BLOCK_PORTAL_AMBIENT;
     public static final SoundEvent BLOCK_PORTAL_TRAVEL;
     public static final SoundEvent BLOCK_PORTAL_TRIGGER;
@@ -378,6 +389,10 @@ public class SoundEvents
     public static final SoundEvent BLOCK_STONE_PRESSPLATE_CLICK_OFF;
     public static final SoundEvent BLOCK_STONE_PRESSPLATE_CLICK_ON;
     public static final SoundEvent BLOCK_STONE_STEP;
+    public static final SoundEvent field_190032_gu;
+    public static final SoundEvent field_190033_gv;
+    public static final SoundEvent field_190034_gw;
+    public static final SoundEvent field_190035_gx;
     public static final SoundEvent ENCHANT_THORNS_HIT;
     public static final SoundEvent ENTITY_TNT_PRIMED;
     public static final SoundEvent BLOCK_TRIPWIRE_ATTACH;
@@ -406,6 +421,10 @@ public class SoundEvents
     public static final SoundEvent ENTITY_WITHER_HURT;
     public static final SoundEvent ENTITY_WITHER_SHOOT;
     public static final SoundEvent ENTITY_WITHER_SPAWN;
+    public static final SoundEvent field_190036_ha;
+    public static final SoundEvent field_190037_hb;
+    public static final SoundEvent field_190038_hc;
+    public static final SoundEvent field_190039_hd;
     public static final SoundEvent ENTITY_WOLF_AMBIENT;
     public static final SoundEvent ENTITY_WOLF_DEATH;
     public static final SoundEvent ENTITY_WOLF_GROWL;
@@ -561,6 +580,7 @@ public class SoundEvents
             ENTITY_ELDER_GUARDIAN_HURT = getRegisteredSoundEvent("entity.elder_guardian.hurt");
             ENTITY_ELDER_GUARDIAN_HURT_LAND = getRegisteredSoundEvent("entity.elder_guardian.hurt_land");
             ITEM_ELYTRA_FLYING = getRegisteredSoundEvent("item.elytra.flying");
+            field_190021_aL = getRegisteredSoundEvent("block.enchantment_table.use");
             BLOCK_ENDERCHEST_CLOSE = getRegisteredSoundEvent("block.enderchest.close");
             BLOCK_ENDERCHEST_OPEN = getRegisteredSoundEvent("block.enderchest.open");
             ENTITY_ENDERDRAGON_AMBIENT = getRegisteredSoundEvent("entity.enderdragon.ambient");
@@ -661,6 +681,10 @@ public class SoundEvents
             ENTITY_HOSTILE_SMALL_FALL = getRegisteredSoundEvent("entity.hostile.small_fall");
             ENTITY_HOSTILE_SPLASH = getRegisteredSoundEvent("entity.hostile.splash");
             ENTITY_HOSTILE_SWIM = getRegisteredSoundEvent("entity.hostile.swim");
+            field_190022_cI = getRegisteredSoundEvent("entity.husk.ambient");
+            field_190023_cJ = getRegisteredSoundEvent("entity.husk.death");
+            field_190024_cK = getRegisteredSoundEvent("entity.husk.hurt");
+            field_190025_cL = getRegisteredSoundEvent("entity.husk.step");
             ENTITY_IRONGOLEM_ATTACK = getRegisteredSoundEvent("entity.irongolem.attack");
             ENTITY_IRONGOLEM_DEATH = getRegisteredSoundEvent("entity.irongolem.death");
             ENTITY_IRONGOLEM_HURT = getRegisteredSoundEvent("entity.irongolem.hurt");
@@ -744,6 +768,12 @@ public class SoundEvents
             ENTITY_PLAYER_SMALL_FALL = getRegisteredSoundEvent("entity.player.small_fall");
             ENTITY_PLAYER_SPLASH = getRegisteredSoundEvent("entity.player.splash");
             ENTITY_PLAYER_SWIM = getRegisteredSoundEvent("entity.player.swim");
+            field_190026_er = getRegisteredSoundEvent("entity.polar_bear.ambient");
+            field_190027_es = getRegisteredSoundEvent("entity.polar_bear.baby_ambient");
+            field_190028_et = getRegisteredSoundEvent("entity.polar_bear.death");
+            field_190029_eu = getRegisteredSoundEvent("entity.polar_bear.hurt");
+            field_190030_ev = getRegisteredSoundEvent("entity.polar_bear.step");
+            field_190031_ew = getRegisteredSoundEvent("entity.polar_bear.warning");
             BLOCK_PORTAL_AMBIENT = getRegisteredSoundEvent("block.portal.ambient");
             BLOCK_PORTAL_TRAVEL = getRegisteredSoundEvent("block.portal.travel");
             BLOCK_PORTAL_TRIGGER = getRegisteredSoundEvent("block.portal.trigger");
@@ -845,6 +875,10 @@ public class SoundEvents
             BLOCK_STONE_PRESSPLATE_CLICK_OFF = getRegisteredSoundEvent("block.stone_pressureplate.click_off");
             BLOCK_STONE_PRESSPLATE_CLICK_ON = getRegisteredSoundEvent("block.stone_pressureplate.click_on");
             BLOCK_STONE_STEP = getRegisteredSoundEvent("block.stone.step");
+            field_190032_gu = getRegisteredSoundEvent("entity.stray.ambient");
+            field_190033_gv = getRegisteredSoundEvent("entity.stray.death");
+            field_190034_gw = getRegisteredSoundEvent("entity.stray.hurt");
+            field_190035_gx = getRegisteredSoundEvent("entity.stray.step");
             ENCHANT_THORNS_HIT = getRegisteredSoundEvent("enchant.thorns.hit");
             ENTITY_TNT_PRIMED = getRegisteredSoundEvent("entity.tnt.primed");
             BLOCK_TRIPWIRE_ATTACH = getRegisteredSoundEvent("block.tripwire.attach");
@@ -873,6 +907,10 @@ public class SoundEvents
             ENTITY_WITHER_HURT = getRegisteredSoundEvent("entity.wither.hurt");
             ENTITY_WITHER_SHOOT = getRegisteredSoundEvent("entity.wither.shoot");
             ENTITY_WITHER_SPAWN = getRegisteredSoundEvent("entity.wither.spawn");
+            field_190036_ha = getRegisteredSoundEvent("entity.wither_skeleton.ambient");
+            field_190037_hb = getRegisteredSoundEvent("entity.wither_skeleton.death");
+            field_190038_hc = getRegisteredSoundEvent("entity.wither_skeleton.hurt");
+            field_190039_hd = getRegisteredSoundEvent("entity.wither_skeleton.step");
             ENTITY_WOLF_AMBIENT = getRegisteredSoundEvent("entity.wolf.ambient");
             ENTITY_WOLF_DEATH = getRegisteredSoundEvent("entity.wolf.death");
             ENTITY_WOLF_GROWL = getRegisteredSoundEvent("entity.wolf.growl");

@@ -1,6 +1,7 @@
 package net.minecraft.world.biome;
 
 import java.util.Random;
+import net.minecraft.entity.monster.EntityPolarBear;
 import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -12,9 +13,9 @@ import net.minecraft.world.gen.feature.WorldGenTaiga2;
 
 public class BiomeSnow extends Biome
 {
-    private boolean superIcy;
-    private WorldGenIceSpike iceSpike = new WorldGenIceSpike();
-    private WorldGenIcePath icePatch = new WorldGenIcePath(4);
+    private final boolean superIcy;
+    private final WorldGenIceSpike iceSpike = new WorldGenIceSpike();
+    private final WorldGenIcePath icePatch = new WorldGenIcePath(4);
 
     public BiomeSnow(boolean superIcyIn, Biome.BiomeProperties properties)
     {
@@ -27,7 +28,16 @@ public class BiomeSnow extends Biome
         }
 
         this.spawnableCreatureList.clear();
-        this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityRabbit.class, 4, 2, 3));
+        this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityRabbit.class, 10, 2, 3));
+        this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityPolarBear.class, 1, 1, 2));
+    }
+
+    /**
+     * returns the chance a creature has to spawn.
+     */
+    public float getSpawningChance()
+    {
+        return 0.07F;
     }
 
     public void decorate(World worldIn, Random rand, BlockPos pos)

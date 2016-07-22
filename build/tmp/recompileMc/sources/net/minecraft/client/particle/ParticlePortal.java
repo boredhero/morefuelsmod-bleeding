@@ -9,10 +9,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class ParticlePortal extends Particle
 {
-    private float portalParticleScale;
-    private double portalPosX;
-    private double portalPosY;
-    private double portalPosZ;
+    private final float portalParticleScale;
+    private final double portalPosX;
+    private final double portalPosY;
+    private final double portalPosZ;
 
     protected ParticlePortal(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn)
     {
@@ -20,14 +20,18 @@ public class ParticlePortal extends Particle
         this.motionX = xSpeedIn;
         this.motionY = ySpeedIn;
         this.motionZ = zSpeedIn;
-        this.portalPosX = this.posX = xCoordIn;
-        this.portalPosY = this.posY = yCoordIn;
-        this.portalPosZ = this.posZ = zCoordIn;
+        this.posX = xCoordIn;
+        this.posY = yCoordIn;
+        this.posZ = zCoordIn;
+        this.portalPosX = this.posX;
+        this.portalPosY = this.posY;
+        this.portalPosZ = this.posZ;
         float f = this.rand.nextFloat() * 0.6F + 0.4F;
-        this.portalParticleScale = this.particleScale = this.rand.nextFloat() * 0.2F + 0.5F;
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F * f;
-        this.particleGreen *= 0.3F;
-        this.particleRed *= 0.9F;
+        this.particleScale = this.rand.nextFloat() * 0.2F + 0.5F;
+        this.portalParticleScale = this.particleScale;
+        this.particleRed = f * 0.9F;
+        this.particleGreen = f * 0.3F;
+        this.particleBlue = f;
         this.particleMaxAge = (int)(Math.random() * 10.0D) + 40;
         this.setParticleTextureIndex((int)(Math.random() * 8.0D));
     }

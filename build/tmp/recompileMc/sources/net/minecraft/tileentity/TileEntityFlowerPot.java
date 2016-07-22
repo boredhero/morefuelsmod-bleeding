@@ -6,6 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.datafix.DataFixer;
 
 public class TileEntityFlowerPot extends TileEntity
 {
@@ -20,6 +21,10 @@ public class TileEntityFlowerPot extends TileEntity
     {
         this.flowerPotItem = potItem;
         this.flowerPotData = potData;
+    }
+
+    public static void func_189699_a(DataFixer p_189699_0_)
+    {
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound)

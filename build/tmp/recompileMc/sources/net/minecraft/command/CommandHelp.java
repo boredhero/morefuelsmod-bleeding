@@ -19,8 +19,8 @@ import net.minecraft.util.text.event.ClickEvent;
 
 public class CommandHelp extends CommandBase
 {
-    private static String[] seargeSays = new String[] {"Yolo", "/achievement take achievement.understandCommands @p", "Ask for help on twitter", "/deop @p", "Scoreboard deleted, commands blocked", "Contact helpdesk for help", "/testfornoob @p", "/trigger warning", "Oh my god, it\'s full of stats", "/kill @p[name=!Searge]", "Have you tried turning it off and on again?", "Sorry, no help today"};
-    private Random rand = new Random();
+    private static final String[] seargeSays = new String[] {"Yolo", "/achievement take achievement.understandCommands @p", "Ask for help on twitter", "/deop @p", "Scoreboard deleted, commands blocked", "Contact helpdesk for help", "/testfornoob @p", "/trigger warning", "Oh my god, it\'s full of stats", "/kill @p[name=!Searge]", "Have you tried turning it off and on again?", "Sorry, no help today"};
+    private final Random rand = new Random();
 
     /**
      * Gets the name of the command

@@ -19,15 +19,15 @@ import org.lwjgl.util.vector.Quaternion;
 public class ItemCameraTransforms
 {
     public static final ItemCameraTransforms DEFAULT = new ItemCameraTransforms();
-    public static float offsetTranslateX = 0.0F;
-    public static float offsetTranslateY = 0.0F;
-    public static float offsetTranslateZ = 0.0F;
-    public static float offsetRotationX = 0.0F;
-    public static float offsetRotationY = 0.0F;
-    public static float offsetRotationZ = 0.0F;
-    public static float offsetScaleX = 0.0F;
-    public static float offsetScaleY = 0.0F;
-    public static float offsetScaleZ = 0.0F;
+    public static float offsetTranslateX;
+    public static float offsetTranslateY;
+    public static float offsetTranslateZ;
+    public static float offsetRotationX;
+    public static float offsetRotationY;
+    public static float offsetRotationZ;
+    public static float offsetScaleX;
+    public static float offsetScaleY;
+    public static float offsetScaleZ;
     public final ItemTransformVec3f thirdperson_left;
     public final ItemTransformVec3f thirdperson_right;
     public final ItemTransformVec3f firstperson_left;

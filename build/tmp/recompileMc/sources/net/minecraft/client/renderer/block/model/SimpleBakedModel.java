@@ -78,8 +78,8 @@ public class SimpleBakedModel implements IBakedModel
             private final ItemOverrideList builderItemOverrideList;
             private final boolean builderAmbientOcclusion;
             private TextureAtlasSprite builderTexture;
-            private boolean builderGui3d;
-            private ItemCameraTransforms builderCameraTransforms;
+            private final boolean builderGui3d;
+            private final ItemCameraTransforms builderCameraTransforms;
 
             public Builder(ModelBlock p_i46988_1_, ItemOverrideList p_i46988_2_)
             {

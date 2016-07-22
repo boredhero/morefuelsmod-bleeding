@@ -12,7 +12,7 @@ public class SlotMerchantResult extends Slot
     /** Merchant's inventory. */
     private final InventoryMerchant theMerchantInventory;
     /** The Player whos trying to buy/sell stuff. */
-    private EntityPlayer thePlayer;
+    private final EntityPlayer thePlayer;
     private int removeCount;
     /** "Instance" of the Merchant. */
     private final IMerchant theMerchant;

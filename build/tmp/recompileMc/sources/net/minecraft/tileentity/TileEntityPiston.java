@@ -9,6 +9,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -206,7 +207,8 @@ public class TileEntityPiston extends TileEntity implements ITickable
     {
         if (this.lastProgress < 1.0F && this.worldObj != null)
         {
-            this.lastProgress = this.progress = 1.0F;
+            this.progress = 1.0F;
+            this.lastProgress = this.progress;
             this.worldObj.removeTileEntity(this.pos);
             this.invalidate();
 
@@ -252,12 +254,17 @@ public class TileEntityPiston extends TileEntity implements ITickable
         }
     }
 
+    public static void func_189685_a(DataFixer p_189685_0_)
+    {
+    }
+
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
         this.pistonState = Block.getBlockById(compound.getInteger("blockId")).getStateFromMeta(compound.getInteger("blockData"));
         this.pistonFacing = EnumFacing.getFront(compound.getInteger("facing"));
-        this.lastProgress = this.progress = compound.getFloat("progress");
+        this.progress = compound.getFloat("progress");
+        this.lastProgress = this.progress;
         this.extending = compound.getBoolean("extending");
     }
 

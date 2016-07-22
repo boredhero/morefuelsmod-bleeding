@@ -26,9 +26,9 @@ import org.lwjgl.input.Keyboard;
 public class GuiRepair extends GuiContainer implements IContainerListener
 {
     private static final ResourceLocation ANVIL_RESOURCE = new ResourceLocation("textures/gui/container/anvil.png");
-    private ContainerRepair anvil;
+    private final ContainerRepair anvil;
     private GuiTextField nameField;
-    private InventoryPlayer playerInventory;
+    private final InventoryPlayer playerInventory;
 
     public GuiRepair(InventoryPlayer inventoryIn, World worldIn)
     {
@@ -103,17 +103,17 @@ public class GuiRepair extends GuiContainer implements IContainerListener
 
                 if (this.fontRendererObj.getUnicodeFlag())
                 {
-                    drawRect(k - 3, l - 2, this.xSize - 7, l + 10, -16777216);
-                    drawRect(k - 2, l - 1, this.xSize - 8, l + 9, -12895429);
+                    drawRect(k - 3, 65, this.xSize - 7, 77, -16777216);
+                    drawRect(k - 2, 66, this.xSize - 8, 76, -12895429);
                 }
                 else
                 {
-                    this.fontRendererObj.drawString(s, k, l + 1, j);
-                    this.fontRendererObj.drawString(s, k + 1, l, j);
-                    this.fontRendererObj.drawString(s, k + 1, l + 1, j);
+                    this.fontRendererObj.drawString(s, k, 68, j);
+                    this.fontRendererObj.drawString(s, k + 1, 67, j);
+                    this.fontRendererObj.drawString(s, k + 1, 68, j);
                 }
 
-                this.fontRendererObj.drawString(s, k, l, i);
+                this.fontRendererObj.drawString(s, k, 67, i);
             }
         }
 

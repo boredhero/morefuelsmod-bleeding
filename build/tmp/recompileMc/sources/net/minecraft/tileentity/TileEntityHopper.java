@@ -20,6 +20,9 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -30,6 +33,11 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
     private ItemStack[] inventory = new ItemStack[5];
     private String customName;
     private int transferCooldown = -1;
+
+    public static void func_189683_a(DataFixer p_189683_0_)
+    {
+        p_189683_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists("Hopper", new String[] {"Items"}));
+    }
 
     public void readFromNBT(NBTTagCompound compound)
     {
@@ -325,9 +333,9 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
             ISidedInventory isidedinventory = (ISidedInventory)inventoryIn;
             int[] aint = isidedinventory.getSlotsForFace(side);
 
-            for (int k = 0; k < aint.length; ++k)
+            for (int k : aint)
             {
-                ItemStack itemstack1 = isidedinventory.getStackInSlot(aint[k]);
+                ItemStack itemstack1 = isidedinventory.getStackInSlot(k);
 
                 if (itemstack1 == null || itemstack1.stackSize != itemstack1.getMaxStackSize())
                 {
@@ -363,9 +371,9 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
             ISidedInventory isidedinventory = (ISidedInventory)inventoryIn;
             int[] aint = isidedinventory.getSlotsForFace(side);
 
-            for (int i = 0; i < aint.length; ++i)
+            for (int i : aint)
             {
-                if (isidedinventory.getStackInSlot(aint[i]) != null)
+                if (isidedinventory.getStackInSlot(i) != null)
                 {
                     return false;
                 }
@@ -389,7 +397,8 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
 
     public static boolean captureDroppedItems(IHopper hopper)
     {
-        if (net.minecraftforge.items.VanillaInventoryCodeHooks.extractHook(hopper)) { return true; }
+        Boolean ret = net.minecraftforge.items.VanillaInventoryCodeHooks.extractHook(hopper);
+        if (ret != null) return ret;
         IInventory iinventory = getHopperInventory(hopper);
 
         if (iinventory != null)
@@ -406,9 +415,9 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
                 ISidedInventory isidedinventory = (ISidedInventory)iinventory;
                 int[] aint = isidedinventory.getSlotsForFace(enumfacing);
 
-                for (int i = 0; i < aint.length; ++i)
+                for (int i : aint)
                 {
-                    if (pullItemFromSlot(hopper, iinventory, aint[i], enumfacing))
+                    if (pullItemFromSlot(hopper, iinventory, i, enumfacing))
                     {
                         return true;
                     }

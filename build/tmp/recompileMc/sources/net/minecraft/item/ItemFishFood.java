@@ -97,7 +97,7 @@ public class ItemFishFood extends ItemFood
         /** The saturation modifier to apply to the heal amount when the player eats the cooked version of this fish. */
         private final float cookedSaturationModifier;
         /** Indicates whether this type of fish has "raw" and "cooked" variants */
-        private boolean cookable = false;
+        private boolean cookable;
 
         private FishType(int meta, String unlocalizedName, int uncookedHeal, float uncookedSaturation, int cookedHeal, float cookedSaturation)
         {

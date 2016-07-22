@@ -372,8 +372,8 @@ public class RegionFile
 
     class ChunkBuffer extends ByteArrayOutputStream
     {
-        private int chunkX;
-        private int chunkZ;
+        private final int chunkX;
+        private final int chunkZ;
 
         public ChunkBuffer(int x, int z)
         {

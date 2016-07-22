@@ -24,6 +24,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -37,6 +38,11 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
     {
         super(worldIn);
         this.setSize(0.7F, 1.9F);
+    }
+
+    public static void func_189783_b(DataFixer p_189783_0_)
+    {
+        EntityLiving.func_189752_a(p_189783_0_, "SnowMan");
     }
 
     protected void initEntityAI()

@@ -1,11 +1,13 @@
 package net.minecraft.entity.monster;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -18,6 +20,11 @@ public class EntityMagmaCube extends EntitySlime
     {
         super(worldIn);
         this.isImmuneToFire = true;
+    }
+
+    public static void func_189759_b(DataFixer p_189759_0_)
+    {
+        EntityLiving.func_189752_a(p_189759_0_, "LavaSlime");
     }
 
     protected void applyEntityAttributes()
@@ -75,7 +82,7 @@ public class EntityMagmaCube extends EntitySlime
     @Nullable
     protected ResourceLocation getLootTable()
     {
-        return !this.isSmallSlime() ? LootTableList.ENTITIES_MAGMA_CUBE : LootTableList.EMPTY;
+        return this.isSmallSlime() ? LootTableList.EMPTY : LootTableList.ENTITIES_MAGMA_CUBE;
     }
 
     /**

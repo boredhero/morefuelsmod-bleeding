@@ -11,8 +11,8 @@ import net.minecraft.world.World;
 
 public class WorldGenSpikes extends WorldGenerator
 {
-    private boolean crystalInvulnerable = false;
-    private WorldGenSpikes.EndSpike spike = null;
+    private boolean crystalInvulnerable;
+    private WorldGenSpikes.EndSpike spike;
     private BlockPos beamTarget;
 
     public void setSpike(WorldGenSpikes.EndSpike p_186143_1_)

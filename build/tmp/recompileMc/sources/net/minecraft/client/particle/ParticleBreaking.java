@@ -33,7 +33,9 @@ public class ParticleBreaking extends Particle
     {
         super(worldIn, posXIn, posYIn, posZIn, 0.0D, 0.0D, 0.0D);
         this.setParticleTexture(Minecraft.getMinecraft().getRenderItem().getItemModelMesher().getParticleIcon(itemIn, meta));
-        this.particleRed = this.particleGreen = this.particleBlue = 1.0F;
+        this.particleRed = 1.0F;
+        this.particleGreen = 1.0F;
+        this.particleBlue = 1.0F;
         this.particleGravity = Blocks.SNOW.blockParticleGravity;
         this.particleScale /= 2.0F;
     }

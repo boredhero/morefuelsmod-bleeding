@@ -9,6 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityEndGateway;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
@@ -34,6 +35,11 @@ public class EntityEnderPearl extends EntityThrowable
     public EntityEnderPearl(World worldIn, double x, double y, double z)
     {
         super(worldIn, x, y, z);
+    }
+
+    public static void func_189663_a(DataFixer p_189663_0_)
+    {
+        EntityThrowable.func_189661_a(p_189663_0_, "ThrownEnderpearl");
     }
 
     /**
@@ -100,7 +106,7 @@ public class EntityEnderPearl extends EntityThrowable
 
                     if (entitylivingbase.isRiding())
                     {
-                        this.dismountRidingEntity();
+                        entitylivingbase.dismountRidingEntity();
                     }
 
                     entitylivingbase.setPositionAndUpdate(event.getTargetX(), event.getTargetY(), event.getTargetZ());

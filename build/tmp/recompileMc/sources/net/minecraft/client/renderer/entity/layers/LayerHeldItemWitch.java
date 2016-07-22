@@ -38,7 +38,7 @@ public class LayerHeldItemWitch implements LayerRenderer<EntityWitch>
                 GlStateManager.translate(0.0F, 0.625F, 0.0F);
                 GlStateManager.rotate(-20.0F, -1.0F, 0.0F, 0.0F);
                 float f = 0.5F;
-                GlStateManager.scale(f, f, f);
+                GlStateManager.scale(0.5F, 0.5F, 0.5F);
             }
 
             ((ModelWitch)this.witchRenderer.getMainModel()).villagerNose.postRender(0.0625F);
@@ -52,14 +52,14 @@ public class LayerHeldItemWitch implements LayerRenderer<EntityWitch>
                 GlStateManager.rotate(30.0F, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(-5.0F, 0.0F, 1.0F, 0.0F);
                 float f4 = 0.375F;
-                GlStateManager.scale(f4, -f4, f4);
+                GlStateManager.scale(0.375F, -0.375F, 0.375F);
             }
             else if (item == Items.BOW)
             {
                 GlStateManager.translate(0.0F, 0.125F, -0.125F);
                 GlStateManager.rotate(-45.0F, 0.0F, 1.0F, 0.0F);
                 float f1 = 0.625F;
-                GlStateManager.scale(f1, -f1, f1);
+                GlStateManager.scale(0.625F, -0.625F, 0.625F);
                 GlStateManager.rotate(-100.0F, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(-20.0F, 0.0F, 1.0F, 0.0F);
             }
@@ -74,7 +74,7 @@ public class LayerHeldItemWitch implements LayerRenderer<EntityWitch>
                 this.witchRenderer.transformHeldFull3DItemLayer();
                 GlStateManager.translate(0.0625F, -0.125F, 0.0F);
                 float f2 = 0.625F;
-                GlStateManager.scale(f2, -f2, f2);
+                GlStateManager.scale(0.625F, -0.625F, 0.625F);
                 GlStateManager.rotate(0.0F, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(0.0F, 0.0F, 1.0F, 0.0F);
             }
@@ -82,7 +82,7 @@ public class LayerHeldItemWitch implements LayerRenderer<EntityWitch>
             {
                 GlStateManager.translate(0.1875F, 0.1875F, 0.0F);
                 float f3 = 0.875F;
-                GlStateManager.scale(f3, f3, f3);
+                GlStateManager.scale(0.875F, 0.875F, 0.875F);
                 GlStateManager.rotate(-20.0F, 0.0F, 0.0F, 1.0F);
                 GlStateManager.rotate(-60.0F, 1.0F, 0.0F, 0.0F);
                 GlStateManager.rotate(-30.0F, 0.0F, 0.0F, 1.0F);

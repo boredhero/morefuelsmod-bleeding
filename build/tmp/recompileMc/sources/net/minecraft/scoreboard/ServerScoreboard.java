@@ -182,9 +182,9 @@ public class ServerScoreboard extends Scoreboard
 
     protected void markSaveDataDirty()
     {
-        for (int i = 0; i < this.dirtyRunnables.length; ++i)
+        for (Runnable runnable : this.dirtyRunnables)
         {
-            this.dirtyRunnables[i].run();
+            runnable.run();
         }
     }
 

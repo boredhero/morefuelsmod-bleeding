@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraft.world.WorldType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -148,7 +148,7 @@ public class DerivedWorldInfo extends WorldInfo
     /**
      * Gets the GameType.
      */
-    public WorldSettings.GameType getGameType()
+    public GameType getGameType()
     {
         return this.theWorldInfo.getGameType();
     }

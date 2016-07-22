@@ -2,7 +2,7 @@ package net.minecraft.world.storage;
 
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.translation.I18n;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -17,7 +17,7 @@ public class WorldSummary implements Comparable<WorldSummary>
     private final long sizeOnDisk;
     private final boolean requiresConversion;
     /** Instance of EnumGameType. */
-    private final WorldSettings.GameType theEnumGameType;
+    private final GameType theEnumGameType;
     private final boolean hardcore;
     private final boolean cheatsEnabled;
     private final String versionName;
@@ -78,7 +78,7 @@ public class WorldSummary implements Comparable<WorldSummary>
     /**
      * Gets the EnumGameType.
      */
-    public WorldSettings.GameType getEnumGameType()
+    public GameType getEnumGameType()
     {
         return this.theEnumGameType;
     }
@@ -108,6 +108,6 @@ public class WorldSummary implements Comparable<WorldSummary>
 
     public boolean askToOpenWorld()
     {
-        return this.versionId > 184;
+        return this.versionId > 512;
     }
 }

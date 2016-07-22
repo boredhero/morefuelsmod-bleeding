@@ -92,15 +92,16 @@ public class SimpleReloadableResourceManager implements IReloadableResourceManag
 
     public void reloadResources(List<IResourcePack> resourcesPacksList)
     {
-        this.clearResources();
         net.minecraftforge.fml.common.ProgressManager.ProgressBar resReload = net.minecraftforge.fml.common.ProgressManager.push("Loading Resources", resourcesPacksList.size()+1, true);
-        LOGGER.info("Reloading ResourceManager: " + JOINER_RESOURCE_PACKS.join(Iterables.transform(resourcesPacksList, new Function<IResourcePack, String>()
+        this.clearResources();
+        LOGGER.info("Reloading ResourceManager: {}", new Object[] {JOINER_RESOURCE_PACKS.join(Iterables.transform(resourcesPacksList, new Function<IResourcePack, String>()
         {
             public String apply(@Nullable IResourcePack p_apply_1_)
             {
                 return p_apply_1_ == null ? "<NULL>" : p_apply_1_.getPackName();
             }
-        })));
+        }))
+                                                                          });
 
         for (IResourcePack iresourcepack : resourcesPacksList)
         {

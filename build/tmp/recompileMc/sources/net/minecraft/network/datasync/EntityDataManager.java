@@ -18,9 +18,12 @@ import net.minecraft.util.ReportedException;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class EntityDataManager
 {
+    private static final Logger field_190303_a = LogManager.getLogger();
     private static final Map < Class <? extends Entity > , Integer > NEXT_ID_MAP = Maps. < Class <? extends Entity > , Integer > newHashMap();
     /** The entity that this data manager is for. */
     private final Entity entity;
@@ -36,39 +39,56 @@ public class EntityDataManager
 
     public static <T> DataParameter<T> createKey(Class <? extends Entity > clazz, DataSerializer<T> serializer)
     {
-        int i;
+        if (field_190303_a.isDebugEnabled())
+        {
+            try
+            {
+                Class<?> oclass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+
+                if (!oclass.equals(clazz))
+                {
+                    field_190303_a.debug("defineId called for: {} from {}", new Object[] {clazz, oclass, new RuntimeException()});
+                }
+            }
+            catch (ClassNotFoundException var5)
+            {
+                ;
+            }
+        }
+
+        int j;
 
         if (NEXT_ID_MAP.containsKey(clazz))
         {
-            i = ((Integer)NEXT_ID_MAP.get(clazz)).intValue() + 1;
+            j = ((Integer)NEXT_ID_MAP.get(clazz)).intValue() + 1;
         }
         else
         {
-            int j = 0;
-            Class<?> oclass = clazz;
+            int i = 0;
+            Class<?> oclass1 = clazz;
 
-            while (oclass != Entity.class)
+            while (oclass1 != Entity.class)
             {
-                oclass = oclass.getSuperclass();
+                oclass1 = oclass1.getSuperclass();
 
-                if (NEXT_ID_MAP.containsKey(oclass))
+                if (NEXT_ID_MAP.containsKey(oclass1))
                 {
-                    j = ((Integer)NEXT_ID_MAP.get(oclass)).intValue() + 1;
+                    i = ((Integer)NEXT_ID_MAP.get(oclass1)).intValue() + 1;
                     break;
                 }
             }
 
-            i = j;
+            j = i;
         }
 
-        if (i > 254)
+        if (j > 254)
         {
-            throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
+            throw new IllegalArgumentException("Data value id is too big with " + j + "! (Max is " + 254 + ")");
         }
         else
         {
-            NEXT_ID_MAP.put(clazz, Integer.valueOf(i));
-            return serializer.createKey(i);
+            NEXT_ID_MAP.put(clazz, Integer.valueOf(j));
+            return serializer.createKey(j);
         }
     }
 

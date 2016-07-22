@@ -25,8 +25,10 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -278,7 +280,7 @@ public class BlockFlowerPot extends BlockContainer
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
         BlockFlowerPot.EnumFlowerType blockflowerpot$enumflowertype = BlockFlowerPot.EnumFlowerType.EMPTY;
-        TileEntity tileentity = worldIn.getTileEntity(pos);
+        TileEntity tileentity = worldIn instanceof ChunkCache ? ((ChunkCache)worldIn).func_190300_a(pos, Chunk.EnumCreateEntityType.CHECK) : worldIn.getTileEntity(pos);
 
         if (tileentity instanceof TileEntityFlowerPot)
         {

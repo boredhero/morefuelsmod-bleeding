@@ -57,18 +57,17 @@ public class ItemEnderEye extends Item
                     worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D, new int[0]);
                 }
 
-                EnumFacing enumfacing = (EnumFacing)iblockstate.getValue(BlockEndPortalFrame.FACING);
                 BlockPattern.PatternHelper blockpattern$patternhelper = BlockEndPortalFrame.getOrCreatePortalShape().match(worldIn, pos);
 
                 if (blockpattern$patternhelper != null)
                 {
                     BlockPos blockpos = blockpattern$patternhelper.getFrontTopLeft().add(-3, 0, -3);
 
-                    for (int k = 0; k < 3; ++k)
+                    for (int j = 0; j < 3; ++j)
                     {
-                        for (int j = 0; j < 3; ++j)
+                        for (int k = 0; k < 3; ++k)
                         {
-                            worldIn.setBlockState(blockpos.add(k, 0, j), Blocks.END_PORTAL.getDefaultState(), 2);
+                            worldIn.setBlockState(blockpos.add(j, 0, k), Blocks.END_PORTAL.getDefaultState(), 2);
                         }
                     }
                 }

@@ -60,7 +60,7 @@ public class ParticleRain extends Particle
 
         if (material.isLiquid() || material.isSolid())
         {
-            double d0 = 0.0D;
+            double d0;
 
             if (iblockstate.getBlock() instanceof BlockLiquid)
             {

@@ -14,7 +14,7 @@ import net.minecraft.network.play.server.SPacketPlayerListItem;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.WorldSettings;
+import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -24,7 +24,7 @@ public class NetworkPlayerInfo
     /** The GameProfile for the player represented by this NetworkPlayerInfo instance */
     private final GameProfile gameProfile;
     Map<Type, ResourceLocation> playerTextures = Maps.newEnumMap(Type.class);
-    private WorldSettings.GameType gameType;
+    private GameType gameType;
     /** Player response time to server in milliseconds */
     private int responseTime;
     private boolean playerTexturesLoaded;
@@ -58,12 +58,12 @@ public class NetworkPlayerInfo
         return this.gameProfile;
     }
 
-    public WorldSettings.GameType getGameType()
+    public GameType getGameType()
     {
         return this.gameType;
     }
 
-    protected void setGameType(WorldSettings.GameType gameMode)
+    protected void setGameType(GameType gameMode)
     {
         this.gameType = gameMode;
     }

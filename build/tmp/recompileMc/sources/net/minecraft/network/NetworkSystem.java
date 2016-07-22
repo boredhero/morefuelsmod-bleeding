@@ -210,7 +210,7 @@ public class NetworkSystem
                                 throw new ReportedException(crashreport);
                             }
 
-                            LOGGER.warn((String)("Failed to handle packet for " + networkmanager.getRemoteAddress()), (Throwable)exception);
+                            LOGGER.warn("Failed to handle packet for {}", new Object[] {networkmanager.getRemoteAddress(), exception});
                             final TextComponentString textcomponentstring = new TextComponentString("Internal server error");
                             networkmanager.sendPacket(new SPacketDisconnect(textcomponentstring), new GenericFutureListener < Future <? super Void >> ()
                             {
