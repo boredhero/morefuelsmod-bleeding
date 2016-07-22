@@ -22,7 +22,7 @@ import com.bored.morefuelsmod.item.ModItems;
 import com.bored.morefuelsmod.block.ModBlocks;
 import com.bored.morefuelsmod.client.MoreFuelsTab;
 
-@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = "[1.10.2]")
+@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = "[1.9.4]")
 public class Main {
 
 	public static final String modid = "morefuelsmod-bleeding";
