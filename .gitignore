@@ -1,22 +1,9 @@
-# eclipse
-bin
-*.launch
-.settings
-.metadata
-.classpath
-.project
-
-# idea
-out
-*.ipr
-*.iws
-*.iml
-.idea
-
-# gradle
-build
-.gradle
-
-# other
-eclipse
-run
+/MinecraftForge-Credits.txt
+/MinecraftForge-License.txt
+/Paulscode SoundSystem CodecIBXM License.txt
+/Paulscode IBXM Library License.txt
+/LICENSE-fml.txt
+/CREDITS-fml.txt
+/morefuelsmod-bleeding_Server.launch
+/morefuelsmod-bleeding_Client.launch
+/forge-1.9.4-12.17.0.1968-changelog.txt
