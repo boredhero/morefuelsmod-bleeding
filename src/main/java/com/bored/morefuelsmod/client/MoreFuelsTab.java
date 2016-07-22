@@ -1,9 +1,10 @@
 package com.bored.morefuelsmod.client;
 
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import com.bored.morefuelsmod.Main;
 import com.bored.morefuelsmod.item.ModItems;
+
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 
 public class MoreFuelsTab extends CreativeTabs {
 
