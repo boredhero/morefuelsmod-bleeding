@@ -33,7 +33,6 @@ public class ModCrafting {
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel, 3),"###","###","###",'#',Item.getItemFromBlock(Blocks.CACTUS));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel, 2),"###","###","###",'#',Item.getItemFromBlock(Blocks.WEB));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel),"###","###","###",'#',Item.getItemFromBlock(Blocks.LEVER));
-		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel),"###","###","###",'#',Item.getItemFromBlock(Blocks.GRASS));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel, 2),"###","###","###",'#',Item.getItemFromBlock(Blocks.DOUBLE_PLANT));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel),"###","###","###",'#',Item.getItemFromBlock(Blocks.RED_FLOWER));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel),"###","###","###",'#',Item.getItemFromBlock(Blocks.YELLOW_FLOWER));

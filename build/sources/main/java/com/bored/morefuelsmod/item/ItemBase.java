@@ -1,8 +1,9 @@
 package com.bored.morefuelsmod.item;
 
+import com.bored.morefuelsmod.Main;
+
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import com.bored.morefuelsmod.Main;
 
 public class ItemBase extends Item {
 

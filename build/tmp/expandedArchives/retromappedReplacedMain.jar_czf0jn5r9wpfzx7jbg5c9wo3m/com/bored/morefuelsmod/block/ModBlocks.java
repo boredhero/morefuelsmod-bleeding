@@ -2,10 +2,8 @@ package com.bored.morefuelsmod.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import com.bored.morefuelsmod.block.BlockBase;
 
 public class ModBlocks {
 

@@ -33,7 +33,6 @@ public class ModCrafting {
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel, 3),"###","###","###",'#',Item.func_150898_a(Blocks.field_150434_aF));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel, 2),"###","###","###",'#',Item.func_150898_a(Blocks.field_150321_G));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel),"###","###","###",'#',Item.func_150898_a(Blocks.field_150442_at));
-		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel),"###","###","###",'#',Item.func_150898_a(Blocks.field_150349_c));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel, 2),"###","###","###",'#',Item.func_150898_a(Blocks.field_150398_cm));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel),"###","###","###",'#',Item.func_150898_a(Blocks.field_150328_O));
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel),"###","###","###",'#',Item.func_150898_a(Blocks.field_150327_N));

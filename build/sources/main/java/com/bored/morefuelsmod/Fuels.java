@@ -36,9 +36,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.LEVER)){
 					return 100;
 				}
-				if (fuel.getItem() == Item.getItemFromBlock(Blocks.GRASS)){
-					return 100;
-				}
 				//Fix for tall grass and all other doubly tall plants
 				if (fuel.getItem() == Item.getItemFromBlock(Blocks.DOUBLE_PLANT)){
 					return 200;

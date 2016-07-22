@@ -36,9 +36,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150442_at)){
 					return 100;
 				}
-				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150349_c)){
-					return 100;
-				}
 				//Fix for tall grass and all other doubly tall plants
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150398_cm)){
 					return 200;

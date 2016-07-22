@@ -1,6 +1,5 @@
 package com.bored.morefuelsmod.item;
 
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
