@@ -3,7 +3,7 @@ package com.bored.morefuelsmod;
 import com.bored.morefuelsmod.block.ModBlocks;
 import com.bored.morefuelsmod.client.MoreFuelsTab;
 import com.bored.morefuelsmod.item.ModItems;
-import com.bored.morefuelsmod.proxy.ClientProxy;
+import com.bored.morefuelsmod.proxy.CommonProxy;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
@@ -48,8 +48,8 @@ public class Main {
 
 	}
 	
-	@SidedProxy(clientSide = "com.bored.morefuelsmod.proxy.ClientProxy")
-	public static ClientProxy proxy;
+	@SidedProxy(clientSide = "com.bored.morefuelsmod.proxy.ClientProxy", serverSide = "com.bored.morefuelsmod.proxy.CommonProxy")
+	public static CommonProxy proxy;
 	
 	public static final MoreFuelsTab creativeTab = new MoreFuelsTab();
 

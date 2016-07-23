@@ -7,7 +7,7 @@
   "mcversion": "${mcversion}",
   "url": "http://tinyurl.com/MoreFuelsMod",
   "updateUrl": "",
-  "authorList": ["§6Noah §4Martino"],
+  "authorList": ["§6Noah §4Martino", ],
   "logoFile": "mf-logo.png",
   "screenshots": [],
   "dependencies": ["mod_Forge"]
