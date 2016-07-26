@@ -11,35 +11,37 @@ This mapping 'snapshot_20160518' was designed for MC 1.9.4! Use at your own peri
 #################################################
 :deobfCompileDummyTask
 :deobfProvidedDummyTask
-:eclipseClasspath
-:eclipseJdt
-:eclipseProject
+:sourceApiJava
+:compileApiJava UP-TO-DATE
+:processApiResources UP-TO-DATE
+:apiClasses UP-TO-DATE
+:sourceMainJava
+:compileJavawarning: [options] bootstrap class path not set in conjunction with -source 1.6
+1 warning
+
+:processResources
+:classes
+:jar
+:sourceTestJava
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:extractMcpData SKIPPED
+:extractMcpMappings SKIPPED
 :getVersionJson
-:extractNatives SKIPPED
 :extractUserdev UP-TO-DATE
-:getAssetIndex UP-TO-DATE
-:getAssets
-Current status: 103/1112   9%
-Current status: 159/1112   14%
-Current status: 265/1112   23%
-Current status: 315/1112   28%
-Current status: 384/1112   34%
-Current status: 508/1112   45%
-Current status: 622/1112   55%
-Current status: 692/1112   62%
-Current status: 723/1112   65%
-Current status: 786/1112   70%
-Current status: 855/1112   76%
-Current status: 888/1112   79%
-Current status: 964/1112   86%
-Current status: 1006/1112   90%
-Current status: 1085/1112   97%
-Current status: 1107/1112   99%
-:makeStart
-:makeEclipseCleanRunClient UP-TO-DATE
-:makeEclipseCleanRunServer UP-TO-DATE
-:eclipse
+:genSrgs
+:reobfJar
+:extractRangemapReplacedMain
+C:\Users\Noah\Desktop\Coding\MoreFuelsMod\morefuelsmod-bleeding\build\sources\main\java
+:retromapReplacedMain
+remapping source...
+:sourceJar
+:assemble
+:check UP-TO-DATE
+:build
 
 BUILD SUCCESSFUL
 
-Total time: 28.103 secs
+Total time: 13.736 secs
