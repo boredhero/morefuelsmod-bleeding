@@ -191,6 +191,7 @@ public class EntityTippedArrow extends EntityArrow
 
         for (PotionEffect potioneffect : this.potion.getEffects())
         {
+            if(potioneffect.getPotion().isInstant()) potioneffect.getPotion().affectEntity(this, shootingEntity, living, potioneffect.getAmplifier(), 1); else // FORGE: Fix MC-91728 Tipped Arrows do not apply instant effects
             living.addPotionEffect(new PotionEffect(potioneffect.getPotion(), potioneffect.getDuration() / 8, potioneffect.getAmplifier(), potioneffect.getIsAmbient(), potioneffect.doesShowParticles()));
         }
 

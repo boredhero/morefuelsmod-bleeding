@@ -69,11 +69,14 @@ public class BiomeForest extends Biome
 
     public void decorate(World worldIn, Random rand, BlockPos pos)
     {
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SHROOM))
         if (this.type == BiomeForest.Type.ROOFED)
         {
             this.addMushrooms(worldIn, rand, pos);
         }
 
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
+        { // no tab for patch
         int i = rand.nextInt(5) - 3;
 
         if (this.type == BiomeForest.Type.FLOWER)
@@ -82,6 +85,7 @@ public class BiomeForest extends Biome
         }
 
         this.addDoublePlants(worldIn, rand, pos, i);
+        }
         super.decorate(worldIn, rand, pos);
     }
 

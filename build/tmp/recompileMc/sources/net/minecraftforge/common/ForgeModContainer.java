@@ -72,6 +72,7 @@ import net.minecraftforge.fml.client.FMLFileResourcePack;
 import net.minecraftforge.fml.client.FMLFolderResourcePack;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.DummyModContainer;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.ICrashCallable;
 import net.minecraftforge.fml.common.LoadController;
@@ -96,18 +97,16 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     public static int clumpingThreshold = 64;
     public static boolean removeErroringEntities = false;
     public static boolean removeErroringTileEntities = false;
-    public static boolean disableStitchedFileSaving = false;
     public static boolean fullBoundingBoxLadders = false;
     public static double zombieSummonBaseChance = 0.1;
     public static int[] blendRanges = { 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34 };
     public static float zombieBabyChance = 0.05f;
     public static boolean shouldSortRecipies = true;
     public static boolean disableVersionCheck = false;
-    public static int defaultSpawnFuzz = 20;
-    public static boolean defaultHasSpawnFuzz = true;
     public static boolean forgeLightPipelineEnabled = true;
     public static boolean replaceVanillaBucketModel = true;
     public static long java8Reminder = 0;
+    public static boolean disableStairSlabCulling = false; // Also known as the "DontCullStairsBecauseIUseACrappyTexturePackThatBreaksBasicBlockShapesSoICantTrustBasicBlockCulling" flag
 
     private static Configuration config;
     private static ForgeModContainer INSTANCE;
@@ -182,6 +181,11 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
 
         Property prop;
 
+        // clean up old properties that are not used anymore
+        if (config.getCategory(CATEGORY_GENERAL).containsKey("defaultSpawnFuzz")) config.getCategory(CATEGORY_GENERAL).remove("defaultSpawnFuzz");
+        if (config.getCategory(CATEGORY_GENERAL).containsKey("spawnHasFuzz")) config.getCategory(CATEGORY_GENERAL).remove("spawnHasFuzz");
+        if (config.getCategory(CATEGORY_GENERAL).containsKey("disableStitchedFileSaving")) config.getCategory(CATEGORY_GENERAL).remove("disableStitchedFileSaving");
+
         prop = config.get(CATEGORY_GENERAL, "disableVersionCheck", false);
         prop.setComment("Set to true to disable Forge's version check mechanics. Forge queries a small json file on our server for version information. For more details see the ForgeVersion class in our github.");
         // Language keys are a good idea to implement if you are using config GUIs. This allows you to use a .lang file that will hold the
@@ -231,10 +235,6 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
             FMLLog.warning("Enabling removal of erroring Tile Entities - USE AT YOUR OWN RISK");
         }
 
-        prop = config.get(Configuration.CATEGORY_GENERAL, "disableStitchedFileSaving", true);
-        prop.setComment("Set this to just disable the texture stitcher from writing the '{name}_{mipmap}.png files to disc. Just a small performance tweak. Default: true");
-        disableStitchedFileSaving = prop.getBoolean(true);
-
         prop = config.get(Configuration.CATEGORY_GENERAL, "fullBoundingBoxLadders", false);
         prop.setComment("Set this to true to check the entire entity's collision bounding box for ladders instead of just the block they are in. Causes noticeable differences in mechanics so default is vanilla behavior. Default: false");
         prop.setLanguageKey("forge.configgui.fullBoundingBoxLadders").setRequiresWorldRestart(true);
@@ -259,22 +259,10 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         zombieBabyChance = (float) prop.getDouble(0.05);
         propOrder.add(prop.getName());
 
-        prop = config.get(Configuration.CATEGORY_GENERAL, "defaultSpawnFuzz", 20,
-            "The spawn fuzz when a player respawns in the world, this is controllable by WorldType, this config option is for the default overworld.",
-            1, Integer.MAX_VALUE);
-        prop.setLanguageKey("forge.configgui.spawnfuzz").setRequiresWorldRestart(false);
-        defaultSpawnFuzz = prop.getInt(20);
-        propOrder.add(prop.getName());
-
-        prop = config.get(Configuration.CATEGORY_GENERAL, "spawnHasFuzz", Boolean.TRUE,
-                "If the overworld has ANY spawn fuzz at all. If not, the spawn will always be the exact same location.");
-        prop.setLanguageKey("forge.configgui.hasspawnfuzz").setRequiresWorldRestart(false);
-        defaultHasSpawnFuzz = prop.getBoolean(Boolean.TRUE);
-        propOrder.add(prop.getName());
-
         prop = config.get(Configuration.CATEGORY_GENERAL, "forgeLightPipelineEnabled", Boolean.TRUE,
                 "Enable the forge block rendering pipeline - fixes the lighting of custom models.");
         forgeLightPipelineEnabled = prop.getBoolean(Boolean.TRUE);
+        prop.setLanguageKey("forge.configgui.forgeLightPipelineEnabled");
         propOrder.add(prop.getName());
 
         config.setCategoryPropertyOrder(CATEGORY_GENERAL, propOrder);
@@ -296,6 +284,13 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
         prop = config.get(Configuration.CATEGORY_CLIENT, "java8Reminder", java8Reminder,
                 "The timestamp of the last reminder to update to Java 8 in number of milliseconds since January 1, 1970, 00:00:00 GMT. Nag will show only once every 24 hours. To disable it set this to some really high number.");
         java8Reminder = prop.getLong(java8Reminder);
+        prop.setLanguageKey("forge.configgui.java8Reminder");
+        propOrder.add(prop.getName());
+
+        prop = config.get(Configuration.CATEGORY_CLIENT, "disableStairSlabCulling", disableStairSlabCulling,
+                "Disable culling of hidden faces next to stairs and slabs. Causes extra rendering, but may fix some resource packs that exploit this vanilla mechanic.");
+        disableStairSlabCulling = prop.getBoolean(disableStairSlabCulling);
+        prop.setLanguageKey("forge.configgui.disableStairSlabCulling").setRequiresMcRestart(false);
         propOrder.add(prop.getName());
 
         config.setCategoryPropertyOrder(CATEGORY_CLIENT, propOrder);
@@ -320,20 +315,32 @@ public class ForgeModContainer extends DummyModContainer implements WorldAccessC
     @SubscribeEvent
     public void onConfigChanged(OnConfigChangedEvent event)
     {
-        if (getMetadata().modId.equals(event.getModID()) && !event.isWorldRunning())
+        if (getMetadata().modId.equals(event.getModID()))
         {
-            if (Configuration.CATEGORY_GENERAL.equals(event.getConfigID()))
+            if (!event.isWorldRunning())
             {
-                syncConfig(false);
+                if (Configuration.CATEGORY_GENERAL.equals(event.getConfigID()))
+                {
+                    syncConfig(false);
+                }
+                else if ("chunkLoader".equals(event.getConfigID()))
+                {
+                    ForgeChunkManager.syncConfigDefaults();
+                    ForgeChunkManager.loadConfiguration();
+                }
+                else if (VERSION_CHECK_CAT.equals(event.getConfigID()))
+                {
+                    syncConfig(false);
+                }
             }
-            else if ("chunkLoader".equals(event.getConfigID()))
+            else
             {
-                ForgeChunkManager.syncConfigDefaults();
-                ForgeChunkManager.loadConfiguration();
-            }
-            else if (VERSION_CHECK_CAT.equals(event.getConfigID()))
-            {
-                syncConfig(false);
+                boolean tmp = config.get(Configuration.CATEGORY_CLIENT, "disableStairSlabCulling", disableStairSlabCulling).getBoolean();
+                if (disableStairSlabCulling != tmp)
+                {
+                    disableStairSlabCulling = tmp;
+                    FMLCommonHandler.instance().reloadRenderers();
+                }
             }
         }
     }

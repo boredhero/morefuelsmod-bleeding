@@ -1061,7 +1061,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        SoundType soundtype = blockIn.getSoundType();
+        SoundType soundtype = blockIn.getSoundType(worldObj.getBlockState(pos), worldObj, pos, this);
 
         if (this.worldObj.getBlockState(pos.up()).getBlock() == Blocks.SNOW_LAYER)
         {

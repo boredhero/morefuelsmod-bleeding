@@ -218,7 +218,7 @@ public class PotionHelper
      * Registers a conversion from one potion item to another, with the given reagent. For example, normal potions
      * become splash potions using gunpowder.
      */
-    private static void registerPotionItemConversion(ItemPotion p_185201_0_, PotionHelper.ItemPredicateInstance p_185201_1_, ItemPotion p_185201_2_)
+    public static void registerPotionItemConversion(ItemPotion p_185201_0_, PotionHelper.ItemPredicateInstance p_185201_1_, ItemPotion p_185201_2_)
     {
         POTION_ITEM_CONVERSIONS.add(new PotionHelper.MixPredicate(p_185201_0_, p_185201_1_, p_185201_2_));
     }
@@ -226,7 +226,7 @@ public class PotionHelper
     /**
      * Registers an itempredicate that identifies a potion item, for example Items.potionItem, or Items.lingering_potion
      */
-    private static void registerPotionItem(PotionHelper.ItemPredicateInstance p_185202_0_)
+    public static void registerPotionItem(PotionHelper.ItemPredicateInstance p_185202_0_)
     {
         POTION_ITEMS.add(p_185202_0_);
     }
@@ -234,12 +234,12 @@ public class PotionHelper
     /**
      * Registers a conversion from one PotionType to another PotionType, with the given reagent
      */
-    private static void registerPotionTypeConversion(PotionType input, Predicate<ItemStack> reagentPredicate, PotionType output)
+    public static void registerPotionTypeConversion(PotionType input, Predicate<ItemStack> reagentPredicate, PotionType output)
     {
         POTION_TYPE_CONVERSIONS.add(new PotionHelper.MixPredicate(input, reagentPredicate, output));
     }
 
-    static class ItemPredicateInstance implements Predicate<ItemStack>
+    public static class ItemPredicateInstance implements Predicate<ItemStack>
         {
             private final Item item;
             private final int meta;
@@ -261,7 +261,7 @@ public class PotionHelper
             }
         }
 
-    static class MixPredicate<T>
+    public static class MixPredicate<T>
         {
             final T input;
             final Predicate<ItemStack> reagent;

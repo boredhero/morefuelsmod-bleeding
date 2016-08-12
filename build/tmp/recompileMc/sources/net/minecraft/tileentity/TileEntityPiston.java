@@ -215,7 +215,7 @@ public class TileEntityPiston extends TileEntity implements ITickable
             if (this.worldObj.getBlockState(this.pos).getBlock() == Blocks.PISTON_EXTENSION)
             {
                 this.worldObj.setBlockState(this.pos, this.pistonState, 3);
-                if(!net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldObj, pos, worldObj.getBlockState(pos), java.util.EnumSet.noneOf(EnumFacing.class)).isCanceled())
+                if(!net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldObj, pos, worldObj.getBlockState(pos), java.util.EnumSet.of(this.pistonFacing.getOpposite())).isCanceled())
                     this.worldObj.notifyBlockOfStateChange(this.pos, this.pistonState.getBlock());
             }
         }
@@ -237,7 +237,7 @@ public class TileEntityPiston extends TileEntity implements ITickable
             if (this.worldObj.getBlockState(this.pos).getBlock() == Blocks.PISTON_EXTENSION)
             {
                 this.worldObj.setBlockState(this.pos, this.pistonState, 3);
-                if(!net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldObj, pos, worldObj.getBlockState(pos), java.util.EnumSet.noneOf(EnumFacing.class)).isCanceled())
+                if(!net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldObj, pos, worldObj.getBlockState(pos), java.util.EnumSet.of(this.pistonFacing.getOpposite())).isCanceled())
                     this.worldObj.notifyBlockOfStateChange(this.pos, this.pistonState.getBlock());
             }
         }

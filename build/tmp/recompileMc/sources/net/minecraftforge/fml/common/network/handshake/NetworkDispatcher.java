@@ -69,6 +69,7 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import org.apache.logging.log4j.Level;
 
+// TODO build test suites to validate the behaviour of this stuff and make it less annoyingly magical
 public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> implements ChannelOutboundHandler {
     private static boolean DEBUG_HANDSHAKE = Boolean.parseBoolean(System.getProperty("fml.debugNetworkHandshake", "false"));
     private static enum ConnectionState {
@@ -146,12 +147,12 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
     public void serverToClientHandshake(EntityPlayerMP player)
     {
         this.player = player;
-        insertIntoChannel();
         Boolean fml = this.manager.channel().attr(NetworkRegistry.FML_MARKER).get();
         if (fml != null && fml)
         {
             //FML on client, send server hello
             //TODO: Make this cleaner as it uses netty magic 0.o
+            insertIntoChannel();
         }
         else
         {

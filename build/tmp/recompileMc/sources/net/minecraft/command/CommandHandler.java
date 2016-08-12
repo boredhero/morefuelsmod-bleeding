@@ -61,6 +61,7 @@ public abstract class CommandHandler implements ICommandManager
                 }
                 return 1;
             }
+            if (event.getParameters() != null) astring = event.getParameters();
 
             if (i > -1)
             {

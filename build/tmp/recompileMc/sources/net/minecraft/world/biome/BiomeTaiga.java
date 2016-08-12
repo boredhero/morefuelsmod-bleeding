@@ -63,7 +63,7 @@ public class BiomeTaiga extends Biome
 
     public void decorate(World worldIn, Random rand, BlockPos pos)
     {
-        if (this.type == BiomeTaiga.Type.MEGA || this.type == BiomeTaiga.Type.MEGA_SPRUCE)
+        if ((this.type == BiomeTaiga.Type.MEGA || this.type == BiomeTaiga.Type.MEGA_SPRUCE) && net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.ROCK))
         {
             int i = rand.nextInt(3);
 
@@ -78,6 +78,7 @@ public class BiomeTaiga extends Biome
 
         DOUBLE_PLANT_GENERATOR.setPlantType(BlockDoublePlant.EnumPlantType.FERN);
 
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.FLOWERS))
         for (int i1 = 0; i1 < 7; ++i1)
         {
             int j1 = rand.nextInt(16) + 8;

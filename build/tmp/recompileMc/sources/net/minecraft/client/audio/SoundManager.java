@@ -222,6 +222,7 @@ public class SoundManager
                 this.sndSystem.stop(s);
             }
 
+            this.pausedChannels.clear(); //Forge: MC-35856 Fixed paused sounds repeating when switching worlds
             this.playingSounds.clear();
             this.delayedSounds.clear();
             this.tickableSounds.clear();

@@ -151,8 +151,8 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
 
             if (lvt_11_2_ < k)
             {
-                LOGGER.warn("Texture {} with size {}x{} limits mip level from {} to {}", new Object[] {resourcelocation, Integer.valueOf(textureatlassprite.getIconWidth()), Integer.valueOf(textureatlassprite.getIconHeight()), Integer.valueOf(MathHelper.calculateLogBaseTwo(k)), Integer.valueOf(MathHelper.calculateLogBaseTwo(lvt_11_2_))});
-                k = lvt_11_2_;
+                // FORGE: do not lower the mipmap level, just log the problematic textures
+                LOGGER.warn("Texture {} with size {}x{} will have visual artifacts at mip level {}, it can only support level {}. Please report to the mod author that the texture should be some multiple of 16x16.", resourcelocation, textureatlassprite.getIconWidth(), textureatlassprite.getIconHeight(), MathHelper.calculateLogBaseTwo(k), MathHelper.calculateLogBaseTwo(lvt_11_2_));
             }
 
             stitcher.addSprite(textureatlassprite);
@@ -162,7 +162,7 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
         int l = Math.min(j, k);
         int i1 = MathHelper.calculateLogBaseTwo(l);
 
-        if (i1 < this.mipmapLevels)
+        if (false && i1 < this.mipmapLevels) // FORGE: do not lower the mipmap level
         {
             LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", new Object[] {this.basePath, Integer.valueOf(this.mipmapLevels), Integer.valueOf(i1), Integer.valueOf(l)});
             this.mipmapLevels = i1;
@@ -400,5 +400,15 @@ public class TextureMap extends AbstractTexture implements ITickableTextureObjec
     public boolean setTextureEntry(TextureAtlasSprite entry)
     {
         return setTextureEntry(entry.getIconName(), entry);
+    }
+
+    public String getBasePath()
+    {
+        return basePath;
+    }
+
+    public int getMipmapLevels()
+    {
+        return mipmapLevels;
     }
 }

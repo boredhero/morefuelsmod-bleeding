@@ -1085,6 +1085,18 @@ public class Item extends net.minecraftforge.fml.common.registry.IForgeRegistryE
     }
 
     /**
+     * Called when the player is mining a block and the item in his hand changes.
+     * Allows to not reset blockbreaking if only NBT or similar changes.
+     * @param oldStack The old stack that was used for mining. Item in players main hand
+     * @param newStack The new stack
+     * @return True to reset block break progress
+     */
+    public boolean shouldCauseBlockBreakReset(ItemStack oldStack, ItemStack newStack)
+    {
+        return !(newStack.getItem() == oldStack.getItem() && ItemStack.areItemStackTagsEqual(newStack, oldStack) && (newStack.isItemStackDamageable() || newStack.getMetadata() == oldStack.getMetadata()));
+    }
+
+    /**
      * Called from ItemStack.setItem, will hold extra data for the life of this ItemStack.
      * Can be retrieved from stack.getCapabilities()
      * The NBT can be null if this is not called from readNBT or if the item the stack is

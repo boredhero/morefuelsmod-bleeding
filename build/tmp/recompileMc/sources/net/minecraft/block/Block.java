@@ -1113,6 +1113,7 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
         return Block.EnumOffsetType.NONE;
     }
 
+    @Deprecated // Forge - World/state/pos/entity sensitive version below
     public SoundType getSoundType()
     {
         return this.blockSoundType;
@@ -2266,6 +2267,20 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> tooltip, boolean advanced)
     {
     }
+
+    /**
+     * Sensitive version of getSoundType
+     * @param state The state
+     * @param world The world
+     * @param pos The position. Note that the world may not necessarily have {@code state} here!
+     * @param entity The entity that is breaking/stepping on/placing/hitting/falling on this block, or null if no entity is in this context
+     * @return A SoundType to use
+     */
+    public SoundType getSoundType(IBlockState state, World world, BlockPos pos, @Nullable Entity entity)
+    {
+        return getSoundType();
+    }
+
     /* ========================================= FORGE END ======================================*/
 
     public static void registerBlocks()
@@ -2544,11 +2559,7 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
             }
             else
             {
-                for (IBlockState iblockstate : block16.getBlockState().getValidStates())
-                {
-                    int k = REGISTRY.getIDForObject(block16) << 4 | block16.getMetaFromState(iblockstate);
-                    BLOCK_STATE_IDS.put(iblockstate, k);
-                }
+//                Handled in GameData.BlockCallbacks - leaving tripwire as it seems to be special cased
             }
         }
     }

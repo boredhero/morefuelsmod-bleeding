@@ -71,6 +71,15 @@ public class UnpackedBakedQuad extends BakedQuad
         {
             consumer.setQuadTint(getTintIndex());
         }
+        try
+        {
+            consumer.setTexture(sprite);
+        }
+        catch(AbstractMethodError e)
+        {
+            // catch missing method errors caused by change to IVertexConsumer
+        }
+        consumer.setApplyDiffuseLighting(applyDiffuseLighting);
         consumer.setQuadOrientation(getFace());
         for(int v = 0; v < 4; v++)
         {

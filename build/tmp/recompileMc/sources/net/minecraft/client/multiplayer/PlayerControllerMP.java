@@ -326,7 +326,7 @@ public class PlayerControllerMP
 
                 if (this.stepSoundTickCounter % 4.0F == 0.0F)
                 {
-                    SoundType soundtype = block.getSoundType();
+                    SoundType soundtype = block.getSoundType(iblockstate, mc.theWorld, posBlock, mc.thePlayer);
                     this.mc.getSoundHandler().playSound(new PositionedSoundRecord(soundtype.getHitSound(), SoundCategory.NEUTRAL, (soundtype.getVolume() + 1.0F) / 8.0F, soundtype.getPitch() * 0.5F, posBlock));
                 }
 
@@ -381,7 +381,7 @@ public class PlayerControllerMP
 
         if (this.currentItemHittingBlock != null && itemstack != null)
         {
-            flag = itemstack.getItem() == this.currentItemHittingBlock.getItem() && ItemStack.areItemStackTagsEqual(itemstack, this.currentItemHittingBlock) && (itemstack.isItemStackDamageable() || itemstack.getMetadata() == this.currentItemHittingBlock.getMetadata());
+            flag = !net.minecraftforge.client.ForgeHooksClient.shouldCauseBlockBreakReset(this.currentItemHittingBlock, itemstack);
         }
 
         return pos.equals(this.currentBlock) && flag;

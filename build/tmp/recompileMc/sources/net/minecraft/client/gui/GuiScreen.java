@@ -168,7 +168,9 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         }
 
         FontRenderer font = stack.getItem().getFontRenderer(stack);
+        net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
         this.drawHoveringText(list, x, y, (font == null ? fontRendererObj : font));
+        net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
     }
 
     /**
@@ -185,7 +187,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
      */
     protected void drawHoveringText(List<String> textLines, int x, int y)
     {
-        drawHoveringText(textLines, x, y, fontRendererObj);   
+        drawHoveringText(textLines, x, y, fontRendererObj);
     }
 
     protected void drawHoveringText(List<String> textLines, int x, int y, FontRenderer font)

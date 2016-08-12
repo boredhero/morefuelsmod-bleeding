@@ -1351,6 +1351,14 @@ public abstract class EntityMinecart extends Entity implements IWorldNameable
         return 0.0078125D;
     }
 
+    /**
+     * Called from Detector Rails to retrieve a redstone power level for comparators.
+     */
+    public int getComparatorLevel()
+    {
+        return -1;
+    }
+
     /* =================================== FORGE END ===========================================*/
 
     public static enum Type

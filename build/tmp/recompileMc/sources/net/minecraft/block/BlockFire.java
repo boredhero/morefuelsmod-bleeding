@@ -338,7 +338,7 @@ public class BlockFire extends Block
 
             for (EnumFacing enumfacing : EnumFacing.values())
             {
-                i = Math.max(worldIn.getBlockState(pos.offset(enumfacing)).getBlock().getFlammability(worldIn, pos.offset(enumfacing), enumfacing.getOpposite()), i);
+                i = Math.max(worldIn.getBlockState(pos.offset(enumfacing)).getBlock().getFireSpreadSpeed(worldIn, pos.offset(enumfacing), enumfacing.getOpposite()), i);
             }
 
             return i;

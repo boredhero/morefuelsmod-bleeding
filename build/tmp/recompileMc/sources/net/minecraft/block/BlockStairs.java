@@ -582,12 +582,24 @@ public class BlockStairs extends Block
     @Override
     public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)
     {
+        if (net.minecraftforge.common.ForgeModContainer.disableStairSlabCulling)
+            return super.doesSideBlockRendering(state, world, pos, face);
+
         if ( state.isOpaqueCube() )
             return true;
 
+        state = this.getActualState(state, world, pos);
+
         EnumHalf half = state.getValue(HALF);
         EnumFacing side = state.getValue(FACING);
-        return side == face || (half == EnumHalf.TOP && face == EnumFacing.UP) || (half == EnumHalf.BOTTOM && face == EnumFacing.DOWN);
+        EnumShape shape = state.getValue(SHAPE);
+        if (face == EnumFacing.UP) return half == EnumHalf.TOP;
+        if (face == EnumFacing.DOWN) return half == EnumHalf.BOTTOM;
+        if (shape == EnumShape.OUTER_LEFT || shape == EnumShape.OUTER_RIGHT) return false;
+        if (face == side) return true;
+        if (shape == EnumShape.INNER_LEFT && face.rotateYCCW() == side) return true;
+        if (shape == EnumShape.INNER_RIGHT && face.rotateY() == side) return true;
+        return false;
     }
 
     public static enum EnumHalf implements IStringSerializable

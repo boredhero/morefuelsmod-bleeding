@@ -1,10 +1,10 @@
 INFO:  Adding File to context from classpath: C:\Users\Noah\Desktop\Coding\MoreFuelsMod\morefuelsmod-bleeding\gradle\wrapper\gradle-wrapper.jar
-INFO:  Adding File to context from classpath: C:\Program Files\Java\jdk1.8.0_92\jre\lib\resources.jar
-INFO:  Adding File to context from classpath: C:\Program Files\Java\jdk1.8.0_92\jre\lib\rt.jar
-INFO:  Adding File to context from classpath: C:\Program Files\Java\jdk1.8.0_92\jre\lib\jsse.jar
-INFO:  Adding File to context from classpath: C:\Program Files\Java\jdk1.8.0_92\jre\lib\jce.jar
-INFO:  Adding File to context from classpath: C:\Program Files\Java\jdk1.8.0_92\jre\lib\charsets.jar
-INFO:  Adding File to context from classpath: C:\Program Files\Java\jdk1.8.0_92\jre\lib\jfr.jar
+INFO:  Adding File to context from classpath: C:\Program Files\Java\jre1.8.0_102\lib\resources.jar
+INFO:  Adding File to context from classpath: C:\Program Files\Java\jre1.8.0_102\lib\rt.jar
+INFO:  Adding File to context from classpath: C:\Program Files\Java\jre1.8.0_102\lib\jsse.jar
+INFO:  Adding File to context from classpath: C:\Program Files\Java\jre1.8.0_102\lib\jce.jar
+INFO:  Adding File to context from classpath: C:\Program Files\Java\jre1.8.0_102\lib\charsets.jar
+INFO:  Adding File to context from classpath: C:\Program Files\Java\jre1.8.0_102\lib\jfr.jar
 WARN:  Inconsistent inner class entries for net/minecraft/block/BlockSilverfish$EnumType!
 WARN:  Inconsistent inner class entries for net/minecraft/block/BlockSilverfish$EnumType!
 WARN:  Inconsistent inner class entries for net/minecraft/block/BlockSilverfish$EnumType!

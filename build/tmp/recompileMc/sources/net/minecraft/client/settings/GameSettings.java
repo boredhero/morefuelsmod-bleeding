@@ -930,7 +930,7 @@ public class GameSettings
                                 String[] t = s2.split(":");
                                 keybinding.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.valueFromString(t[1]), Integer.parseInt(t[0]));
                             } else
-                            keybinding.setKeyCode(Integer.parseInt(s2));
+                            keybinding.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.NONE, Integer.parseInt(s2));
                         }
                     }
 

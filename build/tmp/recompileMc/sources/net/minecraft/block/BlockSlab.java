@@ -59,6 +59,9 @@ public abstract class BlockSlab extends Block
     @Override
     public boolean doesSideBlockRendering(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing face)
     {
+        if (net.minecraftforge.common.ForgeModContainer.disableStairSlabCulling)
+            return super.doesSideBlockRendering(state, world, pos, face);
+
         if ( state.isOpaqueCube() )
             return true;
 

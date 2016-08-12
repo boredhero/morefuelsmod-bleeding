@@ -168,6 +168,8 @@ public class BlockRailDetector extends BlockRailBase
     {
         if (((Boolean)blockState.getValue(POWERED)).booleanValue())
         {
+            List<EntityMinecart> carts = this.findMinecarts(worldIn, pos, EntityMinecart.class);
+            if (!carts.isEmpty() && carts.get(0).getComparatorLevel() > -1) return carts.get(0).getComparatorLevel();
             List<EntityMinecartCommandBlock> list = this.<EntityMinecartCommandBlock>findMinecarts(worldIn, pos, EntityMinecartCommandBlock.class, new Predicate[0]);
 
             if (!list.isEmpty())

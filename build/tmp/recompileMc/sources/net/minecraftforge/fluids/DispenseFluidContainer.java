@@ -75,8 +75,6 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
             return super.dispenseStack(source, stack);
         }
 
-        world.setBlockToAir(blockpos);
-
         if (--stack.stackSize == 0)
         {
             stack.deserializeNBT(result.serializeNBT());

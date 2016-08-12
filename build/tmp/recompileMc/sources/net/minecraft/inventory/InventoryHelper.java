@@ -44,18 +44,7 @@ public class InventoryHelper
         {
             int i = RANDOM.nextInt(21) + 10;
 
-            if (i > stack.stackSize)
-            {
-                i = stack.stackSize;
-            }
-
-            stack.stackSize -= i;
-            EntityItem entityitem = new EntityItem(worldIn, x + (double)f, y + (double)f1, z + (double)f2, new ItemStack(stack.getItem(), i, stack.getMetadata()));
-
-            if (stack.hasTagCompound())
-            {
-                entityitem.getEntityItem().setTagCompound(stack.getTagCompound().copy());
-            }
+            EntityItem entityitem = new EntityItem(worldIn, x + (double)f, y + (double)f1, z + (double)f2, stack.splitStack(i));
 
             float f3 = 0.05F;
             entityitem.motionX = RANDOM.nextGaussian() * 0.05000000074505806D;

@@ -180,7 +180,7 @@ public class StatList
 
     private static void initMiningStats()
     {
-        for (Block block : Block.REGISTRY)
+        for (Block block : net.minecraftforge.fml.common.registry.GameData.getBlockRegistry().typeSafeIterable())
         {
             Item item = Item.getItemFromBlock(block);
 
@@ -202,7 +202,7 @@ public class StatList
 
     private static void initStats()
     {
-        for (Item item : Item.REGISTRY)
+        for (Item item : net.minecraftforge.fml.common.registry.GameData.getItemRegistry().typeSafeIterable())
         {
             if (item != null)
             {
@@ -226,7 +226,7 @@ public class StatList
 
     private static void initItemDepleteStats()
     {
-        for (Item item : Item.REGISTRY)
+        for (Item item : net.minecraftforge.fml.common.registry.GameData.getItemRegistry().typeSafeIterable())
         {
             if (item != null)
             {
@@ -245,7 +245,7 @@ public class StatList
 
     private static void initPickedUpAndDroppedStats()
     {
-        for (Item item : Item.REGISTRY)
+        for (Item item : net.minecraftforge.fml.common.registry.GameData.getItemRegistry().typeSafeIterable())
         {
             if (item != null)
             {

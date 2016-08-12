@@ -174,6 +174,15 @@ public abstract class BlockFluidBase extends Block implements IFluidBlock
     {
         return state.getValue(LEVEL);
     }
+    /**
+     * Convert the given metadata into a BlockState for this Block
+     */
+    @Deprecated
+    public IBlockState getStateFromMeta(int meta)
+    {
+        return this.getDefaultState().withProperty(LEVEL, meta);
+    }
+
     public BlockFluidBase setQuantaPerBlock(int quantaPerBlock)
     {
         if (quantaPerBlock > 16 || quantaPerBlock < 1) quantaPerBlock = 8;

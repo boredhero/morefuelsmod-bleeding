@@ -716,7 +716,9 @@ public class GuiContainerCreative extends InventoryEffectRenderer
                 }
             }
 
+            net.minecraftforge.fml.client.config.GuiUtils.preItemToolTip(stack);
             this.drawHoveringText(list, x, y);
+            net.minecraftforge.fml.client.config.GuiUtils.postItemToolTip();
         }
         else
         {

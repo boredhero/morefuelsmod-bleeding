@@ -2385,7 +2385,7 @@ public class RenderGlobal implements IWorldEventListener, IResourceManagerReload
 
                 if (block.getDefaultState().getMaterial() != Material.AIR)
                 {
-                    SoundType soundtype = block.getSoundType();
+                    SoundType soundtype = block.getSoundType(Block.getStateById(data), theWorld, blockPosIn, null);
                     this.theWorld.playSound(blockPosIn, soundtype.getBreakSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F, false);
                 }
 

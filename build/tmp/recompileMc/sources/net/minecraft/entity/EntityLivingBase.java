@@ -1340,7 +1340,7 @@ public abstract class EntityLivingBase extends Entity
 
             if (iblockstate.getMaterial() != Material.AIR)
             {
-                SoundType soundtype = iblockstate.getBlock().getSoundType();
+                SoundType soundtype = iblockstate.getBlock().getSoundType(iblockstate, worldObj, new BlockPos(j, k, l), this);
                 this.playSound(soundtype.getFallSound(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
             }
         }

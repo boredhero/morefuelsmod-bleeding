@@ -83,6 +83,7 @@ public class TextureUtil
                     int[] aint1 = aint[l1 - 1];
                     int[] aint2 = new int[aint1.length >> 2];
                     int j = p_147949_1_ >> l1;
+                    if (j > 0) { // FORGE: forcing higher mipmap levels on odd textures needs this check
                     int k = aint2.length / j;
                     int l = j << 1;
 
@@ -94,6 +95,7 @@ public class TextureUtil
                             aint2[i1 + j1 * j] = blendColors(aint1[k1 + 0], aint1[k1 + 1], aint1[k1 + 0 + l], aint1[k1 + 1 + l], flag);
                         }
                     }
+                    } // end if (j > 0)
 
                     aint[l1] = aint2;
                 }
@@ -168,6 +170,7 @@ public class TextureUtil
         for (int i = 0; i < p_147955_0_.length; ++i)
         {
             int[] aint = p_147955_0_[i];
+            if ((p_147955_1_ >> i <= 0) || (p_147955_2_ >> i <= 0)) break;
             uploadTextureSub(i, aint, p_147955_1_ >> i, p_147955_2_ >> i, p_147955_3_ >> i, p_147955_4_ >> i, p_147955_5_, p_147955_6_, p_147955_0_.length > 1);
         }
     }

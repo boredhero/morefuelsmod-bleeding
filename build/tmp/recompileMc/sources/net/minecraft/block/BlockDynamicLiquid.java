@@ -67,7 +67,7 @@ public class BlockDynamicLiquid extends BlockLiquid
                 }
             }
 
-            if (this.adjacentSourceBlocks >= 2 && this.blockMaterial == Material.WATER)
+            if (this.adjacentSourceBlocks >= 2 && net.minecraftforge.event.ForgeEventFactory.canCreateFluidSource(worldIn, pos, state, this.blockMaterial == Material.WATER))
             {
                 IBlockState iblockstate = worldIn.getBlockState(pos.down());
 

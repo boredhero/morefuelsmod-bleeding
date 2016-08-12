@@ -422,7 +422,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
 
             if (iblockstate.getMaterial() != Material.AIR && !this.isSilent())
             {
-                SoundType soundtype = block.getSoundType();
+                SoundType soundtype = block.getSoundType(iblockstate, worldObj, new BlockPos(this.posX, this.posY - 0.2D - (double)this.prevRotationYaw, this.posZ), this);
                 this.worldObj.playSound((EntityPlayer)null, this.posX, this.posY, this.posZ, soundtype.getStepSound(), this.getSoundCategory(), soundtype.getVolume() * 0.5F, soundtype.getPitch() * 0.75F);
             }
         }
@@ -586,7 +586,7 @@ public class EntityHorse extends EntityAnimal implements IInventoryChangedListen
 
     protected void playStepSound(BlockPos pos, Block blockIn)
     {
-        SoundType soundtype = blockIn.getSoundType();
+        SoundType soundtype = blockIn.getSoundType(worldObj.getBlockState(pos), worldObj, pos, this);
 
         if (this.worldObj.getBlockState(pos.up()).getBlock() == Blocks.SNOW_LAYER)
         {

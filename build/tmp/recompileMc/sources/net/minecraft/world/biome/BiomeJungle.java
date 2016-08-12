@@ -74,9 +74,11 @@ public class BiomeJungle extends Biome
         int height = worldIn.getHeight(pos.add(i, 0, j)).getY() * 2; // could == 0, which crashes nextInt
         if (height < 1) height = 1;
         int k = rand.nextInt(height);
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.PUMPKIN))
         (new WorldGenMelon()).generate(worldIn, rand, pos.add(i, k, j));
         WorldGenVines worldgenvines = new WorldGenVines();
 
+        if(net.minecraftforge.event.terraingen.TerrainGen.decorate(worldIn, rand, pos, net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.GRASS))
         for (j = 0; j < 50; ++j)
         {
             k = rand.nextInt(16) + 8;
