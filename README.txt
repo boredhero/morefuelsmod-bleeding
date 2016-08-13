@@ -14,12 +14,21 @@ To set up a development workspace for ECLIPSE:
 Clone repository
 Go to cloned repository folder
 Open windows command prompt/linux terminal
-run "gradlew setupDecompWorkspace"
+run "gradlew setupDecompWorkspace  --refresh-dependencies"
 run "gradlew eclipse"
 Open eclipse, set your workspace.
 In the diologue box, navigate into the cloned repo.
 Navigate into the "eclipse" folder
 Hit okay, let eclipse load the project in.
 
+To update the forge version that the mod is built on:
+
+Clone repository
+Go to cloned repository folder
+Open windows command prompt/linux terminal
+run "gradlew cleanCache"
+Open build.gradle and change the build to the number you want instead
+run "gradlew setupDecompWorkspace --refresh-dependencies"
+run "gradlew eclipse"
 
 

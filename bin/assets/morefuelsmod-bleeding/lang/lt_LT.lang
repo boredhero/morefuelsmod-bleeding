@@ -11,6 +11,7 @@ item.bitumen.name=Bitumas
 tile.pelletBlock.name=Kuro granuliu blokas
 tile.concentratedPelletBlock.name=Koncentruotu kuro granuliu blokas
 tile.cokeBlock.name=Kokso blokas
+tile.bituminousCoalOre.name=Bituminous Coal Ore
 
 #Tabs
 

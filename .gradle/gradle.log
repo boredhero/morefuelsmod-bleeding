@@ -19,7 +19,6 @@ This mapping 'snapshot_20160518' was designed for MC 1.9.4! Use at your own peri
 :extractUserdev UP-TO-DATE
 :getAssetIndex UP-TO-DATE
 :getAssets
-Current status: 904/1112   81%
 :makeStart
 :makeEclipseCleanRunClient UP-TO-DATE
 :makeEclipseCleanRunServer UP-TO-DATE
@@ -27,4 +26,4 @@ Current status: 904/1112   81%
 
 BUILD SUCCESSFUL
 
-Total time: 13.396 secs
+Total time: 12.154 secs
