@@ -257,6 +257,19 @@ public class ItemArmor extends Item
         return multimap;
     }
 
+    /**
+     * Determines if this armor will be rendered with the secondary 'overlay' texture.
+     * If this is true, the first texture will be rendered using a tint of the color
+     * specified by getColor(ItemStack)
+     *
+     * @param stack The stack
+     * @return true/false
+     */
+    public boolean hasOverlay(ItemStack stack)
+    {
+        return this.material == ItemArmor.ArmorMaterial.LEATHER || getColor(stack) != 0xFFFFFFFF;
+    }
+
     public static enum ArmorMaterial
     {
         LEATHER("leather", 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F),

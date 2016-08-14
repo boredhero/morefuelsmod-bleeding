@@ -65,10 +65,10 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
                 boolean flag = this.isLegSlot(slotIn);
                 this.renderer.bindTexture(this.getArmorResource(entityLivingBaseIn, itemstack, slotIn, null));
 
-                        int i = itemarmor.getColor(itemstack);
                 {
-                    if (i != 0xFFFFFF) // Allow this for anything, not only cloth
+                    if (itemarmor.hasOverlay(itemstack)) // Allow this for anything, not only cloth
                     {
+                        int i = itemarmor.getColor(itemstack);
                         float f = (float)(i >> 16 & 255) / 255.0F;
                         float f1 = (float)(i >> 8 & 255) / 255.0F;
                         float f2 = (float)(i & 255) / 255.0F;

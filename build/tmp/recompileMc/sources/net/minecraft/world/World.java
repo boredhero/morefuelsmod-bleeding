@@ -59,7 +59,7 @@ import net.minecraft.world.storage.loot.LootTableManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public abstract class World implements IBlockAccess
+public abstract class World implements IBlockAccess, net.minecraftforge.common.capabilities.ICapabilityProvider
 {
     /**
      * Used in the getEntitiesWithinAABB functions to expand the search area for entities.
@@ -144,6 +144,8 @@ public abstract class World implements IBlockAccess
     public boolean restoringBlockSnapshots = false;
     public boolean captureBlockSnapshots = false;
     public java.util.ArrayList<net.minecraftforge.common.util.BlockSnapshot> capturedBlockSnapshots = new java.util.ArrayList<net.minecraftforge.common.util.BlockSnapshot>();
+    private net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
+    private net.minecraftforge.common.util.WorldCapabilityData capabilityData;
 
     protected World(ISaveHandler saveHandlerIn, WorldInfo info, WorldProvider providerIn, Profiler profilerIn, boolean client)
     {
@@ -4216,6 +4218,31 @@ public abstract class World implements IBlockAccess
             }
         }
         return count;
+    }
+
+    protected void initCapabilities()
+    {
+        net.minecraftforge.common.capabilities.ICapabilityProvider parent = provider.initCapabilities();
+        capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this, parent);
+        net.minecraftforge.common.util.WorldCapabilityData data = (net.minecraftforge.common.util.WorldCapabilityData)perWorldStorage.getOrLoadData(net.minecraftforge.common.util.WorldCapabilityData.class, net.minecraftforge.common.util.WorldCapabilityData.ID);
+        if (data == null)
+        {
+            capabilityData = new net.minecraftforge.common.util.WorldCapabilityData(capabilities);
+            perWorldStorage.setData(capabilityData.mapName, capabilityData);
+        }
+        else
+        {
+            capabilityData = data;
+            capabilityData.setCapabilities(provider, capabilities);
+        }
+    }
+    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, EnumFacing facing)
+    {
+        return capabilities == null ? false : capabilities.hasCapability(capability, facing);
+    }
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, EnumFacing facing)
+    {
+        return capabilities == null ? null : capabilities.getCapability(capability, facing);
     }
 
     protected MapStorage perWorldStorage; //Moved to a getter to simulate final without being final so we can load in subclasses.

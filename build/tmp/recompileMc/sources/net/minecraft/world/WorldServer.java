@@ -170,6 +170,7 @@ public class WorldServer extends World implements IThreadListener
             this.getWorldBorder().setTransition(this.worldInfo.getBorderSize());
         }
 
+        this.initCapabilities();
         return this;
     }
 

@@ -67,6 +67,7 @@ public class BlockFalling extends Block
             }
             else
             {
+                IBlockState state = worldIn.getBlockState(pos);
                 worldIn.setBlockToAir(pos);
                 BlockPos blockpos;
 
@@ -77,7 +78,7 @@ public class BlockFalling extends Block
 
                 if (blockpos.getY() > 0)
                 {
-                    worldIn.setBlockState(blockpos.up(), this.getDefaultState());
+                    worldIn.setBlockState(blockpos.up(), state); //Forge: Fix loss of state information during world gen.
                 }
             }
         }

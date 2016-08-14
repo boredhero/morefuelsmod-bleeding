@@ -271,6 +271,7 @@ public class ContainerBrewingStand extends Container
             {
                 if (PotionUtils.getPotionFromItem(stack) != PotionTypes.WATER)
                 {
+                    net.minecraftforge.event.ForgeEventFactory.onPlayerBrewedPotion(playerIn, stack);
                     this.player.addStat(AchievementList.POTION);
                 }
 

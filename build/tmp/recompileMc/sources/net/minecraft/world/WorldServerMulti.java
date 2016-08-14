@@ -78,6 +78,7 @@ public class WorldServerMulti extends WorldServer
             this.villageCollectionObj.setWorldsForAll(this);
         }
 
+        this.initCapabilities();
         return this;
     }
 
