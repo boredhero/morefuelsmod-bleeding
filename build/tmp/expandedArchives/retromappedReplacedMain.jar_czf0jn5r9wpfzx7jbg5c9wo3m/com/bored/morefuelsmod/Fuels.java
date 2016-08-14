@@ -40,7 +40,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150398_cm)){
 					return 200;
 				}
-				//Flowers start here
 				//This code SHOULD cover all flowers.
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150328_O)){
 					return 100;
@@ -48,7 +47,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150327_N)){
 					return 100;
 				}
-				//Flowers end here
 				if (fuel.func_77973_b() == Items.field_151160_bD){
 					return 900;
 				}
@@ -64,7 +62,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150468_ap)){
 					return 300;
 				}
-				//Rails start here
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150448_aq)) {
 					return 100;
 				}
@@ -77,14 +74,12 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150318_D)){
 					return 100;
 				}
-				//Pistons start here
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150331_J)){
 					return 1000;
 				}
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150320_F)){
 					return 1100;
 				}
-				//Pistons end here
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150395_bd)){
 					return 100;
 				}
@@ -97,14 +92,12 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150407_cf)){
 					return 900;
 				}
-				//Wool and Carpet handled here
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150404_cg)){
 					return 200;
 				}
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150325_L)){
 					return 200;
 				}
-				//Arrows handled here
 				if (fuel.func_77973_b() == Items.field_151032_g){
 					return 100;
 				}
@@ -155,14 +148,12 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Items.field_179569_ar){
 					return 600;
 				}
-				//Buttons
 				if (fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150471_bO)){
 					return 300;
 				}
 				if (fuel.func_77973_b() == Items.field_151054_z){
 					return 300;
 				}
-				//Updated boat handler to 1.9 to include different woods.
 				if (fuel.func_77973_b() == Items.field_151124_az){
 					return 1500;
 				}
@@ -181,7 +172,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Items.field_185150_aH){
 					return 1500;
 				}
-				//End of new boat handling procedure
 				if (fuel.func_77973_b() == Items.field_151120_aE){
 					return 300;
 				}
@@ -209,7 +199,6 @@ public class Fuels implements IFuelHandler{
 				if (fuel.func_77973_b() == Items.field_151098_aY){
 					return 2500;
 				}
-				//Fishing Rods and Carrot on a Stick.
 				if (fuel.func_77973_b() == Items.field_151112_aM){
 					return 300;
 				}
@@ -324,10 +313,10 @@ public class Fuels implements IFuelHandler{
 					return 8100; //9 times the value of fuel pellets
 				}
 				if (fuel.func_77973_b() == ModItems.concentratedPelletsFuel){
-					return 3600; //4 times the value of fuel pellets
+					return 32400; //4 times the value of pellet blocks
 				}
 				if (fuel.func_77973_b() == Item.func_150898_a(ModBlocks.concentratedPelletBlock)){
-					return 32400; //9 times the value of concentrated fuel pellets...
+					return 291600; //9 times the value of concentrated pellet fuel
 				}
 				if (fuel.func_77973_b() == ModItems.coke){
 					return 3200; //twice the value of coal.

@@ -19,4 +19,5 @@
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.block.ModBlocks"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.ModWorldGen"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.item.ModItems"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.init.ModWorldGen"/>
 </qualifiedTypeNameHistroy>

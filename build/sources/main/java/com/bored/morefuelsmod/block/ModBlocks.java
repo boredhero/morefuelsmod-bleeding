@@ -4,17 +4,21 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import com.bored.morefuelsmod.block.BlockOre;
 
 public class ModBlocks {
 
 	public static BlockBase pelletBlock;
 	public static BlockBase concentratedPelletBlock;
 	public static BlockBase cokeBlock;
+	public static BlockBase bituminousCoalBlock;
+	public static BlockOre bituminousCoalOre;
 
 	public static void init() {
 		pelletBlock = register(new BlockBase(Material.WOOD, "pelletBlock"));
 		concentratedPelletBlock = register(new BlockBase(Material.WOOD, "concentratedPelletBlock"));
 		cokeBlock = register(new BlockBase(Material.ROCK, "cokeBlock"));
+		bituminousCoalOre = register(new BlockOre("bituminousCoalOre"));
 	}
 
 	private static <T extends Block> T register(T block, ItemBlock itemBlock) {

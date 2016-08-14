@@ -18,18 +18,20 @@ public class ModCrafting {
 		GameRegistry.addRecipe(new ItemStack(ModBlocks.pelletBlock),"###","###","###",'#',ModItems.pelletsFuel);
 		//Pellet Block to Pellet Fuel
 		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.pelletsFuel, 9),new Object[]{ModBlocks.pelletBlock});
+		//Pellet Block to Concentrated Pellet Fuel
+		GameRegistry.addRecipe(new ItemStack(ModItems.concentratedPelletsFuel),"##","##",'#',ModBlocks.pelletBlock);
+		//Concentrated Pellet Fuel to Pellet Block
+		GameRegistry.addShapelessRecipe(new ItemStack(ModBlocks.pelletBlock, 4),new Object[]{ModItems.concentratedPelletsFuel});
 		//Concentrated Pellet Fuel to Concentrated Pellet Block
 		GameRegistry.addRecipe(new ItemStack(ModBlocks.concentratedPelletBlock),"###","###","###",'#',ModItems.concentratedPelletsFuel);
 		//Concentrated Pellet Block to Concentrated Pellet Fuel
-		GameRegistry.addRecipe(new ItemStack(ModItems.concentratedPelletsFuel, 9),"###","###","###",'#',ModBlocks.concentratedPelletBlock);
+		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.concentratedPelletsFuel, 9),new Object[]{ModBlocks.concentratedPelletBlock});
 		//Coal and Bitumen to Bituminous Coal
 		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.bituminousCoal),new Object[]{Items.COAL,ModItems.bitumen});
-		//Coke to Coke Block
-		GameRegistry.addRecipe(new ItemStack(ModBlocks.cokeBlock),"###","###","###",'#',ModItems.coke);
-		//Coke Block to Coke
-		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.coke, 9),new Object[]{ModBlocks.cokeBlock});
 		//Gunpowder, Coal Dust, and Slime Ball to Can of Slimoline
 		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.canSlimoline),new Object[]{Items.GUNPOWDER,ModItems.dustCoal,Items.SLIME_BALL});
+		//Coal and Stone Block to Coal Dust
+	    GameRegistry.addShapelessRecipe(new ItemStack(ModItems.dustCoal),new Object[]{Items.COAL,Blocks.STONE});
 		
 		//Mod Fuels to Fuel Pellets Recipes
 		

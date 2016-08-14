@@ -1,18 +1,22 @@
 Symbol range map extraction starting
-Processing 13 files
-startProcessing "com\bored\morefuelsmod\Fuels.java" md5: f41f7e8359a4ef650ec8610c93ece6d0
+Processing 14 files
+startProcessing "com\bored\morefuelsmod\Fuels.java" md5: fa94c01e838fbaa46501dfbed4373891
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\Fuels.java"
 
-startProcessing "com\bored\morefuelsmod\Main.java" md5: 71763c7990d004060ce4d589e265d561
+startProcessing "com\bored\morefuelsmod\Main.java" md5: 5cb395dc6839b40d182dffbcb44ba365
 endProcessing "com\bored\morefuelsmod\Main.java"
 
-startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: 1e6fcf971e9a24250a0980cbab0ee133
+startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: 69c57f1fb60e7f310c8770abb7f7ed29
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\ModCrafting.java"
 
 startProcessing "com\bored\morefuelsmod\ModSmelting.java" md5: b3f83b3d58b43b509ddb716df723f105
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\ModSmelting.java"
+
+startProcessing "com\bored\morefuelsmod\ModWorldGen.java" md5: 43aa7b272c48fd59d347677d9c09a255
+endProcessing "com\bored\morefuelsmod\ModWorldGen.java"
 
 startProcessing "com\bored\morefuelsmod\RFtL.java" md5: 16f6062376476510f2753f323163103b
 Cache Hit!
@@ -22,11 +26,11 @@ startProcessing "com\bored\morefuelsmod\block\BlockBase.java" md5: 0a8144bcfced4
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockBase.java"
 
-startProcessing "com\bored\morefuelsmod\block\BlockOre.java" md5: e3ee0361985c3d816f9d0ebd92729b60
+startProcessing "com\bored\morefuelsmod\block\BlockOre.java" md5: 7a74e4f172c255214a0c20a9889150d6
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockOre.java"
 
-startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: 7e9a6a32f21a1711b34e19d498714dd0
+startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: c82363bc0d0af9c8c748cfb3ef565c80
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\ModBlocks.java"
 
@@ -43,6 +47,7 @@ Cache Hit!
 endProcessing "com\bored\morefuelsmod\item\ModItems.java"
 
 startProcessing "com\bored\morefuelsmod\proxy\ClientProxy.java" md5: 2a11cc59e03bafcffa2c0d830e3328b6
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\proxy\ClientProxy.java"
 
 startProcessing "com\bored\morefuelsmod\proxy\CommonProxy.java" md5: 7b2562cedb70da5f980ba08a772c2e08

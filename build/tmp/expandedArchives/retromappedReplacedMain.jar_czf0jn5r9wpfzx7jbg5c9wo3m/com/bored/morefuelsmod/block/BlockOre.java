@@ -1,5 +1,7 @@
 package com.bored.morefuelsmod.block;
 
+import com.bored.morefuelsmod.item.ModItems;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 
@@ -7,7 +9,6 @@ public class BlockOre extends BlockBase {
 
 	public BlockOre(String name) {
 		super(Material.field_151576_e, name);
-
 		func_149711_c(3f);
 		func_149752_b(5f);
 	}
