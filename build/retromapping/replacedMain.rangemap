@@ -469,7 +469,7 @@ Class Start: com.bored.morefuelsmod.Fuels
 Class End  : com.bored.morefuelsmod.Fuels
 endProcessing "com\bored\morefuelsmod\Fuels.java"
 
-startProcessing "com\bored\morefuelsmod\Main.java" md5: 5cb395dc6839b40d182dffbcb44ba365
+startProcessing "com\bored\morefuelsmod\Main.java" md5: 514c889a4521de453a1ee7e4e6be950b
 @|com\bored\morefuelsmod\Main.java|8|30|com.bored.morefuelsmod|package|com.bored.morefuelsmod|(file)
 Class Start: com.bored.morefuelsmod.Main
    @|com\bored\morefuelsmod\Main.java|696|699|Mod|class|net.minecraftforge.fml.common.Mod
@@ -1336,7 +1336,7 @@ Class Start: com.bored.morefuelsmod.ModSmelting
 Class End  : com.bored.morefuelsmod.ModSmelting
 endProcessing "com\bored\morefuelsmod\ModSmelting.java"
 
-startProcessing "com\bored\morefuelsmod\ModWorldGen.java" md5: 43aa7b272c48fd59d347677d9c09a255
+startProcessing "com\bored\morefuelsmod\ModWorldGen.java" md5: 416b1972a0b42bab7fbd21aadda6b83a
 @|com\bored\morefuelsmod\ModWorldGen.java|8|30|com.bored.morefuelsmod|package|com.bored.morefuelsmod|(file)
 Class Start: com.bored.morefuelsmod.ModWorldGen
    @|com\bored\morefuelsmod\ModWorldGen.java|460|471|ModWorldGen|class|com.bored.morefuelsmod.ModWorldGen

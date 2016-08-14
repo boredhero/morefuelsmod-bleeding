@@ -39,7 +39,7 @@ public class ModWorldGen implements IWorldGenerator{
   switch (world.provider.getDimension()){
   case 0://Over_World
    //this.runGenerator(generator, world, random, chunkX, chunkZ, chancesToSpawn, minHeight, maxHeight);//
-   this.runGenerator(this.bituminousCoalOre, world, random, chunkX, chunkZ, 7, 0, 15);
+   this.runGenerator(this.bituminousCoalOre, world, random, chunkX, chunkZ, 10, 0, 50);
      break;
   case -1://Nether
    
