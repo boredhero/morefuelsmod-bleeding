@@ -145,10 +145,16 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
                         break;
                     }
 
+                    float[] customColor = iblockstate.getBlock().getBeaconColorMultiplier(iblockstate, this.worldObj, blockpos$mutableblockpos, getPos());
+                    if (customColor != null)
+                        afloat = customColor;
+                    else {
                     tileentitybeacon$beamsegment.incrementHeight();
                     continue;
+                    }
                 }
 
+                else
                 afloat = EntitySheep.getDyeRgb((EnumDyeColor)iblockstate.getValue(BlockStainedGlassPane.COLOR));
             }
 

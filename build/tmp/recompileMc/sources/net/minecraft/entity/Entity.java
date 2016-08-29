@@ -2178,6 +2178,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         if (this.ridingEntity != null)
         {
             Entity entity = this.ridingEntity;
+            if (!net.minecraftforge.event.ForgeEventFactory.canMountEntity(this, entity, false)) return;
             this.ridingEntity = null;
             entity.removePassenger(this);
         }

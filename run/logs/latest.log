@@ -1,24 +1,73 @@
-[12:19:59] [Client thread/INFO]: Setting user: Player439
-[12:20:02] [Client thread/WARN]: Skipping bad option: lastServer:
-[12:20:02] [Client thread/INFO]: LWJGL Version: 2.9.4
-[12:20:04] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
-[12:20:08] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[12:20:08] [Thread-8/INFO]: Initializing LWJGL OpenAL
-[12:20:08] [Thread-8/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[12:20:08] [Thread-8/INFO]: OpenAL initialized.
-[12:20:08] [Sound Library Loader/INFO]: Sound engine started
-[12:20:10] [Client thread/INFO]: Created: 16x16 textures-atlas
-[12:20:11] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
-[12:20:12] [Client thread/INFO]: SoundSystem shutting down...
-[12:20:12] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
-[12:20:12] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[12:20:12] [Thread-10/INFO]: Initializing LWJGL OpenAL
-[12:20:12] [Thread-10/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[12:20:12] [Thread-10/INFO]: OpenAL initialized.
-[12:20:13] [Sound Library Loader/INFO]: Sound engine started
-[12:20:14] [Client thread/INFO]: Created: 1024x512 textures-atlas
-[12:20:14] [Client thread/WARN]: Skipping bad option: lastServer:
-[12:20:15] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[12:20:19] [Client thread/INFO]: Stopping!
-[12:20:19] [Client thread/INFO]: SoundSystem shutting down...
-[12:20:19] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[14:42:05] [Client thread/INFO]: Setting user: Player62
+[14:42:08] [Client thread/WARN]: Skipping bad option: lastServer:
+[14:42:08] [Client thread/INFO]: LWJGL Version: 2.9.4
+[14:42:10] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
+[14:42:12] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[14:42:12] [Thread-8/INFO]: Initializing LWJGL OpenAL
+[14:42:12] [Thread-8/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[14:42:12] [Thread-8/INFO]: OpenAL initialized.
+[14:42:12] [Sound Library Loader/INFO]: Sound engine started
+[14:42:14] [Client thread/INFO]: Created: 16x16 textures-atlas
+[14:42:15] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
+[14:42:16] [Client thread/INFO]: SoundSystem shutting down...
+[14:42:16] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[14:42:16] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[14:42:16] [Thread-10/INFO]: Initializing LWJGL OpenAL
+[14:42:16] [Thread-10/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[14:42:16] [Thread-10/INFO]: OpenAL initialized.
+[14:42:17] [Sound Library Loader/INFO]: Sound engine started
+[14:42:18] [Client thread/INFO]: Created: 1024x512 textures-atlas
+[14:42:19] [Client thread/WARN]: Skipping bad option: lastServer:
+[14:42:19] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[14:42:26] [Server thread/INFO]: Starting integrated minecraft server version 1.10.2
+[14:42:26] [Server thread/INFO]: Generating keypair
+[14:42:26] [Server thread/INFO]: Preparing start region for level 0
+[14:42:27] [Server thread/INFO]: Preparing spawn area: 11%
+[14:42:28] [Server thread/INFO]: Preparing spawn area: 25%
+[14:42:29] [Server thread/INFO]: Preparing spawn area: 41%
+[14:42:30] [Server thread/INFO]: Preparing spawn area: 60%
+[14:42:31] [Server thread/INFO]: Preparing spawn area: 78%
+[14:42:32] [Server thread/INFO]: Preparing spawn area: 98%
+[14:42:33] [Server thread/INFO]: Changing view distance to 12, from 10
+[14:42:33] [Server thread/INFO]: Player62[local:E:4de02af8] logged in with entity id 1315 at (-27.5, 68.0, 245.5)
+[14:42:33] [Server thread/INFO]: Player62 joined the game
+[14:42:34] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@678fab04[id=1b8221f7-5861-330e-bef0-ac96b785ff27,name=Player62,properties={},legacy=false]
+com.mojang.authlib.exceptions.AuthenticationException: The client has sent too many requests within a certain amount of time
+	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:65) ~[YggdrasilAuthenticationService.class:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:175) [YggdrasilMinecraftSessionService.class:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:59) [YggdrasilMinecraftSessionService$1.class:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:56) [YggdrasilMinecraftSessionService$1.class:?]
+	at com.google.common.cache.LocalCache$LoadingValueReference.loadFuture(LocalCache.java:3524) [guava-17.0.jar:?]
+	at com.google.common.cache.LocalCache$Segment.loadSync(LocalCache.java:2317) [guava-17.0.jar:?]
+	at com.google.common.cache.LocalCache$Segment.lockedGetOrLoad(LocalCache.java:2280) [guava-17.0.jar:?]
+	at com.google.common.cache.LocalCache$Segment.get(LocalCache.java:2195) [guava-17.0.jar:?]
+	at com.google.common.cache.LocalCache.get(LocalCache.java:3934) [guava-17.0.jar:?]
+	at com.google.common.cache.LocalCache.getOrLoad(LocalCache.java:3938) [guava-17.0.jar:?]
+	at com.google.common.cache.LocalCache$LocalLoadingCache.get(LocalCache.java:4821) [guava-17.0.jar:?]
+	at com.google.common.cache.LocalCache$LocalLoadingCache.getUnchecked(LocalCache.java:4827) [guava-17.0.jar:?]
+	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillProfileProperties(YggdrasilMinecraftSessionService.java:165) [YggdrasilMinecraftSessionService.class:?]
+	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:3060) [Minecraft.class:?]
+	at net.minecraft.client.resources.SkinManager$3.run(SkinManager.java:131) [SkinManager$3.class:?]
+	at java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source) [?:1.8.0_102]
+	at java.util.concurrent.FutureTask.run(Unknown Source) [?:1.8.0_102]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) [?:1.8.0_102]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) [?:1.8.0_102]
+	at java.lang.Thread.run(Unknown Source) [?:1.8.0_102]
+[14:42:36] [Server thread/WARN]: Can't keep up! Did the system time change, or is the server overloaded? Running 2630ms behind, skipping 52 tick(s)
+[14:42:44] [Server thread/INFO]: Player62 has just earned the achievement [Taking Inventory]
+[14:42:44] [Client thread/INFO]: [CHAT] Player62 has just earned the achievement [Taking Inventory]
+[14:43:02] [Server thread/INFO]: [Player62: Set own game mode to Survival Mode]
+[14:43:02] [Client thread/INFO]: [CHAT] Your game mode has been updated to Survival Mode
+[14:43:27] [Server thread/INFO]: Saving and pausing game...
+[14:43:27] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[14:43:27] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[14:43:27] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[14:43:28] [Server thread/INFO]: Stopping server
+[14:43:28] [Server thread/INFO]: Saving players
+[14:43:28] [Server thread/INFO]: Saving worlds
+[14:43:28] [Server thread/INFO]: Saving chunks for level 'New World'/Overworld
+[14:43:28] [Server thread/INFO]: Saving chunks for level 'New World'/Nether
+[14:43:28] [Server thread/INFO]: Saving chunks for level 'New World'/The End
+[14:43:29] [Client thread/INFO]: Stopping!
+[14:43:29] [Client thread/INFO]: SoundSystem shutting down...
+[14:43:29] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com

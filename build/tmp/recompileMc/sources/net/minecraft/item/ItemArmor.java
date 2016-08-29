@@ -267,7 +267,7 @@ public class ItemArmor extends Item
      */
     public boolean hasOverlay(ItemStack stack)
     {
-        return this.material == ItemArmor.ArmorMaterial.LEATHER || getColor(stack) != 0xFFFFFFFF;
+        return this.material == ItemArmor.ArmorMaterial.LEATHER || getColor(stack) != 0x00FFFFFF;
     }
 
     public static enum ArmorMaterial

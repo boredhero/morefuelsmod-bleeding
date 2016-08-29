@@ -15,9 +15,10 @@
 <fullyQualifiedTypeName name="net.minecraft.init.Items"/>
 <fullyQualifiedTypeName name="net.minecraft.block.material.Material"/>
 <fullyQualifiedTypeName name="net.minecraft.init.Blocks"/>
-<fullyQualifiedTypeName name="net.minecraft.item.Item"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.block.ModBlocks"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.ModWorldGen"/>
-<fullyQualifiedTypeName name="com.bored.morefuelsmod.item.ModItems"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.init.ModWorldGen"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.item.ModItems"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
+<fullyQualifiedTypeName name="net.minecraft.item.Item"/>
 </qualifiedTypeNameHistroy>

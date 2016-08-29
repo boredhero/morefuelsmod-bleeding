@@ -19,6 +19,8 @@ public class BlockBase extends Block {
 		setUnlocalizedName(name);
 		setRegistryName(name);
 		setCreativeTab(Main.creativeTab);
+		setHardness(5f);
+		setResistance(5f);
 	}
 
 	public void registerItemModel(ItemBlock itemBlock) {

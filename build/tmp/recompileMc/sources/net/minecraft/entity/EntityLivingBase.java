@@ -1728,7 +1728,6 @@ public abstract class EntityLivingBase extends Entity
      */
     public void dismountEntity(Entity entityIn)
     {
-        if (!net.minecraftforge.event.ForgeEventFactory.canMountEntity(this, entityIn, false)) return;
         if (!(entityIn instanceof EntityBoat) && !(entityIn instanceof EntityHorse))
         {
             double d1 = entityIn.posX;

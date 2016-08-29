@@ -1033,17 +1033,28 @@ public class Item extends net.minecraftforge.fml.common.registry.IForgeRegistryE
     }
 
     /**
-     * Queries the harvest level of this item stack for the specifred tool class,
-     * Returns -1 if this tool is not of the specified type
-     *
-     * @param stack This item stack instance
-     * @param toolClass Tool Class
-     * @return Harvest level, or -1 if not the specified tool type.
+     * Deprecated, Use the position aware variant instead
      */
+    @Deprecated
     public int getHarvestLevel(ItemStack stack, String toolClass)
     {
         Integer ret = toolClasses.get(toolClass);
         return ret == null ? -1 : ret;
+    }
+
+    /**
+     * Queries the harvest level of this item stack for the specified tool class,
+     * Returns -1 if this tool is not of the specified type
+     *
+     * @param stack This item stack instance
+     * @param toolClass Tool Class
+     * @param player The player trying to harvest the given blockstate
+     * @param blockState The block to harvest
+     * @return Harvest level, or -1 if not the specified tool type.
+     */
+    public int getHarvestLevel(ItemStack stack, String toolClass, @Nullable EntityPlayer player, @Nullable IBlockState blockState)
+    {
+        return getHarvestLevel(stack, toolClass);
     }
 
     /**

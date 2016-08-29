@@ -2281,6 +2281,19 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
         return getSoundType();
     }
 
+    /**
+     * @param state The state
+     * @param world The world
+     * @param pos The position of this state
+     * @param beaconPos The position of the beacon
+     * @return A float RGB [0.0, 1.0] array to be averaged with a beacon's existing beam color, or null to do nothing to the beam
+     */
+    @Nullable
+    public float[] getBeaconColorMultiplier(IBlockState state, World world, BlockPos pos, BlockPos beaconPos)
+    {
+        return null;
+    }
+
     /* ========================================= FORGE END ======================================*/
 
     public static void registerBlocks()
