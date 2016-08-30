@@ -26,8 +26,6 @@ public class ModCrafting {
 		GameRegistry.addRecipe(new ItemStack(ModBlocks.concentratedPelletBlock),"###","###","###",'#',ModItems.concentratedPelletsFuel);
 		//Concentrated Pellet Block to Concentrated Pellet Fuel
 		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.concentratedPelletsFuel, 9),new Object[]{ModBlocks.concentratedPelletBlock});
-		//Coal and Bitumen to Bituminous Coal
-		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.bituminousCoal),new Object[]{Items.field_151044_h,ModItems.bitumen});
 		//Gunpowder, Coal Dust, and Slime Ball to Can of Slimoline
 		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.canSlimoline),new Object[]{Items.field_151016_H,ModItems.dustCoal,Items.field_151123_aH});
 		//Coal and Stone Block to Coal Dust

@@ -20,7 +20,6 @@ public class ModItems {
 		bituminousCoal = register(new ItemBase("bituminousCoal"));
 		canSlimoline = register(new ItemBase("canSlimoline"));
 		dustCoal = register(new ItemBase("dustCoal"));
-		bitumen = register(new ItemBase("bitumen"));
 	}
 
 	private static <T extends Item> T register(T item) {

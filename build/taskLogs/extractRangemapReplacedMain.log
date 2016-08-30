@@ -4,15 +4,13 @@ startProcessing "com\bored\morefuelsmod\Fuels.java" md5: fa94c01e838fbaa46501dfb
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\Fuels.java"
 
-startProcessing "com\bored\morefuelsmod\Main.java" md5: 38c48dc0323dc0dedd164320a87420d8
+startProcessing "com\bored\morefuelsmod\Main.java" md5: 0c2c3b0e569226d410d62f9bf45ad30a
 endProcessing "com\bored\morefuelsmod\Main.java"
 
-startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: 69c57f1fb60e7f310c8770abb7f7ed29
-Cache Hit!
+startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: 24168db80506fcc77ef62175f4a4f35c
 endProcessing "com\bored\morefuelsmod\ModCrafting.java"
 
-startProcessing "com\bored\morefuelsmod\ModSmelting.java" md5: b3f83b3d58b43b509ddb716df723f105
-Cache Hit!
+startProcessing "com\bored\morefuelsmod\ModSmelting.java" md5: 9dd2d6608c5582bf5304914c0d439038
 endProcessing "com\bored\morefuelsmod\ModSmelting.java"
 
 startProcessing "com\bored\morefuelsmod\ModWorldGen.java" md5: 01192c61affa67f72206b72429e4e673
@@ -24,9 +22,11 @@ Cache Hit!
 endProcessing "com\bored\morefuelsmod\RFtL.java"
 
 startProcessing "com\bored\morefuelsmod\block\BlockBase.java" md5: d5c477f688efc5bcaafa83d718795ddd
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockBase.java"
 
 startProcessing "com\bored\morefuelsmod\block\BlockOre.java" md5: 56cf6c71b9edbdf87e69c4ceafb66826
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockOre.java"
 
 startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: c82363bc0d0af9c8c748cfb3ef565c80
@@ -41,8 +41,7 @@ startProcessing "com\bored\morefuelsmod\item\ItemBase.java" md5: 8c973959372748d
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\item\ItemBase.java"
 
-startProcessing "com\bored\morefuelsmod\item\ModItems.java" md5: 5767dfa3848cd4f7008f87ec4f27a51f
-Cache Hit!
+startProcessing "com\bored\morefuelsmod\item\ModItems.java" md5: 2cb95500be32092c3aff189da31b5d28
 endProcessing "com\bored\morefuelsmod\item\ModItems.java"
 
 startProcessing "com\bored\morefuelsmod\proxy\ClientProxy.java" md5: 2a11cc59e03bafcffa2c0d830e3328b6
