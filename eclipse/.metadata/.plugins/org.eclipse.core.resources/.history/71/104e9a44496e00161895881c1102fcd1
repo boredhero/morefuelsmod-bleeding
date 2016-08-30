@@ -19,14 +19,14 @@ public class Main {
 
 	public static final String modid = "morefuelsmod-bleeding";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.5.RC.0";
+	public static final String version = "1.5.beta.1";
 
 	@Mod.Instance(modid)
 	public static Main instance;
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		System.out.println(name + " is making smelting better for you!");
+		System.out.println(name + " is loading!");
 		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
 		config.load();
 		boolean enableRFtLrecipe = config.get(Configuration.CATEGORY_GENERAL, "enableRFtLrecipe", true).getBoolean(true);
