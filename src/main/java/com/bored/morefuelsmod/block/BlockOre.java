@@ -5,6 +5,7 @@ import java.util.Random;
 import com.bored.morefuelsmod.item.ModItems;
 
 import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
@@ -22,8 +23,9 @@ public class BlockOre extends BlockBase {
 		return this;
 	}
 	
-//	public Item getItemDropped(int par1, Random random, int par2){
-//		return ModItems.bituminousCoal;
-//	}
+	public Item getItemDropped(IBlockState state, Random rand, int fortune){
+		return ModItems.bituminousCoal;
+		}
+
 
 }
