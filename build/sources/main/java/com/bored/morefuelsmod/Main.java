@@ -19,7 +19,7 @@ public class Main {
 
 	public static final String modid = "morefuelsmod-bleeding";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.5.alpha.4";
+	public static final String version = "1.5.beta.1";
 
 	@Mod.Instance(modid)
 	public static Main instance;

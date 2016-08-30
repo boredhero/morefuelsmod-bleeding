@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModSmelting {
 	public static void init(){
-		GameRegistry.addSmelting(Items.FLINT, new ItemStack(ModItems.bitumen), 0.5F);
 		GameRegistry.addSmelting(ModItems.bituminousCoal, new ItemStack(ModItems.coke), 0.5F);
 	}
 }

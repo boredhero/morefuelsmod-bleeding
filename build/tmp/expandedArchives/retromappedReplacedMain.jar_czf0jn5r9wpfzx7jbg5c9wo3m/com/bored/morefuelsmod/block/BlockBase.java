@@ -19,6 +19,8 @@ public class BlockBase extends Block {
 		func_149663_c(name);
 		setRegistryName(name);
 		func_149647_a(Main.creativeTab);
+		func_149711_c(5f);
+		func_149752_b(5f);
 	}
 
 	public void registerItemModel(ItemBlock itemBlock) {
