@@ -1826,9 +1826,9 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
         IBlockState plant = plantable.getPlant(world, pos.offset(direction));
         net.minecraftforge.common.EnumPlantType plantType = plantable.getPlantType(world, pos.offset(direction));
 
-        if (plant.getBlock() == net.minecraft.init.Blocks.CACTUS && this == net.minecraft.init.Blocks.CACTUS)
+        if (plant.getBlock() == net.minecraft.init.Blocks.CACTUS)
         {
-            return true;
+            return this == net.minecraft.init.Blocks.CACTUS || this == net.minecraft.init.Blocks.SAND;
         }
 
         if (plant.getBlock() == net.minecraft.init.Blocks.REEDS && this == net.minecraft.init.Blocks.REEDS)
@@ -1843,7 +1843,7 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
 
         switch (plantType)
         {
-            case Desert: return this == net.minecraft.init.Blocks.SAND || this == net.minecraft.init.Blocks.HARDENED_CLAY || this == net.minecraft.init.Blocks.STAINED_HARDENED_CLAY || this == net.minecraft.init.Blocks.DIRT;
+            case Desert: return this == net.minecraft.init.Blocks.SAND || this == net.minecraft.init.Blocks.HARDENED_CLAY || this == net.minecraft.init.Blocks.STAINED_HARDENED_CLAY;
             case Nether: return this == net.minecraft.init.Blocks.SOUL_SAND;
             case Crop:   return this == net.minecraft.init.Blocks.FARMLAND;
             case Cave:   return state.isSideSolid(world, pos, EnumFacing.UP);

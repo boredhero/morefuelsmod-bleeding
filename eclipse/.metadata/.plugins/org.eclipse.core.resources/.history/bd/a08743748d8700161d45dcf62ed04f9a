@@ -1,0 +1,18 @@
+##All French Translation Done With Google Translate! If there are errors, email me at treeclan12@gmail.com to correct them or commit to github repo
+
+#Items
+item.pelletsFuel.name=Pellets de Carburant
+item.concentratedPelletsFuel.name=Pellets de Carburant Concentres
+item.coke.name=Coke (Combustible)
+item.bituminousCoal.name=Charbon Bitumineux
+item.canSlimoline.name=Bidon d'Slimoline
+item.dustCoal.name=Poussiere de Charbon
+
+#Blocks
+tile.pelletBlock.name=Block of Pellet Fuel
+tile.concentratedPelletBlock.name=Block of Concentrated Pellet Fuel
+tile.cokeBlock.name=Block of Coke
+tile.bituminousCoalOre.name=Bituminous Coal Ore
+
+#Tabs
+itemGroup.morefuelsmod-bleeding=More Fuels Mod
