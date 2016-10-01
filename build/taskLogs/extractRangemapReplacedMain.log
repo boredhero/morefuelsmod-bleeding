@@ -4,7 +4,7 @@ startProcessing "com\bored\morefuelsmod\Fuels.java" md5: fa94c01e838fbaa46501dfb
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\Fuels.java"
 
-startProcessing "com\bored\morefuelsmod\Main.java" md5: 5c36aba4ccd1eea4ec0f24fb9dc66cf1
+startProcessing "com\bored\morefuelsmod\Main.java" md5: acfca8f6c93c61addd4fe305e93f0b85
 endProcessing "com\bored\morefuelsmod\Main.java"
 
 startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: 24168db80506fcc77ef62175f4a4f35c
@@ -32,6 +32,7 @@ Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockOre.java"
 
 startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: 515133cef81697746ff929053c6de486
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\ModBlocks.java"
 
 startProcessing "com\bored\morefuelsmod\client\MoreFuelsTab.java" md5: 8d4f1282f8320db0c933a6d3b92a7e67

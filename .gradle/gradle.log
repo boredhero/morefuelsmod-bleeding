@@ -9,23 +9,41 @@ This mapping 'snapshot_20160518' was designed for MC 1.9.4! Use at your own peri
          by: Searge, ProfMobius, Fesh0r,         
          R4wk, ZeuX, IngisKahn, bspkrs           
 #################################################
-Version string '1.5.1.RC.0' does not match SemVer specification 
+Version string '1.5.2.RC.0' does not match SemVer specification 
 You should try SemVer : http://semver.org/
 :deobfCompileDummyTask
 :deobfProvidedDummyTask
-:eclipseClasspath
-:eclipseJdt
-:eclipseProject
+:sourceApiJava UP-TO-DATE
+:compileApiJava UP-TO-DATE
+:processApiResources UP-TO-DATE
+:apiClasses UP-TO-DATE
+:sourceMainJava
+:compileJavawarning: [options] bootstrap class path not set in conjunction with -source 1.6
+1 warning
+
+:processResources
+:classes
+:jar
+:sourceTestJava UP-TO-DATE
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:extractMcpData SKIPPED
+:extractMcpMappings
 :getVersionJson
-:extractNatives SKIPPED
 :extractUserdev UP-TO-DATE
-:getAssetIndex UP-TO-DATE
-:getAssets
-:makeStart
-:makeEclipseCleanRunClient UP-TO-DATE
-:makeEclipseCleanRunServer UP-TO-DATE
-:eclipse
+:genSrgs SKIPPED
+:reobfJar
+:extractRangemapReplacedMain
+C:\Users\Noah\Desktop\Coding\MoreFuelsMod\morefuelsmod-bleeding\build\sources\main\java
+:retromapReplacedMain
+remapping source...
+:sourceJar
+:assemble
+:check UP-TO-DATE
+:build
 
 BUILD SUCCESSFUL
 
-Total time: 10.586 secs
+Total time: 15.279 secs
