@@ -1,42 +1,29 @@
-[00:46:57] [Client thread/INFO]: Setting user: Player115
-[00:46:59] [Client thread/WARN]: Skipping bad option: lastServer:
-[00:46:59] [Client thread/INFO]: LWJGL Version: 2.9.4
-[00:47:02] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
-[00:47:03] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[00:47:03] [Thread-8/INFO]: Initializing LWJGL OpenAL
-[00:47:03] [Thread-8/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[00:47:03] [Thread-8/INFO]: OpenAL initialized.
-[00:47:04] [Sound Library Loader/INFO]: Sound engine started
-[00:47:05] [Client thread/INFO]: Created: 16x16 textures-atlas
-[00:47:06] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
-[00:47:07] [Client thread/INFO]: SoundSystem shutting down...
-[00:47:07] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
-[00:47:07] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[00:47:08] [Thread-10/INFO]: Initializing LWJGL OpenAL
-[00:47:08] [Thread-10/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[00:47:08] [Thread-10/INFO]: OpenAL initialized.
-[00:47:08] [Sound Library Loader/INFO]: Sound engine started
-[00:47:09] [Client thread/INFO]: Created: 1024x512 textures-atlas
-[00:47:10] [Client thread/WARN]: Skipping bad option: lastServer:
-[00:47:10] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[00:47:59] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
-[00:48:00] [Client thread/INFO]: SoundSystem shutting down...
-[00:48:00] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
-[00:48:00] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[00:48:00] [Thread-12/INFO]: Initializing LWJGL OpenAL
-[00:48:00] [Thread-12/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[00:48:00] [Thread-12/INFO]: OpenAL initialized.
-[00:48:01] [Sound Library Loader/INFO]: Sound engine started
-[00:48:02] [Client thread/INFO]: Created: 1024x512 textures-atlas
-[00:48:29] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
-[00:48:30] [Client thread/INFO]: SoundSystem shutting down...
-[00:48:30] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
-[00:48:30] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[00:48:30] [Thread-14/INFO]: Initializing LWJGL OpenAL
-[00:48:30] [Thread-14/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[00:48:30] [Thread-14/INFO]: OpenAL initialized.
-[00:48:31] [Sound Library Loader/INFO]: Sound engine started
-[00:48:32] [Client thread/INFO]: Created: 1024x512 textures-atlas
-[00:48:41] [Client thread/INFO]: Stopping!
-[00:48:41] [Client thread/INFO]: SoundSystem shutting down...
-[00:48:41] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[21:58:35] [Client thread/INFO]: Setting user: Player265
+[21:58:38] [Client thread/WARN]: Skipping bad option: lastServer:
+[21:58:38] [Client thread/INFO]: LWJGL Version: 2.9.4
+[21:58:39] [Client thread/INFO]: [STDOUT]: ---- Minecraft Crash Report ----
+// Sorry :(
+
+Time: 12/27/16 9:58 PM
+Description: Loading screen debug info
+
+This is just a prompt for computer specs to be printed. THIS IS NOT A ERROR
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- System Details --
+Details:
+	Minecraft Version: 1.11.2
+	Operating System: Windows 10 (amd64) version 10.0
+	Java Version: 1.8.0_112, Oracle Corporation
+	Java VM Version: Java HotSpot(TM) 64-Bit Server VM (mixed mode), Oracle Corporation
+	Memory: 787168048 bytes (750 MB) / 1037959168 bytes (989 MB) up to 1037959168 bytes (989 MB)
+	JVM Flags: 3 total; -Xincgc -Xmx1024M -Xms1024M
+	IntCache: cache: 0, tcache: 0, allocated: 0, tallocated: 0
+	FML: 
+	Loaded coremods (and transformers): 
+	GL info: ' Vendor: 'ATI Technologies Inc.' Version: '4.5.13464 Compatibility Profile Context 21.19.384.0' Renderer: 'AMD Radeon (TM) R9 Fury Series'
+[21:58:40] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
+[21:58:40] [Client thread/INFO]: [STDOUT]: More Fuels Mod is making smelting better for you!
