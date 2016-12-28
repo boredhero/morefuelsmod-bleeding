@@ -33,6 +33,7 @@ public class Main {
 		if(enableRFtLrecipe)
 			RFtL.init();
 		boolean enableCustomFuels = config.get(Configuration.CATEGORY_GENERAL, "enableCustomFuels", true).getBoolean(true);
+		if(enableCustomFuels)
 			GameRegistry.registerFuelHandler(new Fuels());
 		config.save();
 		ModItems.init();

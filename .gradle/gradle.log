@@ -21,7 +21,7 @@ You should try SemVer : http://semver.org/
 :compileJavawarning: [options] bootstrap class path not set in conjunction with -source 1.6
 1 warning
 
-:processResources
+:processResources UP-TO-DATE
 :classes
 :jar
 :sourceTestJava UP-TO-DATE
@@ -46,4 +46,4 @@ remapping source...
 
 BUILD SUCCESSFUL
 
-Total time: 8.765 secs
+Total time: 8.086 secs
