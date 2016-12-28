@@ -5,21 +5,21 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class ModItems {
 	
-	public static ItemBase pelletsfuel;
-	public static ItemBase concentratedpelletsfuel;
+	public static ItemBase pelletsFuel;
+	public static ItemBase concentratedPelletsFuel;
 	public static ItemBase coke;
-	public static ItemBase bituminouscoal;
-	public static ItemBase canslimoline;
-	public static ItemBase dustcoal;
+	public static ItemBase bituminousCoal;
+	public static ItemBase canSlimoline;
+	public static ItemBase dustCoal;
 	public static ItemBase bitumen;
 
 	public static void init() {
-		pelletsfuel = register(new ItemBase("pelletsfuel"));
-		concentratedpelletsfuel = register(new ItemBase("concentratedpelletsfuel"));
+		pelletsFuel = register(new ItemBase("pelletsFuel"));
+		concentratedPelletsFuel = register(new ItemBase("concentratedPelletsFuel"));
 		coke = register(new ItemBase("coke"));
-		bituminouscoal = register(new ItemBase("bituminouscoal"));
-		canslimoline = register(new ItemBase("canslimoline"));
-		dustcoal = register(new ItemBase("dustcoal"));
+		bituminousCoal = register(new ItemBase("bituminousCoal"));
+		canSlimoline = register(new ItemBase("canSlimoline"));
+		dustCoal = register(new ItemBase("dustCoal"));
 	}
 
 	private static <T extends Item> T register(T item) {

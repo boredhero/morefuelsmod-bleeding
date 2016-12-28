@@ -1,6 +1,6 @@
 Symbol range map extraction starting
 Processing 14 files
-startProcessing "com\bored\morefuelsmod\Fuels.java" md5: 3126c2b7132aeb11aabab81071e628ac
+startProcessing "com\bored\morefuelsmod\Fuels.java" md5: fa94c01e838fbaa46501dfbed4373891
 @|com\bored\morefuelsmod\Fuels.java|8|30|com.bored.morefuelsmod|package|com.bored.morefuelsmod|(file)
 Class Start: com.bored.morefuelsmod.Fuels
    @|com\bored\morefuelsmod\Fuels.java|327|332|Fuels|class|com.bored.morefuelsmod.Fuels
@@ -429,23 +429,23 @@ Class Start: com.bored.morefuelsmod.Fuels
       @|com\bored\morefuelsmod\Fuels.java|8678|8682|fuel|param|com.bored.morefuelsmod.Fuels|getBurnTime|(Lnet/minecraft/item/ItemStack;)I|fuel|0
       @|com\bored\morefuelsmod\Fuels.java|8683|8690|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|8696|8704|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\Fuels.java|8705|8716|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\Fuels.java|8705|8716|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\Fuels.java|8750|8754|fuel|param|com.bored.morefuelsmod.Fuels|getBurnTime|(Lnet/minecraft/item/ItemStack;)I|fuel|0
       @|com\bored\morefuelsmod\Fuels.java|8755|8762|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|8768|8772|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\Fuels.java|8773|8789|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|8790|8799|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\Fuels.java|8800|8811|pelletblock|field|com.bored.morefuelsmod.block.ModBlocks|pelletblock
+      @|com\bored\morefuelsmod\Fuels.java|8800|8811|pelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|pelletBlock
       @|com\bored\morefuelsmod\Fuels.java|8883|8887|fuel|param|com.bored.morefuelsmod.Fuels|getBurnTime|(Lnet/minecraft/item/ItemStack;)I|fuel|0
       @|com\bored\morefuelsmod\Fuels.java|8888|8895|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|8901|8909|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\Fuels.java|8910|8933|concentratedpelletsfuel|field|com.bored.morefuelsmod.item.ModItems|concentratedpelletsfuel
+      @|com\bored\morefuelsmod\Fuels.java|8910|8933|concentratedPelletsFuel|field|com.bored.morefuelsmod.item.ModItems|concentratedPelletsFuel
       @|com\bored\morefuelsmod\Fuels.java|9006|9010|fuel|param|com.bored.morefuelsmod.Fuels|getBurnTime|(Lnet/minecraft/item/ItemStack;)I|fuel|0
       @|com\bored\morefuelsmod\Fuels.java|9011|9018|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|9024|9028|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\Fuels.java|9029|9045|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|9046|9055|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\Fuels.java|9056|9079|concentratedpelletblock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedpelletblock
+      @|com\bored\morefuelsmod\Fuels.java|9056|9079|concentratedPelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedPelletBlock
       @|com\bored\morefuelsmod\Fuels.java|9165|9169|fuel|param|com.bored.morefuelsmod.Fuels|getBurnTime|(Lnet/minecraft/item/ItemStack;)I|fuel|0
       @|com\bored\morefuelsmod\Fuels.java|9170|9177|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|9183|9191|ModItems|class|com.bored.morefuelsmod.item.ModItems
@@ -455,15 +455,15 @@ Class Start: com.bored.morefuelsmod.Fuels
       @|com\bored\morefuelsmod\Fuels.java|9276|9280|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\Fuels.java|9281|9297|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|9298|9307|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\Fuels.java|9308|9317|cokeblock|field|com.bored.morefuelsmod.block.ModBlocks|cokeblock
+      @|com\bored\morefuelsmod\Fuels.java|9308|9317|cokeBlock|field|com.bored.morefuelsmod.block.ModBlocks|cokeBlock
       @|com\bored\morefuelsmod\Fuels.java|9354|9358|fuel|param|com.bored.morefuelsmod.Fuels|getBurnTime|(Lnet/minecraft/item/ItemStack;)I|fuel|0
       @|com\bored\morefuelsmod\Fuels.java|9359|9366|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|9372|9380|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\Fuels.java|9381|9395|bituminouscoal|field|com.bored.morefuelsmod.item.ModItems|bituminouscoal
+      @|com\bored\morefuelsmod\Fuels.java|9381|9395|bituminousCoal|field|com.bored.morefuelsmod.item.ModItems|bituminousCoal
       @|com\bored\morefuelsmod\Fuels.java|9510|9514|fuel|param|com.bored.morefuelsmod.Fuels|getBurnTime|(Lnet/minecraft/item/ItemStack;)I|fuel|0
       @|com\bored\morefuelsmod\Fuels.java|9515|9522|getItem|method|net.minecraft.item.ItemStack|getItem|()Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\Fuels.java|9528|9536|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\Fuels.java|9537|9549|canslimoline|field|com.bored.morefuelsmod.item.ModItems|canslimoline
+      @|com\bored\morefuelsmod\Fuels.java|9537|9549|canSlimoline|field|com.bored.morefuelsmod.item.ModItems|canSlimoline
    Method End: getBurnTime(Lnet/minecraft/item/ItemStack;)I
 Class End  : com.bored.morefuelsmod.Fuels
 endProcessing "com\bored\morefuelsmod\Fuels.java"
@@ -563,7 +563,7 @@ Class Start: com.bored.morefuelsmod.Main
 Class End  : com.bored.morefuelsmod.Main
 endProcessing "com\bored\morefuelsmod\Main.java"
 
-startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: f203f4823ef3024c92b1767490f1b193
+startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: 24168db80506fcc77ef62175f4a4f35c
 @|com\bored\morefuelsmod\ModCrafting.java|8|30|com.bored.morefuelsmod|package|com.bored.morefuelsmod|(file)
 Class Start: com.bored.morefuelsmod.ModCrafting
    @|com\bored\morefuelsmod\ModCrafting.java|336|347|ModCrafting|class|com.bored.morefuelsmod.ModCrafting
@@ -573,64 +573,64 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|464|473|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|478|487|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|488|497|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\ModCrafting.java|498|509|pelletblock|field|com.bored.morefuelsmod.block.ModBlocks|pelletblock
+      @|com\bored\morefuelsmod\ModCrafting.java|498|509|pelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|pelletBlock
       @|com\bored\morefuelsmod\ModCrafting.java|533|541|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|542|553|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|542|553|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|590|602|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|603|621|addShapelessRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addShapelessRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|626|635|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|636|644|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|645|656|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|645|656|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|665|671|Object|class|java.lang.Object
       @|com\bored\morefuelsmod\ModCrafting.java|674|683|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\ModCrafting.java|684|695|pelletblock|field|com.bored.morefuelsmod.block.ModBlocks|pelletblock
+      @|com\bored\morefuelsmod\ModCrafting.java|684|695|pelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|pelletBlock
       @|com\bored\morefuelsmod\ModCrafting.java|746|758|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|759|768|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|773|782|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|783|791|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|792|815|concentratedpelletsfuel|field|com.bored.morefuelsmod.item.ModItems|concentratedpelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|792|815|concentratedPelletsFuel|field|com.bored.morefuelsmod.item.ModItems|concentratedPelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|831|840|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\ModCrafting.java|841|852|pelletblock|field|com.bored.morefuelsmod.block.ModBlocks|pelletblock
+      @|com\bored\morefuelsmod\ModCrafting.java|841|852|pelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|pelletBlock
       @|com\bored\morefuelsmod\ModCrafting.java|902|914|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|915|933|addShapelessRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addShapelessRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|938|947|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|948|957|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\ModCrafting.java|958|969|pelletblock|field|com.bored.morefuelsmod.block.ModBlocks|pelletblock
+      @|com\bored\morefuelsmod\ModCrafting.java|958|969|pelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|pelletBlock
       @|com\bored\morefuelsmod\ModCrafting.java|978|984|Object|class|java.lang.Object
       @|com\bored\morefuelsmod\ModCrafting.java|987|995|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|996|1019|concentratedpelletsfuel|field|com.bored.morefuelsmod.item.ModItems|concentratedpelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|996|1019|concentratedPelletsFuel|field|com.bored.morefuelsmod.item.ModItems|concentratedPelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|1083|1095|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|1096|1105|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|1110|1119|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|1120|1129|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\ModCrafting.java|1130|1153|concentratedpelletblock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedpelletblock
+      @|com\bored\morefuelsmod\ModCrafting.java|1130|1153|concentratedPelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedPelletBlock
       @|com\bored\morefuelsmod\ModCrafting.java|1177|1185|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|1186|1209|concentratedpelletsfuel|field|com.bored.morefuelsmod.item.ModItems|concentratedpelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|1186|1209|concentratedPelletsFuel|field|com.bored.morefuelsmod.item.ModItems|concentratedPelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|1272|1284|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|1285|1303|addShapelessRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addShapelessRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|1308|1317|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|1318|1326|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|1327|1350|concentratedpelletsfuel|field|com.bored.morefuelsmod.item.ModItems|concentratedpelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|1327|1350|concentratedPelletsFuel|field|com.bored.morefuelsmod.item.ModItems|concentratedPelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|1359|1365|Object|class|java.lang.Object
       @|com\bored\morefuelsmod\ModCrafting.java|1368|1377|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\ModCrafting.java|1378|1401|concentratedpelletblock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedpelletblock
+      @|com\bored\morefuelsmod\ModCrafting.java|1378|1401|concentratedPelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedPelletBlock
       @|com\bored\morefuelsmod\ModCrafting.java|1468|1480|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|1481|1499|addShapelessRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addShapelessRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|1504|1513|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|1514|1522|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|1523|1535|canslimoline|field|com.bored.morefuelsmod.item.ModItems|canslimoline
+      @|com\bored\morefuelsmod\ModCrafting.java|1523|1535|canSlimoline|field|com.bored.morefuelsmod.item.ModItems|canSlimoline
       @|com\bored\morefuelsmod\ModCrafting.java|1541|1547|Object|class|java.lang.Object
       @|com\bored\morefuelsmod\ModCrafting.java|1550|1555|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|1556|1565|GUNPOWDER|field|net.minecraft.init.Items|GUNPOWDER
       @|com\bored\morefuelsmod\ModCrafting.java|1566|1574|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|1575|1583|dustcoal|field|com.bored.morefuelsmod.item.ModItems|dustcoal
+      @|com\bored\morefuelsmod\ModCrafting.java|1575|1583|dustCoal|field|com.bored.morefuelsmod.item.ModItems|dustCoal
       @|com\bored\morefuelsmod\ModCrafting.java|1584|1589|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|1590|1600|SLIME_BALL|field|net.minecraft.init.Items|SLIME_BALL
       @|com\bored\morefuelsmod\ModCrafting.java|1647|1659|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|1660|1678|addShapelessRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addShapelessRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|1683|1692|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|1693|1701|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|1702|1710|dustcoal|field|com.bored.morefuelsmod.item.ModItems|dustcoal
+      @|com\bored\morefuelsmod\ModCrafting.java|1702|1710|dustCoal|field|com.bored.morefuelsmod.item.ModItems|dustCoal
       @|com\bored\morefuelsmod\ModCrafting.java|1716|1722|Object|class|java.lang.Object
       @|com\bored\morefuelsmod\ModCrafting.java|1725|1730|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|1731|1735|COAL|field|net.minecraft.init.Items|COAL
@@ -640,7 +640,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|1811|1820|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|1825|1834|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|1835|1843|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|1844|1855|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|1844|1855|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|1882|1886|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|1887|1903|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|1904|1910|Blocks|class|net.minecraft.init.Blocks
@@ -649,7 +649,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|1938|1947|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|1952|1961|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|1962|1970|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|1971|1982|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|1971|1982|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2009|2013|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|2014|2030|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|2031|2037|Blocks|class|net.minecraft.init.Blocks
@@ -658,7 +658,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|2063|2072|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|2077|2086|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|2087|2095|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|2096|2107|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|2096|2107|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2134|2138|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|2139|2155|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|2156|2162|Blocks|class|net.minecraft.init.Blocks
@@ -667,7 +667,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|2185|2194|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|2199|2208|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|2209|2217|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|2218|2229|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|2218|2229|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2253|2257|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|2258|2274|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|2275|2281|Blocks|class|net.minecraft.init.Blocks
@@ -676,7 +676,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|2306|2315|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|2320|2329|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|2330|2338|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|2339|2350|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|2339|2350|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2377|2381|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|2382|2398|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|2399|2405|Blocks|class|net.minecraft.init.Blocks
@@ -685,7 +685,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|2437|2446|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|2451|2460|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|2461|2469|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|2470|2481|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|2470|2481|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2505|2509|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|2510|2526|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|2527|2533|Blocks|class|net.minecraft.init.Blocks
@@ -694,7 +694,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|2563|2572|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|2577|2586|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|2587|2595|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|2596|2607|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|2596|2607|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2631|2635|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|2636|2652|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|2653|2659|Blocks|class|net.minecraft.init.Blocks
@@ -703,35 +703,35 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|2692|2701|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|2706|2715|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|2716|2724|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|2725|2736|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|2725|2736|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2763|2768|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|2769|2779|ITEM_FRAME|field|net.minecraft.init.Items|ITEM_FRAME
       @|com\bored\morefuelsmod\ModCrafting.java|2784|2796|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|2797|2806|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|2811|2820|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|2821|2829|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|2830|2841|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|2830|2841|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2869|2874|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|2875|2878|BED|field|net.minecraft.init.Items|BED
       @|com\bored\morefuelsmod\ModCrafting.java|2883|2895|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|2896|2905|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|2910|2919|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|2920|2928|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|2929|2940|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|2929|2940|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|2968|2973|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|2974|2982|PAINTING|field|net.minecraft.init.Items|PAINTING
       @|com\bored\morefuelsmod\ModCrafting.java|2987|2999|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|3000|3009|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|3014|3023|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|3024|3032|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|3033|3044|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|3033|3044|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|3071|3076|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|3077|3081|SIGN|field|net.minecraft.init.Items|SIGN
       @|com\bored\morefuelsmod\ModCrafting.java|3086|3098|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|3099|3108|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|3113|3122|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|3123|3131|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|3132|3143|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|3132|3143|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|3170|3174|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|3175|3191|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|3192|3198|Blocks|class|net.minecraft.init.Blocks
@@ -740,7 +740,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|3224|3233|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|3238|3247|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|3248|3256|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|3257|3268|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|3257|3268|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|3292|3296|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|3297|3313|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|3314|3320|Blocks|class|net.minecraft.init.Blocks
@@ -749,7 +749,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|3344|3353|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|3358|3367|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|3368|3376|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|3377|3388|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|3377|3388|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|3412|3416|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|3417|3433|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|3434|3440|Blocks|class|net.minecraft.init.Blocks
@@ -758,7 +758,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|3474|3483|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|3488|3497|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|3498|3506|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|3507|3518|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|3507|3518|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|3542|3546|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|3547|3563|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|3564|3570|Blocks|class|net.minecraft.init.Blocks
@@ -767,7 +767,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|3603|3612|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|3617|3626|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|3627|3635|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|3636|3647|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|3636|3647|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|3671|3675|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|3676|3692|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|3693|3699|Blocks|class|net.minecraft.init.Blocks
@@ -776,7 +776,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|3730|3739|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|3744|3753|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|3754|3762|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|3763|3774|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|3763|3774|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|3802|3806|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|3807|3823|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|3824|3830|Blocks|class|net.minecraft.init.Blocks
@@ -785,7 +785,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|3856|3865|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|3870|3879|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|3880|3888|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|3889|3900|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|3889|3900|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|3927|3931|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|3932|3948|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|3949|3955|Blocks|class|net.minecraft.init.Blocks
@@ -794,7 +794,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|3988|3997|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|4002|4011|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|4012|4020|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|4021|4032|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|4021|4032|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|4056|4060|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|4061|4077|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|4078|4084|Blocks|class|net.minecraft.init.Blocks
@@ -803,7 +803,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|4108|4117|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|4122|4131|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|4132|4140|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|4141|4152|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|4141|4152|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|4176|4180|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|4181|4197|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|4198|4204|Blocks|class|net.minecraft.init.Blocks
@@ -812,7 +812,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|4233|4242|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|4247|4256|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|4257|4265|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|4266|4277|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|4266|4277|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|4304|4308|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|4309|4325|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|4326|4332|Blocks|class|net.minecraft.init.Blocks
@@ -821,7 +821,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|4365|4374|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|4379|4388|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|4389|4397|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|4398|4409|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|4398|4409|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|4436|4440|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|4441|4457|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|4458|4464|Blocks|class|net.minecraft.init.Blocks
@@ -830,7 +830,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|4493|4502|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|4507|4516|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|4517|4525|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|4526|4537|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|4526|4537|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|4564|4568|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|4569|4585|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|4586|4592|Blocks|class|net.minecraft.init.Blocks
@@ -839,7 +839,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|4618|4627|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|4632|4641|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|4642|4650|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|4651|4662|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|4651|4662|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|4689|4693|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|4694|4710|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|4711|4717|Blocks|class|net.minecraft.init.Blocks
@@ -848,49 +848,49 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|4741|4750|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|4755|4764|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|4765|4773|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|4774|4785|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|4774|4785|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|4809|4814|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|4815|4820|ARROW|field|net.minecraft.init.Items|ARROW
       @|com\bored\morefuelsmod\ModCrafting.java|4825|4837|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|4838|4847|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|4852|4861|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|4862|4870|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|4871|4882|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|4871|4882|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|4906|4911|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|4912|4919|FEATHER|field|net.minecraft.init.Items|FEATHER
       @|com\bored\morefuelsmod\ModCrafting.java|5213|5225|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|5226|5235|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|5240|5249|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|5250|5258|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|5259|5270|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|5259|5270|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|5294|5299|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|5300|5311|WHEAT_SEEDS|field|net.minecraft.init.Items|WHEAT_SEEDS
       @|com\bored\morefuelsmod\ModCrafting.java|5316|5328|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|5329|5338|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|5343|5352|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|5353|5361|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|5362|5373|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|5362|5373|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|5397|5402|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|5403|5414|MELON_SEEDS|field|net.minecraft.init.Items|MELON_SEEDS
       @|com\bored\morefuelsmod\ModCrafting.java|5419|5431|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|5432|5441|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|5446|5455|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|5456|5464|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|5465|5476|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|5465|5476|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|5500|5505|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|5506|5519|PUMPKIN_SEEDS|field|net.minecraft.init.Items|PUMPKIN_SEEDS
       @|com\bored\morefuelsmod\ModCrafting.java|5524|5536|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|5537|5546|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|5551|5560|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|5561|5569|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|5570|5581|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|5570|5581|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|5605|5610|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|5611|5625|BEETROOT_SEEDS|field|net.minecraft.init.Items|BEETROOT_SEEDS
       @|com\bored\morefuelsmod\ModCrafting.java|5630|5642|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|5643|5652|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|5657|5666|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|5667|5675|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|5676|5687|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|5676|5687|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|5711|5715|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|5716|5732|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|5733|5739|Blocks|class|net.minecraft.init.Blocks
@@ -899,7 +899,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|5764|5773|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|5778|5787|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|5788|5796|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|5797|5808|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|5797|5808|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|5832|5836|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|5837|5853|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|5854|5860|Blocks|class|net.minecraft.init.Blocks
@@ -908,49 +908,49 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|6099|6108|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6113|6122|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6123|6131|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6132|6143|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6132|6143|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|6170|6175|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|6176|6184|OAK_DOOR|field|net.minecraft.init.Items|OAK_DOOR
       @|com\bored\morefuelsmod\ModCrafting.java|6189|6201|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|6202|6211|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6216|6225|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6226|6234|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6235|6246|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6235|6246|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|6273|6278|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|6279|6290|ACACIA_DOOR|field|net.minecraft.init.Items|ACACIA_DOOR
       @|com\bored\morefuelsmod\ModCrafting.java|6295|6307|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|6308|6317|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6322|6331|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6332|6340|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6341|6352|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6341|6352|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|6379|6384|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|6385|6395|BIRCH_DOOR|field|net.minecraft.init.Items|BIRCH_DOOR
       @|com\bored\morefuelsmod\ModCrafting.java|6400|6412|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|6413|6422|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6427|6436|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6437|6445|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6446|6457|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6446|6457|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|6484|6489|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|6490|6503|DARK_OAK_DOOR|field|net.minecraft.init.Items|DARK_OAK_DOOR
       @|com\bored\morefuelsmod\ModCrafting.java|6508|6520|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|6521|6530|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6535|6544|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6545|6553|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6554|6565|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6554|6565|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|6592|6597|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|6598|6609|JUNGLE_DOOR|field|net.minecraft.init.Items|JUNGLE_DOOR
       @|com\bored\morefuelsmod\ModCrafting.java|6614|6626|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|6627|6636|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6641|6650|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6651|6659|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6660|6671|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6660|6671|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|6698|6703|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|6704|6715|SPRUCE_DOOR|field|net.minecraft.init.Items|SPRUCE_DOOR
       @|com\bored\morefuelsmod\ModCrafting.java|6720|6732|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|6733|6742|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6747|6756|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6757|6765|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6766|6777|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6766|6777|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|6804|6808|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|6809|6825|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|6826|6832|Blocks|class|net.minecraft.init.Blocks
@@ -959,126 +959,126 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|6865|6874|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6879|6888|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6889|6897|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6898|6909|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6898|6909|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|6936|6941|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|6942|6946|BOWL|field|net.minecraft.init.Items|BOWL
       @|com\bored\morefuelsmod\ModCrafting.java|6951|6963|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|6964|6973|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|6978|6987|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|6988|6996|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|6997|7008|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|6997|7008|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7036|7041|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7042|7046|BOAT|field|net.minecraft.init.Items|BOAT
       @|com\bored\morefuelsmod\ModCrafting.java|7051|7063|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7064|7073|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7078|7087|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7088|7096|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7097|7108|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7097|7108|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7136|7141|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7142|7153|ACACIA_BOAT|field|net.minecraft.init.Items|ACACIA_BOAT
       @|com\bored\morefuelsmod\ModCrafting.java|7158|7170|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7171|7180|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7185|7194|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7195|7203|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7204|7215|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7204|7215|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7243|7248|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7249|7259|BIRCH_BOAT|field|net.minecraft.init.Items|BIRCH_BOAT
       @|com\bored\morefuelsmod\ModCrafting.java|7264|7276|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7277|7286|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7291|7300|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7301|7309|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7310|7321|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7310|7321|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7349|7354|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7355|7368|DARK_OAK_BOAT|field|net.minecraft.init.Items|DARK_OAK_BOAT
       @|com\bored\morefuelsmod\ModCrafting.java|7373|7385|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7386|7395|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7400|7409|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7410|7418|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7419|7430|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7419|7430|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7458|7463|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7464|7475|JUNGLE_BOAT|field|net.minecraft.init.Items|JUNGLE_BOAT
       @|com\bored\morefuelsmod\ModCrafting.java|7480|7492|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7493|7502|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7507|7516|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7517|7525|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7526|7537|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7526|7537|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7565|7570|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7571|7582|SPRUCE_BOAT|field|net.minecraft.init.Items|SPRUCE_BOAT
       @|com\bored\morefuelsmod\ModCrafting.java|7587|7599|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7600|7609|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7614|7623|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7624|7632|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7633|7644|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7633|7644|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7671|7676|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7677|7682|REEDS|field|net.minecraft.init.Items|REEDS
       @|com\bored\morefuelsmod\ModCrafting.java|7687|7699|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7700|7709|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7714|7723|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7724|7732|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7733|7744|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7733|7744|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7771|7776|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7777|7782|PAPER|field|net.minecraft.init.Items|PAPER
       @|com\bored\morefuelsmod\ModCrafting.java|7787|7799|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7800|7809|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7814|7823|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7824|7832|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7833|7844|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7833|7844|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7872|7877|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7878|7882|BOOK|field|net.minecraft.init.Items|BOOK
       @|com\bored\morefuelsmod\ModCrafting.java|7887|7899|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|7900|7909|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|7914|7923|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|7924|7932|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|7933|7944|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|7933|7944|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|7972|7977|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|7978|7991|WRITABLE_BOOK|field|net.minecraft.init.Items|WRITABLE_BOOK
       @|com\bored\morefuelsmod\ModCrafting.java|7996|8008|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|8009|8018|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8023|8032|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8033|8041|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8042|8053|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8042|8053|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8081|8086|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|8087|8099|WRITTEN_BOOK|field|net.minecraft.init.Items|WRITTEN_BOOK
       @|com\bored\morefuelsmod\ModCrafting.java|8104|8116|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|8117|8126|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8131|8140|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8141|8149|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8150|8161|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8150|8161|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8188|8193|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|8194|8208|CHEST_MINECART|field|net.minecraft.init.Items|CHEST_MINECART
       @|com\bored\morefuelsmod\ModCrafting.java|8213|8225|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|8226|8235|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8240|8249|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8250|8258|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8259|8270|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8259|8270|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8298|8303|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|8304|8307|MAP|field|net.minecraft.init.Items|MAP
       @|com\bored\morefuelsmod\ModCrafting.java|8312|8324|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|8325|8334|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8339|8348|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8349|8357|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8358|8369|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8358|8369|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8397|8402|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|8403|8413|FILLED_MAP|field|net.minecraft.init.Items|FILLED_MAP
       @|com\bored\morefuelsmod\ModCrafting.java|8418|8430|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|8431|8440|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8445|8454|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8455|8463|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8464|8475|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8464|8475|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8502|8507|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|8508|8519|FISHING_ROD|field|net.minecraft.init.Items|FISHING_ROD
       @|com\bored\morefuelsmod\ModCrafting.java|8524|8536|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|8537|8546|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8551|8560|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8561|8569|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8570|8581|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8570|8581|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8608|8613|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|8614|8631|CARROT_ON_A_STICK|field|net.minecraft.init.Items|CARROT_ON_A_STICK
       @|com\bored\morefuelsmod\ModCrafting.java|8636|8648|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|8649|8658|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8663|8672|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8673|8681|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8682|8693|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8682|8693|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8720|8724|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|8725|8741|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|8742|8748|Blocks|class|net.minecraft.init.Blocks
@@ -1087,7 +1087,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|8777|8786|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8791|8800|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8801|8809|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8810|8821|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8810|8821|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8845|8849|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|8850|8866|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|8867|8873|Blocks|class|net.minecraft.init.Blocks
@@ -1096,7 +1096,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|8907|8916|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|8921|8930|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|8931|8939|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|8940|8951|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|8940|8951|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|8975|8979|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|8980|8996|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|8997|9003|Blocks|class|net.minecraft.init.Blocks
@@ -1105,7 +1105,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|9035|9044|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9049|9058|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9059|9067|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9068|9079|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9068|9079|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|9106|9110|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|9111|9127|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|9128|9134|Blocks|class|net.minecraft.init.Blocks
@@ -1114,7 +1114,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|9174|9183|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9188|9197|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9198|9206|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9207|9218|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9207|9218|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|9245|9249|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|9250|9266|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|9267|9273|Blocks|class|net.minecraft.init.Blocks
@@ -1123,140 +1123,140 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|9313|9322|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9327|9336|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9337|9345|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9346|9357|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9346|9357|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|9384|9389|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|9390|9401|ARMOR_STAND|field|net.minecraft.init.Items|ARMOR_STAND
       @|com\bored\morefuelsmod\ModCrafting.java|9406|9418|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|9419|9428|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9433|9442|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9443|9451|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9452|9463|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9452|9463|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|9491|9496|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|9497|9508|FIRE_CHARGE|field|net.minecraft.init.Items|FIRE_CHARGE
       @|com\bored\morefuelsmod\ModCrafting.java|9513|9525|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|9526|9535|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9540|9549|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9550|9558|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9559|9570|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9559|9570|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|9598|9603|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|9604|9619|FIREWORK_CHARGE|field|net.minecraft.init.Items|FIREWORK_CHARGE
       @|com\bored\morefuelsmod\ModCrafting.java|9624|9636|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|9637|9646|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9651|9660|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9661|9669|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9670|9681|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9670|9681|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|9709|9714|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|9715|9724|FIREWORKS|field|net.minecraft.init.Items|FIREWORKS
       @|com\bored\morefuelsmod\ModCrafting.java|9729|9741|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|9742|9751|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9756|9765|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9766|9774|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9775|9786|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9775|9786|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|9814|9819|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|9820|9829|GUNPOWDER|field|net.minecraft.init.Items|GUNPOWDER
       @|com\bored\morefuelsmod\ModCrafting.java|9834|9846|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|9847|9856|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9861|9870|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9871|9879|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9880|9891|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9880|9891|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|9919|9924|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|9925|9937|BLAZE_POWDER|field|net.minecraft.init.Items|BLAZE_POWDER
       @|com\bored\morefuelsmod\ModCrafting.java|9942|9954|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|9955|9964|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|9969|9978|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|9979|9987|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|9988|9999|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|9988|9999|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10027|10032|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10033|10044|MAGMA_CREAM|field|net.minecraft.init.Items|MAGMA_CREAM
       @|com\bored\morefuelsmod\ModCrafting.java|10049|10061|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10062|10071|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10076|10085|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10086|10094|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10095|10106|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10095|10106|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10134|10139|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10140|10150|GHAST_TEAR|field|net.minecraft.init.Items|GHAST_TEAR
       @|com\bored\morefuelsmod\ModCrafting.java|10155|10167|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10168|10177|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10182|10191|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10192|10200|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10201|10212|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10201|10212|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10240|10245|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10246|10255|SPAWN_EGG|field|net.minecraft.init.Items|SPAWN_EGG
       @|com\bored\morefuelsmod\ModCrafting.java|10260|10272|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10273|10282|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10287|10296|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10297|10305|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10306|10317|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10306|10317|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10341|10346|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10347|10363|POISONOUS_POTATO|field|net.minecraft.init.Items|POISONOUS_POTATO
       @|com\bored\morefuelsmod\ModCrafting.java|10368|10380|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10381|10390|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10395|10404|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10405|10413|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10414|10425|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10414|10425|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10449|10454|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10455|10467|ROTTEN_FLESH|field|net.minecraft.init.Items|ROTTEN_FLESH
       @|com\bored\morefuelsmod\ModCrafting.java|10472|10484|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10485|10494|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10499|10508|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10509|10517|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10518|10529|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10518|10529|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10553|10558|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10559|10569|SPIDER_EYE|field|net.minecraft.init.Items|SPIDER_EYE
       @|com\bored\morefuelsmod\ModCrafting.java|10574|10586|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10587|10596|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10601|10610|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10611|10619|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10620|10631|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10620|10631|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10658|10663|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10664|10684|FERMENTED_SPIDER_EYE|field|net.minecraft.init.Items|FERMENTED_SPIDER_EYE
       @|com\bored\morefuelsmod\ModCrafting.java|10689|10701|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10702|10711|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10716|10725|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10726|10734|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10735|10746|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10735|10746|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10773|10778|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10779|10790|RABBIT_FOOT|field|net.minecraft.init.Items|RABBIT_FOOT
       @|com\bored\morefuelsmod\ModCrafting.java|10795|10807|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10808|10817|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10822|10831|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10832|10840|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10841|10852|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10841|10852|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10876|10881|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10882|10889|LEATHER|field|net.minecraft.init.Items|LEATHER
       @|com\bored\morefuelsmod\ModCrafting.java|10894|10906|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|10907|10916|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|10921|10930|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|10931|10939|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|10940|10951|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|10940|10951|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|10978|10983|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|10984|10997|LEATHER_BOOTS|field|net.minecraft.init.Items|LEATHER_BOOTS
       @|com\bored\morefuelsmod\ModCrafting.java|11002|11014|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|11015|11024|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11029|11038|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11039|11047|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11048|11059|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11048|11059|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|11086|11091|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|11092|11110|LEATHER_CHESTPLATE|field|net.minecraft.init.Items|LEATHER_CHESTPLATE
       @|com\bored\morefuelsmod\ModCrafting.java|11115|11127|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|11128|11137|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11142|11151|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11152|11160|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11161|11172|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11161|11172|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|11199|11204|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|11205|11219|LEATHER_HELMET|field|net.minecraft.init.Items|LEATHER_HELMET
       @|com\bored\morefuelsmod\ModCrafting.java|11224|11236|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|11237|11246|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11251|11260|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11261|11269|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11270|11281|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11270|11281|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|11308|11313|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|11314|11330|LEATHER_LEGGINGS|field|net.minecraft.init.Items|LEATHER_LEGGINGS
       @|com\bored\morefuelsmod\ModCrafting.java|11335|11347|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|11348|11357|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11362|11371|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11372|11380|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11381|11392|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11381|11392|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|11419|11423|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|11424|11440|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|11441|11447|Blocks|class|net.minecraft.init.Blocks
@@ -1265,7 +1265,7 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|11479|11488|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11493|11502|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11503|11511|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11512|11523|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11512|11523|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|11550|11554|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|11555|11571|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|11572|11578|Blocks|class|net.minecraft.init.Blocks
@@ -1274,21 +1274,21 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|11611|11620|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11625|11634|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11635|11643|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11644|11655|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11644|11655|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|11683|11688|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|11689|11695|SHIELD|field|net.minecraft.init.Items|SHIELD
       @|com\bored\morefuelsmod\ModCrafting.java|11700|11712|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|11713|11722|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11727|11736|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11737|11745|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11746|11757|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11746|11757|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|11785|11790|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|11791|11804|DRAGON_BREATH|field|net.minecraft.init.Items|DRAGON_BREATH
       @|com\bored\morefuelsmod\ModCrafting.java|11809|11821|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModCrafting.java|11822|11831|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11836|11845|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11846|11854|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11855|11866|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11855|11866|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|11894|11898|Item|class|net.minecraft.item.Item
       @|com\bored\morefuelsmod\ModCrafting.java|11899|11915|getItemFromBlock|method|net.minecraft.item.Item|getItemFromBlock|(Lnet/minecraft/block/Block;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\ModCrafting.java|11916|11922|Blocks|class|net.minecraft.init.Blocks
@@ -1297,14 +1297,14 @@ Class Start: com.bored.morefuelsmod.ModCrafting
       @|com\bored\morefuelsmod\ModCrafting.java|11945|11954|addRecipe|method|net.minecraftforge.fml.common.registry.GameRegistry|addRecipe|(Lnet/minecraft/item/ItemStack;[Ljava/lang/Object;)V
       @|com\bored\morefuelsmod\ModCrafting.java|11959|11968|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModCrafting.java|11969|11977|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModCrafting.java|11978|11989|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\ModCrafting.java|11978|11989|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\ModCrafting.java|12017|12022|Items|class|net.minecraft.init.Items
       @|com\bored\morefuelsmod\ModCrafting.java|12023|12035|TNT_MINECART|field|net.minecraft.init.Items|TNT_MINECART
    Method End: init()V
 Class End  : com.bored.morefuelsmod.ModCrafting
 endProcessing "com\bored\morefuelsmod\ModCrafting.java"
 
-startProcessing "com\bored\morefuelsmod\ModSmelting.java" md5: 66c5f1efa6ab665f4ebbe0070fc8194a
+startProcessing "com\bored\morefuelsmod\ModSmelting.java" md5: 9dd2d6608c5582bf5304914c0d439038
 @|com\bored\morefuelsmod\ModSmelting.java|8|30|com.bored.morefuelsmod|package|com.bored.morefuelsmod|(file)
 Class Start: com.bored.morefuelsmod.ModSmelting
    @|com\bored\morefuelsmod\ModSmelting.java|223|234|ModSmelting|class|com.bored.morefuelsmod.ModSmelting
@@ -1313,7 +1313,7 @@ Class Start: com.bored.morefuelsmod.ModSmelting
       @|com\bored\morefuelsmod\ModSmelting.java|267|279|GameRegistry|class|net.minecraftforge.fml.common.registry.GameRegistry
       @|com\bored\morefuelsmod\ModSmelting.java|280|291|addSmelting|method|net.minecraftforge.fml.common.registry.GameRegistry|addSmelting|(Lnet/minecraft/item/Item;Lnet/minecraft/item/ItemStack;F)V
       @|com\bored\morefuelsmod\ModSmelting.java|292|300|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\ModSmelting.java|301|315|bituminouscoal|field|com.bored.morefuelsmod.item.ModItems|bituminouscoal
+      @|com\bored\morefuelsmod\ModSmelting.java|301|315|bituminousCoal|field|com.bored.morefuelsmod.item.ModItems|bituminousCoal
       @|com\bored\morefuelsmod\ModSmelting.java|321|330|ItemStack|class|net.minecraft.item.ItemStack
       @|com\bored\morefuelsmod\ModSmelting.java|331|339|ModItems|class|com.bored.morefuelsmod.item.ModItems
       @|com\bored\morefuelsmod\ModSmelting.java|340|344|coke|field|com.bored.morefuelsmod.item.ModItems|coke
@@ -1321,7 +1321,7 @@ Class Start: com.bored.morefuelsmod.ModSmelting
 Class End  : com.bored.morefuelsmod.ModSmelting
 endProcessing "com\bored\morefuelsmod\ModSmelting.java"
 
-startProcessing "com\bored\morefuelsmod\ModWorldGen.java" md5: 6cbf462b331d64caed094396c25edd34
+startProcessing "com\bored\morefuelsmod\ModWorldGen.java" md5: 01192c61affa67f72206b72429e4e673
 @|com\bored\morefuelsmod\ModWorldGen.java|8|30|com.bored.morefuelsmod|package|com.bored.morefuelsmod|(file)
 Class Start: com.bored.morefuelsmod.ModWorldGen
    @|com\bored\morefuelsmod\ModWorldGen.java|460|471|ModWorldGen|class|com.bored.morefuelsmod.ModWorldGen
@@ -1334,7 +1334,7 @@ Class Start: com.bored.morefuelsmod.ModWorldGen
       @|com\bored\morefuelsmod\ModWorldGen.java|576|593|bituminousCoalOre|field|com.bored.morefuelsmod.ModWorldGen|bituminousCoalOre
       @|com\bored\morefuelsmod\ModWorldGen.java|600|615|WorldGenMinable|class|net.minecraft.world.gen.feature.WorldGenMinable
       @|com\bored\morefuelsmod\ModWorldGen.java|616|625|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
-      @|com\bored\morefuelsmod\ModWorldGen.java|626|643|bituminouscoalore|field|com.bored.morefuelsmod.block.ModBlocks|bituminouscoalore
+      @|com\bored\morefuelsmod\ModWorldGen.java|626|643|bituminousCoalOre|field|com.bored.morefuelsmod.block.ModBlocks|bituminousCoalOre
       @|com\bored\morefuelsmod\ModWorldGen.java|644|659|getDefaultState|method|net.minecraft.block.Block|getDefaultState|()Lnet/minecraft/block/state/IBlockState;
    Method End: ModWorldGen()V
    Method Start: runGenerator(Lnet/minecraft/world/gen/feature/WorldGenerator;Lnet/minecraft/world/World;Ljava/util/Random;IIIII)V
@@ -1467,7 +1467,7 @@ Class Start: com.bored.morefuelsmod.block.BlockBase
 Class End  : com.bored.morefuelsmod.block.BlockBase
 endProcessing "com\bored\morefuelsmod\block\BlockBase.java"
 
-startProcessing "com\bored\morefuelsmod\block\BlockOre.java" md5: 2c0f1b2c1254b6e39ed3e54949b4a726
+startProcessing "com\bored\morefuelsmod\block\BlockOre.java" md5: 56cf6c71b9edbdf87e69c4ceafb66826
 @|com\bored\morefuelsmod\block\BlockOre.java|8|36|com.bored.morefuelsmod.block|package|com.bored.morefuelsmod.block|(file)
 Class Start: com.bored.morefuelsmod.block.BlockOre
    @|com\bored\morefuelsmod\block\BlockOre.java|296|304|BlockOre|class|com.bored.morefuelsmod.block.BlockOre
@@ -1500,48 +1500,48 @@ Class Start: com.bored.morefuelsmod.block.BlockOre
       @|com\bored\morefuelsmod\block\BlockOre.java|572|583|IBlockState|class|net.minecraft.block.state.IBlockState
       @|com\bored\morefuelsmod\block\BlockOre.java|591|597|Random|class|java.util.Random
       @|com\bored\morefuelsmod\block\BlockOre.java|627|635|ModItems|class|com.bored.morefuelsmod.item.ModItems
-      @|com\bored\morefuelsmod\block\BlockOre.java|636|650|bituminouscoal|field|com.bored.morefuelsmod.item.ModItems|bituminouscoal
+      @|com\bored\morefuelsmod\block\BlockOre.java|636|650|bituminousCoal|field|com.bored.morefuelsmod.item.ModItems|bituminousCoal
    Method End: getItemDropped(Lnet/minecraft/block/state/IBlockState;Ljava/util/Random;I)Lnet/minecraft/item/Item;
 Class End  : com.bored.morefuelsmod.block.BlockOre
 endProcessing "com\bored\morefuelsmod\block\BlockOre.java"
 
-startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: 6238edba199ce9bd11fa84615033eefa
+startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: 515133cef81697746ff929053c6de486
 @|com\bored\morefuelsmod\block\ModBlocks.java|8|36|com.bored.morefuelsmod.block|package|com.bored.morefuelsmod.block|(file)
 Class Start: com.bored.morefuelsmod.block.ModBlocks
    @|com\bored\morefuelsmod\block\ModBlocks.java|276|285|ModBlocks|class|com.bored.morefuelsmod.block.ModBlocks
    @|com\bored\morefuelsmod\block\ModBlocks.java|304|313|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
    @|com\bored\morefuelsmod\block\ModBlocks.java|304|313|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
-   @|com\bored\morefuelsmod\block\ModBlocks.java|314|325|pelletblock|field|com.bored.morefuelsmod.block.ModBlocks|pelletblock|
+   @|com\bored\morefuelsmod\block\ModBlocks.java|314|325|pelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|pelletBlock|
    @|com\bored\morefuelsmod\block\ModBlocks.java|342|351|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
    @|com\bored\morefuelsmod\block\ModBlocks.java|342|351|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
-   @|com\bored\morefuelsmod\block\ModBlocks.java|352|375|concentratedpelletblock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedpelletblock|
+   @|com\bored\morefuelsmod\block\ModBlocks.java|352|375|concentratedPelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedPelletBlock|
    @|com\bored\morefuelsmod\block\ModBlocks.java|392|401|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
    @|com\bored\morefuelsmod\block\ModBlocks.java|392|401|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
-   @|com\bored\morefuelsmod\block\ModBlocks.java|402|411|cokeblock|field|com.bored.morefuelsmod.block.ModBlocks|cokeblock|
+   @|com\bored\morefuelsmod\block\ModBlocks.java|402|411|cokeBlock|field|com.bored.morefuelsmod.block.ModBlocks|cokeBlock|
    @|com\bored\morefuelsmod\block\ModBlocks.java|428|437|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
    @|com\bored\morefuelsmod\block\ModBlocks.java|428|437|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
-   @|com\bored\morefuelsmod\block\ModBlocks.java|438|457|bituminouscoalblock|field|com.bored.morefuelsmod.block.ModBlocks|bituminouscoalblock|
+   @|com\bored\morefuelsmod\block\ModBlocks.java|438|457|bituminousCoalBlock|field|com.bored.morefuelsmod.block.ModBlocks|bituminousCoalBlock|
    @|com\bored\morefuelsmod\block\ModBlocks.java|474|482|BlockOre|class|com.bored.morefuelsmod.block.BlockOre
    @|com\bored\morefuelsmod\block\ModBlocks.java|474|482|BlockOre|class|com.bored.morefuelsmod.block.BlockOre
-   @|com\bored\morefuelsmod\block\ModBlocks.java|483|500|bituminouscoalore|field|com.bored.morefuelsmod.block.ModBlocks|bituminouscoalore|
+   @|com\bored\morefuelsmod\block\ModBlocks.java|483|500|bituminousCoalOre|field|com.bored.morefuelsmod.block.ModBlocks|bituminousCoalOre|
    Method Start: init()V
       @|com\bored\morefuelsmod\block\ModBlocks.java|523|527|init|method|com.bored.morefuelsmod.block.ModBlocks|init|()V
-      @|com\bored\morefuelsmod\block\ModBlocks.java|534|545|pelletblock|field|com.bored.morefuelsmod.block.ModBlocks|pelletblock
+      @|com\bored\morefuelsmod\block\ModBlocks.java|534|545|pelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|pelletBlock
       @|com\bored\morefuelsmod\block\ModBlocks.java|548|556|register|method|com.bored.morefuelsmod.block.ModBlocks|register|(Lnet/minecraft/block/Block;)Lnet/minecraft/block/Block;
       @|com\bored\morefuelsmod\block\ModBlocks.java|561|570|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
       @|com\bored\morefuelsmod\block\ModBlocks.java|571|579|Material|class|net.minecraft.block.material.Material
       @|com\bored\morefuelsmod\block\ModBlocks.java|580|584|ROCK|field|net.minecraft.block.material.Material|ROCK
-      @|com\bored\morefuelsmod\block\ModBlocks.java|605|628|concentratedpelletblock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedpelletblock
+      @|com\bored\morefuelsmod\block\ModBlocks.java|605|628|concentratedPelletBlock|field|com.bored.morefuelsmod.block.ModBlocks|concentratedPelletBlock
       @|com\bored\morefuelsmod\block\ModBlocks.java|631|639|register|method|com.bored.morefuelsmod.block.ModBlocks|register|(Lnet/minecraft/block/Block;)Lnet/minecraft/block/Block;
       @|com\bored\morefuelsmod\block\ModBlocks.java|644|653|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
       @|com\bored\morefuelsmod\block\ModBlocks.java|654|662|Material|class|net.minecraft.block.material.Material
       @|com\bored\morefuelsmod\block\ModBlocks.java|663|667|ROCK|field|net.minecraft.block.material.Material|ROCK
-      @|com\bored\morefuelsmod\block\ModBlocks.java|700|709|cokeblock|field|com.bored.morefuelsmod.block.ModBlocks|cokeblock
+      @|com\bored\morefuelsmod\block\ModBlocks.java|700|709|cokeBlock|field|com.bored.morefuelsmod.block.ModBlocks|cokeBlock
       @|com\bored\morefuelsmod\block\ModBlocks.java|712|720|register|method|com.bored.morefuelsmod.block.ModBlocks|register|(Lnet/minecraft/block/Block;)Lnet/minecraft/block/Block;
       @|com\bored\morefuelsmod\block\ModBlocks.java|725|734|BlockBase|class|com.bored.morefuelsmod.block.BlockBase
       @|com\bored\morefuelsmod\block\ModBlocks.java|735|743|Material|class|net.minecraft.block.material.Material
       @|com\bored\morefuelsmod\block\ModBlocks.java|744|748|ROCK|field|net.minecraft.block.material.Material|ROCK
-      @|com\bored\morefuelsmod\block\ModBlocks.java|767|784|bituminouscoalore|field|com.bored.morefuelsmod.block.ModBlocks|bituminouscoalore
+      @|com\bored\morefuelsmod\block\ModBlocks.java|767|784|bituminousCoalOre|field|com.bored.morefuelsmod.block.ModBlocks|bituminousCoalOre
       @|com\bored\morefuelsmod\block\ModBlocks.java|787|795|register|method|com.bored.morefuelsmod.block.ModBlocks|register|(Lnet/minecraft/block/Block;)Lnet/minecraft/block/Block;
       @|com\bored\morefuelsmod\block\ModBlocks.java|800|808|BlockOre|class|com.bored.morefuelsmod.block.BlockOre
    Method End: init()V
@@ -1645,49 +1645,49 @@ Class Start: com.bored.morefuelsmod.item.ItemBase
 Class End  : com.bored.morefuelsmod.item.ItemBase
 endProcessing "com\bored\morefuelsmod\item\ItemBase.java"
 
-startProcessing "com\bored\morefuelsmod\item\ModItems.java" md5: c3812a1d1f3715bcae6d78670ae05755
+startProcessing "com\bored\morefuelsmod\item\ModItems.java" md5: 2cb95500be32092c3aff189da31b5d28
 @|com\bored\morefuelsmod\item\ModItems.java|8|35|com.bored.morefuelsmod.item|package|com.bored.morefuelsmod.item|(file)
 Class Start: com.bored.morefuelsmod.item.ModItems
    @|com\bored\morefuelsmod\item\ModItems.java|144|152|ModItems|class|com.bored.morefuelsmod.item.ModItems
    @|com\bored\morefuelsmod\item\ModItems.java|172|180|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|172|180|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-   @|com\bored\morefuelsmod\item\ModItems.java|181|192|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel|
+   @|com\bored\morefuelsmod\item\ModItems.java|181|192|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel|
    @|com\bored\morefuelsmod\item\ModItems.java|209|217|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|209|217|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-   @|com\bored\morefuelsmod\item\ModItems.java|218|241|concentratedpelletsfuel|field|com.bored.morefuelsmod.item.ModItems|concentratedpelletsfuel|
+   @|com\bored\morefuelsmod\item\ModItems.java|218|241|concentratedPelletsFuel|field|com.bored.morefuelsmod.item.ModItems|concentratedPelletsFuel|
    @|com\bored\morefuelsmod\item\ModItems.java|258|266|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|258|266|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|267|271|coke|field|com.bored.morefuelsmod.item.ModItems|coke|
    @|com\bored\morefuelsmod\item\ModItems.java|288|296|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|288|296|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-   @|com\bored\morefuelsmod\item\ModItems.java|297|311|bituminouscoal|field|com.bored.morefuelsmod.item.ModItems|bituminouscoal|
+   @|com\bored\morefuelsmod\item\ModItems.java|297|311|bituminousCoal|field|com.bored.morefuelsmod.item.ModItems|bituminousCoal|
    @|com\bored\morefuelsmod\item\ModItems.java|328|336|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|328|336|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-   @|com\bored\morefuelsmod\item\ModItems.java|337|349|canslimoline|field|com.bored.morefuelsmod.item.ModItems|canslimoline|
+   @|com\bored\morefuelsmod\item\ModItems.java|337|349|canSlimoline|field|com.bored.morefuelsmod.item.ModItems|canSlimoline|
    @|com\bored\morefuelsmod\item\ModItems.java|366|374|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|366|374|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-   @|com\bored\morefuelsmod\item\ModItems.java|375|383|dustcoal|field|com.bored.morefuelsmod.item.ModItems|dustcoal|
+   @|com\bored\morefuelsmod\item\ModItems.java|375|383|dustCoal|field|com.bored.morefuelsmod.item.ModItems|dustCoal|
    @|com\bored\morefuelsmod\item\ModItems.java|400|408|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|400|408|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    @|com\bored\morefuelsmod\item\ModItems.java|409|416|bitumen|field|com.bored.morefuelsmod.item.ModItems|bitumen|
    Method Start: init()V
       @|com\bored\morefuelsmod\item\ModItems.java|439|443|init|method|com.bored.morefuelsmod.item.ModItems|init|()V
-      @|com\bored\morefuelsmod\item\ModItems.java|450|461|pelletsfuel|field|com.bored.morefuelsmod.item.ModItems|pelletsfuel
+      @|com\bored\morefuelsmod\item\ModItems.java|450|461|pelletsFuel|field|com.bored.morefuelsmod.item.ModItems|pelletsFuel
       @|com\bored\morefuelsmod\item\ModItems.java|464|472|register|method|com.bored.morefuelsmod.item.ModItems|register|(Lnet/minecraft/item/Item;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\item\ModItems.java|477|485|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-      @|com\bored\morefuelsmod\item\ModItems.java|505|528|concentratedpelletsfuel|field|com.bored.morefuelsmod.item.ModItems|concentratedpelletsfuel
+      @|com\bored\morefuelsmod\item\ModItems.java|505|528|concentratedPelletsFuel|field|com.bored.morefuelsmod.item.ModItems|concentratedPelletsFuel
       @|com\bored\morefuelsmod\item\ModItems.java|531|539|register|method|com.bored.morefuelsmod.item.ModItems|register|(Lnet/minecraft/item/Item;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\item\ModItems.java|544|552|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
       @|com\bored\morefuelsmod\item\ModItems.java|584|588|coke|field|com.bored.morefuelsmod.item.ModItems|coke
       @|com\bored\morefuelsmod\item\ModItems.java|591|599|register|method|com.bored.morefuelsmod.item.ModItems|register|(Lnet/minecraft/item/Item;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\item\ModItems.java|604|612|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-      @|com\bored\morefuelsmod\item\ModItems.java|625|639|bituminouscoal|field|com.bored.morefuelsmod.item.ModItems|bituminouscoal
+      @|com\bored\morefuelsmod\item\ModItems.java|625|639|bituminousCoal|field|com.bored.morefuelsmod.item.ModItems|bituminousCoal
       @|com\bored\morefuelsmod\item\ModItems.java|642|650|register|method|com.bored.morefuelsmod.item.ModItems|register|(Lnet/minecraft/item/Item;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\item\ModItems.java|655|663|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-      @|com\bored\morefuelsmod\item\ModItems.java|686|698|canslimoline|field|com.bored.morefuelsmod.item.ModItems|canslimoline
+      @|com\bored\morefuelsmod\item\ModItems.java|686|698|canSlimoline|field|com.bored.morefuelsmod.item.ModItems|canSlimoline
       @|com\bored\morefuelsmod\item\ModItems.java|701|709|register|method|com.bored.morefuelsmod.item.ModItems|register|(Lnet/minecraft/item/Item;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\item\ModItems.java|714|722|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
-      @|com\bored\morefuelsmod\item\ModItems.java|743|751|dustcoal|field|com.bored.morefuelsmod.item.ModItems|dustcoal
+      @|com\bored\morefuelsmod\item\ModItems.java|743|751|dustCoal|field|com.bored.morefuelsmod.item.ModItems|dustCoal
       @|com\bored\morefuelsmod\item\ModItems.java|754|762|register|method|com.bored.morefuelsmod.item.ModItems|register|(Lnet/minecraft/item/Item;)Lnet/minecraft/item/Item;
       @|com\bored\morefuelsmod\item\ModItems.java|767|775|ItemBase|class|com.bored.morefuelsmod.item.ItemBase
    Method End: init()V

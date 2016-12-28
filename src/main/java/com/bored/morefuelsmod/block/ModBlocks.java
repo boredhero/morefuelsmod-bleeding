@@ -8,17 +8,17 @@ import com.bored.morefuelsmod.block.BlockOre;
 
 public class ModBlocks {
 
-	public static BlockBase pelletblock;
-	public static BlockBase concentratedpelletblock;
-	public static BlockBase cokeblock;
-	public static BlockBase bituminouscoalblock;
-	public static BlockOre bituminouscoalore;
+	public static BlockBase pelletBlock;
+	public static BlockBase concentratedPelletBlock;
+	public static BlockBase cokeBlock;
+	public static BlockBase bituminousCoalBlock;
+	public static BlockOre bituminousCoalOre;
 
 	public static void init() {
-		pelletblock = register(new BlockBase(Material.ROCK, "pelletblock"));
-		concentratedpelletblock = register(new BlockBase(Material.ROCK, "concentratedpelletblock"));
-		cokeblock = register(new BlockBase(Material.ROCK, "cokeblock"));
-		bituminouscoalore = register(new BlockOre("bituminouscoalore"));
+		pelletBlock = register(new BlockBase(Material.ROCK, "pelletBlock"));
+		concentratedPelletBlock = register(new BlockBase(Material.ROCK, "concentratedPelletBlock"));
+		cokeBlock = register(new BlockBase(Material.ROCK, "cokeBlock"));
+		bituminousCoalOre = register(new BlockOre("bituminousCoalOre"));
 	}
 
 	private static <T extends Block> T register(T block, ItemBlock itemBlock) {

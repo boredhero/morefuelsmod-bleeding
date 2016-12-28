@@ -306,28 +306,28 @@ public class Fuels implements IFuelHandler{
 					return 8200;
 				}
 				//MOD ITEMS BELOW THIS POINT
-				if (fuel.func_77973_b() == ModItems.pelletsfuel){
+				if (fuel.func_77973_b() == ModItems.pelletsFuel){
 					return 900;
 				}
-				if (fuel.func_77973_b() == Item.func_150898_a(ModBlocks.pelletblock)){
+				if (fuel.func_77973_b() == Item.func_150898_a(ModBlocks.pelletBlock)){
 					return 8100; //9 times the value of fuel pellets
 				}
-				if (fuel.func_77973_b() == ModItems.concentratedpelletsfuel){
+				if (fuel.func_77973_b() == ModItems.concentratedPelletsFuel){
 					return 32400; //4 times the value of pellet blocks
 				}
-				if (fuel.func_77973_b() == Item.func_150898_a(ModBlocks.concentratedpelletblock)){
+				if (fuel.func_77973_b() == Item.func_150898_a(ModBlocks.concentratedPelletBlock)){
 					return 291600; //9 times the value of concentrated pellet fuel
 				}
 				if (fuel.func_77973_b() == ModItems.coke){
 					return 3200; //twice the value of coal.
 				}
-				if (fuel.func_77973_b() == Item.func_150898_a(ModBlocks.cokeblock)){
+				if (fuel.func_77973_b() == Item.func_150898_a(ModBlocks.cokeBlock)){
 					return 28800;
 				}
-				if (fuel.func_77973_b() == ModItems.bituminouscoal){
+				if (fuel.func_77973_b() == ModItems.bituminousCoal){
 					return 1600; //Same as regular coal, it will function as this with the ability to make coke.
 				}
-				if (fuel.func_77973_b() == ModItems.canslimoline){
+				if (fuel.func_77973_b() == ModItems.canSlimoline){
 					return 20000;
 				}
 				
