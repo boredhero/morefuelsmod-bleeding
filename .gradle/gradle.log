@@ -9,26 +9,28 @@ This mapping 'snapshot_20161111' was designed for MC 1.10.2! Use at your own per
          by: Searge, ProfMobius, Fesh0r,         
          R4wk, ZeuX, IngisKahn, bspkrs           
 #################################################
+Version string '1.6.UFO' does not match SemVer specification 
+You should try SemVer : http://semver.org/
 :deobfCompileDummyTask
 :deobfProvidedDummyTask
-:sourceApiJava
+:sourceApiJava UP-TO-DATE
 :compileApiJava UP-TO-DATE
 :processApiResources UP-TO-DATE
 :apiClasses UP-TO-DATE
-:sourceMainJava
+:sourceMainJava UP-TO-DATE
 :compileJavawarning: [options] bootstrap class path not set in conjunction with -source 1.6
 1 warning
 
 :processResources
 :classes
 :jar
-:sourceTestJava
+:sourceTestJava UP-TO-DATE
 :compileTestJava UP-TO-DATE
 :processTestResources UP-TO-DATE
 :testClasses UP-TO-DATE
 :test UP-TO-DATE
 :extractMcpData SKIPPED
-:extractMcpMappings
+:extractMcpMappings SKIPPED
 :getVersionJson
 :extractUserdev UP-TO-DATE
 :genSrgs SKIPPED
@@ -44,4 +46,4 @@ remapping source...
 
 BUILD SUCCESSFUL
 
-Total time: 14.68 secs
+Total time: 9.439 secs
