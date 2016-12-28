@@ -24,7 +24,7 @@ public class BlockOre extends BlockBase {
 	}
 	
 	public Item func_180660_a(IBlockState state, Random rand, int fortune){
-		return ModItems.bituminousCoal;
+		return ModItems.bituminouscoal;
 		}
 
 

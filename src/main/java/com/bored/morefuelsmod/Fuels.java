@@ -306,28 +306,28 @@ public class Fuels implements IFuelHandler{
 					return 8200;
 				}
 				//MOD ITEMS BELOW THIS POINT
-				if (fuel.getItem() == ModItems.pelletsFuel){
+				if (fuel.getItem() == ModItems.pelletsfuel){
 					return 900;
 				}
-				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.pelletBlock)){
+				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.pelletblock)){
 					return 8100; //9 times the value of fuel pellets
 				}
-				if (fuel.getItem() == ModItems.concentratedPelletsFuel){
+				if (fuel.getItem() == ModItems.concentratedpelletsfuel){
 					return 32400; //4 times the value of pellet blocks
 				}
-				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.concentratedPelletBlock)){
+				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.concentratedpelletblock)){
 					return 291600; //9 times the value of concentrated pellet fuel
 				}
 				if (fuel.getItem() == ModItems.coke){
 					return 3200; //twice the value of coal.
 				}
-				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.cokeBlock)){
+				if (fuel.getItem() == Item.getItemFromBlock(ModBlocks.cokeblock)){
 					return 28800;
 				}
-				if (fuel.getItem() == ModItems.bituminousCoal){
+				if (fuel.getItem() == ModItems.bituminouscoal){
 					return 1600; //Same as regular coal, it will function as this with the ability to make coke.
 				}
-				if (fuel.getItem() == ModItems.canSlimoline){
+				if (fuel.getItem() == ModItems.canslimoline){
 					return 20000;
 				}
 				

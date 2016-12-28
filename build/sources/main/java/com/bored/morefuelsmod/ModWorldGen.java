@@ -17,7 +17,7 @@ public class ModWorldGen implements IWorldGenerator{
  private WorldGenerator bituminousCoalOre;
  
  public ModWorldGen(){
-  this.bituminousCoalOre = new WorldGenMinable(ModBlocks.bituminousCoalOre.getDefaultState(), 4);
+  this.bituminousCoalOre = new WorldGenMinable(ModBlocks.bituminouscoalore.getDefaultState(), 4);
   }
  
  private void runGenerator(WorldGenerator generator, World world, Random rand, int chunk_X, int chunk_Z, int chancesToSpawn, int minHeight, int maxHeight) {
