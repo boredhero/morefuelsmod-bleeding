@@ -2,6 +2,7 @@ package net.minecraft.world.biome;
 
 import java.util.Random;
 import net.minecraft.block.BlockSilverfish;
+import net.minecraft.entity.passive.EntityLlama;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,6 +27,7 @@ public class BiomeHills extends Biome
             this.theBiomeDecorator.treesPerChunk = 3;
         }
 
+        this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityLlama.class, 5, 4, 6));
         this.type = p_i46710_1_;
     }
 

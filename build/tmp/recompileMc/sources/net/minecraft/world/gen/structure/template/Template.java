@@ -26,6 +26,10 @@ import net.minecraft.tileentity.TileEntityStructure;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.ObjectIntIdentityMap;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IDataFixer;
+import net.minecraft.util.datafix.IDataWalker;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -59,7 +63,7 @@ public class Template
     /**
      * takes blocks from the world and puts the data them into this template
      */
-    public void takeBlocksFromWorld(World worldIn, BlockPos startPos, BlockPos endPos, boolean takeEntities, @Nullable Block p_186254_5_)
+    public void takeBlocksFromWorld(World worldIn, BlockPos startPos, BlockPos endPos, boolean takeEntities, @Nullable Block toIgnore)
     {
         if (endPos.getX() >= 1 && endPos.getY() >= 1 && endPos.getZ() >= 1)
         {
@@ -76,7 +80,7 @@ public class Template
                 BlockPos blockpos3 = blockpos$mutableblockpos.subtract(blockpos1);
                 IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
 
-                if (p_186254_5_ == null || p_186254_5_ != iblockstate.getBlock())
+                if (toIgnore == null || toIgnore != iblockstate.getBlock())
                 {
                     TileEntity tileentity = worldIn.getTileEntity(blockpos$mutableblockpos);
 
@@ -200,17 +204,22 @@ public class Template
      */
     public void addBlocksToWorld(World worldIn, BlockPos pos, PlacementSettings placementIn)
     {
-        this.func_189960_a(worldIn, pos, new BlockRotationProcessor(pos, placementIn), placementIn, 2);
+        this.addBlocksToWorld(worldIn, pos, new BlockRotationProcessor(pos, placementIn), placementIn, 2);
     }
 
-    public void func_189962_a(World p_189962_1_, BlockPos p_189962_2_, PlacementSettings p_189962_3_, int p_189962_4_)
+    /**
+     * This takes the data stored in this instance and puts them into the world.
+     *  
+     * @param flags The flags to use when placing blocks.
+     */
+    public void addBlocksToWorld(World worldIn, BlockPos pos, PlacementSettings placementIn, int flags)
     {
-        this.func_189960_a(p_189962_1_, p_189962_2_, new BlockRotationProcessor(p_189962_2_, p_189962_3_), p_189962_3_, p_189962_4_);
+        this.addBlocksToWorld(worldIn, pos, new BlockRotationProcessor(pos, placementIn), placementIn, flags);
     }
 
-    public void func_189960_a(World p_189960_1_, BlockPos p_189960_2_, @Nullable ITemplateProcessor p_189960_3_, PlacementSettings p_189960_4_, int p_189960_5_)
+    public void addBlocksToWorld(World p_189960_1_, BlockPos p_189960_2_, @Nullable ITemplateProcessor p_189960_3_, PlacementSettings p_189960_4_, int p_189960_5_)
     {
-        if (!this.blocks.isEmpty() && this.size.getX() >= 1 && this.size.getY() >= 1 && this.size.getZ() >= 1)
+        if ((!this.blocks.isEmpty() || !p_189960_4_.getIgnoreEntities() && !this.entities.isEmpty()) && this.size.getX() >= 1 && this.size.getY() >= 1 && this.size.getZ() >= 1)
         {
             Block block = p_189960_4_.getReplacedBlock();
             StructureBoundingBox structureboundingbox = p_189960_4_.getBoundingBox();
@@ -218,7 +227,7 @@ public class Template
             for (Template.BlockInfo template$blockinfo : this.blocks)
             {
                 BlockPos blockpos = transformedBlockPos(p_189960_4_, template$blockinfo.pos).add(p_189960_2_);
-                Template.BlockInfo template$blockinfo1 = p_189960_3_ != null ? p_189960_3_.func_189943_a(p_189960_1_, blockpos, template$blockinfo) : template$blockinfo;
+                Template.BlockInfo template$blockinfo1 = p_189960_3_ != null ? p_189960_3_.processBlock(p_189960_1_, blockpos, template$blockinfo) : template$blockinfo;
 
                 if (template$blockinfo1 != null)
                 {
@@ -254,8 +263,8 @@ public class Template
                                 template$blockinfo1.tileentityData.setInteger("y", blockpos.getY());
                                 template$blockinfo1.tileentityData.setInteger("z", blockpos.getZ());
                                 tileentity2.readFromNBT(template$blockinfo1.tileentityData);
-                                tileentity2.func_189668_a(p_189960_4_.getMirror());
-                                tileentity2.func_189667_a(p_189960_4_.getRotation());
+                                tileentity2.mirror(p_189960_4_.getMirror());
+                                tileentity2.rotate(p_189960_4_.getRotation());
                             }
                         }
                     }
@@ -270,7 +279,7 @@ public class Template
 
                     if (structureboundingbox == null || structureboundingbox.isVecInside(blockpos1))
                     {
-                        p_189960_1_.notifyNeighborsRespectDebug(blockpos1, template$blockinfo2.blockState.getBlock());
+                        p_189960_1_.notifyNeighborsRespectDebug(blockpos1, template$blockinfo2.blockState.getBlock(), false);
 
                         if (template$blockinfo2.tileentityData != null)
                         {
@@ -407,33 +416,79 @@ public class Template
         }
     }
 
-    public BlockPos func_189961_a(BlockPos p_189961_1_, Mirror p_189961_2_, Rotation p_189961_3_)
+    public BlockPos getZeroPositionWithTransform(BlockPos p_189961_1_, Mirror p_189961_2_, Rotation p_189961_3_)
     {
-        int i = this.getSize().getX() - 1;
-        int j = this.getSize().getZ() - 1;
-        int k = p_189961_2_ == Mirror.FRONT_BACK ? i : 0;
-        int l = p_189961_2_ == Mirror.LEFT_RIGHT ? j : 0;
-        BlockPos blockpos = p_189961_1_;
+        return func_191157_a(p_189961_1_, p_189961_2_, p_189961_3_, this.getSize().getX(), this.getSize().getZ());
+    }
 
-        switch (p_189961_3_)
+    public static BlockPos func_191157_a(BlockPos p_191157_0_, Mirror p_191157_1_, Rotation p_191157_2_, int p_191157_3_, int p_191157_4_)
+    {
+        --p_191157_3_;
+        --p_191157_4_;
+        int i = p_191157_1_ == Mirror.FRONT_BACK ? p_191157_3_ : 0;
+        int j = p_191157_1_ == Mirror.LEFT_RIGHT ? p_191157_4_ : 0;
+        BlockPos blockpos = p_191157_0_;
+
+        switch (p_191157_2_)
         {
             case COUNTERCLOCKWISE_90:
-                blockpos = p_189961_1_.add(l, 0, i - k);
+                blockpos = p_191157_0_.add(j, 0, p_191157_3_ - i);
                 break;
             case CLOCKWISE_90:
-                blockpos = p_189961_1_.add(j - l, 0, k);
+                blockpos = p_191157_0_.add(p_191157_4_ - j, 0, i);
                 break;
             case CLOCKWISE_180:
-                blockpos = p_189961_1_.add(i - k, 0, j - l);
+                blockpos = p_191157_0_.add(p_191157_3_ - i, 0, p_191157_4_ - j);
                 break;
             case NONE:
-                blockpos = p_189961_1_.add(k, 0, l);
+                blockpos = p_191157_0_.add(i, 0, j);
         }
 
         return blockpos;
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound p_189552_1_)
+    public static void func_191158_a(DataFixer p_191158_0_)
+    {
+        p_191158_0_.registerWalker(FixTypes.STRUCTURE, new IDataWalker()
+        {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
+            {
+                if (compound.hasKey("entities", 9))
+                {
+                    NBTTagList nbttaglist = compound.getTagList("entities", 10);
+
+                    for (int i = 0; i < nbttaglist.tagCount(); ++i)
+                    {
+                        NBTTagCompound nbttagcompound = (NBTTagCompound)nbttaglist.get(i);
+
+                        if (nbttagcompound.hasKey("nbt", 10))
+                        {
+                            nbttagcompound.setTag("nbt", fixer.process(FixTypes.ENTITY, nbttagcompound.getCompoundTag("nbt"), versionIn));
+                        }
+                    }
+                }
+
+                if (compound.hasKey("blocks", 9))
+                {
+                    NBTTagList nbttaglist1 = compound.getTagList("blocks", 10);
+
+                    for (int j = 0; j < nbttaglist1.tagCount(); ++j)
+                    {
+                        NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist1.get(j);
+
+                        if (nbttagcompound1.hasKey("nbt", 10))
+                        {
+                            nbttagcompound1.setTag("nbt", fixer.process(FixTypes.BLOCK_ENTITY, nbttagcompound1.getCompoundTag("nbt"), versionIn));
+                        }
+                    }
+                }
+
+                return compound;
+            }
+        });
+    }
+
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt)
     {
         Template.BasicPalette template$basicpalette = new Template.BasicPalette();
         NBTTagList nbttaglist = new NBTTagList();
@@ -442,7 +497,7 @@ public class Template
         {
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             nbttagcompound.setTag("pos", this.writeInts(new int[] {template$blockinfo.pos.getX(), template$blockinfo.pos.getY(), template$blockinfo.pos.getZ()}));
-            nbttagcompound.setInteger("state", template$basicpalette.func_189954_a(template$blockinfo.blockState));
+            nbttagcompound.setInteger("state", template$basicpalette.idFor(template$blockinfo.blockState));
 
             if (template$blockinfo.tileentityData != null)
             {
@@ -472,16 +527,17 @@ public class Template
 
         for (IBlockState iblockstate : template$basicpalette)
         {
-            nbttaglist2.appendTag(NBTUtil.func_190009_a(new NBTTagCompound(), iblockstate));
+            nbttaglist2.appendTag(NBTUtil.writeBlockState(new NBTTagCompound(), iblockstate));
         }
 
-        p_189552_1_.setTag("palette", nbttaglist2);
-        p_189552_1_.setTag("blocks", nbttaglist);
-        p_189552_1_.setTag("entities", nbttaglist1);
-        p_189552_1_.setTag("size", this.writeInts(new int[] {this.size.getX(), this.size.getY(), this.size.getZ()}));
-        p_189552_1_.setInteger("version", 1);
-        p_189552_1_.setString("author", this.author);
-        return p_189552_1_;
+        nbt.setTag("palette", nbttaglist2);
+        nbt.setTag("blocks", nbttaglist);
+        nbt.setTag("entities", nbttaglist1);
+        nbt.setTag("size", this.writeInts(new int[] {this.size.getX(), this.size.getY(), this.size.getZ()}));
+        nbt.setString("author", this.author);
+        nbt.setInteger("DataVersion", 922);
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
+        return nbt;
     }
 
     public void read(NBTTagCompound compound)
@@ -496,7 +552,7 @@ public class Template
 
         for (int i = 0; i < nbttaglist1.tagCount(); ++i)
         {
-            template$basicpalette.func_189956_a(NBTUtil.func_190008_d(nbttaglist1.getCompoundTagAt(i)), i);
+            template$basicpalette.addMapping(NBTUtil.readBlockState(nbttaglist1.getCompoundTagAt(i)), i);
         }
 
         NBTTagList nbttaglist3 = compound.getTagList("blocks", 10);
@@ -506,7 +562,7 @@ public class Template
             NBTTagCompound nbttagcompound = nbttaglist3.getCompoundTagAt(j);
             NBTTagList nbttaglist2 = nbttagcompound.getTagList("pos", 3);
             BlockPos blockpos = new BlockPos(nbttaglist2.getIntAt(0), nbttaglist2.getIntAt(1), nbttaglist2.getIntAt(2));
-            IBlockState iblockstate = template$basicpalette.func_189955_a(nbttagcompound.getInteger("state"));
+            IBlockState iblockstate = template$basicpalette.stateFor(nbttagcompound.getInteger("state"));
             NBTTagCompound nbttagcompound1;
 
             if (nbttagcompound.hasKey("nbt"))
@@ -565,43 +621,43 @@ public class Template
 
     static class BasicPalette implements Iterable<IBlockState>
         {
-            public static final IBlockState field_189957_a = Blocks.AIR.getDefaultState();
-            final ObjectIntIdentityMap<IBlockState> field_189958_b;
-            private int field_189959_c;
+            public static final IBlockState DEFAULT_BLOCK_STATE = Blocks.AIR.getDefaultState();
+            final ObjectIntIdentityMap<IBlockState> ids;
+            private int lastId;
 
             private BasicPalette()
             {
-                this.field_189958_b = new ObjectIntIdentityMap(16);
+                this.ids = new ObjectIntIdentityMap(16);
             }
 
-            public int func_189954_a(IBlockState p_189954_1_)
+            public int idFor(IBlockState p_189954_1_)
             {
-                int i = this.field_189958_b.get(p_189954_1_);
+                int i = this.ids.get(p_189954_1_);
 
                 if (i == -1)
                 {
-                    i = this.field_189959_c++;
-                    this.field_189958_b.put(p_189954_1_, i);
+                    i = this.lastId++;
+                    this.ids.put(p_189954_1_, i);
                 }
 
                 return i;
             }
 
             @Nullable
-            public IBlockState func_189955_a(int p_189955_1_)
+            public IBlockState stateFor(int p_189955_1_)
             {
-                IBlockState iblockstate = (IBlockState)this.field_189958_b.getByValue(p_189955_1_);
-                return iblockstate == null ? field_189957_a : iblockstate;
+                IBlockState iblockstate = (IBlockState)this.ids.getByValue(p_189955_1_);
+                return iblockstate == null ? DEFAULT_BLOCK_STATE : iblockstate;
             }
 
             public Iterator<IBlockState> iterator()
             {
-                return this.field_189958_b.iterator();
+                return this.ids.iterator();
             }
 
-            public void func_189956_a(IBlockState p_189956_1_, int p_189956_2_)
+            public void addMapping(IBlockState p_189956_1_, int p_189956_2_)
             {
-                this.field_189958_b.put(p_189956_1_, p_189956_2_);
+                this.ids.put(p_189956_1_, p_189956_2_);
             }
         }
 
@@ -626,7 +682,7 @@ public class Template
         {
             /** the position the entity is will be generated to */
             public final Vec3d pos;
-            /** field_186248_b */
+            /** None */
             public final BlockPos blockPos;
             /** the serialized NBT data of the entity in the structure */
             public final NBTTagCompound entityData;

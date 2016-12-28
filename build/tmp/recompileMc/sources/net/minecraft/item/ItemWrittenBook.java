@@ -90,21 +90,23 @@ public class ItemWrittenBook extends Item
         }
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        if (!worldIn.isRemote)
+        ItemStack itemstack = worldIn.getHeldItem(playerIn);
+
+        if (!itemStackIn.isRemote)
         {
-            this.resolveContents(itemStackIn, playerIn);
+            this.resolveContents(itemstack, worldIn);
         }
 
-        playerIn.openBook(itemStackIn, hand);
-        playerIn.addStat(StatList.getObjectUseStats(this));
-        return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+        worldIn.openBook(itemstack, playerIn);
+        worldIn.addStat(StatList.getObjectUseStats(this));
+        return new ActionResult(EnumActionResult.SUCCESS, itemstack);
     }
 
     private void resolveContents(ItemStack stack, EntityPlayer player)
     {
-        if (stack != null && stack.getTagCompound() != null)
+        if (stack.getTagCompound() != null)
         {
             NBTTagCompound nbttagcompound = stack.getTagCompound();
 
@@ -119,19 +121,19 @@ public class ItemWrittenBook extends Item
                     for (int i = 0; i < nbttaglist.tagCount(); ++i)
                     {
                         String s = nbttaglist.getStringTagAt(i);
-                        ITextComponent lvt_7_1_;
+                        ITextComponent itextcomponent;
 
                         try
                         {
-                            lvt_7_1_ = ITextComponent.Serializer.fromJsonLenient(s);
-                            lvt_7_1_ = TextComponentUtils.processComponent(player, lvt_7_1_, player);
+                            itextcomponent = ITextComponent.Serializer.fromJsonLenient(s);
+                            itextcomponent = TextComponentUtils.processComponent(player, itextcomponent, player);
                         }
                         catch (Exception var9)
                         {
-                            lvt_7_1_ = new TextComponentString(s);
+                            itextcomponent = new TextComponentString(s);
                         }
 
-                        nbttaglist.set(i, new NBTTagString(ITextComponent.Serializer.componentToJson(lvt_7_1_)));
+                        nbttaglist.set(i, new NBTTagString(ITextComponent.Serializer.componentToJson(itextcomponent)));
                     }
 
                     nbttagcompound.setTag("pages", nbttaglist);

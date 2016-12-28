@@ -9,6 +9,7 @@ import net.minecraft.client.gui.GuiSpectator;
 import net.minecraft.client.gui.spectator.categories.SpectatorDetails;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -129,7 +130,7 @@ public class SpectatorMenu
 
             public ITextComponent getSpectatorName()
             {
-                return new TextComponentString("Close menu");
+                return new TextComponentTranslation("spectatorMenu.close", new Object[0]);
             }
 
             public void renderIcon(float p_178663_1_, int alpha)
@@ -158,12 +159,12 @@ public class SpectatorMenu
 
             public void selectItem(SpectatorMenu menu)
             {
-                menu.page = this.direction;
+                menu.page = menu.page + this.direction;
             }
 
             public ITextComponent getSpectatorName()
             {
-                return this.direction < 0 ? new TextComponentString("Previous Page") : new TextComponentString("Next Page");
+                return this.direction < 0 ? new TextComponentTranslation("spectatorMenu.previous_page", new Object[0]) : new TextComponentTranslation("spectatorMenu.next_page", new Object[0]);
             }
 
             public void renderIcon(float p_178663_1_, int alpha)

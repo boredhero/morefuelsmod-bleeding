@@ -1,11 +1,11 @@
 package net.minecraft.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
@@ -13,6 +13,7 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -26,25 +27,37 @@ public class ItemPotion extends Item
         this.setCreativeTab(CreativeTabs.BREWING);
     }
 
+    @SideOnly(Side.CLIENT)
+    public ItemStack func_190903_i()
+    {
+        return PotionUtils.addPotionToItemStack(super.func_190903_i(), PotionTypes.WATER);
+    }
+
     /**
      * Called when the player finishes using this Item (E.g. finishes eating.). Not called when the player stops using
      * the Item before the action is complete.
      */
-    @Nullable
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
     {
         EntityPlayer entityplayer = entityLiving instanceof EntityPlayer ? (EntityPlayer)entityLiving : null;
 
         if (entityplayer == null || !entityplayer.capabilities.isCreativeMode)
         {
-            --stack.stackSize;
+            stack.func_190918_g(1);
         }
 
         if (!worldIn.isRemote)
         {
             for (PotionEffect potioneffect : PotionUtils.getEffectsFromStack(stack))
             {
-                entityLiving.addPotionEffect(new PotionEffect(potioneffect));
+                if (potioneffect.getPotion().isInstant())
+                {
+                    potioneffect.getPotion().affectEntity(entityplayer, entityplayer, entityLiving, potioneffect.getAmplifier(), 1.0D);
+                }
+                else
+                {
+                    entityLiving.addPotionEffect(new PotionEffect(potioneffect));
+                }
             }
         }
 
@@ -55,7 +68,7 @@ public class ItemPotion extends Item
 
         if (entityplayer == null || !entityplayer.capabilities.isCreativeMode)
         {
-            if (stack.stackSize <= 0)
+            if (stack.func_190926_b())
             {
                 return new ItemStack(Items.GLASS_BOTTLE);
             }
@@ -85,10 +98,10 @@ public class ItemPotion extends Item
         return EnumAction.DRINK;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        playerIn.setActiveHand(hand);
-        return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+        worldIn.setActiveHand(playerIn);
+        return new ActionResult(EnumActionResult.SUCCESS, worldIn.getHeldItem(playerIn));
     }
 
     public String getItemStackDisplayName(ItemStack stack)
@@ -108,18 +121,21 @@ public class ItemPotion extends Item
     @SideOnly(Side.CLIENT)
     public boolean hasEffect(ItemStack stack)
     {
-        return !PotionUtils.getEffectsFromStack(stack).isEmpty();
+        return super.hasEffect(stack) || !PotionUtils.getEffectsFromStack(stack).isEmpty();
     }
 
     /**
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
+    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
     {
         for (PotionType potiontype : PotionType.REGISTRY)
         {
-            subItems.add(PotionUtils.addPotionToItemStack(new ItemStack(itemIn), potiontype));
+            if (potiontype != PotionTypes.EMPTY)
+            {
+                subItems.add(PotionUtils.addPotionToItemStack(new ItemStack(itemIn), potiontype));
+            }
         }
     }
 }

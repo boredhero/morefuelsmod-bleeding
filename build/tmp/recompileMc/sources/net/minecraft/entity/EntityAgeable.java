@@ -27,15 +27,18 @@ public abstract class EntityAgeable extends EntityCreature
         super(worldIn);
     }
 
+    @Nullable
     public abstract EntityAgeable createChild(EntityAgeable ageable);
 
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        if (stack != null && stack.getItem() == Items.SPAWN_EGG)
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (itemstack.getItem() == Items.SPAWN_EGG)
         {
             if (!this.worldObj.isRemote)
             {
-                Class <? extends Entity > oclass = EntityList.NAME_TO_CLASS.get(ItemMonsterPlacer.getEntityIdFromItem(stack));
+                Class <? extends Entity > oclass = EntityList.getClass(ItemMonsterPlacer.func_190908_h(itemstack));
 
                 if (oclass != null && this.getClass() == oclass)
                 {
@@ -47,14 +50,14 @@ public abstract class EntityAgeable extends EntityCreature
                         entityageable.setLocationAndAngles(this.posX, this.posY, this.posZ, 0.0F, 0.0F);
                         this.worldObj.spawnEntityInWorld(entityageable);
 
-                        if (stack.hasDisplayName())
+                        if (itemstack.hasDisplayName())
                         {
-                            entityageable.setCustomNameTag(stack.getDisplayName());
+                            entityageable.setCustomNameTag(itemstack.getDisplayName());
                         }
 
                         if (!player.capabilities.isCreativeMode)
                         {
-                            --stack.stackSize;
+                            itemstack.func_190918_g(1);
                         }
                     }
                 }
@@ -65,6 +68,19 @@ public abstract class EntityAgeable extends EntityCreature
         else
         {
             return false;
+        }
+    }
+
+    protected boolean func_190669_a(ItemStack p_190669_1_, Class <? extends Entity > p_190669_2_)
+    {
+        if (p_190669_1_.getItem() != Items.SPAWN_EGG)
+        {
+            return false;
+        }
+        else
+        {
+            Class <? extends Entity > oclass = EntityList.getClass(ItemMonsterPlacer.func_190908_h(p_190669_1_));
+            return oclass != null && p_190669_2_ == oclass;
         }
     }
 

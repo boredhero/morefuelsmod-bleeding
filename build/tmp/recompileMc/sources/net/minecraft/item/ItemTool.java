@@ -79,7 +79,7 @@ public class ItemTool extends Item
      */
     public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving)
     {
-        if ((double)state.getBlockHardness(worldIn, pos) != 0.0D)
+        if (!worldIn.isRemote && (double)state.getBlockHardness(worldIn, pos) != 0.0D)
         {
             stack.damageItem(1, entityLiving);
         }
@@ -123,7 +123,7 @@ public class ItemTool extends Item
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
     {
         ItemStack mat = this.toolMaterial.getRepairItemStack();
-        if (mat != null && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) return true;
+        if (!mat.func_190926_b() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat, repair, false)) return true;
         return super.getIsRepairable(toRepair, repair);
     }
 
@@ -141,12 +141,13 @@ public class ItemTool extends Item
     }
 
     /*===================================== FORGE START =================================*/
+    @javax.annotation.Nullable
     private String toolClass;
     @Override
-    public int getHarvestLevel(ItemStack stack, String toolClass)
+    public int getHarvestLevel(ItemStack stack, String toolClass, @javax.annotation.Nullable net.minecraft.entity.player.EntityPlayer player, @javax.annotation.Nullable IBlockState blockState)
     {
-        int level = super.getHarvestLevel(stack, toolClass);
-        if (level == -1 && toolClass != null && toolClass.equals(this.toolClass))
+        int level = super.getHarvestLevel(stack, toolClass,  player, blockState);
+        if (level == -1 && toolClass.equals(this.toolClass))
         {
             return this.toolMaterial.getHarvestLevel();
         }

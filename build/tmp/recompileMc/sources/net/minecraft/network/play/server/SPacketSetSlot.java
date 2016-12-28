@@ -1,7 +1,6 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
-import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -13,17 +12,17 @@ public class SPacketSetSlot implements Packet<INetHandlerPlayClient>
 {
     private int windowId;
     private int slot;
-    private ItemStack item;
+    private ItemStack item = ItemStack.field_190927_a;
 
     public SPacketSetSlot()
     {
     }
 
-    public SPacketSetSlot(int windowIdIn, int slotIn, @Nullable ItemStack itemIn)
+    public SPacketSetSlot(int windowIdIn, int slotIn, ItemStack itemIn)
     {
         this.windowId = windowIdIn;
         this.slot = slotIn;
-        this.item = itemIn == null ? null : itemIn.copy();
+        this.item = itemIn.func_190926_b() ? ItemStack.field_190927_a : itemIn.copy();
     }
 
     /**
@@ -66,7 +65,6 @@ public class SPacketSetSlot implements Packet<INetHandlerPlayClient>
         return this.slot;
     }
 
-    @Nullable
     @SideOnly(Side.CLIENT)
     public ItemStack getStack()
     {

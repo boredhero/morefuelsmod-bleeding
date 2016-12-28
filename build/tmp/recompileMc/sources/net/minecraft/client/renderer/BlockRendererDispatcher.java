@@ -1,6 +1,5 @@
 package net.minecraft.client.renderer;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.SimpleBakedModel;
@@ -124,19 +123,6 @@ public class BlockRendererDispatcher implements IResourceManagerReloadListener
                     this.chestRenderer.renderChestBrightness(state.getBlock(), brightness);
                 case LIQUID:
             }
-        }
-    }
-
-    public boolean isEntityBlockAnimated(Block blockIn)
-    {
-        if (blockIn == null)
-        {
-            return false;
-        }
-        else
-        {
-            EnumBlockRenderType enumblockrendertype = blockIn.getDefaultState().getRenderType();
-            return enumblockrendertype == EnumBlockRenderType.MODEL ? false : enumblockrendertype == EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
         }
     }
 

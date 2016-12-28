@@ -69,10 +69,12 @@ import net.minecraftforge.fml.common.EnhancedRuntimeException.WrappedPrintStream
 @SuppressWarnings("WeakerAccess")
 public class PersistentRegistryManager
 {
+    public static void fireCreateRegistryEvents() {
+        MinecraftForge.EVENT_BUS.post(new RegistryEvent.NewRegistry());
+    }
+
     public static void fireRegistryEvents()
     {
-        MinecraftForge.EVENT_BUS.post(new RegistryEvent.NewRegistry());
-
         List<ResourceLocation> registryKeys = Lists.newArrayList(PersistentRegistry.ACTIVE.registries.keySet());
         Collections.sort(registryKeys, new Comparator<ResourceLocation>()
         {
@@ -189,6 +191,7 @@ public class PersistentRegistryManager
     public static final ResourceLocation SOUNDEVENTS = new ResourceLocation("minecraft:soundevents");
     public static final ResourceLocation POTIONTYPES = new ResourceLocation("minecraft:potiontypes");
     public static final ResourceLocation ENCHANTMENTS = new ResourceLocation("minecraft:enchantments");
+    public static final ResourceLocation ENTITIES = new ResourceLocation("minecraft:entities");
     static final ResourceLocation SUBSTITUTION_ORIGINALS = new ResourceLocation("fml:suboriginals");
 
     @Deprecated //Use RegistryBuilder TODO: Remove in 1.11

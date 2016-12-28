@@ -32,17 +32,11 @@ public class Slot
      */
     public void onSlotChange(ItemStack p_75220_1_, ItemStack p_75220_2_)
     {
-        if (p_75220_1_ != null && p_75220_2_ != null)
-        {
-            if (p_75220_1_.getItem() == p_75220_2_.getItem())
-            {
-                int i = p_75220_2_.stackSize - p_75220_1_.stackSize;
+        int i = p_75220_2_.func_190916_E() - p_75220_1_.func_190916_E();
 
-                if (i > 0)
-                {
-                    this.onCrafting(p_75220_1_, i);
-                }
-            }
+        if (i > 0)
+        {
+            this.onCrafting(p_75220_2_, i);
         }
     }
 
@@ -54,6 +48,10 @@ public class Slot
     {
     }
 
+    protected void func_190900_b(int p_190900_1_)
+    {
+    }
+
     /**
      * the itemStack passed in is the output - ie, iron ingots, and pickaxes, not ore and wood.
      */
@@ -61,15 +59,16 @@ public class Slot
     {
     }
 
-    public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack)
+    public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
     {
         this.onSlotChanged();
+        return p_190901_2_;
     }
 
     /**
-     * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+     * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
      */
-    public boolean isItemValid(@Nullable ItemStack stack)
+    public boolean isItemValid(ItemStack stack)
     {
         return true;
     }
@@ -77,7 +76,6 @@ public class Slot
     /**
      * Helper fnct to get the stack in the slot.
      */
-    @Nullable
     public ItemStack getStack()
     {
         return this.inventory.getStackInSlot(this.slotIndex);
@@ -88,13 +86,13 @@ public class Slot
      */
     public boolean getHasStack()
     {
-        return this.getStack() != null;
+        return !this.getStack().func_190926_b();
     }
 
     /**
      * Helper method to put a stack in the slot.
      */
-    public void putStack(@Nullable ItemStack stack)
+    public void putStack(ItemStack stack)
     {
         this.inventory.setInventorySlotContents(this.slotIndex, stack);
         this.onSlotChanged();

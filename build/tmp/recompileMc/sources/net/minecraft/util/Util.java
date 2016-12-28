@@ -1,6 +1,7 @@
 package net.minecraft.util;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import javax.annotation.Nullable;
@@ -13,7 +14,7 @@ public class Util
     @SideOnly(Side.CLIENT)
     public static Util.EnumOS getOSType()
     {
-        String s = System.getProperty("os.name").toLowerCase();
+        String s = System.getProperty("os.name").toLowerCase(Locale.ROOT);
         return s.contains("win") ? Util.EnumOS.WINDOWS : (s.contains("mac") ? Util.EnumOS.OSX : (s.contains("solaris") ? Util.EnumOS.SOLARIS : (s.contains("sunos") ? Util.EnumOS.SOLARIS : (s.contains("linux") ? Util.EnumOS.LINUX : (s.contains("unix") ? Util.EnumOS.LINUX : Util.EnumOS.UNKNOWN)))));
     }
 

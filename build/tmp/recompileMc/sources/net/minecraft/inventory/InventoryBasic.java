@@ -2,9 +2,9 @@ package net.minecraft.inventory;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -15,7 +15,7 @@ public class InventoryBasic implements IInventory
 {
     private String inventoryTitle;
     private final int slotsCount;
-    private final ItemStack[] inventoryContents;
+    private final NonNullList<ItemStack> inventoryContents;
     private List<IInventoryChangedListener> changeListeners;
     private boolean hasCustomName;
 
@@ -24,7 +24,7 @@ public class InventoryBasic implements IInventory
         this.inventoryTitle = title;
         this.hasCustomName = customName;
         this.slotsCount = slotCount;
-        this.inventoryContents = new ItemStack[slotCount];
+        this.inventoryContents = NonNullList.<ItemStack>func_191197_a(slotCount, ItemStack.field_190927_a);
     }
 
     @SideOnly(Side.CLIENT)
@@ -57,21 +57,19 @@ public class InventoryBasic implements IInventory
     /**
      * Returns the stack in the given slot.
      */
-    @Nullable
     public ItemStack getStackInSlot(int index)
     {
-        return index >= 0 && index < this.inventoryContents.length ? this.inventoryContents[index] : null;
+        return index >= 0 && index < this.inventoryContents.size() ? (ItemStack)this.inventoryContents.get(index) : ItemStack.field_190927_a;
     }
 
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
-    @Nullable
     public ItemStack decrStackSize(int index, int count)
     {
         ItemStack itemstack = ItemStackHelper.getAndSplit(this.inventoryContents, index, count);
 
-        if (itemstack != null)
+        if (!itemstack.func_190926_b())
         {
             this.markDirty();
         }
@@ -79,7 +77,6 @@ public class InventoryBasic implements IInventory
         return itemstack;
     }
 
-    @Nullable
     public ItemStack addItem(ItemStack stack)
     {
         ItemStack itemstack = stack.copy();
@@ -88,33 +85,33 @@ public class InventoryBasic implements IInventory
         {
             ItemStack itemstack1 = this.getStackInSlot(i);
 
-            if (itemstack1 == null)
+            if (itemstack1.func_190926_b())
             {
                 this.setInventorySlotContents(i, itemstack);
                 this.markDirty();
-                return null;
+                return ItemStack.field_190927_a;
             }
 
             if (ItemStack.areItemsEqual(itemstack1, itemstack))
             {
                 int j = Math.min(this.getInventoryStackLimit(), itemstack1.getMaxStackSize());
-                int k = Math.min(itemstack.stackSize, j - itemstack1.stackSize);
+                int k = Math.min(itemstack.func_190916_E(), j - itemstack1.func_190916_E());
 
                 if (k > 0)
                 {
-                    itemstack1.stackSize += k;
-                    itemstack.stackSize -= k;
+                    itemstack1.func_190917_f(k);
+                    itemstack.func_190918_g(k);
 
-                    if (itemstack.stackSize <= 0)
+                    if (itemstack.func_190926_b())
                     {
                         this.markDirty();
-                        return null;
+                        return ItemStack.field_190927_a;
                     }
                 }
             }
         }
 
-        if (itemstack.stackSize != stack.stackSize)
+        if (itemstack.func_190916_E() != stack.func_190916_E())
         {
             this.markDirty();
         }
@@ -125,31 +122,31 @@ public class InventoryBasic implements IInventory
     /**
      * Removes a stack from the given slot and returns it.
      */
-    @Nullable
     public ItemStack removeStackFromSlot(int index)
     {
-        if (this.inventoryContents[index] != null)
+        ItemStack itemstack = (ItemStack)this.inventoryContents.get(index);
+
+        if (itemstack.func_190926_b())
         {
-            ItemStack itemstack = this.inventoryContents[index];
-            this.inventoryContents[index] = null;
-            return itemstack;
+            return ItemStack.field_190927_a;
         }
         else
         {
-            return null;
+            this.inventoryContents.set(index, ItemStack.field_190927_a);
+            return itemstack;
         }
     }
 
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
+    public void setInventorySlotContents(int index, ItemStack stack)
     {
-        this.inventoryContents[index] = stack;
+        this.inventoryContents.set(index, stack);
 
-        if (stack != null && stack.stackSize > this.getInventoryStackLimit())
+        if (!stack.func_190926_b() && stack.func_190916_E() > this.getInventoryStackLimit())
         {
-            stack.stackSize = this.getInventoryStackLimit();
+            stack.func_190920_e(this.getInventoryStackLimit());
         }
 
         this.markDirty();
@@ -161,6 +158,19 @@ public class InventoryBasic implements IInventory
     public int getSizeInventory()
     {
         return this.slotsCount;
+    }
+
+    public boolean func_191420_l()
+    {
+        for (ItemStack itemstack : this.inventoryContents)
+        {
+            if (!itemstack.func_190926_b())
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -220,7 +230,7 @@ public class InventoryBasic implements IInventory
     }
 
     /**
-     * Do not make give this method the name canInteractWith because it clashes with Container
+     * Don't rename this method to canInteractWith due to conflicts with Container
      */
     public boolean isUseableByPlayer(EntityPlayer player)
     {
@@ -236,7 +246,8 @@ public class InventoryBasic implements IInventory
     }
 
     /**
-     * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot.
+     * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot. For
+     * guis use Slot.isItemValid
      */
     public boolean isItemValidForSlot(int index, ItemStack stack)
     {
@@ -259,9 +270,6 @@ public class InventoryBasic implements IInventory
 
     public void clear()
     {
-        for (int i = 0; i < this.inventoryContents.length; ++i)
-        {
-            this.inventoryContents[i] = null;
-        }
+        this.inventoryContents.clear();
     }
 }

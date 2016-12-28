@@ -61,7 +61,7 @@ public class CommandMessage extends CommandBase
 
             if (entityplayer == sender)
             {
-                throw new PlayerNotFoundException("commands.message.sameTarget", new Object[0]);
+                throw new PlayerNotFoundException("commands.message.sameTarget");
             }
             else
             {

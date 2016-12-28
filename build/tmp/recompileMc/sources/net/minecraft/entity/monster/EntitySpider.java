@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.EntityAILeapAtTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
@@ -45,9 +45,9 @@ public class EntitySpider extends EntityMob
         this.setSize(1.4F, 0.9F);
     }
 
-    public static void func_189774_d(DataFixer p_189774_0_)
+    public static void registerFixesSpider(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189774_0_, "Spider");
+        EntityLiving.registerFixesMob(fixer, EntitySpider.class);
     }
 
     protected void initEntityAI()
@@ -55,7 +55,7 @@ public class EntitySpider extends EntityMob
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(3, new EntityAILeapAtTarget(this, 0.4F));
         this.tasks.addTask(4, new EntitySpider.AISpiderAttack(this));
-        this.tasks.addTask(5, new EntityAIWander(this, 0.8D));
+        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 0.8D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));

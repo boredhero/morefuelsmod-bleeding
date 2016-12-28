@@ -45,7 +45,14 @@ public class SkinManager
         {
             public Map<Type, MinecraftProfileTexture> load(GameProfile p_load_1_) throws Exception
             {
-                return Minecraft.getMinecraft().getSessionService().getTextures(p_load_1_, false);
+                try
+                {
+                    return Minecraft.getMinecraft().getSessionService().getTextures(p_load_1_, false);
+                }
+                catch (Throwable var3)
+                {
+                    return Maps.<Type, MinecraftProfileTexture>newHashMap();
+                }
             }
         });
     }

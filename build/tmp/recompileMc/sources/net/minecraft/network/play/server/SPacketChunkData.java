@@ -35,7 +35,7 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
         this.chunkX = p_i47124_1_.xPosition;
         this.chunkZ = p_i47124_1_.zPosition;
         this.loadChunk = p_i47124_2_ == 65535;
-        boolean flag = !p_i47124_1_.getWorld().provider.getHasNoSky();
+        boolean flag = p_i47124_1_.getWorld().provider.func_191066_m();
         this.buffer = new byte[this.calculateChunkSize(p_i47124_1_, flag, p_i47124_2_)];
         this.availableSections = this.extractChunkData(new PacketBuffer(this.getWriteBuffer()), p_i47124_1_, flag, p_i47124_2_);
         this.tileEntityTags = Lists.<NBTTagCompound>newArrayList();
@@ -154,10 +154,10 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
         return i;
     }
 
-    protected int calculateChunkSize(Chunk p_189556_1_, boolean p_189556_2_, int p_189556_3_)
+    protected int calculateChunkSize(Chunk chunkIn, boolean p_189556_2_, int p_189556_3_)
     {
         int i = 0;
-        ExtendedBlockStorage[] aextendedblockstorage = p_189556_1_.getBlockStorageArray();
+        ExtendedBlockStorage[] aextendedblockstorage = chunkIn.getBlockStorageArray();
         int j = 0;
 
         for (int k = aextendedblockstorage.length; j < k; ++j)
@@ -178,7 +178,7 @@ public class SPacketChunkData implements Packet<INetHandlerPlayClient>
 
         if (this.doChunkLoad())
         {
-            i += p_189556_1_.getBiomeArray().length;
+            i += chunkIn.getBiomeArray().length;
         }
 
         return i;

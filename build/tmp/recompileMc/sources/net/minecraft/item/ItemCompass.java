@@ -45,13 +45,13 @@ public class ItemCompass extends Item
                     if (worldIn.provider.isSurfaceWorld())
                     {
                         double d1 = flag ? (double)entity.rotationYaw : this.getFrameRotation((EntityItemFrame)entity);
-                        d1 = d1 % 360.0D;
-                        double d2 = this.getSpawnToAngle(worldIn, entity);
-                        d0 = Math.PI - ((d1 - 90.0D) * 0.01745329238474369D - d2);
+                        d1 = MathHelper.func_191273_b(d1 / 360.0D, 1.0D);
+                        double d2 = this.getSpawnToAngle(worldIn, entity) / (Math.PI * 2D);
+                        d0 = 0.5D - (d1 - 0.25D - d2);
                     }
                     else
                     {
-                        d0 = Math.random() * (Math.PI * 2D);
+                        d0 = Math.random();
                     }
 
                     if (flag)
@@ -59,22 +59,20 @@ public class ItemCompass extends Item
                         d0 = this.wobble(worldIn, d0);
                     }
 
-                    float f = (float)(d0 / (Math.PI * 2D));
-                    return MathHelper.positiveModulo(f, 1.0F);
+                    return MathHelper.positiveModulo((float)d0, 1.0F);
                 }
             }
             @SideOnly(Side.CLIENT)
-            private double wobble(World p_185093_1_, double p_185093_2_)
+            private double wobble(World worldIn, double p_185093_2_)
             {
-                if (p_185093_1_.getTotalWorldTime() != this.lastUpdateTick)
+                if (worldIn.getTotalWorldTime() != this.lastUpdateTick)
                 {
-                    this.lastUpdateTick = p_185093_1_.getTotalWorldTime();
+                    this.lastUpdateTick = worldIn.getTotalWorldTime();
                     double d0 = p_185093_2_ - this.rotation;
-                    d0 = d0 % (Math.PI * 2D);
-                    d0 = MathHelper.clamp_double(d0, -1.0D, 1.0D);
+                    d0 = MathHelper.func_191273_b(d0 + 0.5D, 1.0D) - 0.5D;
                     this.rota += d0 * 0.1D;
                     this.rota *= 0.8D;
-                    this.rotation += this.rota;
+                    this.rotation = MathHelper.func_191273_b(this.rotation + this.rota, 1.0D);
                 }
 
                 return this.rotation;

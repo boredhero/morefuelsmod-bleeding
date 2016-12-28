@@ -54,6 +54,8 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
                 {
                     int j = ((Integer)state.getValue(AGE)).intValue();
 
+                    if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, true))
+                    {
                     if (j == 15)
                     {
                         worldIn.setBlockState(pos.up(), this.getDefaultState());
@@ -62,6 +64,8 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
                     else
                     {
                         worldIn.setBlockState(pos, state.withProperty(AGE, Integer.valueOf(j + 1)), 4);
+                    }
+                    net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
                     }
                 }
             }
@@ -105,7 +109,7 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         this.checkForDrop(worldIn, pos, state);
     }
@@ -130,7 +134,7 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
     }
 
     @Nullable
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -138,7 +142,6 @@ public class BlockReed extends Block implements net.minecraftforge.common.IPlant
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Items.REEDS;

@@ -2,7 +2,7 @@ package net.minecraft.client.renderer.entity.layers;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
-import javax.annotation.Nullable;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLivingBase;
@@ -49,9 +49,9 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
 
     private void renderArmorLayer(EntityLivingBase entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale, EntityEquipmentSlot slotIn)
     {
-        ItemStack itemstack = this.getItemStackFromSlot(entityLivingBaseIn, slotIn);
+        ItemStack itemstack = entityLivingBaseIn.getItemStackFromSlot(slotIn);
 
-        if (itemstack != null && itemstack.getItem() instanceof ItemArmor)
+        if (itemstack.getItem() instanceof ItemArmor)
         {
             ItemArmor itemarmor = (ItemArmor)itemstack.getItem();
 
@@ -89,12 +89,6 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
         }
     }
 
-    @Nullable
-    public ItemStack getItemStackFromSlot(EntityLivingBase living, EntityEquipmentSlot slotIn)
-    {
-        return living.getItemStackFromSlot(slotIn);
-    }
-
     public T getModelFromSlot(EntityEquipmentSlot slotIn)
     {
         return (T)(this.isLegSlot(slotIn) ? this.modelLeggings : this.modelArmor);
@@ -109,6 +103,7 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
     {
         float f = (float)p_188364_1_.ticksExisted + p_188364_5_;
         p_188364_0_.bindTexture(ENCHANTED_ITEM_GLINT_RES);
+        Minecraft.getMinecraft().entityRenderer.func_191514_d(true);
         GlStateManager.enableBlend();
         GlStateManager.depthFunc(514);
         GlStateManager.depthMask(false);
@@ -129,6 +124,7 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
             GlStateManager.translate(0.0F, f * (0.001F + (float)i * 0.003F) * 20.0F, 0.0F);
             GlStateManager.matrixMode(5888);
             model.render(p_188364_1_, p_188364_3_, p_188364_4_, p_188364_6_, p_188364_7_, p_188364_8_, p_188364_9_);
+            GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         }
 
         GlStateManager.matrixMode(5890);
@@ -138,6 +134,7 @@ public abstract class LayerArmorBase<T extends ModelBase> implements LayerRender
         GlStateManager.depthMask(true);
         GlStateManager.depthFunc(515);
         GlStateManager.disableBlend();
+        Minecraft.getMinecraft().entityRenderer.func_191514_d(false);
     }
 
     @Deprecated //Use the more sensitive version getArmorResource below

@@ -11,9 +11,11 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -115,18 +117,18 @@ public abstract class EntityArrow extends Entity implements IProjectile
         this.dataManager.register(CRITICAL, Byte.valueOf((byte)0));
     }
 
-    public void setAim(Entity p_184547_1_, float p_184547_2_, float p_184547_3_, float p_184547_4_, float p_184547_5_, float p_184547_6_)
+    public void setAim(Entity shooter, float pitch, float yaw, float p_184547_4_, float velocity, float inaccuracy)
     {
-        float f = -MathHelper.sin(p_184547_3_ * 0.017453292F) * MathHelper.cos(p_184547_2_ * 0.017453292F);
-        float f1 = -MathHelper.sin(p_184547_2_ * 0.017453292F);
-        float f2 = MathHelper.cos(p_184547_3_ * 0.017453292F) * MathHelper.cos(p_184547_2_ * 0.017453292F);
-        this.setThrowableHeading((double)f, (double)f1, (double)f2, p_184547_5_, p_184547_6_);
-        this.motionX += p_184547_1_.motionX;
-        this.motionZ += p_184547_1_.motionZ;
+        float f = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+        float f1 = -MathHelper.sin(pitch * 0.017453292F);
+        float f2 = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
+        this.setThrowableHeading((double)f, (double)f1, (double)f2, velocity, inaccuracy);
+        this.motionX += shooter.motionX;
+        this.motionZ += shooter.motionZ;
 
-        if (!p_184547_1_.onGround)
+        if (!shooter.onGround)
         {
-            this.motionY += p_184547_1_.motionY;
+            this.motionY += shooter.motionY;
         }
     }
 
@@ -227,16 +229,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
         {
             int j = block.getMetaFromState(iblockstate);
 
-            if (block == this.inTile && j == this.inData)
-            {
-                ++this.ticksInGround;
-
-                if (this.ticksInGround >= 1200)
-                {
-                    this.setDead();
-                }
-            }
-            else
+            if ((block != this.inTile || j != this.inData) && !this.worldObj.collidesWithAnyBlock(this.getEntityBoundingBox().expandXyz(0.05D)))
             {
                 this.inGround = false;
                 this.motionX *= (double)(this.rand.nextFloat() * 0.2F);
@@ -244,6 +237,15 @@ public abstract class EntityArrow extends Entity implements IProjectile
                 this.motionZ *= (double)(this.rand.nextFloat() * 0.2F);
                 this.ticksInGround = 0;
                 this.ticksInAir = 0;
+            }
+            else
+            {
+                ++this.ticksInGround;
+
+                if (this.ticksInGround >= 1200)
+                {
+                    this.setDead();
+                }
             }
 
             ++this.timeInGround;
@@ -270,7 +272,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
                 raytraceresult = new RayTraceResult(entity);
             }
 
-            if (raytraceresult != null && raytraceresult.entityHit != null && raytraceresult.entityHit instanceof EntityPlayer)
+            if (raytraceresult != null && raytraceresult.entityHit instanceof EntityPlayer)
             {
                 EntityPlayer entityplayer = (EntityPlayer)raytraceresult.entityHit;
 
@@ -344,7 +346,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
             this.motionY *= (double)f1;
             this.motionZ *= (double)f1;
 
-            if (!this.func_189652_ae())
+            if (!this.hasNoGravity())
             {
                 this.motionY -= 0.05000000074505806D;
             }
@@ -477,6 +479,21 @@ public abstract class EntityArrow extends Entity implements IProjectile
         }
     }
 
+    /**
+     * Tries to move the entity towards the specified location.
+     */
+    public void moveEntity(MoverType x, double p_70091_2_, double p_70091_4_, double p_70091_6_)
+    {
+        super.moveEntity(x, p_70091_2_, p_70091_4_, p_70091_6_);
+
+        if (this.inGround)
+        {
+            this.xTile = MathHelper.floor_double(this.posX);
+            this.yTile = MathHelper.floor_double(this.posY);
+            this.zTile = MathHelper.floor_double(this.posZ);
+        }
+    }
+
     protected void arrowHit(EntityLivingBase living)
     {
     }
@@ -513,13 +530,13 @@ public abstract class EntityArrow extends Entity implements IProjectile
         return entity;
     }
 
-    public static void func_189657_a(DataFixer p_189657_0_, String p_189657_1_)
+    public static void registerFixesArrow(DataFixer fixer, String name)
     {
     }
 
-    public static void func_189658_a(DataFixer p_189658_0_)
+    public static void registerFixesArrow(DataFixer fixer)
     {
-        func_189657_a(p_189658_0_, "Arrow");
+        registerFixesArrow(fixer, "Arrow");
     }
 
     /**
@@ -538,6 +555,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
         compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
         compound.setByte("pickup", (byte)this.pickupStatus.ordinal());
         compound.setDouble("damage", this.damage);
+        compound.setBoolean("crit", this.getIsCritical());
     }
 
     /**
@@ -576,6 +594,8 @@ public abstract class EntityArrow extends Entity implements IProjectile
         {
             this.pickupStatus = compound.getBoolean("player") ? EntityArrow.PickupStatus.ALLOWED : EntityArrow.PickupStatus.DISALLOWED;
         }
+
+        this.setIsCritical(compound.getBoolean("crit"));
     }
 
     /**
@@ -594,7 +614,6 @@ public abstract class EntityArrow extends Entity implements IProjectile
 
             if (flag)
             {
-                this.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 0.2F, ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.0F) * 2.0F);
                 entityIn.onItemPickup(this, 1);
                 this.setDead();
             }
@@ -610,12 +629,6 @@ public abstract class EntityArrow extends Entity implements IProjectile
     protected boolean canTriggerWalking()
     {
         return false;
-    }
-
-    @SideOnly(Side.CLIENT)
-    public int getBrightnessForRender(float partialTicks)
-    {
-        return 15728880;
     }
 
     public void setDamage(double damageIn)
@@ -673,6 +686,28 @@ public abstract class EntityArrow extends Entity implements IProjectile
     {
         byte b0 = ((Byte)this.dataManager.get(CRITICAL)).byteValue();
         return (b0 & 1) != 0;
+    }
+
+    public void func_190547_a(EntityLivingBase p_190547_1_, float p_190547_2_)
+    {
+        int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, p_190547_1_);
+        int j = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, p_190547_1_);
+        this.setDamage((double)(p_190547_2_ * 2.0F) + this.rand.nextGaussian() * 0.25D + (double)((float)this.worldObj.getDifficulty().getDifficultyId() * 0.11F));
+
+        if (i > 0)
+        {
+            this.setDamage(this.getDamage() + (double)i * 0.5D + 0.5D);
+        }
+
+        if (j > 0)
+        {
+            this.setKnockbackStrength(j);
+        }
+
+        if (EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.FLAME, p_190547_1_) > 0)
+        {
+            this.setFire(100);
+        }
     }
 
     public static enum PickupStatus

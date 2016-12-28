@@ -77,10 +77,15 @@ public class PotionUtils
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    public static int func_190932_c(ItemStack p_190932_0_)
+    {
+        NBTTagCompound nbttagcompound = p_190932_0_.getTagCompound();
+        return nbttagcompound != null && nbttagcompound.hasKey("CustomPotionColor", 99) ? nbttagcompound.getInteger("CustomPotionColor") : (getPotionFromItem(p_190932_0_) == PotionTypes.EMPTY ? 16253176 : getPotionColorFromEffectList(getEffectsFromStack(p_190932_0_)));
+    }
+
     public static int getPotionColor(PotionType potionIn)
     {
-        return getPotionColorFromEffectList(potionIn.getEffects());
+        return potionIn == PotionTypes.EMPTY ? 16253176 : getPotionColorFromEffectList(potionIn.getEffects());
     }
 
     public static int getPotionColorFromEffectList(Collection<PotionEffect> effects)
@@ -138,18 +143,31 @@ public class PotionUtils
      */
     public static PotionType getPotionTypeFromNBT(@Nullable NBTTagCompound tag)
     {
-        return tag == null ? PotionTypes.WATER : PotionType.getPotionTypeForName(tag.getString("Potion"));
+        return tag == null ? PotionTypes.EMPTY : PotionType.getPotionTypeForName(tag.getString("Potion"));
     }
 
     public static ItemStack addPotionToItemStack(ItemStack itemIn, PotionType potionIn)
     {
         ResourceLocation resourcelocation = (ResourceLocation)PotionType.REGISTRY.getNameForObject(potionIn);
 
-        if (resourcelocation != null)
+        if (potionIn == PotionTypes.EMPTY)
         {
-            NBTTagCompound nbttagcompound = itemIn.hasTagCompound() ? itemIn.getTagCompound() : new NBTTagCompound();
-            nbttagcompound.setString("Potion", resourcelocation.toString());
-            itemIn.setTagCompound(nbttagcompound);
+            if (itemIn.hasTagCompound())
+            {
+                NBTTagCompound nbttagcompound = itemIn.getTagCompound();
+                nbttagcompound.removeTag("Potion");
+
+                if (nbttagcompound.hasNoTags())
+                {
+                    itemIn.setTagCompound((NBTTagCompound)null);
+                }
+            }
+        }
+        else
+        {
+            NBTTagCompound nbttagcompound1 = itemIn.hasTagCompound() ? itemIn.getTagCompound() : new NBTTagCompound();
+            nbttagcompound1.setString("Potion", resourcelocation.toString());
+            itemIn.setTagCompound(nbttagcompound1);
         }
 
         return itemIn;

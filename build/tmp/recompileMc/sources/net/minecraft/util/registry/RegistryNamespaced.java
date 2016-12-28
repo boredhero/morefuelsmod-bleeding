@@ -55,7 +55,7 @@ public class RegistryNamespaced<K, V> extends RegistrySimple<K, V> implements IO
     /**
      * Gets the integer ID we use to identify the given object.
      */
-    public int getIDForObject(V value)
+    public int getIDForObject(@Nullable V value)
     {
         return this.underlyingIntegerMap.getId(value);
     }

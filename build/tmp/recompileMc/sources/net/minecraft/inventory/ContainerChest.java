@@ -1,6 +1,5 @@
 package net.minecraft.inventory;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -38,6 +37,9 @@ public class ContainerChest extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.lowerChestInventory.isUseableByPlayer(playerIn);
@@ -46,10 +48,9 @@ public class ContainerChest extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
-    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.field_190927_a;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -61,17 +62,17 @@ public class ContainerChest extends Container
             {
                 if (!this.mergeItemStack(itemstack1, this.numRows * 9, this.inventorySlots.size(), true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 0, this.numRows * 9, false))
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.func_190926_b())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.field_190927_a);
             }
             else
             {

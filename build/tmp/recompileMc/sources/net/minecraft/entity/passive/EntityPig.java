@@ -14,7 +14,7 @@ import net.minecraft.entity.ai.EntityAIMate;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityPigZombie;
@@ -29,6 +29,7 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.stats.AchievementList;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
@@ -41,6 +42,7 @@ import net.minecraft.world.storage.loot.LootTableList;
 public class EntityPig extends EntityAnimal
 {
     private static final DataParameter<Boolean> SADDLED = EntityDataManager.<Boolean>createKey(EntityPig.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Integer> field_191520_bx = EntityDataManager.<Integer>createKey(EntityPig.class, DataSerializers.VARINT);
     private static final Set<Item> TEMPTATION_ITEMS = Sets.newHashSet(new Item[] {Items.CARROT, Items.POTATO, Items.BEETROOT});
     private boolean boosting;
     private int boostTime;
@@ -60,7 +62,7 @@ public class EntityPig extends EntityAnimal
         this.tasks.addTask(4, new EntityAITempt(this, 1.2D, Items.CARROT_ON_A_STICK, false));
         this.tasks.addTask(4, new EntityAITempt(this, 1.2D, false, TEMPTATION_ITEMS));
         this.tasks.addTask(5, new EntityAIFollowParent(this, 1.1D));
-        this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
     }
@@ -97,29 +99,32 @@ public class EntityPig extends EntityAnimal
         else
         {
             EntityPlayer entityplayer = (EntityPlayer)entity;
-            ItemStack itemstack = entityplayer.getHeldItemMainhand();
-
-            if (itemstack != null && itemstack.getItem() == Items.CARROT_ON_A_STICK)
-            {
-                return true;
-            }
-            else
-            {
-                itemstack = entityplayer.getHeldItemOffhand();
-                return itemstack != null && itemstack.getItem() == Items.CARROT_ON_A_STICK;
-            }
+            return entityplayer.getHeldItemMainhand().getItem() == Items.CARROT_ON_A_STICK || entityplayer.getHeldItemOffhand().getItem() == Items.CARROT_ON_A_STICK;
         }
+    }
+
+    public void notifyDataManagerChange(DataParameter<?> key)
+    {
+        if (field_191520_bx.equals(key) && this.worldObj.isRemote)
+        {
+            this.boosting = true;
+            this.boostTime = 0;
+            this.totalBoostTime = ((Integer)this.dataManager.get(field_191520_bx)).intValue();
+        }
+
+        super.notifyDataManagerChange(key);
     }
 
     protected void entityInit()
     {
         super.entityInit();
         this.dataManager.register(SADDLED, Boolean.valueOf(false));
+        this.dataManager.register(field_191520_bx, Integer.valueOf(0));
     }
 
-    public static void func_189792_b(DataFixer p_189792_0_)
+    public static void registerFixesPig(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189792_0_, "Pig");
+        EntityLiving.registerFixesMob(fixer, EntityPig.class);
     }
 
     /**
@@ -160,13 +165,29 @@ public class EntityPig extends EntityAnimal
         this.playSound(SoundEvents.ENTITY_PIG_STEP, 0.15F, 1.0F);
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        if (!super.processInteract(player, hand, stack))
+        if (!super.processInteract(player, hand))
         {
-            if (this.getSaddled() && !this.worldObj.isRemote && !this.isBeingRidden())
+            ItemStack itemstack = player.getHeldItem(hand);
+
+            if (itemstack.getItem() == Items.NAME_TAG)
             {
-                player.startRiding(this);
+                itemstack.interactWithEntity(player, this, hand);
+                return true;
+            }
+            else if (this.getSaddled() && !this.isBeingRidden())
+            {
+                if (!this.worldObj.isRemote)
+                {
+                    player.startRiding(this);
+                }
+
+                return true;
+            }
+            else if (itemstack.getItem() == Items.SADDLE)
+            {
+                itemstack.interactWithEntity(player, this, hand);
                 return true;
             }
             else
@@ -181,15 +202,18 @@ public class EntityPig extends EntityAnimal
     }
 
     /**
-     * Drop the equipment for this entity.
+     * Called when the mob's health reaches 0.
      */
-    protected void dropEquipment(boolean wasRecentlyHit, int lootingModifier)
+    public void onDeath(DamageSource cause)
     {
-        super.dropEquipment(wasRecentlyHit, lootingModifier);
+        super.onDeath(cause);
 
-        if (this.getSaddled())
+        if (!this.worldObj.isRemote)
         {
-            this.dropItem(Items.SADDLE, 1);
+            if (this.getSaddled())
+            {
+                this.dropItem(Items.SADDLE, 1);
+            }
         }
     }
 
@@ -276,17 +300,17 @@ public class EntityPig extends EntityAnimal
             this.stepHeight = 1.0F;
             this.jumpMovementFactor = this.getAIMoveSpeed() * 0.1F;
 
+            if (this.boosting && this.boostTime++ > this.totalBoostTime)
+            {
+                this.boosting = false;
+            }
+
             if (this.canPassengerSteer())
             {
                 float f = (float)this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue() * 0.225F;
 
                 if (this.boosting)
                 {
-                    if (this.boostTime++ > this.totalBoostTime)
-                    {
-                        this.boosting = false;
-                    }
-
                     f += f * 1.15F * MathHelper.sin((float)this.boostTime / (float)this.totalBoostTime * (float)Math.PI);
                 }
 
@@ -332,6 +356,7 @@ public class EntityPig extends EntityAnimal
             this.boosting = true;
             this.boostTime = 0;
             this.totalBoostTime = this.getRNG().nextInt(841) + 140;
+            this.getDataManager().set(field_191520_bx, Integer.valueOf(this.totalBoostTime));
             return true;
         }
     }
@@ -345,8 +370,8 @@ public class EntityPig extends EntityAnimal
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(@Nullable ItemStack stack)
+    public boolean isBreedingItem(ItemStack stack)
     {
-        return stack != null && TEMPTATION_ITEMS.contains(stack.getItem());
+        return TEMPTATION_ITEMS.contains(stack.getItem());
     }
 }

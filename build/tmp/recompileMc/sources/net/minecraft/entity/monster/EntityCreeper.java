@@ -1,7 +1,9 @@
 package net.minecraft.entity.monster;
 
+import java.util.Collection;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackMelee;
@@ -11,7 +13,7 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.passive.EntityOcelot;
@@ -24,6 +26,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -63,7 +66,7 @@ public class EntityCreeper extends EntityMob
         this.tasks.addTask(2, new EntityAICreeperSwell(this));
         this.tasks.addTask(3, new EntityAIAvoidEntity(this, EntityOcelot.class, 6.0F, 1.0D, 1.2D));
         this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0D, false));
-        this.tasks.addTask(5, new EntityAIWander(this, 0.8D));
+        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 0.8D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(6, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
@@ -103,9 +106,9 @@ public class EntityCreeper extends EntityMob
         this.dataManager.register(IGNITED, Boolean.valueOf(false));
     }
 
-    public static void func_189762_b(DataFixer p_189762_0_)
+    public static void registerFixesCreeper(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189762_0_, "Creeper");
+        EntityLiving.registerFixesMob(fixer, EntityCreeper.class);
     }
 
     /**
@@ -274,9 +277,11 @@ public class EntityCreeper extends EntityMob
         this.dataManager.set(POWERED, Boolean.valueOf(true));
     }
 
-    protected boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    protected boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        if (stack != null && stack.getItem() == Items.FLINT_AND_STEEL)
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (itemstack.getItem() == Items.FLINT_AND_STEEL)
         {
             this.worldObj.playSound(player, this.posX, this.posY, this.posZ, SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.rand.nextFloat() * 0.4F + 0.8F);
             player.swingArm(hand);
@@ -284,12 +289,12 @@ public class EntityCreeper extends EntityMob
             if (!this.worldObj.isRemote)
             {
                 this.ignite();
-                stack.damageItem(1, player);
+                itemstack.damageItem(1, player);
                 return true;
             }
         }
 
-        return super.processInteract(player, hand, stack);
+        return super.processInteract(player, hand);
     }
 
     /**
@@ -304,6 +309,29 @@ public class EntityCreeper extends EntityMob
             this.dead = true;
             this.worldObj.createExplosion(this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, flag);
             this.setDead();
+            this.func_190741_do();
+        }
+    }
+
+    private void func_190741_do()
+    {
+        Collection<PotionEffect> collection = this.getActivePotionEffects();
+
+        if (!collection.isEmpty())
+        {
+            EntityAreaEffectCloud entityareaeffectcloud = new EntityAreaEffectCloud(this.worldObj, this.posX, this.posY, this.posZ);
+            entityareaeffectcloud.setRadius(2.5F);
+            entityareaeffectcloud.setRadiusOnUse(-0.5F);
+            entityareaeffectcloud.setWaitTime(10);
+            entityareaeffectcloud.setDuration(entityareaeffectcloud.getDuration() / 2);
+            entityareaeffectcloud.setRadiusPerTick(-entityareaeffectcloud.getRadius() / (float)entityareaeffectcloud.getDuration());
+
+            for (PotionEffect potioneffect : collection)
+            {
+                entityareaeffectcloud.addEffect(new PotionEffect(potioneffect));
+            }
+
+            this.worldObj.spawnEntityInWorld(entityareaeffectcloud);
         }
     }
 

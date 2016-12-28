@@ -1,7 +1,6 @@
 package net.minecraft.client.renderer;
 
 import com.google.common.base.Objects;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -38,8 +37,8 @@ public class ItemRenderer
     private static final ResourceLocation RES_UNDERWATER_OVERLAY = new ResourceLocation("textures/misc/underwater.png");
     /** A reference to the Minecraft object. */
     private final Minecraft mc;
-    private ItemStack itemStackMainHand;
-    private ItemStack itemStackOffHand;
+    private ItemStack itemStackMainHand = ItemStack.field_190927_a;
+    private ItemStack itemStackOffHand = ItemStack.field_190927_a;
     private float equippedProgressMainHand;
     private float prevEquippedProgressMainHand;
     private float equippedProgressOffHand;
@@ -59,21 +58,21 @@ public class ItemRenderer
         this.renderItemSide(entityIn, heldStack, transform, false);
     }
 
-    public void renderItemSide(EntityLivingBase entitylivingbaseIn, ItemStack heldStack, ItemCameraTransforms.TransformType transform, boolean p_187462_4_)
+    public void renderItemSide(EntityLivingBase entitylivingbaseIn, ItemStack heldStack, ItemCameraTransforms.TransformType transform, boolean leftHanded)
     {
-        if (heldStack != null)
+        if (!heldStack.func_190926_b())
         {
             Item item = heldStack.getItem();
             Block block = Block.getBlockFromItem(item);
             GlStateManager.pushMatrix();
-            boolean flag = this.itemRenderer.shouldRenderItemIn3D(heldStack) && this.isBlockTranslucent(block);
+            boolean flag = this.itemRenderer.shouldRenderItemIn3D(heldStack) && block.getBlockLayer() == BlockRenderLayer.TRANSLUCENT;
 
             if (flag)
             {
                 GlStateManager.depthMask(false);
             }
 
-            this.itemRenderer.renderItem(heldStack, entitylivingbaseIn, transform, p_187462_4_);
+            this.itemRenderer.renderItem(heldStack, entitylivingbaseIn, transform, leftHanded);
 
             if (flag)
             {
@@ -82,14 +81,6 @@ public class ItemRenderer
 
             GlStateManager.popMatrix();
         }
-    }
-
-    /**
-     * Returns true if given block is translucent
-     */
-    private boolean isBlockTranslucent(@Nullable Block blockIn)
-    {
-        return blockIn != null && blockIn.getBlockLayer() == BlockRenderLayer.TRANSLUCENT;
     }
 
     /**
@@ -363,13 +354,13 @@ public class ItemRenderer
         RenderHelper.disableStandardItemLighting();
     }
 
-    public void renderItemInFirstPerson(AbstractClientPlayer p_187457_1_, float p_187457_2_, float p_187457_3_, EnumHand p_187457_4_, float p_187457_5_, @Nullable ItemStack p_187457_6_, float p_187457_7_)
+    public void renderItemInFirstPerson(AbstractClientPlayer p_187457_1_, float p_187457_2_, float p_187457_3_, EnumHand p_187457_4_, float p_187457_5_, ItemStack p_187457_6_, float p_187457_7_)
     {
         boolean flag = p_187457_4_ == EnumHand.MAIN_HAND;
         EnumHandSide enumhandside = flag ? p_187457_1_.getPrimaryHand() : p_187457_1_.getPrimaryHand().opposite();
         GlStateManager.pushMatrix();
 
-        if (p_187457_6_ == null)
+        if (p_187457_6_.func_190926_b())
         {
             if (flag && !p_187457_1_.isInvisible())
             {
@@ -378,7 +369,7 @@ public class ItemRenderer
         }
         else if (p_187457_6_.getItem() instanceof net.minecraft.item.ItemMap)
         {
-            if (flag && this.itemStackOffHand == null)
+            if (flag && this.itemStackOffHand.func_190926_b())
             {
                 this.renderMapFirstPerson(p_187457_3_, p_187457_7_, p_187457_5_);
             }
@@ -474,7 +465,7 @@ public class ItemRenderer
                 BlockPos blockpos = new BlockPos(d0, d1 + (double)entityplayer.getEyeHeight(), d2);
                 IBlockState iblockstate1 = this.mc.theWorld.getBlockState(blockpos);
 
-                if (iblockstate1.getBlock().isVisuallyOpaque())
+                if (iblockstate1.func_191058_s())
                 {
                     iblockstate = iblockstate1;
                     overlayPos = blockpos;

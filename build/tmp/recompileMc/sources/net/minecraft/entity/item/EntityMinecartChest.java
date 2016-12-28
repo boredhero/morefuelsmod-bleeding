@@ -25,9 +25,9 @@ public class EntityMinecartChest extends EntityMinecartContainer
         super(worldIn, x, y, z);
     }
 
-    public static void func_189681_a(DataFixer p_189681_0_)
+    public static void registerFixesMinecartChest(DataFixer fixer)
     {
-        EntityMinecartContainer.func_189680_b(p_189681_0_, "MinecartChest");
+        EntityMinecartContainer.func_190574_b(fixer, EntityMinecartChest.class);
     }
 
     public void killMinecart(DamageSource source)

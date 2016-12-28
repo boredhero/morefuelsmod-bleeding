@@ -97,9 +97,9 @@ public class CombatTracker
                     if (itextcomponent2 != null && (itextcomponent1 == null || !itextcomponent2.equals(itextcomponent1)))
                     {
                         Entity entity1 = combatentry.getDamageSrc().getEntity();
-                        ItemStack itemstack1 = entity1 instanceof EntityLivingBase ? ((EntityLivingBase)entity1).getHeldItemMainhand() : null;
+                        ItemStack itemstack1 = entity1 instanceof EntityLivingBase ? ((EntityLivingBase)entity1).getHeldItemMainhand() : ItemStack.field_190927_a;
 
-                        if (itemstack1 != null && itemstack1.hasDisplayName())
+                        if (!itemstack1.func_190926_b() && itemstack1.hasDisplayName())
                         {
                             itextcomponent = new TextComponentTranslation("death.fell.assist.item", new Object[] {this.fighter.getDisplayName(), itextcomponent2, itemstack1.getTextComponent()});
                         }
@@ -110,9 +110,9 @@ public class CombatTracker
                     }
                     else if (itextcomponent1 != null)
                     {
-                        ItemStack itemstack = entity instanceof EntityLivingBase ? ((EntityLivingBase)entity).getHeldItemMainhand() : null;
+                        ItemStack itemstack = entity instanceof EntityLivingBase ? ((EntityLivingBase)entity).getHeldItemMainhand() : ItemStack.field_190927_a;
 
-                        if (itemstack != null && itemstack.hasDisplayName())
+                        if (!itemstack.func_190926_b() && itemstack.hasDisplayName())
                         {
                             itextcomponent = new TextComponentTranslation("death.fell.finish.item", new Object[] {this.fighter.getDisplayName(), itextcomponent1, itemstack.getTextComponent()});
                         }

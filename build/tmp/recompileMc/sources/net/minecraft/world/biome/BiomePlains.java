@@ -3,6 +3,7 @@ package net.minecraft.world.biome;
 import java.util.Random;
 import net.minecraft.block.BlockDoublePlant;
 import net.minecraft.block.BlockFlower;
+import net.minecraft.entity.passive.EntityDonkey;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -17,8 +18,9 @@ public class BiomePlains extends Biome
         super(properties);
         this.sunflowers = p_i46699_1_;
         this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityHorse.class, 5, 2, 6));
+        this.spawnableCreatureList.add(new Biome.SpawnListEntry(EntityDonkey.class, 1, 1, 3));
         this.theBiomeDecorator.treesPerChunk = 0;
-        this.theBiomeDecorator.field_189870_A = 0.05F;
+        this.theBiomeDecorator.extraTreeChance = 0.05F;
         this.theBiomeDecorator.flowersPerChunk = 4;
         this.theBiomeDecorator.grassPerChunk = 10;
     }

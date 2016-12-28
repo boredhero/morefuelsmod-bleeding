@@ -13,7 +13,7 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -59,16 +59,16 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
         this.setSize(0.6F, 1.95F);
     }
 
-    public static void func_189776_b(DataFixer p_189776_0_)
+    public static void registerFixesWitch(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189776_0_, "Witch");
+        EntityLiving.registerFixesMob(fixer, EntityWitch.class);
     }
 
     protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityAIAttackRanged(this, 1.0D, 60, 10.0F));
-        this.tasks.addTask(2, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(2, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(3, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
@@ -130,9 +130,9 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
                 {
                     this.setAggressive(false);
                     ItemStack itemstack = this.getHeldItemMainhand();
-                    this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, (ItemStack)null);
+                    this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.field_190927_a);
 
-                    if (itemstack != null && itemstack.getItem() == Items.POTIONITEM)
+                    if (itemstack.getItem() == Items.POTIONITEM)
                     {
                         List<PotionEffect> list = PotionUtils.getEffectsFromStack(itemstack);
 
@@ -156,7 +156,7 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
                 {
                     potiontype = PotionTypes.WATER_BREATHING;
                 }
-                else if (this.rand.nextFloat() < 0.15F && (this.isBurning() || this.func_189748_bU() != null && this.func_189748_bU().isFireDamage()) && !this.isPotionActive(MobEffects.FIRE_RESISTANCE))
+                else if (this.rand.nextFloat() < 0.15F && (this.isBurning() || this.getLastDamageSource() != null && this.getLastDamageSource().isFireDamage()) && !this.isPotionActive(MobEffects.FIRE_RESISTANCE))
                 {
                     potiontype = PotionTypes.FIRE_RESISTANCE;
                 }
@@ -234,8 +234,10 @@ public class EntityWitch extends EntityMob implements IRangedAttackMob
 
     /**
      * Attack the specified entity using a ranged attack.
+     *  
+     * @param distanceFactor How far the target is, normalized and clamped between 0.1 and 1.0
      */
-    public void attackEntityWithRangedAttack(EntityLivingBase target, float p_82196_2_)
+    public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor)
     {
         if (!this.isDrinkingPotion())
         {

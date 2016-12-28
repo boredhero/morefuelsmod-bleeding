@@ -30,8 +30,11 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapedRecipes;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
+
+import javax.annotation.Nonnull;
 
 public class ShapedOreRecipe implements IRecipe
 {
@@ -39,7 +42,7 @@ public class ShapedOreRecipe implements IRecipe
     public static final int MAX_CRAFT_GRID_WIDTH = 3;
     public static final int MAX_CRAFT_GRID_HEIGHT = 3;
 
-    protected ItemStack output = null;
+    protected ItemStack output = ItemStack.field_190927_a;
     protected Object[] input = null;
     protected int width = 0;
     protected int height = 0;
@@ -47,7 +50,7 @@ public class ShapedOreRecipe implements IRecipe
 
     public ShapedOreRecipe(Block     result, Object... recipe){ this(new ItemStack(result), recipe); }
     public ShapedOreRecipe(Item      result, Object... recipe){ this(new ItemStack(result), recipe); }
-    public ShapedOreRecipe(ItemStack result, Object... recipe)
+    public ShapedOreRecipe(@Nonnull ItemStack result, Object... recipe)
     {
         output = result.copy();
 
@@ -156,7 +159,7 @@ public class ShapedOreRecipe implements IRecipe
         {
             ItemStack ingredient = recipe.recipeItems[i];
 
-            if(ingredient == null) continue;
+            if(ingredient.func_190926_b()) continue;
 
             input[i] = recipe.recipeItems[i];
 
@@ -258,7 +261,7 @@ public class ShapedOreRecipe implements IRecipe
                         return false;
                     }
                 }
-                else if (target == null && slot != null)
+                else if (target == null && !slot.func_190926_b())
                 {
                     return false;
                 }
@@ -285,8 +288,18 @@ public class ShapedOreRecipe implements IRecipe
     }
 
     @Override
-    public ItemStack[] getRemainingItems(InventoryCrafting inv) //getRecipeLeftovers
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) //getRecipeLeftovers
     {
         return ForgeHooks.defaultRecipeGetRemainingItems(inv);
+    }
+
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public int getHeight()
+    {
+        return height;
     }
 }

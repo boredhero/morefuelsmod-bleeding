@@ -34,7 +34,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
     {
         int i = this.getResourcePackFormat();
 
-        if (i != 2)
+        if (i != 3)
         {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             Gui.drawRect(x - 1, y - 1, x + listWidth - 9, y + slotHeight + 1, -8978432);
@@ -54,12 +54,12 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
             int j = mouseX - x;
             int k = mouseY - y;
 
-            if (i < 2)
+            if (i < 3)
             {
                 s = INCOMPATIBLE.getFormattedText();
                 s1 = INCOMPATIBLE_OLD.getFormattedText();
             }
-            else if (i > 2)
+            else if (i > 3)
             {
                 s = INCOMPATIBLE.getFormattedText();
                 s1 = INCOMPATIBLE_NEW.getFormattedText();
@@ -183,7 +183,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                 final int j = ((ResourcePackListEntry)this.resourcePacksGUI.getSelectedResourcePacks().get(0)).isServerPack() ? 1 : 0;
                 int l = this.getResourcePackFormat();
 
-                if (l == 2)
+                if (l == 3)
                 {
                     this.resourcePacksGUI.getListContaining(this).remove(this);
                     this.resourcePacksGUI.getSelectedResourcePacks().add(j, this);
@@ -191,7 +191,7 @@ public abstract class ResourcePackListEntry implements GuiListExtended.IGuiListE
                 else
                 {
                     String s = I18n.format("resourcePack.incompatible.confirm.title", new Object[0]);
-                    String s1 = I18n.format("resourcePack.incompatible.confirm." + (l > 2 ? "new" : "old"), new Object[0]);
+                    String s1 = I18n.format("resourcePack.incompatible.confirm." + (l > 3 ? "new" : "old"), new Object[0]);
                     this.mc.displayGuiScreen(new GuiYesNo(new GuiYesNoCallback()
                     {
                         public void confirmClicked(boolean result, int id)

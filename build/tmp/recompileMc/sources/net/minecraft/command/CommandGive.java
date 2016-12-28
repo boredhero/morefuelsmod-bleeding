@@ -79,9 +79,9 @@ public class CommandGive extends CommandBase
                 entityplayer.inventoryContainer.detectAndSendChanges();
             }
 
-            if (flag && itemstack.stackSize <= 0)
+            if (flag && itemstack.func_190926_b())
             {
-                itemstack.stackSize = 1;
+                itemstack.func_190920_e(1);
                 sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, i);
                 EntityItem entityitem1 = entityplayer.dropItem(itemstack, false);
 
@@ -92,7 +92,7 @@ public class CommandGive extends CommandBase
             }
             else
             {
-                sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, i - itemstack.stackSize);
+                sender.setCommandStat(CommandResultStats.Type.AFFECTED_ITEMS, i - itemstack.func_190916_E());
                 EntityItem entityitem = entityplayer.dropItem(itemstack, false);
 
                 if (entityitem != null)

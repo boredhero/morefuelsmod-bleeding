@@ -6,7 +6,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -68,14 +67,6 @@ public class EntityPigZombie extends EntityZombie
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(5.0D);
     }
 
-    /**
-     * Called to update the entity's position/logic.
-     */
-    public void onUpdate()
-    {
-        super.onUpdate();
-    }
-
     protected void updateAITasks()
     {
         IAttributeInstance iattributeinstance = this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
@@ -126,9 +117,9 @@ public class EntityPigZombie extends EntityZombie
         return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.containsAnyLiquid(this.getEntityBoundingBox());
     }
 
-    public static void func_189781_b(DataFixer p_189781_0_)
+    public static void registerFixesPigZombie(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189781_0_, "PigZombie");
+        EntityLiving.registerFixesMob(fixer, EntityPigZombie.class);
     }
 
     /**
@@ -234,7 +225,7 @@ public class EntityPigZombie extends EntityZombie
         return LootTableList.ENTITIES_ZOMBIE_PIGMAN;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
         return false;
     }
@@ -247,16 +238,9 @@ public class EntityPigZombie extends EntityZombie
         this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
     }
 
-    /**
-     * Called only once on an entity when first time spawned, via egg, mob spawner, natural spawning etc, but not called
-     * when entity is reloaded from nbt. Mainly used for initializing attributes and inventory
-     */
-    @Nullable
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
+    protected ItemStack func_190732_dj()
     {
-        super.onInitialSpawn(difficulty, livingdata);
-        this.func_189778_a(ZombieType.NORMAL);
-        return livingdata;
+        return ItemStack.field_190927_a;
     }
 
     static class AIHurtByAggressor extends EntityAIHurtByTarget

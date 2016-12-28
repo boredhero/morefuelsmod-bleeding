@@ -2,12 +2,14 @@ package net.minecraft.tileentity;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.WeightedSpawnerEntity;
@@ -39,17 +41,19 @@ public abstract class MobSpawnerBaseLogic
     /** The range coefficient for spawning entities around. */
     private int spawnRange = 4;
 
-    /**
-     * Gets the entity name that should be spawned.
-     */
-    private String getEntityNameToSpawn()
+    @Nullable
+    private ResourceLocation func_190895_g()
     {
-        return this.randomEntity.getNbt().getString("id");
+        String s = this.randomEntity.getNbt().getString("id");
+        return StringUtils.isNullOrEmpty(s) ? null : new ResourceLocation(s);
     }
 
-    public void setEntityName(String name)
+    public void func_190894_a(@Nullable ResourceLocation p_190894_1_)
     {
-        this.randomEntity.getNbt().setString("id", name);
+        if (p_190894_1_ != null)
+        {
+            this.randomEntity.getNbt().setString("id", p_190894_1_.toString());
+        }
     }
 
     /**
@@ -192,14 +196,14 @@ public abstract class MobSpawnerBaseLogic
             }
         }
 
-        NBTTagCompound nbttagcompound = nbt.getCompoundTag("SpawnData");
-
-        if (!nbttagcompound.hasKey("id", 8))
+        if (nbt.hasKey("SpawnData", 10))
         {
-            nbttagcompound.setString("id", "Pig");
+            this.setNextSpawnData(new WeightedSpawnerEntity(1, nbt.getCompoundTag("SpawnData")));
         }
-
-        this.setNextSpawnData(new WeightedSpawnerEntity(1, nbttagcompound));
+        else if (!this.minecartToSpawn.isEmpty())
+        {
+            this.setNextSpawnData((WeightedSpawnerEntity)WeightedRandom.getRandomItem(this.getSpawnerWorld().rand, this.minecartToSpawn));
+        }
 
         if (nbt.hasKey("MinSpawnDelay", 99))
         {
@@ -227,9 +231,9 @@ public abstract class MobSpawnerBaseLogic
 
     public NBTTagCompound writeToNBT(NBTTagCompound p_189530_1_)
     {
-        String s = this.getEntityNameToSpawn();
+        ResourceLocation resourcelocation = this.func_190895_g();
 
-        if (StringUtils.isNullOrEmpty(s))
+        if (resourcelocation == null)
         {
             return p_189530_1_;
         }

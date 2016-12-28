@@ -19,7 +19,6 @@
 
 package net.minecraftforge.oredict;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,18 +29,21 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 
+import javax.annotation.Nonnull;
+
 public class ShapelessOreRecipe implements IRecipe
 {
-    protected ItemStack output = null;
-    protected ArrayList<Object> input = new ArrayList<Object>();
+    protected ItemStack output = ItemStack.field_190927_a;
+    protected NonNullList<Object> input = NonNullList.func_191196_a();
 
     public ShapelessOreRecipe(Block result, Object... recipe){ this(new ItemStack(result), recipe); }
     public ShapelessOreRecipe(Item  result, Object... recipe){ this(new ItemStack(result), recipe); }
 
-    public ShapelessOreRecipe(ItemStack result, Object... recipe)
+    public ShapelessOreRecipe(@Nonnull ItemStack result, Object... recipe)
     {
         output = result.copy();
         for (Object in : recipe)
@@ -116,13 +118,14 @@ public class ShapelessOreRecipe implements IRecipe
     @Override
     public boolean matches(InventoryCrafting var1, World world)
     {
-        ArrayList<Object> required = new ArrayList<Object>(input);
+        NonNullList<Object> required = NonNullList.func_191196_a();
+        required.addAll(input);
 
         for (int x = 0; x < var1.getSizeInventory(); x++)
         {
             ItemStack slot = var1.getStackInSlot(x);
 
-            if (slot != null)
+            if (!slot.func_190926_b())
             {
                 boolean inRecipe = false;
                 Iterator<Object> req = required.iterator();
@@ -169,13 +172,13 @@ public class ShapelessOreRecipe implements IRecipe
      * manipulate the values in this array as it will effect the recipe itself.
      * @return The recipes input vales.
      */
-    public ArrayList<Object> getInput()
+    public NonNullList<Object> getInput()
     {
         return this.input;
     }
 
     @Override
-    public ItemStack[] getRemainingItems(InventoryCrafting inv) //getRecipeLeftovers
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv) //getRecipeLeftovers
     {
         return ForgeHooks.defaultRecipeGetRemainingItems(inv);
     }

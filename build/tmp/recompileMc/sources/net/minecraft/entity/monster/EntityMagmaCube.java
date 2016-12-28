@@ -22,9 +22,9 @@ public class EntityMagmaCube extends EntitySlime
         this.isImmuneToFire = true;
     }
 
-    public static void func_189759_b(DataFixer p_189759_0_)
+    public static void registerFixesMagmaCube(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189759_0_, "LavaSlime");
+        EntityLiving.registerFixesMob(fixer, EntityMagmaCube.class);
     }
 
     protected void applyEntityAttributes()
@@ -49,9 +49,9 @@ public class EntityMagmaCube extends EntitySlime
         return this.worldObj.checkNoEntityCollision(this.getEntityBoundingBox(), this) && this.worldObj.getCollisionBoxes(this, this.getEntityBoundingBox()).isEmpty() && !this.worldObj.containsAnyLiquid(this.getEntityBoundingBox());
     }
 
-    protected void setSlimeSize(int size)
+    protected void setSlimeSize(int size, boolean p_70799_2_)
     {
-        super.setSlimeSize(size);
+        super.setSlimeSize(size, p_70799_2_);
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue((double)(size * 3));
     }
 

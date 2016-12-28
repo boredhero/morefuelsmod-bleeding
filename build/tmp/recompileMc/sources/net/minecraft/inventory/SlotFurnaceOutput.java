@@ -1,6 +1,5 @@
 package net.minecraft.inventory;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -22,9 +21,9 @@ public class SlotFurnaceOutput extends Slot
     }
 
     /**
-     * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+     * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
      */
-    public boolean isItemValid(@Nullable ItemStack stack)
+    public boolean isItemValid(ItemStack stack)
     {
         return false;
     }
@@ -37,16 +36,17 @@ public class SlotFurnaceOutput extends Slot
     {
         if (this.getHasStack())
         {
-            this.removeCount += Math.min(amount, this.getStack().stackSize);
+            this.removeCount += Math.min(amount, this.getStack().func_190916_E());
         }
 
         return super.decrStackSize(amount);
     }
 
-    public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack)
+    public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
     {
-        this.onCrafting(stack);
-        super.onPickupFromSlot(playerIn, stack);
+        this.onCrafting(p_190901_2_);
+        super.func_190901_a(p_190901_1_, p_190901_2_);
+        return p_190901_2_;
     }
 
     /**

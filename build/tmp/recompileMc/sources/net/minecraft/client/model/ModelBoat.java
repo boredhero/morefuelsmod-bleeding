@@ -82,16 +82,7 @@ public class ModelBoat extends ModelBase implements IMultipassModel
         GlStateManager.colorMask(true, true, true, true);
     }
 
-    /**
-     * Sets the model's various rotation angles. For bipeds, par1 and par2 are used for animating the movement of arms
-     * and legs, where par1 represents the time(so that arms and legs swing back and forth) and par2 represents how
-     * "far" arms and legs can swing at most.
-     */
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn)
-    {
-    }
-
-    ModelRenderer makePaddle(boolean p_187056_1_)
+    protected ModelRenderer makePaddle(boolean p_187056_1_)
     {
         ModelRenderer modelrenderer = (new ModelRenderer(this, 62, p_187056_1_ ? 0 : 20)).setTextureSize(128, 64);
         int i = 20;
@@ -103,7 +94,7 @@ public class ModelBoat extends ModelBase implements IMultipassModel
         return modelrenderer;
     }
 
-    void renderPaddle(EntityBoat boat, int paddle, float scale, float limbSwing)
+    protected void renderPaddle(EntityBoat boat, int paddle, float scale, float limbSwing)
     {
         float f = 40.0F;
         float f1 = boat.getRowingTime(paddle, limbSwing) * 40.0F;

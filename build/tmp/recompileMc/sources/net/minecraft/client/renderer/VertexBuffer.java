@@ -286,16 +286,24 @@ public class VertexBuffer
     }
 
     /**
-     * Gets the color index.
+     * Gets the position into the vertex data buffer at which the given vertex's color data can be found, in {@code
+     * int}s.
+     *  
+     * @param vertexIndex The index of the vertex in question, where 0 is the last one added, 1 is the second last, etc.
      */
-    public int getColorIndex(int p_78909_1_)
+    public int getColorIndex(int vertexIndex)
     {
-        return ((this.vertexCount - p_78909_1_) * this.vertexFormat.getNextOffset() + this.vertexFormat.getColorOffset()) / 4;
+        return ((this.vertexCount - vertexIndex) * this.vertexFormat.getNextOffset() + this.vertexFormat.getColorOffset()) / 4;
     }
 
-    public void putColorMultiplier(float red, float green, float blue, int p_178978_4_)
+    /**
+     * Modify the color data of the given vertex with the given multipliers.
+     *  
+     * @param vertexIndex The index of the vertex to modify, where 0 is the last one added, 1 is the second last, etc.
+     */
+    public void putColorMultiplier(float red, float green, float blue, int vertexIndex)
     {
-        int i = this.getColorIndex(p_178978_4_);
+        int i = this.getColorIndex(vertexIndex);
         int j = -1;
 
         if (!this.noColor)
@@ -323,9 +331,9 @@ public class VertexBuffer
         this.rawIntBuffer.put(i, j);
     }
 
-    private void putColor(int argb, int p_178988_2_)
+    private void putColor(int argb, int vertexIndex)
     {
-        int i = this.getColorIndex(p_178988_2_);
+        int i = this.getColorIndex(vertexIndex);
         int j = argb >> 16 & 255;
         int k = argb >> 8 & 255;
         int l = argb & 255;
@@ -333,24 +341,30 @@ public class VertexBuffer
         this.putColorRGBA(i, j, k, l, i1);
     }
 
-    public void putColorRGB_F(float red, float green, float blue, int p_178994_4_)
+    public void putColorRGB_F(float red, float green, float blue, int vertexIndex)
     {
-        int i = this.getColorIndex(p_178994_4_);
+        int i = this.getColorIndex(vertexIndex);
         int j = MathHelper.clamp_int((int)(red * 255.0F), 0, 255);
         int k = MathHelper.clamp_int((int)(green * 255.0F), 0, 255);
         int l = MathHelper.clamp_int((int)(blue * 255.0F), 0, 255);
         this.putColorRGBA(i, j, k, l, 255);
     }
 
-    public void putColorRGBA(int index, int red, int p_178972_3_, int p_178972_4_, int p_178972_5_)
+    /**
+     * Write the given color data of 4 bytes at the given index into the vertex data buffer, accounting for system
+     * endianness.
+     *  
+     * @param index The index in the vertex data buffer to which the color data will be written, in {@code int}s
+     */
+    public void putColorRGBA(int index, int red, int green, int blue, int alpha)
     {
         if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
         {
-            this.rawIntBuffer.put(index, p_178972_5_ << 24 | p_178972_4_ << 16 | p_178972_3_ << 8 | red);
+            this.rawIntBuffer.put(index, alpha << 24 | blue << 16 | green << 8 | red);
         }
         else
         {
-            this.rawIntBuffer.put(index, red << 24 | p_178972_3_ << 16 | p_178972_4_ << 8 | p_178972_5_);
+            this.rawIntBuffer.put(index, red << 24 | green << 16 | blue << 8 | alpha);
         }
     }
 

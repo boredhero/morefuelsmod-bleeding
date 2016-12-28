@@ -7,12 +7,12 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntityBanner;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -36,22 +36,12 @@ public class ItemShield extends Item
         BlockDispenser.DISPENSE_BEHAVIOR_REGISTRY.putObject(this, ItemArmor.DISPENSER_BEHAVIOR);
     }
 
-    /**
-     * Called when a Block is right-clicked with this Item
-     */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-    {
-        return super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ);
-    }
-
     public String getItemStackDisplayName(ItemStack stack)
     {
-        if (stack.getSubCompound("BlockEntityTag", false) != null)
+        if (stack.getSubCompound("BlockEntityTag") != null)
         {
-            String s = "item.shield.";
-            EnumDyeColor enumdyecolor = ItemBanner.getBaseColor(stack);
-            s = s + enumdyecolor.getUnlocalizedName() + ".name";
-            return I18n.translateToLocal(s);
+            EnumDyeColor enumdyecolor = TileEntityBanner.func_190616_d(stack);
+            return I18n.translateToLocal("item.shield." + enumdyecolor.getUnlocalizedName() + ".name");
         }
         else
         {
@@ -72,7 +62,7 @@ public class ItemShield extends Item
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
+    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
     {
         ItemStack itemstack = new ItemStack(itemIn, 1, 0);
         subItems.add(itemstack);
@@ -103,10 +93,11 @@ public class ItemShield extends Item
         return 72000;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        playerIn.setActiveHand(hand);
-        return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+        ItemStack itemstack = worldIn.getHeldItem(playerIn);
+        worldIn.setActiveHand(playerIn);
+        return new ActionResult(EnumActionResult.SUCCESS, itemstack);
     }
 
     /**

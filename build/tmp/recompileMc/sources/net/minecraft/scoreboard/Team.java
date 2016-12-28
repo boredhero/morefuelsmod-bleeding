@@ -57,6 +57,7 @@ public abstract class Team
             return (String[])nameMap.keySet().toArray(new String[nameMap.size()]);
         }
 
+        @Nullable
         public static Team.CollisionRule getByName(String nameIn)
         {
             return (Team.CollisionRule)nameMap.get(nameIn);
@@ -93,6 +94,7 @@ public abstract class Team
             return (String[])nameMap.keySet().toArray(new String[nameMap.size()]);
         }
 
+        @Nullable
         public static Team.EnumVisible getByName(String nameIn)
         {
             return (Team.EnumVisible)nameMap.get(nameIn);

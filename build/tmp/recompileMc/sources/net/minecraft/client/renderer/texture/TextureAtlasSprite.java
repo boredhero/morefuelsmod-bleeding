@@ -126,6 +126,9 @@ public class TextureAtlasSprite
         return this.minU + f * (float)u / 16.0F;
     }
 
+    /**
+     * The opposite of getInterpolatedU. Takes the return value of that method and returns the input to it.
+     */
     public float getUnInterpolatedU(float p_188537_1_)
     {
         float f = this.maxU - this.minU;
@@ -157,6 +160,9 @@ public class TextureAtlasSprite
         return this.minV + f * (float)v / 16.0F;
     }
 
+    /**
+     * The opposite of getInterpolatedV. Takes the return value of that method and returns the input to it.
+     */
     public float getUnInterpolatedV(float p_188536_1_)
     {
         float f = this.maxV - this.minV;
@@ -292,11 +298,11 @@ public class TextureAtlasSprite
 
             if (animationmetadatasection.getFrameCount() > 0)
             {
-                Iterator iterator = animationmetadatasection.getFrameIndexSet().iterator();
+                Iterator lvt_7_1_ = animationmetadatasection.getFrameIndexSet().iterator();
 
-                while (iterator.hasNext())
+                while (lvt_7_1_.hasNext())
                 {
-                    int j = ((Integer)iterator.next()).intValue();
+                    int j = ((Integer)lvt_7_1_.next()).intValue();
 
                     if (j >= i)
                     {
@@ -431,8 +437,8 @@ public class TextureAtlasSprite
     /**
      * The result of this function determines is the below 'load' function is called, and the
      * default vanilla loading code is bypassed completely.
-     * @param manager
-     * @param location
+     * @param manager Main resource manager
+     * @param location File resource location
      * @return True to use your own custom load code and bypass vanilla loading.
      */
     public boolean hasCustomLoader(net.minecraft.client.resources.IResourceManager manager, net.minecraft.util.ResourceLocation location)

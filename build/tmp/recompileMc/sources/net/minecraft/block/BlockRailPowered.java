@@ -158,11 +158,11 @@ public class BlockRailPowered extends BlockRailBase
         if (flag1 != flag)
         {
             p_189541_2_.setBlockState(p_189541_3_, p_189541_1_.withProperty(POWERED, Boolean.valueOf(flag1)), 3);
-            p_189541_2_.notifyNeighborsOfStateChange(p_189541_3_.down(), this);
+            p_189541_2_.notifyNeighborsOfStateChange(p_189541_3_.down(), this, false);
 
             if (((BlockRailBase.EnumRailDirection)p_189541_1_.getValue(SHAPE)).isAscending())
             {
-                p_189541_2_.notifyNeighborsOfStateChange(p_189541_3_.up(), this);
+                p_189541_2_.notifyNeighborsOfStateChange(p_189541_3_.up(), this, false);
             }
         }
     }

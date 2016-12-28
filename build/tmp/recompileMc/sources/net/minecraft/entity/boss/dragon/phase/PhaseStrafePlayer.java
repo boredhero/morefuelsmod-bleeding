@@ -83,9 +83,7 @@ public class PhaseStrafePlayer extends PhaseBase
                         double d11 = this.attackTarget.posZ - d8;
                         this.dragon.worldObj.playEvent((EntityPlayer)null, 1017, new BlockPos(this.dragon), 0);
                         EntityDragonFireball entitydragonfireball = new EntityDragonFireball(this.dragon.worldObj, this.dragon, d9, d10, d11);
-                        entitydragonfireball.posX = d6;
-                        entitydragonfireball.posY = d7;
-                        entitydragonfireball.posZ = d8;
+                        entitydragonfireball.setLocationAndAngles(d6, d7, d8, 0.0F, 0.0F);
                         this.dragon.worldObj.spawnEntityInWorld(entitydragonfireball);
                         this.fireballCharge = 0;
 
@@ -134,7 +132,7 @@ public class PhaseStrafePlayer extends PhaseBase
                 --j;
             }
 
-            if (this.dragon.getFightManager() != null && this.dragon.getFightManager().getNumAliveCrystals() >= 0)
+            if (this.dragon.getFightManager() != null && this.dragon.getFightManager().getNumAliveCrystals() > 0)
             {
                 j = j % 12;
 

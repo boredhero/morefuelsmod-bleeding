@@ -55,33 +55,33 @@ public class EntityAIVillagerInteract extends EntityAIWatchClosest2
                 for (int i = 0; i < inventorybasic.getSizeInventory(); ++i)
                 {
                     ItemStack itemstack = inventorybasic.getStackInSlot(i);
-                    ItemStack itemstack1 = null;
+                    ItemStack itemstack1 = ItemStack.field_190927_a;
 
-                    if (itemstack != null)
+                    if (!itemstack.func_190926_b())
                     {
                         Item item = itemstack.getItem();
 
-                        if ((item == Items.BREAD || item == Items.POTATO || item == Items.CARROT || item == Items.BEETROOT) && itemstack.stackSize > 3)
+                        if ((item == Items.BREAD || item == Items.POTATO || item == Items.CARROT || item == Items.BEETROOT) && itemstack.func_190916_E() > 3)
                         {
-                            int l = itemstack.stackSize / 2;
-                            itemstack.stackSize -= l;
+                            int l = itemstack.func_190916_E() / 2;
+                            itemstack.func_190918_g(l);
                             itemstack1 = new ItemStack(item, l, itemstack.getMetadata());
                         }
-                        else if (item == Items.WHEAT && itemstack.stackSize > 5)
+                        else if (item == Items.WHEAT && itemstack.func_190916_E() > 5)
                         {
-                            int j = itemstack.stackSize / 2 / 3 * 3;
+                            int j = itemstack.func_190916_E() / 2 / 3 * 3;
                             int k = j / 3;
-                            itemstack.stackSize -= j;
+                            itemstack.func_190918_g(j);
                             itemstack1 = new ItemStack(Items.BREAD, k, 0);
                         }
 
-                        if (itemstack.stackSize <= 0)
+                        if (itemstack.func_190926_b())
                         {
-                            inventorybasic.setInventorySlotContents(i, (ItemStack)null);
+                            inventorybasic.setInventorySlotContents(i, ItemStack.field_190927_a);
                         }
                     }
 
-                    if (itemstack1 != null)
+                    if (!itemstack1.func_190926_b())
                     {
                         double d0 = this.villager.posY - 0.30000001192092896D + (double)this.villager.getEyeHeight();
                         EntityItem entityitem = new EntityItem(this.villager.worldObj, this.villager.posX, d0, this.villager.posZ, itemstack1);

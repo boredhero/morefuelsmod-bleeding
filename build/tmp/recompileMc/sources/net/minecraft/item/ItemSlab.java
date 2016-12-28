@@ -51,12 +51,14 @@ public class ItemSlab extends ItemBlock
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        if (stack.stackSize != 0 && playerIn.canPlayerEdit(pos.offset(facing), facing, stack))
+        ItemStack itemstack = stack.getHeldItem(pos);
+
+        if (!itemstack.func_190926_b() && stack.canPlayerEdit(worldIn.offset(hand), hand, itemstack))
         {
-            Comparable<?> comparable = this.singleSlab.getTypeForItem(stack);
-            IBlockState iblockstate = worldIn.getBlockState(pos);
+            Comparable<?> comparable = this.singleSlab.getTypeForItem(itemstack);
+            IBlockState iblockstate = playerIn.getBlockState(worldIn);
 
             if (iblockstate.getBlock() == this.singleSlab)
             {
@@ -64,23 +66,23 @@ public class ItemSlab extends ItemBlock
                 Comparable<?> comparable1 = iblockstate.getValue(iproperty);
                 BlockSlab.EnumBlockHalf blockslab$enumblockhalf = (BlockSlab.EnumBlockHalf)iblockstate.getValue(BlockSlab.HALF);
 
-                if ((facing == EnumFacing.UP && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.BOTTOM || facing == EnumFacing.DOWN && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.TOP) && comparable1 == comparable)
+                if ((hand == EnumFacing.UP && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.BOTTOM || hand == EnumFacing.DOWN && blockslab$enumblockhalf == BlockSlab.EnumBlockHalf.TOP) && comparable1 == comparable)
                 {
                     IBlockState iblockstate1 = this.makeState(iproperty, comparable1);
-                    AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(worldIn, pos);
+                    AxisAlignedBB axisalignedbb = iblockstate1.getCollisionBoundingBox(playerIn, worldIn);
 
-                    if (axisalignedbb != Block.NULL_AABB && worldIn.checkNoEntityCollision(axisalignedbb.offset(pos)) && worldIn.setBlockState(pos, iblockstate1, 11))
+                    if (axisalignedbb != Block.NULL_AABB && playerIn.checkNoEntityCollision(axisalignedbb.offset(worldIn)) && playerIn.setBlockState(worldIn, iblockstate1, 11))
                     {
-                        SoundType soundtype = this.doubleSlab.getSoundType(iblockstate1, worldIn, pos,playerIn);
-                        worldIn.playSound(playerIn, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                        --stack.stackSize;
+                        SoundType soundtype = this.doubleSlab.getSoundType(iblockstate1, playerIn, worldIn, stack);
+                        playerIn.playSound(stack, worldIn, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                        itemstack.func_190918_g(1);
                     }
 
                     return EnumActionResult.SUCCESS;
                 }
             }
 
-            return this.tryPlace(playerIn, stack, worldIn, pos.offset(facing), comparable) ? EnumActionResult.SUCCESS : super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+            return this.tryPlace(stack, itemstack, playerIn, worldIn.offset(hand), comparable) ? EnumActionResult.SUCCESS : super.onItemUse(stack, playerIn, worldIn, pos, hand, facing, hitX, hitY);
         }
         else
         {
@@ -128,7 +130,7 @@ public class ItemSlab extends ItemBlock
                 {
                     SoundType soundtype = this.doubleSlab.getSoundType(iblockstate1, worldIn, pos, player);
                     worldIn.playSound(player, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                    --stack.stackSize;
+                    stack.func_190918_g(1);
                 }
 
                 return true;

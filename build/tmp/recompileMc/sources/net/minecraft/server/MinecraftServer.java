@@ -19,7 +19,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Proxy;
+import java.net.URLEncoder;
 import java.security.KeyPair;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -123,6 +125,7 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
     public int percentDone;
     /** True if the server is in online mode. */
     private boolean onlineMode;
+    private boolean field_190519_A;
     /** True if the server has animals turned on. */
     private boolean canSpawnAnimals;
     private boolean canSpawnNPCs;
@@ -246,6 +249,7 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
         this.userMessage = message;
     }
 
+    @Nullable
     @SideOnly(Side.CLIENT)
 
     public synchronized String getUserMessage()
@@ -346,7 +350,14 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
 
         if (file1.isFile())
         {
-            this.setResourcePack("level://" + worldNameIn + "/" + "resources.zip", "");
+            try
+            {
+                this.setResourcePack("level://" + URLEncoder.encode(worldNameIn, Charsets.UTF_8.toString()) + "/" + "resources.zip", "");
+            }
+            catch (UnsupportedEncodingException var5)
+            {
+                LOG.warn("Something went wrong url encoding {}", new Object[] {worldNameIn});
+            }
         }
     }
 
@@ -398,13 +409,13 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
     /**
      * par1 indicates if a log message should be output.
      */
-    public void saveAllWorlds(boolean dontLog)
+    public void saveAllWorlds(boolean isSilent)
     {
         for (WorldServer worldserver : this.worldServers)
         {
             if (worldserver != null)
             {
-                if (!dontLog)
+                if (!isSilent)
                 {
                     LOG.info("Saving chunks for level \'{}\'/{}", new Object[] {worldserver.getWorldInfo().getWorldName(), worldserver.provider.getDimensionType().getName()});
                 }
@@ -499,7 +510,7 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
                 this.currentTime = getCurrentTimeMillis();
                 long i = 0L;
                 this.statusResponse.setServerDescription(new TextComponentString(this.motd));
-                this.statusResponse.setVersion(new ServerStatusResponse.Version("1.10.2", 210));
+                this.statusResponse.setVersion(new ServerStatusResponse.Version("1.11.2", 316));
                 this.applyServerIconToResponse(this.statusResponse);
 
                 while (this.serverRunning)
@@ -863,7 +874,7 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
      */
     public String getMinecraftVersion()
     {
-        return "1.10.2";
+        return "1.11.2";
     }
 
     /**
@@ -1210,6 +1221,11 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
         this.onlineMode = online;
     }
 
+    public boolean func_190518_ac()
+    {
+        return this.field_190519_A;
+    }
+
     public boolean getCanSpawnAnimals()
     {
         return this.canSpawnAnimals;
@@ -1384,6 +1400,9 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
         return false;
     }
 
+    /**
+     * Get the forceGamemode field (whether joining players will be put in their old gamemode or the default one)
+     */
     public boolean getForceGamemode()
     {
         return this.isGamemodeForced;
@@ -1744,6 +1763,12 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
         this.serverPort = port;
     }
 
+    @SideOnly(Side.SERVER)
+    public void func_190517_e(boolean p_190517_1_)
+    {
+        this.field_190519_A = p_190517_1_;
+    }
+
     /**
      * Return the spawn protection area's size.
      */
@@ -1753,6 +1778,9 @@ public abstract class MinecraftServer implements Runnable, ICommandSender, IThre
         return 16;
     }
 
+    /**
+     * Set the forceGamemode field (whether joining players will be put in their old gamemode or the default one)
+     */
     @SideOnly(Side.SERVER)
     public void setForceGamemode(boolean force)
     {

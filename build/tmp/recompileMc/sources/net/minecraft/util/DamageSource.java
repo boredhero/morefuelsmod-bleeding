@@ -14,30 +14,32 @@ import net.minecraft.world.Explosion;
 
 public class DamageSource
 {
-    public static DamageSource inFire = (new DamageSource("inFire")).setFireDamage();
-    public static DamageSource lightningBolt = new DamageSource("lightningBolt");
-    public static DamageSource onFire = (new DamageSource("onFire")).setDamageBypassesArmor().setFireDamage();
-    public static DamageSource lava = (new DamageSource("lava")).setFireDamage();
-    public static DamageSource field_190095_e = (new DamageSource("hotFloor")).setFireDamage();
-    public static DamageSource inWall = (new DamageSource("inWall")).setDamageBypassesArmor();
-    public static DamageSource drown = (new DamageSource("drown")).setDamageBypassesArmor();
-    public static DamageSource starve = (new DamageSource("starve")).setDamageBypassesArmor().setDamageIsAbsolute();
-    public static DamageSource cactus = new DamageSource("cactus");
-    public static DamageSource fall = (new DamageSource("fall")).setDamageBypassesArmor();
-    public static DamageSource flyIntoWall = (new DamageSource("flyIntoWall")).setDamageBypassesArmor();
-    public static DamageSource outOfWorld = (new DamageSource("outOfWorld")).setDamageBypassesArmor().setDamageAllowedInCreativeMode();
-    public static DamageSource generic = (new DamageSource("generic")).setDamageBypassesArmor();
-    public static DamageSource magic = (new DamageSource("magic")).setDamageBypassesArmor().setMagicDamage();
-    public static DamageSource wither = (new DamageSource("wither")).setDamageBypassesArmor();
-    public static DamageSource anvil = new DamageSource("anvil");
-    public static DamageSource fallingBlock = new DamageSource("fallingBlock");
-    public static DamageSource dragonBreath = (new DamageSource("dragonBreath")).setDamageBypassesArmor();
+    public static final DamageSource inFire = (new DamageSource("inFire")).setFireDamage();
+    public static final DamageSource lightningBolt = new DamageSource("lightningBolt");
+    public static final DamageSource onFire = (new DamageSource("onFire")).setDamageBypassesArmor().setFireDamage();
+    public static final DamageSource lava = (new DamageSource("lava")).setFireDamage();
+    public static final DamageSource hotFloor = (new DamageSource("hotFloor")).setFireDamage();
+    public static final DamageSource inWall = (new DamageSource("inWall")).setDamageBypassesArmor();
+    public static final DamageSource field_191291_g = (new DamageSource("cramming")).setDamageBypassesArmor();
+    public static final DamageSource drown = (new DamageSource("drown")).setDamageBypassesArmor();
+    public static final DamageSource starve = (new DamageSource("starve")).setDamageBypassesArmor().setDamageIsAbsolute();
+    public static final DamageSource cactus = new DamageSource("cactus");
+    public static final DamageSource fall = (new DamageSource("fall")).setDamageBypassesArmor();
+    public static final DamageSource flyIntoWall = (new DamageSource("flyIntoWall")).setDamageBypassesArmor();
+    public static final DamageSource outOfWorld = (new DamageSource("outOfWorld")).setDamageBypassesArmor().setDamageAllowedInCreativeMode();
+    public static final DamageSource generic = (new DamageSource("generic")).setDamageBypassesArmor();
+    public static final DamageSource magic = (new DamageSource("magic")).setDamageBypassesArmor().setMagicDamage();
+    public static final DamageSource wither = (new DamageSource("wither")).setDamageBypassesArmor();
+    public static final DamageSource anvil = new DamageSource("anvil");
+    public static final DamageSource fallingBlock = new DamageSource("fallingBlock");
+    public static final DamageSource dragonBreath = (new DamageSource("dragonBreath")).setDamageBypassesArmor();
+    public static final DamageSource field_191552_t = (new DamageSource("fireworks")).setExplosion();
     /** This kind of damage can be blocked or not. */
     private boolean isUnblockable;
     private boolean isDamageAllowedInCreativeMode;
     /** Whether or not the damage ignores modification by potion effects or enchantments. */
     private boolean damageIsAbsolute;
-    private float hungerDamage = 0.3F;
+    private float hungerDamage = 0.1F;
     /** This kind of damage is based on fire or not. */
     private boolean fireDamage;
     /** This kind of damage is based on a projectile or not. */

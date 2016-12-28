@@ -28,8 +28,10 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityDragonFireball;
 import net.minecraft.entity.projectile.EntityEgg;
+import net.minecraft.entity.projectile.EntityEvokerFangs;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.entity.projectile.EntityLlamaSpit;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityShulkerBullet;
 import net.minecraft.entity.projectile.EntitySmallFireball;
@@ -105,13 +107,13 @@ public class EntityTrackerEntry
     public boolean playerEntitiesUpdated;
     public final Set<EntityPlayerMP> trackingPlayers = Sets.<EntityPlayerMP>newHashSet();
 
-    public EntityTrackerEntry(Entity entityIn, int p_i46837_2_, int p_i46837_3_, int p_i46837_4_, boolean p_i46837_5_)
+    public EntityTrackerEntry(Entity entityIn, int rangeIn, int maxRangeIn, int updateFrequencyIn, boolean sendVelocityUpdatesIn)
     {
         this.trackedEntity = entityIn;
-        this.range = p_i46837_2_;
-        this.maxRange = p_i46837_3_;
-        this.updateFrequency = p_i46837_4_;
-        this.sendVelocityUpdates = p_i46837_5_;
+        this.range = rangeIn;
+        this.maxRange = maxRangeIn;
+        this.updateFrequency = updateFrequencyIn;
+        this.sendVelocityUpdates = sendVelocityUpdatesIn;
         this.encodedPosX = EntityTracker.getPositionLong(entityIn.posX);
         this.encodedPosY = EntityTracker.getPositionLong(entityIn.posY);
         this.encodedPosZ = EntityTracker.getPositionLong(entityIn.posZ);
@@ -158,7 +160,7 @@ public class EntityTrackerEntry
             EntityItemFrame entityitemframe = (EntityItemFrame)this.trackedEntity;
             ItemStack itemstack = entityitemframe.getDisplayedItem();
 
-            if (itemstack != null && itemstack.getItem() instanceof ItemMap)
+            if (itemstack.getItem() instanceof ItemMap)
             {
                 MapData mapdata = Items.FILLED_MAP.getMapData(itemstack, this.trackedEntity.worldObj);
 
@@ -250,7 +252,7 @@ public class EntityTrackerEntry
                     flag2 = true;
                 }
 
-                if (flag2)
+                if (flag2 && this.updateCounter > 0)
                 {
                     double d0 = this.trackedEntity.motionX - this.lastTrackedEntityMotionX;
                     double d1 = this.trackedEntity.motionY - this.lastTrackedEntityMotionY;
@@ -427,7 +429,7 @@ public class EntityTrackerEntry
                         {
                             ItemStack itemstack = ((EntityLivingBase)this.trackedEntity).getItemStackFromSlot(entityequipmentslot);
 
-                            if (itemstack != null)
+                            if (!itemstack.func_190926_b())
                             {
                                 playerMP.connection.sendPacket(new SPacketEntityEquipment(this.trackedEntity.getEntityId(), entityequipmentslot, itemstack));
                             }
@@ -452,6 +454,16 @@ public class EntityTrackerEntry
                         {
                             playerMP.connection.sendPacket(new SPacketEntityEffect(this.trackedEntity.getEntityId(), potioneffect));
                         }
+                    }
+
+                    if (!this.trackedEntity.getPassengers().isEmpty())
+                    {
+                        playerMP.connection.sendPacket(new SPacketSetPassengers(this.trackedEntity));
+                    }
+
+                    if (this.trackedEntity.isRiding())
+                    {
+                        playerMP.connection.sendPacket(new SPacketSetPassengers(this.trackedEntity.getRidingEntity()));
                     }
 
                     this.trackedEntity.addTrackingPlayer(playerMP);
@@ -500,13 +512,22 @@ public class EntityTrackerEntry
         Packet pkt = net.minecraftforge.fml.common.network.internal.FMLNetworkHandler.getEntitySpawningPacket(this.trackedEntity);
         if (pkt != null) return pkt;
 
-        if (this.trackedEntity instanceof EntityItem)
-        {
-            return new SPacketSpawnObject(this.trackedEntity, 2, 1);
-        }
-        else if (this.trackedEntity instanceof EntityPlayerMP)
+        if (this.trackedEntity instanceof EntityPlayerMP)
         {
             return new SPacketSpawnPlayer((EntityPlayer)this.trackedEntity);
+        }
+        else if (this.trackedEntity instanceof IAnimals)
+        {
+            this.lastHeadMotion = MathHelper.floor_float(this.trackedEntity.getRotationYawHead() * 256.0F / 360.0F);
+            return new SPacketSpawnMob((EntityLivingBase)this.trackedEntity);
+        }
+        else if (this.trackedEntity instanceof EntityPainting)
+        {
+            return new SPacketSpawnPainting((EntityPainting)this.trackedEntity);
+        }
+        else if (this.trackedEntity instanceof EntityItem)
+        {
+            return new SPacketSpawnObject(this.trackedEntity, 2, 1);
         }
         else if (this.trackedEntity instanceof EntityMinecart)
         {
@@ -517,29 +538,32 @@ public class EntityTrackerEntry
         {
             return new SPacketSpawnObject(this.trackedEntity, 1);
         }
-        else if (this.trackedEntity instanceof IAnimals)
+        else if (this.trackedEntity instanceof EntityXPOrb)
         {
-            this.lastHeadMotion = MathHelper.floor_float(this.trackedEntity.getRotationYawHead() * 256.0F / 360.0F);
-            return new SPacketSpawnMob((EntityLivingBase)this.trackedEntity);
+            return new SPacketSpawnExperienceOrb((EntityXPOrb)this.trackedEntity);
         }
         else if (this.trackedEntity instanceof EntityFishHook)
         {
-            Entity entity2 = ((EntityFishHook)this.trackedEntity).angler;
-            return new SPacketSpawnObject(this.trackedEntity, 90, entity2 != null ? entity2.getEntityId() : this.trackedEntity.getEntityId());
+            Entity entity2 = ((EntityFishHook)this.trackedEntity).func_190619_l();
+            return new SPacketSpawnObject(this.trackedEntity, 90, entity2 == null ? this.trackedEntity.getEntityId() : entity2.getEntityId());
         }
         else if (this.trackedEntity instanceof EntitySpectralArrow)
         {
             Entity entity1 = ((EntitySpectralArrow)this.trackedEntity).shootingEntity;
-            return new SPacketSpawnObject(this.trackedEntity, 91, 1 + (entity1 != null ? entity1.getEntityId() : this.trackedEntity.getEntityId()));
+            return new SPacketSpawnObject(this.trackedEntity, 91, 1 + (entity1 == null ? this.trackedEntity.getEntityId() : entity1.getEntityId()));
         }
         else if (this.trackedEntity instanceof EntityTippedArrow)
         {
             Entity entity = ((EntityArrow)this.trackedEntity).shootingEntity;
-            return new SPacketSpawnObject(this.trackedEntity, 60, 1 + (entity != null ? entity.getEntityId() : this.trackedEntity.getEntityId()));
+            return new SPacketSpawnObject(this.trackedEntity, 60, 1 + (entity == null ? this.trackedEntity.getEntityId() : entity.getEntityId()));
         }
         else if (this.trackedEntity instanceof EntitySnowball)
         {
             return new SPacketSpawnObject(this.trackedEntity, 61);
+        }
+        else if (this.trackedEntity instanceof EntityLlamaSpit)
+        {
+            return new SPacketSpawnObject(this.trackedEntity, 68);
         }
         else if (this.trackedEntity instanceof EntityPotion)
         {
@@ -606,6 +630,10 @@ public class EntityTrackerEntry
         {
             return new SPacketSpawnObject(this.trackedEntity, 62);
         }
+        else if (this.trackedEntity instanceof EntityEvokerFangs)
+        {
+            return new SPacketSpawnObject(this.trackedEntity, 79);
+        }
         else if (this.trackedEntity instanceof EntityTNTPrimed)
         {
             return new SPacketSpawnObject(this.trackedEntity, 50);
@@ -623,10 +651,6 @@ public class EntityTrackerEntry
         {
             return new SPacketSpawnObject(this.trackedEntity, 78);
         }
-        else if (this.trackedEntity instanceof EntityPainting)
-        {
-            return new SPacketSpawnPainting((EntityPainting)this.trackedEntity);
-        }
         else if (this.trackedEntity instanceof EntityItemFrame)
         {
             EntityItemFrame entityitemframe = (EntityItemFrame)this.trackedEntity;
@@ -636,10 +660,6 @@ public class EntityTrackerEntry
         {
             EntityLeashKnot entityleashknot = (EntityLeashKnot)this.trackedEntity;
             return new SPacketSpawnObject(this.trackedEntity, 77, 0, entityleashknot.getHangingPosition());
-        }
-        else if (this.trackedEntity instanceof EntityXPOrb)
-        {
-            return new SPacketSpawnExperienceOrb((EntityXPOrb)this.trackedEntity);
         }
         else if (this.trackedEntity instanceof EntityAreaEffectCloud)
         {
@@ -669,9 +689,9 @@ public class EntityTrackerEntry
         return this.trackedEntity;
     }
 
-    public void setMaxRange(int p_187259_1_)
+    public void setMaxRange(int maxRangeIn)
     {
-        this.maxRange = p_187259_1_;
+        this.maxRange = maxRangeIn;
     }
 
     public void resetPlayerVisibility()

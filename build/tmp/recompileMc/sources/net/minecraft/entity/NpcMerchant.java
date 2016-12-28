@@ -1,12 +1,15 @@
 package net.minecraft.entity;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryMerchant;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -37,12 +40,13 @@ public class NpcMerchant implements IMerchant
     {
     }
 
+    @Nullable
     public MerchantRecipeList getRecipes(EntityPlayer player)
     {
         return this.recipeList;
     }
 
-    public void setRecipes(MerchantRecipeList recipeList)
+    public void setRecipes(@Nullable MerchantRecipeList recipeList)
     {
         this.recipeList = recipeList;
     }
@@ -66,5 +70,15 @@ public class NpcMerchant implements IMerchant
     public ITextComponent getDisplayName()
     {
         return (ITextComponent)(this.name != null ? this.name : new TextComponentTranslation("entity.Villager.name", new Object[0]));
+    }
+
+    public World func_190670_t_()
+    {
+        return this.customer.worldObj;
+    }
+
+    public BlockPos func_190671_u_()
+    {
+        return new BlockPos(this.customer);
     }
 }

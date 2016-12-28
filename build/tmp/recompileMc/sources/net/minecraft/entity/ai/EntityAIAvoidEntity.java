@@ -38,7 +38,7 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
         {
             public boolean apply(@Nullable Entity p_apply_1_)
             {
-                return p_apply_1_.isEntityAlive() && EntityAIAvoidEntity.this.theEntity.getEntitySenses().canSee(p_apply_1_);
+                return p_apply_1_.isEntityAlive() && EntityAIAvoidEntity.this.theEntity.getEntitySenses().canSee(p_apply_1_) && !EntityAIAvoidEntity.this.theEntity.isOnSameTeam(p_apply_1_);
             }
         };
         this.theEntity = theEntityIn;

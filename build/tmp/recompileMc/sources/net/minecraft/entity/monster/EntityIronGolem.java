@@ -18,7 +18,7 @@ import net.minecraft.entity.ai.EntityAIMoveThroughVillage;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -44,6 +44,7 @@ public class EntityIronGolem extends EntityGolem
     protected static final DataParameter<Byte> PLAYER_CREATED = EntityDataManager.<Byte>createKey(EntityIronGolem.class, DataSerializers.BYTE);
     /** deincrements, and a distance-to-home check is done at 0 */
     private int homeCheckTimer;
+    @Nullable
     Village villageObj;
     private int attackTimer;
     private int holdRoseTick;
@@ -61,7 +62,7 @@ public class EntityIronGolem extends EntityGolem
         this.tasks.addTask(3, new EntityAIMoveThroughVillage(this, 0.6D, true));
         this.tasks.addTask(4, new EntityAIMoveTowardsRestriction(this, 1.0D));
         this.tasks.addTask(5, new EntityAILookAtVillager(this));
-        this.tasks.addTask(6, new EntityAIWander(this, 0.6D));
+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 0.6D));
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIDefendVillage(this));
@@ -168,9 +169,9 @@ public class EntityIronGolem extends EntityGolem
         return this.isPlayerCreated() && EntityPlayer.class.isAssignableFrom(cls) ? false : (cls == EntityCreeper.class ? false : super.canAttackClass(cls));
     }
 
-    public static void func_189784_b(DataFixer p_189784_0_)
+    public static void registerFixesIronGolem(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189784_0_, "VillagerGolem");
+        EntityLiving.registerFixesMob(fixer, EntityIronGolem.class);
     }
 
     /**
@@ -219,6 +220,10 @@ public class EntityIronGolem extends EntityGolem
         {
             this.holdRoseTick = 400;
         }
+        else if (id == 34)
+        {
+            this.holdRoseTick = 0;
+        }
         else
         {
             super.handleStatusUpdate(id);
@@ -238,8 +243,16 @@ public class EntityIronGolem extends EntityGolem
 
     public void setHoldingRose(boolean p_70851_1_)
     {
-        this.holdRoseTick = p_70851_1_ ? 400 : 0;
-        this.worldObj.setEntityState(this, (byte)11);
+        if (p_70851_1_)
+        {
+            this.holdRoseTick = 400;
+            this.worldObj.setEntityState(this, (byte)11);
+        }
+        else
+        {
+            this.holdRoseTick = 0;
+            this.worldObj.setEntityState(this, (byte)34);
+        }
     }
 
     protected SoundEvent getHurtSound()

@@ -1,12 +1,12 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Maps;
-import java.util.List;
 import java.util.Map;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -52,7 +52,7 @@ public class ItemFishFood extends ItemFood
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
+    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
     {
         for (ItemFishFood.FishType itemfishfood$fishtype : ItemFishFood.FishType.values())
         {
@@ -97,7 +97,7 @@ public class ItemFishFood extends ItemFood
         /** The saturation modifier to apply to the heal amount when the player eats the cooked version of this fish. */
         private final float cookedSaturationModifier;
         /** Indicates whether this type of fish has "raw" and "cooked" variants */
-        private boolean cookable;
+        private final boolean cookable;
 
         private FishType(int meta, String unlocalizedName, int uncookedHeal, float uncookedSaturation, int cookedHeal, float cookedSaturation)
         {

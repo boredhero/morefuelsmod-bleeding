@@ -19,7 +19,7 @@ public abstract class GenLayer
     /** base seed to the LCG prng provided via the constructor */
     protected long baseSeed;
 
-    public static GenLayer[] initializeAllBiomeGenerators(long seed, WorldType p_180781_2_, String p_180781_3_)
+    public static GenLayer[] initializeAllBiomeGenerators(long seed, WorldType p_180781_2_, ChunkProviderSettings p_180781_3_)
     {
         GenLayer genlayer = new GenLayerIsland(1L);
         genlayer = new GenLayerFuzzyZoom(2000L, genlayer);
@@ -43,11 +43,10 @@ public abstract class GenLayer
         int i = 4;
         int j = i;
 
-        if (p_180781_2_ == WorldType.CUSTOMIZED && !p_180781_3_.isEmpty())
+        if (p_180781_3_ != null)
         {
-            ChunkProviderSettings chunkprovidersettings = ChunkProviderSettings.Factory.jsonToFactory(p_180781_3_).build();
-            i = chunkprovidersettings.biomeSize;
-            j = chunkprovidersettings.riverSize;
+            i = p_180781_3_.biomeSize;
+            j = p_180781_3_.riverSize;
         }
 
         if (p_180781_2_ == WorldType.LARGE_BIOMES)
@@ -57,11 +56,11 @@ public abstract class GenLayer
 
         i = getModdedBiomeSize(p_180781_2_, i);
 
-        GenLayer lvt_8_1_ = GenLayerZoom.magnify(1000L, genlayer4, 0);
-        GenLayerRiverInit genlayerriverinit = new GenLayerRiverInit(100L, lvt_8_1_);
-        GenLayer lvt_10_1_ = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
+        GenLayer lvt_7_1_ = GenLayerZoom.magnify(1000L, genlayer4, 0);
+        GenLayerRiverInit genlayerriverinit = new GenLayerRiverInit(100L, lvt_7_1_);
+        GenLayer lvt_9_1_ = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
         GenLayer genlayerbiomeedge = p_180781_2_.getBiomeLayer(seed, genlayer4, p_180781_3_);
-        GenLayer genlayerhills = new GenLayerHills(1000L, genlayerbiomeedge, lvt_10_1_);
+        GenLayer genlayerhills = new GenLayerHills(1000L, genlayerbiomeedge, lvt_9_1_);
         GenLayer genlayer5 = GenLayerZoom.magnify(1000L, genlayerriverinit, 2);
         genlayer5 = GenLayerZoom.magnify(1000L, genlayer5, j);
         GenLayerRiver genlayerriver = new GenLayerRiver(1L, genlayer5);

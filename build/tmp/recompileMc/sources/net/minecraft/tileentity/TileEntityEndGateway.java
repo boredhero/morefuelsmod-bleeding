@@ -25,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TileEntityEndGateway extends TileEntity implements ITickable
+public class TileEntityEndGateway extends TileEntityEndPortal implements ITickable
 {
     private static final Logger LOG = LogManager.getLogger();
     private long age;
@@ -91,6 +91,11 @@ public class TileEntityEndGateway extends TileEntity implements ITickable
             {
                 this.teleportEntity((Entity)list.get(0));
             }
+
+            if (this.age % 2400L == 0L)
+            {
+                this.triggerCooldown();
+            }
         }
 
         if (flag != this.isSpawning() || flag1 != this.isCoolingDown())
@@ -110,15 +115,15 @@ public class TileEntityEndGateway extends TileEntity implements ITickable
     }
 
     @SideOnly(Side.CLIENT)
-    public float getSpawnPercent()
+    public float getSpawnPercent(float p_184302_1_)
     {
-        return MathHelper.clamp_float((float)this.age / 200.0F, 0.0F, 1.0F);
+        return MathHelper.clamp_float(((float)this.age + p_184302_1_) / 200.0F, 0.0F, 1.0F);
     }
 
     @SideOnly(Side.CLIENT)
-    public float getCooldownPercent()
+    public float getCooldownPercent(float p_184305_1_)
     {
-        return 1.0F - MathHelper.clamp_float((float)this.teleportCooldown / 20.0F, 0.0F, 1.0F);
+        return 1.0F - MathHelper.clamp_float(((float)this.teleportCooldown - p_184305_1_) / 40.0F, 0.0F, 1.0F);
     }
 
     @Nullable
@@ -136,7 +141,7 @@ public class TileEntityEndGateway extends TileEntity implements ITickable
     {
         if (!this.worldObj.isRemote)
         {
-            this.teleportCooldown = 20;
+            this.teleportCooldown = 40;
             this.worldObj.addBlockEvent(this.getPos(), this.getBlockType(), 1, 0);
             this.markDirty();
         }
@@ -146,7 +151,7 @@ public class TileEntityEndGateway extends TileEntity implements ITickable
     {
         if (id == 1)
         {
-            this.teleportCooldown = 20;
+            this.teleportCooldown = 40;
             return true;
         }
         else
@@ -315,5 +320,11 @@ public class TileEntityEndGateway extends TileEntity implements ITickable
         }
 
         return i;
+    }
+
+    public void func_190603_b(BlockPos p_190603_1_)
+    {
+        this.exactTeleport = true;
+        this.exitPortal = p_190603_1_;
     }
 }

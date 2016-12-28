@@ -1,19 +1,20 @@
 package net.minecraft.entity.item;
 
 import io.netty.buffer.ByteBuf;
-import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.CommandBlockBaseLogic;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityCommandBlock;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.IDataFixer;
@@ -106,14 +107,14 @@ public class EntityMinecartCommandBlock extends EntityMinecart
         super(worldIn, x, y, z);
     }
 
-    public static void func_189670_a(DataFixer p_189670_0_)
+    public static void registerFixesMinecartCommand(DataFixer fixer)
     {
-        EntityMinecart.func_189669_a(p_189670_0_, "MinecartCommandBlock");
-        p_189670_0_.registerWalker(FixTypes.ENTITY, new IDataWalker()
+        EntityMinecart.registerFixesMinecart(fixer, EntityMinecartCommandBlock.class);
+        fixer.registerWalker(FixTypes.ENTITY, new IDataWalker()
         {
             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
             {
-                if ("MinecartCommandBlock".equals(compound.getString("id")))
+                if (TileEntity.func_190559_a(TileEntityCommandBlock.class).equals(new ResourceLocation(compound.getString("id"))))
                 {
                     compound.setString("id", "Control");
                     fixer.process(FixTypes.BLOCK_ENTITY, compound, versionIn);
@@ -179,9 +180,9 @@ public class EntityMinecartCommandBlock extends EntityMinecart
         }
     }
 
-    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand stack)
     {
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand))) return true;
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack))) return true;
         this.commandBlockLogic.tryOpenEditCommandBlock(player);
         return false;
     }

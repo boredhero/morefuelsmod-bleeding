@@ -27,7 +27,7 @@ public class LayerCape implements LayerRenderer<AbstractClientPlayer>
         {
             ItemStack itemstack = entitylivingbaseIn.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
 
-            if (itemstack == null || itemstack.getItem() != Items.ELYTRA)
+            if (itemstack.getItem() != Items.ELYTRA)
             {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 this.playerRenderer.bindTexture(entitylivingbaseIn.getLocationCape());

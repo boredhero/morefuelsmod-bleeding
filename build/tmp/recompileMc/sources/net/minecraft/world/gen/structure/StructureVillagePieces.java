@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
 import net.minecraft.block.BlockDoor;
@@ -18,8 +19,7 @@ import net.minecraft.block.BlockTorch;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.monster.ZombieType;
+import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
@@ -34,6 +34,7 @@ import net.minecraft.world.biome.BiomeDesert;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.biome.BiomeSavanna;
 import net.minecraft.world.biome.BiomeTaiga;
+import net.minecraft.world.gen.structure.template.TemplateManager;
 import net.minecraft.world.storage.loot.LootTableList;
 
 public class StructureVillagePieces
@@ -430,9 +431,9 @@ public class StructureVillagePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.cropTypeA = Block.getBlockById(tagCompound.getInteger("CA"));
                 this.cropTypeB = Block.getBlockById(tagCompound.getInteger("CB"));
                 this.cropTypeC = Block.getBlockById(tagCompound.getInteger("CC"));
@@ -580,9 +581,9 @@ public class StructureVillagePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.cropTypeA = Block.getBlockById(tagCompound.getInteger("CA"));
                 this.cropTypeB = Block.getBlockById(tagCompound.getInteger("CB"));
             }
@@ -968,9 +969,9 @@ public class StructureVillagePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.hasMadeChest = tagCompound.getBoolean("Chest");
             }
 
@@ -1274,9 +1275,9 @@ public class StructureVillagePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.isRoofAccessible = tagCompound.getBoolean("Terrace");
             }
 
@@ -1423,9 +1424,9 @@ public class StructureVillagePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.length = tagCompound.getInteger("Length");
             }
 
@@ -1631,25 +1632,25 @@ public class StructureVillagePieces
                 this.worldChunkMngr = chunkManagerIn;
                 this.structureVillageWeightedPieceList = p_i2104_6_;
                 this.terrainType = p_i2104_7_;
-                Biome biome = chunkManagerIn.getBiomeGenerator(new BlockPos(p_i2104_4_, 0, p_i2104_5_), Biomes.DEFAULT);
+                Biome biome = chunkManagerIn.getBiome(new BlockPos(p_i2104_4_, 0, p_i2104_5_), Biomes.DEFAULT);
                 this.biome = biome;
                 this.startPiece = this;
 
                 if (biome instanceof BiomeDesert)
                 {
-                    this.field_189928_h = 1;
+                    this.structureType = 1;
                 }
                 else if (biome instanceof BiomeSavanna)
                 {
-                    this.field_189928_h = 2;
+                    this.structureType = 2;
                 }
                 else if (biome instanceof BiomeTaiga)
                 {
-                    this.field_189928_h = 3;
+                    this.structureType = 3;
                 }
 
-                this.func_189924_a(this.field_189928_h);
-                this.field_189929_i = rand.nextInt(50) == 0;
+                this.func_189924_a(this.structureType);
+                this.isZombieInfested = rand.nextInt(50) == 0;
             }
         }
 
@@ -1709,8 +1710,8 @@ public class StructureVillagePieces
             protected int averageGroundLvl = -1;
             /** The number of villagers that have been spawned in this component. */
             private int villagersSpawned;
-            protected int field_189928_h;
-            protected boolean field_189929_i;
+            protected int structureType;
+            protected boolean isZombieInfested;
             protected StructureVillagePieces.Start startPiece;
 
             public Village()
@@ -1723,8 +1724,8 @@ public class StructureVillagePieces
 
                 if (start != null)
                 {
-                    this.field_189928_h = start.field_189928_h;
-                    this.field_189929_i = start.field_189929_i;
+                    this.structureType = start.structureType;
+                    this.isZombieInfested = start.isZombieInfested;
                     startPiece = start;
                 }
             }
@@ -1736,30 +1737,31 @@ public class StructureVillagePieces
             {
                 tagCompound.setInteger("HPos", this.averageGroundLvl);
                 tagCompound.setInteger("VCount", this.villagersSpawned);
-                tagCompound.setByte("Type", (byte)this.field_189928_h);
-                tagCompound.setBoolean("Zombie", this.field_189929_i);
+                tagCompound.setByte("Type", (byte)this.structureType);
+                tagCompound.setBoolean("Zombie", this.isZombieInfested);
             }
 
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
                 this.averageGroundLvl = tagCompound.getInteger("HPos");
                 this.villagersSpawned = tagCompound.getInteger("VCount");
-                this.field_189928_h = tagCompound.getByte("Type");
+                this.structureType = tagCompound.getByte("Type");
 
                 if (tagCompound.getBoolean("Desert"))
                 {
-                    this.field_189928_h = 1;
+                    this.structureType = 1;
                 }
 
-                this.field_189929_i = tagCompound.getBoolean("Zombie");
+                this.isZombieInfested = tagCompound.getBoolean("Zombie");
             }
 
             /**
              * Gets the next village component, with the bounding box shifted -1 in the X and Z direction.
              */
+            @Nullable
             protected StructureComponent getNextComponentNN(StructureVillagePieces.Start start, List<StructureComponent> structureComponents, Random rand, int p_74891_4_, int p_74891_5_)
             {
                 EnumFacing enumfacing = this.getCoordBaseMode();
@@ -1788,6 +1790,7 @@ public class StructureVillagePieces
             /**
              * Gets the next village component, with the bounding box shifted +1 in the X and Z direction.
              */
+            @Nullable
             protected StructureComponent getNextComponentPP(StructureVillagePieces.Start start, List<StructureComponent> structureComponents, Random rand, int p_74894_4_, int p_74894_5_)
             {
                 EnumFacing enumfacing = this.getCoordBaseMode();
@@ -1873,21 +1876,20 @@ public class StructureVillagePieces
 
                         ++this.villagersSpawned;
 
-                        if (this.field_189929_i)
+                        if (this.isZombieInfested)
                         {
-                            EntityZombie entityzombie = new EntityZombie(worldIn);
-                            entityzombie.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
-                            entityzombie.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityzombie)), (IEntityLivingData)null);
-                            entityzombie.setVillagerType(chooseForgeProfession(i, net.minecraftforge.fml.common.registry.ForgeRegistries.VILLAGER_PROFESSIONS.getValue(new net.minecraft.util.ResourceLocation("minecraft:farmer"))));
-                            entityzombie.enablePersistence();
-                            worldIn.spawnEntityInWorld(entityzombie);
+                            EntityZombieVillager entityzombievillager = new EntityZombieVillager(worldIn);
+                            entityzombievillager.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
+                            entityzombievillager.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityzombievillager)), (IEntityLivingData)null);
+                            entityzombievillager.enablePersistence();
+                            worldIn.spawnEntityInWorld(entityzombievillager);
                         }
                         else
                         {
                             EntityVillager entityvillager = new EntityVillager(worldIn);
                             entityvillager.setLocationAndAngles((double)j + 0.5D, (double)k, (double)l + 0.5D, 0.0F, 0.0F);
-                            entityvillager.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), (IEntityLivingData)null);
                             entityvillager.setProfession(this.chooseForgeProfession(i, entityvillager.getProfessionForge()));
+                            entityvillager.func_190672_a(worldIn.getDifficultyForLocation(new BlockPos(entityvillager)), (IEntityLivingData)null, false);
                             worldIn.spawnEntityInWorld(entityvillager);
                         }
                     }
@@ -1909,7 +1911,7 @@ public class StructureVillagePieces
                 net.minecraftforge.event.terraingen.BiomeEvent.GetVillageBlockID event = new net.minecraftforge.event.terraingen.BiomeEvent.GetVillageBlockID(startPiece == null ? null : startPiece.biome, blockstateIn);
                 net.minecraftforge.common.MinecraftForge.TERRAIN_GEN_BUS.post(event);
                 if (event.getResult() == net.minecraftforge.fml.common.eventhandler.Event.Result.DENY) return event.getReplacement();
-                if (this.field_189928_h == 1)
+                if (this.structureType == 1)
                 {
                     if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2)
                     {
@@ -1941,7 +1943,7 @@ public class StructureVillagePieces
                         return Blocks.SANDSTONE.getDefaultState();
                     }
                 }
-                else if (this.field_189928_h == 3)
+                else if (this.structureType == 3)
                 {
                     if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2)
                     {
@@ -1963,7 +1965,7 @@ public class StructureVillagePieces
                         return Blocks.SPRUCE_FENCE.getDefaultState();
                     }
                 }
-                else if (this.field_189928_h == 2)
+                else if (this.structureType == 2)
                 {
                     if (blockstateIn.getBlock() == Blocks.LOG || blockstateIn.getBlock() == Blocks.LOG2)
                     {
@@ -1996,7 +1998,7 @@ public class StructureVillagePieces
 
             protected BlockDoor func_189925_i()
             {
-                switch (this.field_189928_h)
+                switch (this.structureType)
                 {
                     case 2:
                         return Blocks.ACACIA_DOOR;
@@ -2009,7 +2011,7 @@ public class StructureVillagePieces
 
             protected void func_189927_a(World p_189927_1_, StructureBoundingBox p_189927_2_, Random p_189927_3_, int p_189927_4_, int p_189927_5_, int p_189927_6_, EnumFacing p_189927_7_)
             {
-                if (!this.field_189929_i)
+                if (!this.isZombieInfested)
                 {
                     this.func_189915_a(p_189927_1_, p_189927_2_, p_189927_3_, p_189927_4_, p_189927_5_, p_189927_6_, EnumFacing.NORTH, this.func_189925_i());
                 }
@@ -2017,7 +2019,7 @@ public class StructureVillagePieces
 
             protected void func_189926_a(World p_189926_1_, EnumFacing p_189926_2_, int p_189926_3_, int p_189926_4_, int p_189926_5_, StructureBoundingBox p_189926_6_)
             {
-                if (!this.field_189929_i)
+                if (!this.isZombieInfested)
                 {
                     this.setBlockState(p_189926_1_, Blocks.TORCH.getDefaultState().withProperty(BlockTorch.FACING, p_189926_2_), p_189926_3_, p_189926_4_, p_189926_5_, p_189926_6_);
                 }
@@ -2035,7 +2037,7 @@ public class StructureVillagePieces
 
             protected void func_189924_a(int p_189924_1_)
             {
-                this.field_189928_h = p_189924_1_;
+                this.structureType = p_189924_1_;
             }
         }
 
@@ -2112,7 +2114,7 @@ public class StructureVillagePieces
                     {
                         if (j == 0 || j == 5 || i == 0 || i == 5)
                         {
-                            this.setBlockState(worldIn, Blocks.COBBLESTONE.getDefaultState(), j, 11, i, structureBoundingBoxIn);
+                            this.setBlockState(worldIn, iblockstate, j, 11, i, structureBoundingBoxIn);
                             this.clearCurrentPositionBlocksUpwards(worldIn, j, 12, i, structureBoundingBoxIn);
                         }
                     }
@@ -2153,9 +2155,9 @@ public class StructureVillagePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.tablePosition = tagCompound.getInteger("T");
                 this.isTallHouse = tagCompound.getBoolean("C");
             }

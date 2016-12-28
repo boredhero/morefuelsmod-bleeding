@@ -43,9 +43,9 @@ public class TextureUtil
         GlStateManager.deleteTexture(textureId);
     }
 
-    public static int uploadTextureImage(int p_110987_0_, BufferedImage p_110987_1_)
+    public static int uploadTextureImage(int textureId, BufferedImage texture)
     {
-        return uploadTextureImageAllocate(p_110987_0_, p_110987_1_, false, false);
+        return uploadTextureImageAllocate(textureId, texture, false, false);
     }
 
     public static void uploadTexture(int textureId, int[] p_110988_1_, int p_110988_2_, int p_110988_3_)
@@ -192,35 +192,35 @@ public class TextureUtil
         }
     }
 
-    public static int uploadTextureImageAllocate(int p_110989_0_, BufferedImage p_110989_1_, boolean blur, boolean clamp)
+    public static int uploadTextureImageAllocate(int textureId, BufferedImage texture, boolean blur, boolean clamp)
     {
-        allocateTexture(p_110989_0_, p_110989_1_.getWidth(), p_110989_1_.getHeight());
-        return uploadTextureImageSub(p_110989_0_, p_110989_1_, 0, 0, blur, clamp);
+        allocateTexture(textureId, texture.getWidth(), texture.getHeight());
+        return uploadTextureImageSub(textureId, texture, 0, 0, blur, clamp);
     }
 
-    public static void allocateTexture(int p_110991_0_, int p_110991_1_, int p_110991_2_)
+    public static void allocateTexture(int textureId, int width, int height)
     {
-        allocateTextureImpl(p_110991_0_, 0, p_110991_1_, p_110991_2_);
+        allocateTextureImpl(textureId, 0, width, height);
     }
 
-    public static void allocateTextureImpl(int p_180600_0_, int p_180600_1_, int p_180600_2_, int p_180600_3_)
+    public static void allocateTextureImpl(int glTextureId, int mipmapLevels, int width, int height)
     {
         synchronized (net.minecraftforge.fml.client.SplashProgress.class)
         {
-        deleteTexture(p_180600_0_);
-        bindTexture(p_180600_0_);
+        deleteTexture(glTextureId);
+        bindTexture(glTextureId);
         }
-        if (p_180600_1_ >= 0)
+        if (mipmapLevels >= 0)
         {
-            GlStateManager.glTexParameteri(3553, 33085, p_180600_1_);
+            GlStateManager.glTexParameteri(3553, 33085, mipmapLevels);
             GlStateManager.glTexParameteri(3553, 33082, 0);
-            GlStateManager.glTexParameteri(3553, 33083, p_180600_1_);
+            GlStateManager.glTexParameteri(3553, 33083, mipmapLevels);
             GlStateManager.glTexParameterf(3553, 34049, 0.0F);
         }
 
-        for (int i = 0; i <= p_180600_1_; ++i)
+        for (int i = 0; i <= mipmapLevels; ++i)
         {
-            GlStateManager.glTexImage2D(3553, i, 6408, p_180600_2_ >> i, p_180600_3_ >> i, 0, 32993, 33639, (IntBuffer)null);
+            GlStateManager.glTexImage2D(3553, i, 6408, width >> i, height >> i, 0, 32993, 33639, (IntBuffer)null);
         }
     }
 

@@ -23,9 +23,9 @@ public class ItemLead extends Item
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        Block block = worldIn.getBlockState(pos).getBlock();
+        Block block = playerIn.getBlockState(worldIn).getBlock();
 
         if (!(block instanceof BlockFence))
         {
@@ -33,9 +33,9 @@ public class ItemLead extends Item
         }
         else
         {
-            if (!worldIn.isRemote)
+            if (!playerIn.isRemote)
             {
-                attachToFence(playerIn, worldIn, pos);
+                attachToFence(stack, playerIn, worldIn);
             }
 
             return EnumActionResult.SUCCESS;

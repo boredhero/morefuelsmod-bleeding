@@ -1,5 +1,6 @@
 package net.minecraft.command;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.Deque;
@@ -70,7 +71,7 @@ public class CommandClone extends CommandBase
             {
                 boolean flag = false;
                 Block block = null;
-                int j = -1;
+                Predicate<IBlockState> predicate = null;
 
                 if ((args.length < 11 || !"force".equals(args[10]) && !"move".equals(args[10])) && structureboundingbox.intersectsWith(structureboundingbox1))
                 {
@@ -108,7 +109,7 @@ public class CommandClone extends CommandBase
 
                                     if (args.length >= 13)
                                     {
-                                        j = parseInt(args[12], 0, 15);
+                                        predicate = func_190791_b(block, args[12]);
                                     }
                                 }
                             }
@@ -119,17 +120,17 @@ public class CommandClone extends CommandBase
                             Deque<BlockPos> deque = Lists.<BlockPos>newLinkedList();
                             BlockPos blockpos3 = new BlockPos(structureboundingbox1.minX - structureboundingbox.minX, structureboundingbox1.minY - structureboundingbox.minY, structureboundingbox1.minZ - structureboundingbox.minZ);
 
-                            for (int k = structureboundingbox.minZ; k <= structureboundingbox.maxZ; ++k)
+                            for (int j = structureboundingbox.minZ; j <= structureboundingbox.maxZ; ++j)
                             {
-                                for (int l = structureboundingbox.minY; l <= structureboundingbox.maxY; ++l)
+                                for (int k = structureboundingbox.minY; k <= structureboundingbox.maxY; ++k)
                                 {
-                                    for (int i1 = structureboundingbox.minX; i1 <= structureboundingbox.maxX; ++i1)
+                                    for (int l = structureboundingbox.minX; l <= structureboundingbox.maxX; ++l)
                                     {
-                                        BlockPos blockpos4 = new BlockPos(i1, l, k);
+                                        BlockPos blockpos4 = new BlockPos(l, k, j);
                                         BlockPos blockpos5 = blockpos4.add(blockpos3);
                                         IBlockState iblockstate = world.getBlockState(blockpos4);
 
-                                        if ((!flag1 || iblockstate.getBlock() != Blocks.AIR) && (block == null || iblockstate.getBlock() == block && (j < 0 || iblockstate.getBlock().getMetaFromState(iblockstate) == j)))
+                                        if ((!flag1 || iblockstate.getBlock() != Blocks.AIR) && (block == null || iblockstate.getBlock() == block && (predicate == null || predicate.apply(iblockstate))))
                                         {
                                             TileEntity tileentity = world.getTileEntity(blockpos4);
 
@@ -220,7 +221,7 @@ public class CommandClone extends CommandBase
 
                             for (CommandClone.StaticCloneData commandclone$staticclonedata3 : list4)
                             {
-                                world.notifyNeighborsRespectDebug(commandclone$staticclonedata3.pos, commandclone$staticclonedata3.blockState.getBlock());
+                                world.notifyNeighborsRespectDebug(commandclone$staticclonedata3.pos, commandclone$staticclonedata3.blockState.getBlock(), false);
                             }
 
                             List<NextTickListEntry> list5 = world.getPendingBlockUpdates(structureboundingbox, false);

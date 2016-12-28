@@ -82,11 +82,6 @@ public class SPacketSpawnPlayer implements Packet<INetHandlerPlayClient>
     @SideOnly(Side.CLIENT)
     public List < EntityDataManager.DataEntry<? >> getDataManagerEntries()
     {
-        if (this.dataManagerEntries == null)
-        {
-            this.dataManagerEntries = this.watcher.getAll();
-        }
-
         return this.dataManagerEntries;
     }
 

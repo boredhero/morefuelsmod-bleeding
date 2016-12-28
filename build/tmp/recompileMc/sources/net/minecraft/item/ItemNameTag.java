@@ -18,21 +18,21 @@ public class ItemNameTag extends Item
      */
     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand)
     {
-        if (!stack.hasDisplayName())
+        if (stack.hasDisplayName() && !(target instanceof EntityPlayer))
         {
-            return false;
-        }
-        else if (target instanceof EntityLiving)
-        {
-            EntityLiving entityliving = (EntityLiving)target;
-            entityliving.setCustomNameTag(stack.getDisplayName());
-            entityliving.enablePersistence();
-            --stack.stackSize;
+            target.setCustomNameTag(stack.getDisplayName());
+
+            if (target instanceof EntityLiving)
+            {
+                ((EntityLiving)target).enablePersistence();
+            }
+
+            stack.func_190918_g(1);
             return true;
         }
         else
         {
-            return super.itemInteractionForEntity(stack, playerIn, target, hand);
+            return false;
         }
     }
 }

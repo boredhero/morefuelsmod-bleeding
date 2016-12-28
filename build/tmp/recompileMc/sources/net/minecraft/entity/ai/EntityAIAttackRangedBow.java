@@ -1,14 +1,14 @@
 package net.minecraft.entity.ai;
 
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemBow;
 import net.minecraft.util.EnumHand;
 
 public class EntityAIAttackRangedBow extends EntityAIBase
 {
-    private final EntitySkeleton entity;
+    private final AbstractSkeleton entity;
     private final double moveSpeedAmp;
     private int attackCooldown;
     private final float maxAttackDistance;
@@ -18,7 +18,7 @@ public class EntityAIAttackRangedBow extends EntityAIBase
     private boolean strafingBackwards;
     private int strafingTime = -1;
 
-    public EntityAIAttackRangedBow(EntitySkeleton skeleton, double speedAmplifier, int delay, float maxDistance)
+    public EntityAIAttackRangedBow(AbstractSkeleton skeleton, double speedAmplifier, int delay, float maxDistance)
     {
         this.entity = skeleton;
         this.moveSpeedAmp = speedAmplifier;
@@ -42,7 +42,7 @@ public class EntityAIAttackRangedBow extends EntityAIBase
 
     protected boolean isBowInMainhand()
     {
-        return this.entity.getHeldItemMainhand() != null && this.entity.getHeldItemMainhand().getItem() == Items.BOW;
+        return !this.entity.getHeldItemMainhand().func_190926_b() && this.entity.getHeldItemMainhand().getItem() == Items.BOW;
     }
 
     /**

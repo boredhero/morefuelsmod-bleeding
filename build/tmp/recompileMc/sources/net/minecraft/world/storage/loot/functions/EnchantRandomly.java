@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -26,24 +27,19 @@ import org.apache.logging.log4j.Logger;
 public class EnchantRandomly extends LootFunction
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    @Nullable
     private final List<Enchantment> enchantments;
 
     public EnchantRandomly(LootCondition[] conditionsIn, @Nullable List<Enchantment> enchantmentsIn)
     {
         super(conditionsIn);
-        this.enchantments = enchantmentsIn;
+        this.enchantments = enchantmentsIn == null ? Collections.<Enchantment>emptyList() : enchantmentsIn;
     }
 
     public ItemStack apply(ItemStack stack, Random rand, LootContext context)
     {
         Enchantment enchantment;
 
-        if (this.enchantments != null && !this.enchantments.isEmpty())
-        {
-            enchantment = (Enchantment)this.enchantments.get(rand.nextInt(this.enchantments.size()));
-        }
-        else
+        if (this.enchantments.isEmpty())
         {
             List<Enchantment> list = Lists.<Enchantment>newArrayList();
 
@@ -63,12 +59,16 @@ public class EnchantRandomly extends LootFunction
 
             enchantment = (Enchantment)list.get(rand.nextInt(list.size()));
         }
+        else
+        {
+            enchantment = (Enchantment)this.enchantments.get(rand.nextInt(this.enchantments.size()));
+        }
 
         int i = MathHelper.getRandomIntegerInRange(rand, enchantment.getMinLevel(), enchantment.getMaxLevel());
 
         if (stack.getItem() == Items.BOOK)
         {
-            stack.setItem(Items.ENCHANTED_BOOK);
+            stack = new ItemStack(Items.ENCHANTED_BOOK);
             Items.ENCHANTED_BOOK.addEnchantment(stack, new EnchantmentData(enchantment, i));
         }
         else
@@ -88,7 +88,7 @@ public class EnchantRandomly extends LootFunction
 
             public void serialize(JsonObject object, EnchantRandomly functionClazz, JsonSerializationContext serializationContext)
             {
-                if (functionClazz.enchantments != null && !functionClazz.enchantments.isEmpty())
+                if (!functionClazz.enchantments.isEmpty())
                 {
                     JsonArray jsonarray = new JsonArray();
 
@@ -110,12 +110,10 @@ public class EnchantRandomly extends LootFunction
 
             public EnchantRandomly deserialize(JsonObject object, JsonDeserializationContext deserializationContext, LootCondition[] conditionsIn)
             {
-                List<Enchantment> list = null;
+                List<Enchantment> list = Lists.<Enchantment>newArrayList();
 
                 if (object.has("enchantments"))
                 {
-                    list = Lists.<Enchantment>newArrayList();
-
                     for (JsonElement jsonelement : JsonUtils.getJsonArray(object, "enchantments"))
                     {
                         String s = JsonUtils.getString(jsonelement, "enchantment");

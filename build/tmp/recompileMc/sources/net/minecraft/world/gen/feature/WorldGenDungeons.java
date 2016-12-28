@@ -2,11 +2,16 @@ package net.minecraft.world.gen.feature;
 
 import java.util.Random;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
@@ -16,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 public class WorldGenDungeons extends WorldGenerator
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String[] SPAWNERTYPES = new String[] {"Skeleton", "Zombie", "Zombie", "Spider"};
+    private static final ResourceLocation[] SPAWNERTYPES = new ResourceLocation[] {EntityList.func_191306_a(EntitySkeleton.class), EntityList.func_191306_a(EntityZombie.class), EntityList.func_191306_a(EntityZombie.class), EntityList.func_191306_a(EntitySpider.class)};
 
     public boolean generate(World worldIn, Random rand, BlockPos position)
     {
@@ -137,7 +142,7 @@ public class WorldGenDungeons extends WorldGenerator
 
             if (tileentity instanceof TileEntityMobSpawner)
             {
-                ((TileEntityMobSpawner)tileentity).getSpawnerBaseLogic().setEntityName(this.pickMobSpawner(rand));
+                ((TileEntityMobSpawner)tileentity).getSpawnerBaseLogic().func_190894_a(this.pickMobSpawner(rand));
             }
             else
             {
@@ -155,7 +160,7 @@ public class WorldGenDungeons extends WorldGenerator
     /**
      * Randomly decides which spawner to use in a dungeon
      */
-    private String pickMobSpawner(Random rand)
+    private ResourceLocation pickMobSpawner(Random rand)
     {
         return net.minecraftforge.common.DungeonHooks.getRandomDungeonMob(rand);
     }

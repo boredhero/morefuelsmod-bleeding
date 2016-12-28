@@ -30,9 +30,8 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.INpc;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.passive.EntityAnimal;
-import net.minecraft.entity.passive.EntityHorse;
+import net.minecraft.entity.passive.EntitySkeletonHorse;
 import net.minecraft.entity.passive.EntityWaterMob;
-import net.minecraft.entity.passive.HorseType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -296,7 +295,10 @@ public class WorldServer extends World implements IThreadListener
             }
         }
 
-        this.resetRainAndThunder();
+        if (this.getGameRules().getBoolean("doWeatherCycle"))
+        {
+            this.resetRainAndThunder();
+        }
     }
 
     /**
@@ -425,14 +427,13 @@ public class WorldServer extends World implements IThreadListener
                     {
                         DifficultyInstance difficultyinstance = this.getDifficultyForLocation(blockpos);
 
-                        if (this.rand.nextDouble() < (double)difficultyinstance.getAdditionalDifficulty() * 0.05D)
+                        if (this.getGameRules().getBoolean("doMobSpawning") && this.rand.nextDouble() < (double)difficultyinstance.getAdditionalDifficulty() * 0.01D)
                         {
-                            EntityHorse entityhorse = new EntityHorse(this);
-                            entityhorse.setType(HorseType.SKELETON);
-                            entityhorse.setSkeletonTrap(true);
-                            entityhorse.setGrowingAge(0);
-                            entityhorse.setPosition((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
-                            this.spawnEntityInWorld(entityhorse);
+                            EntitySkeletonHorse entityskeletonhorse = new EntitySkeletonHorse(this);
+                            entityskeletonhorse.func_190691_p(true);
+                            entityskeletonhorse.setGrowingAge(0);
+                            entityskeletonhorse.setPosition((double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ());
+                            this.spawnEntityInWorld(entityskeletonhorse);
                             this.addWeatherEffect(new EntityLightningBolt(this, (double)blockpos.getX(), (double)blockpos.getY(), (double)blockpos.getZ(), true));
                         }
                         else
@@ -461,7 +462,7 @@ public class WorldServer extends World implements IThreadListener
                         this.setBlockState(blockpos1, Blocks.SNOW_LAYER.getDefaultState());
                     }
 
-                    if (flag && this.getBiomeGenForCoords(blockpos2).canRain())
+                    if (flag && this.getBiome(blockpos2).canRain())
                     {
                         this.getBlockState(blockpos2).getBlock().fillWithRain(this, blockpos2);
                     }
@@ -602,6 +603,7 @@ public class WorldServer extends World implements IThreadListener
 
     public void scheduleBlockUpdate(BlockPos pos, Block blockIn, int delay, int priority)
     {
+        if (blockIn == null) return; //Forge: Prevent null blocks from ticking, can happen if blocks are removed in old worlds. TODO: Fix real issue causing block to be null.
         if (pos instanceof BlockPos.MutableBlockPos || pos instanceof BlockPos.PooledMutableBlockPos)
         {
             pos = new BlockPos(pos);
@@ -1033,6 +1035,7 @@ public class WorldServer extends World implements IThreadListener
     /**
      * Returns null for anything other than the End
      */
+    @Nullable
     public BlockPos getSpawnCoordinate()
     {
         return this.provider.getSpawnCoordinate();
@@ -1138,7 +1141,7 @@ public class WorldServer extends World implements IThreadListener
     {
         if (entityIn.isDead)
         {
-            LOGGER.warn("Tried to add entity {} but it was marked as removed already", new Object[] {EntityList.getEntityString(entityIn)});
+            LOGGER.warn("Tried to add entity {} but it was marked as removed already", new Object[] {EntityList.func_191301_a(entityIn)});
             return false;
         }
         else
@@ -1157,7 +1160,7 @@ public class WorldServer extends World implements IThreadListener
                 {
                     if (!(entityIn instanceof EntityPlayer))
                     {
-                        LOGGER.warn("Keeping entity {} that already exists with UUID {}", new Object[] {EntityList.getEntityString(entity), uuid.toString()});
+                        LOGGER.warn("Keeping entity {} that already exists with UUID {}", new Object[] {EntityList.func_191301_a(entity), uuid.toString()});
                         return false;
                     }
 
@@ -1432,6 +1435,12 @@ public class WorldServer extends World implements IThreadListener
     public boolean isCallingFromMinecraftThread()
     {
         return this.mcServer.isCallingFromMinecraftThread();
+    }
+
+    @Nullable
+    public BlockPos func_190528_a(String p_190528_1_, BlockPos p_190528_2_, boolean p_190528_3_)
+    {
+        return this.getChunkProvider().getStrongholdGen(this, p_190528_1_, p_190528_2_, p_190528_3_);
     }
 
     public java.io.File getChunkSaveLocation()

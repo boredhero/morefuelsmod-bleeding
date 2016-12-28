@@ -19,6 +19,7 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.TemplateManager;
 
 public abstract class StructureComponent
 {
@@ -82,13 +83,13 @@ public abstract class StructureComponent
         int i = tagCompound.getInteger("O");
         this.setCoordBaseMode(i == -1 ? null : EnumFacing.getHorizontal(i));
         this.componentType = tagCompound.getInteger("GD");
-        this.readStructureFromNBT(tagCompound);
+        this.readStructureFromNBT(tagCompound, worldIn.getSaveHandler().getStructureTemplateManager());
     }
 
     /**
      * (abstract) Helper method to read subclass data from NBT
      */
-    protected abstract void readStructureFromNBT(NBTTagCompound tagCompound);
+    protected abstract void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_);
 
     /**
      * Initiates construction of the Structure Component picked, at the current Location of StructGen
@@ -130,11 +131,6 @@ public abstract class StructureComponent
         }
 
         return null;
-    }
-
-    public BlockPos getBoundingBoxCenter()
-    {
-        return new BlockPos(this.boundingBox.getCenter());
     }
 
     /**
@@ -469,16 +465,24 @@ public abstract class StructureComponent
     protected boolean generateChest(World worldIn, StructureBoundingBox structurebb, Random randomIn, int x, int y, int z, ResourceLocation loot)
     {
         BlockPos blockpos = new BlockPos(this.getXWithOffset(x, z), this.getYWithOffset(y), this.getZWithOffset(x, z));
+        return this.func_191080_a(worldIn, structurebb, randomIn, blockpos, loot, (IBlockState)null);
+    }
 
-        if (structurebb.isVecInside(blockpos) && worldIn.getBlockState(blockpos).getBlock() != Blocks.CHEST)
+    protected boolean func_191080_a(World p_191080_1_, StructureBoundingBox p_191080_2_, Random p_191080_3_, BlockPos p_191080_4_, ResourceLocation p_191080_5_, @Nullable IBlockState p_191080_6_)
+    {
+        if (p_191080_2_.isVecInside(p_191080_4_) && p_191080_1_.getBlockState(p_191080_4_).getBlock() != Blocks.CHEST)
         {
-            IBlockState iblockstate = Blocks.CHEST.getDefaultState();
-            worldIn.setBlockState(blockpos, Blocks.CHEST.correctFacing(worldIn, blockpos, iblockstate), 2);
-            TileEntity tileentity = worldIn.getTileEntity(blockpos);
+            if (p_191080_6_ == null)
+            {
+                p_191080_6_ = Blocks.CHEST.correctFacing(p_191080_1_, p_191080_4_, Blocks.CHEST.getDefaultState());
+            }
+
+            p_191080_1_.setBlockState(p_191080_4_, p_191080_6_, 2);
+            TileEntity tileentity = p_191080_1_.getTileEntity(p_191080_4_);
 
             if (tileentity instanceof TileEntityChest)
             {
-                ((TileEntityChest)tileentity).setLootTable(loot, randomIn.nextLong());
+                ((TileEntityChest)tileentity).setLootTable(p_191080_5_, p_191080_3_.nextLong());
             }
 
             return true;

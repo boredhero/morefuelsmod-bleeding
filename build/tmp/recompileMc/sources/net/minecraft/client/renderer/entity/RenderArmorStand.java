@@ -5,6 +5,7 @@ import net.minecraft.client.model.ModelArmorStandArmor;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerCustomHead;
+import net.minecraft.client.renderer.entity.layers.LayerElytra;
 import net.minecraft.client.renderer.entity.layers.LayerHeldItem;
 import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.util.ResourceLocation;
@@ -31,6 +32,7 @@ public class RenderArmorStand extends RenderLivingBase<EntityArmorStand>
         };
         this.addLayer(layerbipedarmor);
         this.addLayer(new LayerHeldItem(this));
+        this.addLayer(new LayerElytra(this));
         this.addLayer(new LayerCustomHead(this.getMainModel().bipedHead));
     }
 

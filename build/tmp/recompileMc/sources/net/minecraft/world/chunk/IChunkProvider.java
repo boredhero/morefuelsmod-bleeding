@@ -18,4 +18,6 @@ public interface IChunkProvider
      * Converts the instance data to a readable string.
      */
     String makeString();
+
+    boolean func_191062_e(int p_191062_1_, int p_191062_2_);
 }

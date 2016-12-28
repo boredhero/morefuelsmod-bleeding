@@ -3,6 +3,7 @@ package net.minecraft.block.state;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSortedMap;
@@ -11,6 +12,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import com.google.common.collect.UnmodifiableIterator;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -128,9 +130,12 @@ public class BlockStateContainer
     private List < Iterable < Comparable<? >>> getAllowedValues()
     {
         List < Iterable < Comparable<? >>> list = Lists. < Iterable < Comparable<? >>> newArrayList();
+        ImmutableCollection < IProperty<? >> immutablecollection = this.properties.values();
+        UnmodifiableIterator unmodifiableiterator = immutablecollection.iterator();
 
-        for (IProperty<?> iproperty : this.properties.values())
+        while (unmodifiableiterator.hasNext())
         {
+            IProperty<?> iproperty = (IProperty)unmodifiableiterator.next();
             list.add(((IProperty)iproperty).getAllowedValues());
         }
 
@@ -257,9 +262,11 @@ public class BlockStateContainer
                 else
                 {
                     Table < IProperty<?>, Comparable<?>, IBlockState > table = HashBasedTable. < IProperty<?>, Comparable<?>, IBlockState > create();
+                    UnmodifiableIterator unmodifiableiterator = this.properties.entrySet().iterator();
 
-                    for (Entry < IProperty<?>, Comparable<? >> entry : this.properties.entrySet())
+                    while (unmodifiableiterator.hasNext())
                     {
+                        Entry < IProperty<?>, Comparable<? >> entry = (Entry)unmodifiableiterator.next();
                         IProperty<?> iproperty = (IProperty)entry.getKey();
 
                         for (Comparable<?> comparable : iproperty.getAllowedValues())
@@ -292,9 +299,9 @@ public class BlockStateContainer
                 return this.block.isFullBlock(this);
             }
 
-            public boolean func_189884_a(Entity p_189884_1_)
+            public boolean canEntitySpawn(Entity entityIn)
             {
-                return this.block.func_189872_a(this, p_189884_1_);
+                return this.block.canEntitySpawn(this, entityIn);
             }
 
             public int getLightOpacity()
@@ -342,6 +349,12 @@ public class BlockStateContainer
             public boolean isFullCube()
             {
                 return this.block.isFullCube(this);
+            }
+
+            @SideOnly(Side.CLIENT)
+            public boolean func_191057_i()
+            {
+                return this.block.func_190946_v(this);
             }
 
             public EnumBlockRenderType getRenderType()
@@ -434,14 +447,14 @@ public class BlockStateContainer
             }
 
             @Nullable
-            public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos)
+            public AxisAlignedBB getCollisionBoundingBox(IBlockAccess worldIn, BlockPos pos)
             {
                 return this.block.getCollisionBoundingBox(this, worldIn, pos);
             }
 
-            public void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_)
+            public void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_, boolean p_185908_6_)
             {
-                this.block.addCollisionBoxToList(this, worldIn, pos, p_185908_3_, p_185908_4_, p_185908_5_);
+                this.block.addCollisionBoxToList(this, worldIn, pos, p_185908_3_, p_185908_4_, p_185908_5_, p_185908_6_);
             }
 
             public AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos)
@@ -459,14 +472,16 @@ public class BlockStateContainer
                 return this.block.isFullyOpaque(this);
             }
 
+            public Vec3d func_191059_e(IBlockAccess p_191059_1_, BlockPos p_191059_2_)
+            {
+                return this.block.func_190949_e(this, p_191059_1_, p_191059_2_);
+            }
+
             /**
              * Called on both Client and Server when World#addBlockEvent is called. On the Server, this may perform
              * additional changes to the world, like pistons replacing the block with an extended base. On the client,
              * the update may involve replacing tile entities, playing sounds, or performing other visual actions to
              * reflect the server side changes.
-             *  
-             * @param worldIn The world the block event is taking place in
-             * @param pos The position of the block event taking place
              */
             public boolean onBlockEventReceived(World worldIn, BlockPos pos, int id, int param)
             {
@@ -478,9 +493,14 @@ public class BlockStateContainer
              * neighbor change. Cases may include when redstone power is updated, cactus blocks popping off due to a
              * neighboring solid block, etc.
              */
-            public void neighborChanged(World worldIn, BlockPos pos, Block p_189546_3_)
+            public void neighborChanged(World worldIn, BlockPos pos, Block blockIn, BlockPos p_189546_4_)
             {
-                this.block.neighborChanged(this, worldIn, pos, p_189546_3_);
+                this.block.neighborChanged(this, worldIn, pos, blockIn, p_189546_4_);
+            }
+
+            public boolean func_191058_s()
+            {
+                return this.block.isVisuallyOpaque(this);
             }
 
             //Forge Start

@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -53,10 +52,11 @@ public class BlockNetherWart extends BlockBush
     {
         int i = ((Integer)state.getValue(AGE)).intValue();
 
-        if (i < 3 && rand.nextInt(10) == 0)
+        if (i < 3 && net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt(10) == 0))
         {
             state = state.withProperty(AGE, Integer.valueOf(i + 1));
             worldIn.setBlockState(pos, state, 2);
+            net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
         }
 
         super.updateTick(worldIn, pos, state, rand);
@@ -93,10 +93,9 @@ public class BlockNetherWart extends BlockBush
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return null;
+        return Items.field_190931_a;
     }
 
     /**

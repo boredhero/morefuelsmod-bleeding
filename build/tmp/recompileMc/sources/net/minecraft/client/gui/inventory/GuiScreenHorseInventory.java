@@ -2,7 +2,9 @@ package net.minecraft.client.gui.inventory;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.passive.EntityHorse;
+import net.minecraft.entity.passive.AbstractChestHorse;
+import net.minecraft.entity.passive.AbstractHorse;
+import net.minecraft.entity.passive.EntityLlama;
 import net.minecraft.inventory.ContainerHorseInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
@@ -18,13 +20,13 @@ public class GuiScreenHorseInventory extends GuiContainer
     /** The horse inventory bound to this GUI. */
     private final IInventory horseInventory;
     /** The EntityHorse whose inventory is currently being accessed. */
-    private final EntityHorse horseEntity;
+    private final AbstractHorse horseEntity;
     /** The mouse x-position recorded during the last rendered frame. */
     private float mousePosx;
     /** The mouse y-position recorded during the last renderered frame. */
     private float mousePosY;
 
-    public GuiScreenHorseInventory(IInventory playerInv, IInventory horseInv, EntityHorse horse)
+    public GuiScreenHorseInventory(IInventory playerInv, IInventory horseInv, AbstractHorse horse)
     {
         super(new ContainerHorseInventory(playerInv, horseInv, horse, Minecraft.getMinecraft().thePlayer));
         this.playerInventory = playerInv;
@@ -53,14 +55,31 @@ public class GuiScreenHorseInventory extends GuiContainer
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.ySize);
 
-        if (this.horseEntity.isChested())
+        if (this.horseEntity instanceof AbstractChestHorse)
         {
-            this.drawTexturedModalRect(i + 79, j + 17, 0, this.ySize, 90, 54);
+            AbstractChestHorse abstractchesthorse = (AbstractChestHorse)this.horseEntity;
+
+            if (abstractchesthorse.func_190695_dh())
+            {
+                this.drawTexturedModalRect(i + 79, j + 17, 0, this.ySize, abstractchesthorse.func_190696_dl() * 18, 54);
+            }
         }
 
-        if (this.horseEntity.getType().isHorse())
+        if (this.horseEntity.func_190685_dA())
         {
-            this.drawTexturedModalRect(i + 7, j + 35, 0, this.ySize + 54, 18, 18);
+            this.drawTexturedModalRect(i + 7, j + 35 - 18, 18, this.ySize + 54, 18, 18);
+        }
+
+        if (this.horseEntity.func_190677_dK())
+        {
+            if (this.horseEntity instanceof EntityLlama)
+            {
+                this.drawTexturedModalRect(i + 7, j + 35, 36, this.ySize + 54, 18, 18);
+            }
+            else
+            {
+                this.drawTexturedModalRect(i + 7, j + 35, 0, this.ySize + 54, 18, 18);
+            }
         }
 
         GuiInventory.drawEntityOnScreen(i + 51, j + 60, 17, (float)(i + 51) - this.mousePosx, (float)(j + 75 - 50) - this.mousePosY, this.horseEntity);

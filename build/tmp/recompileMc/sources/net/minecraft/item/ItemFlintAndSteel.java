@@ -24,23 +24,24 @@ public class ItemFlintAndSteel extends Item
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        pos = pos.offset(facing);
+        worldIn = worldIn.offset(hand);
+        ItemStack itemstack = stack.getHeldItem(pos);
 
-        if (!playerIn.canPlayerEdit(pos, facing, stack))
+        if (!stack.canPlayerEdit(worldIn, hand, itemstack))
         {
             return EnumActionResult.FAIL;
         }
         else
         {
-            if (worldIn.isAirBlock(pos))
+            if (playerIn.isAirBlock(worldIn))
             {
-                worldIn.playSound(playerIn, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, itemRand.nextFloat() * 0.4F + 0.8F);
-                worldIn.setBlockState(pos, Blocks.FIRE.getDefaultState(), 11);
+                playerIn.playSound(stack, worldIn, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, itemRand.nextFloat() * 0.4F + 0.8F);
+                playerIn.setBlockState(worldIn, Blocks.FIRE.getDefaultState(), 11);
             }
 
-            stack.damageItem(1, playerIn);
+            itemstack.damageItem(1, stack);
             return EnumActionResult.SUCCESS;
         }
     }

@@ -2,9 +2,9 @@ package net.minecraft.item.crafting;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 public class ShapelessRecipes implements IRecipe
@@ -19,23 +19,22 @@ public class ShapelessRecipes implements IRecipe
         this.recipeItems = inputList;
     }
 
-    @Nullable
     public ItemStack getRecipeOutput()
     {
         return this.recipeOutput;
     }
 
-    public ItemStack[] getRemainingItems(InventoryCrafting inv)
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
     {
-        ItemStack[] aitemstack = new ItemStack[inv.getSizeInventory()];
+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(inv.getSizeInventory(), ItemStack.field_190927_a);
 
-        for (int i = 0; i < aitemstack.length; ++i)
+        for (int i = 0; i < nonnulllist.size(); ++i)
         {
             ItemStack itemstack = inv.getStackInSlot(i);
-            aitemstack[i] = net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack);
+            nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
         }
 
-        return aitemstack;
+        return nonnulllist;
     }
 
     /**
@@ -51,7 +50,7 @@ public class ShapelessRecipes implements IRecipe
             {
                 ItemStack itemstack = inv.getStackInRowAndColumn(j, i);
 
-                if (itemstack != null)
+                if (!itemstack.func_190926_b())
                 {
                     boolean flag = false;
 
@@ -79,7 +78,6 @@ public class ShapelessRecipes implements IRecipe
     /**
      * Returns an Item that is the result of this recipe
      */
-    @Nullable
     public ItemStack getCraftingResult(InventoryCrafting inv)
     {
         return this.recipeOutput.copy();

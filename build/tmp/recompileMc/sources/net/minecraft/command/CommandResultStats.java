@@ -120,7 +120,7 @@ public class CommandResultStats
             {
                 s1 = CommandBase.getEntityName(server, icommandsender, s);
             }
-            catch (EntityNotFoundException var12)
+            catch (CommandException var12)
             {
                 return;
             }

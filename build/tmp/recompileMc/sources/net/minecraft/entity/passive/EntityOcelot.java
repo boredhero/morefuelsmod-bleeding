@@ -20,7 +20,7 @@ import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITargetNonTamed;
 import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -67,7 +67,7 @@ public class EntityOcelot extends EntityTameable
         this.tasks.addTask(7, new EntityAILeapAtTarget(this, 0.3F));
         this.tasks.addTask(8, new EntityAIOcelotAttack(this));
         this.tasks.addTask(9, new EntityAIMate(this, 0.8D));
-        this.tasks.addTask(10, new EntityAIWander(this, 0.8D));
+        this.tasks.addTask(10, new EntityAIWanderAvoidWater(this, 0.8D, 1.0000001E-5F));
         this.tasks.addTask(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
         this.targetTasks.addTask(1, new EntityAITargetNonTamed(this, EntityChicken.class, false, (Predicate)null));
     }
@@ -126,9 +126,9 @@ public class EntityOcelot extends EntityTameable
     {
     }
 
-    public static void func_189787_b(DataFixer p_189787_0_)
+    public static void registerFixesOcelot(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189787_0_, "Ozelot");
+        EntityLiving.registerFixesMob(fixer, EntityOcelot.class);
     }
 
     /**
@@ -204,20 +204,22 @@ public class EntityOcelot extends EntityTameable
         return LootTableList.ENTITIES_OCELOT;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
+        ItemStack itemstack = player.getHeldItem(hand);
+
         if (this.isTamed())
         {
-            if (this.isOwner(player) && !this.worldObj.isRemote && !this.isBreedingItem(stack))
+            if (this.isOwner(player) && !this.worldObj.isRemote && !this.isBreedingItem(itemstack))
             {
                 this.aiSit.setSitting(!this.isSitting());
             }
         }
-        else if ((this.aiTempt == null || this.aiTempt.isRunning()) && stack != null && stack.getItem() == Items.FISH && player.getDistanceSqToEntity(this) < 9.0D)
+        else if ((this.aiTempt == null || this.aiTempt.isRunning()) && itemstack.getItem() == Items.FISH && player.getDistanceSqToEntity(this) < 9.0D)
         {
             if (!player.capabilities.isCreativeMode)
             {
-                --stack.stackSize;
+                itemstack.func_190918_g(1);
             }
 
             if (!this.worldObj.isRemote)
@@ -241,7 +243,7 @@ public class EntityOcelot extends EntityTameable
             return true;
         }
 
-        return super.processInteract(player, hand, stack);
+        return super.processInteract(player, hand);
     }
 
     public EntityOcelot createChild(EntityAgeable ageable)
@@ -262,9 +264,9 @@ public class EntityOcelot extends EntityTameable
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(@Nullable ItemStack stack)
+    public boolean isBreedingItem(ItemStack stack)
     {
-        return stack != null && stack.getItem() == Items.FISH;
+        return stack.getItem() == Items.FISH;
     }
 
     /**
@@ -341,11 +343,6 @@ public class EntityOcelot extends EntityTameable
     public String getName()
     {
         return this.hasCustomName() ? this.getCustomNameTag() : (this.isTamed() ? I18n.translateToLocal("entity.Cat.name") : super.getName());
-    }
-
-    public void setTamed(boolean tamed)
-    {
-        super.setTamed(tamed);
     }
 
     protected void setupTamedAI()

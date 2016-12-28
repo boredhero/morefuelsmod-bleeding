@@ -23,14 +23,13 @@ public class WorldProviderEnd extends WorldProvider
     public void createBiomeProvider()
     {
         this.biomeProvider = new BiomeProviderSingle(Biomes.SKY);
-        this.hasNoSky = true;
         NBTTagCompound nbttagcompound = this.worldObj.getWorldInfo().getDimensionData(DimensionType.THE_END);
         this.dragonFightManager = this.worldObj instanceof WorldServer ? new DragonFightManager((WorldServer)this.worldObj, nbttagcompound.getCompoundTag("DragonFight")) : null;
     }
 
     public IChunkGenerator createChunkGenerator()
     {
-        return new ChunkProviderEnd(this.worldObj, this.worldObj.getWorldInfo().isMapFeaturesEnabled(), this.worldObj.getSeed());
+        return new ChunkProviderEnd(this.worldObj, this.worldObj.getWorldInfo().isMapFeaturesEnabled(), this.worldObj.getSeed(), this.getSpawnCoordinate());
     }
 
     /**
@@ -44,6 +43,7 @@ public class WorldProviderEnd extends WorldProvider
     /**
      * Returns array with sunrise/sunset colors
      */
+    @Nullable
     @SideOnly(Side.CLIENT)
     public float[] calcSunriseSunsetColors(float celestialAngle, float partialTicks)
     {

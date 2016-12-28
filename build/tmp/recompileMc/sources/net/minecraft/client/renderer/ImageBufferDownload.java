@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.ImageObserver;
+import javax.annotation.Nullable;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -15,6 +16,7 @@ public class ImageBufferDownload implements IImageBuffer
     private int imageWidth;
     private int imageHeight;
 
+    @Nullable
     public BufferedImage parseUserSkin(BufferedImage image)
     {
         if (image == null)

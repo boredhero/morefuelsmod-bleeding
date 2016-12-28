@@ -99,7 +99,7 @@ public class BlockLadder extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
 
@@ -109,7 +109,7 @@ public class BlockLadder extends Block
             worldIn.setBlockToAir(pos);
         }
 
-        super.neighborChanged(state, worldIn, pos, blockIn);
+        super.neighborChanged(state, worldIn, pos, blockIn, p_189540_5_);
     }
 
     protected boolean canBlockStay(World worldIn, BlockPos pos, EnumFacing facing)

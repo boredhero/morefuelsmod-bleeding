@@ -1,8 +1,8 @@
 package net.minecraft.inventory;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -63,13 +63,16 @@ public class ContainerBeacon extends Container
         {
             ItemStack itemstack = this.beaconSlot.decrStackSize(this.beaconSlot.getSlotStackLimit());
 
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 playerIn.dropItem(itemstack, false);
             }
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.tileBeacon.isUseableByPlayer(playerIn);
@@ -78,10 +81,9 @@ public class ContainerBeacon extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
-    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.field_190927_a;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -93,52 +95,49 @@ public class ContainerBeacon extends Container
             {
                 if (!this.mergeItemStack(itemstack1, 1, 37, true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
 
                 slot.onSlotChange(itemstack1, itemstack);
             }
-            else if (!this.beaconSlot.getHasStack() && this.beaconSlot.isItemValid(itemstack1) && itemstack1.stackSize == 1)
+            else if (this.mergeItemStack(itemstack1, 0, 1, false)) //Forge Fix Shift Clicking in beacons with stacks larger then 1.
             {
-                if (!this.mergeItemStack(itemstack1, 0, 1, false))
-                {
-                    return null;
-                }
+                return ItemStack.field_190927_a;
             }
             else if (index >= 1 && index < 28)
             {
                 if (!this.mergeItemStack(itemstack1, 28, 37, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (index >= 28 && index < 37)
             {
                 if (!this.mergeItemStack(itemstack1, 1, 28, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 1, 37, false))
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.func_190926_b())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.field_190927_a);
             }
             else
             {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.func_190916_E() == itemstack.func_190916_E())
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            slot.onPickupFromSlot(playerIn, itemstack1);
+            slot.func_190901_a(playerIn, itemstack1);
         }
 
         return itemstack;
@@ -152,11 +151,11 @@ public class ContainerBeacon extends Container
         }
 
         /**
-         * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+         * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
          */
-        public boolean isItemValid(@Nullable ItemStack stack)
+        public boolean isItemValid(ItemStack stack)
         {
-            return stack == null ? false : stack.getItem().isBeaconPayment(stack);
+            return stack.getItem().isBeaconPayment(stack);
         }
 
         /**

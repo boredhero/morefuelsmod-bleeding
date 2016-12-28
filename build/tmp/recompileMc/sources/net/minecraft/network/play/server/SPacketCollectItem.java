@@ -11,15 +11,17 @@ public class SPacketCollectItem implements Packet<INetHandlerPlayClient>
 {
     private int collectedItemEntityId;
     private int entityId;
+    private int field_191209_c;
 
     public SPacketCollectItem()
     {
     }
 
-    public SPacketCollectItem(int collectedItemEntityIdIn, int entityIdIn)
+    public SPacketCollectItem(int p_i47316_1_, int p_i47316_2_, int p_i47316_3_)
     {
-        this.collectedItemEntityId = collectedItemEntityIdIn;
-        this.entityId = entityIdIn;
+        this.collectedItemEntityId = p_i47316_1_;
+        this.entityId = p_i47316_2_;
+        this.field_191209_c = p_i47316_3_;
     }
 
     /**
@@ -29,6 +31,7 @@ public class SPacketCollectItem implements Packet<INetHandlerPlayClient>
     {
         this.collectedItemEntityId = buf.readVarIntFromBuffer();
         this.entityId = buf.readVarIntFromBuffer();
+        this.field_191209_c = buf.readVarIntFromBuffer();
     }
 
     /**
@@ -38,6 +41,7 @@ public class SPacketCollectItem implements Packet<INetHandlerPlayClient>
     {
         buf.writeVarIntToBuffer(this.collectedItemEntityId);
         buf.writeVarIntToBuffer(this.entityId);
+        buf.writeVarIntToBuffer(this.field_191209_c);
     }
 
     /**
@@ -58,5 +62,11 @@ public class SPacketCollectItem implements Packet<INetHandlerPlayClient>
     public int getEntityID()
     {
         return this.entityId;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int func_191208_c()
+    {
+        return this.field_191209_c;
     }
 }

@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.IBlockState;
@@ -35,6 +34,9 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
         this.setSoundType(SoundType.PLANT);
     }
 
+    /**
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+     */
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         int i = 1;
@@ -205,7 +207,6 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Item.getItemFromBlock(Blocks.SAPLING);
@@ -251,7 +252,7 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
         return this.leavesFancy ? BlockRenderLayer.CUTOUT_MIPPED : BlockRenderLayer.SOLID;
     }
 
-    public boolean isVisuallyOpaque()
+    public boolean isVisuallyOpaque(IBlockState p_176214_1_)
     {
         return false;
     }
@@ -284,7 +285,11 @@ public abstract class BlockLeaves extends Block implements net.minecraftforge.co
         }
 
         if (rand.nextInt(chance) == 0)
-            ret.add(new ItemStack(getItemDropped(state, rand, fortune), 1, damageDropped(state)));
+        {
+            ItemStack drop = new ItemStack(getItemDropped(state, rand, fortune), 1, damageDropped(state));
+            if (!drop.func_190926_b())
+                ret.add(drop);
+        }
 
         chance = 200;
         if (fortune > 0)

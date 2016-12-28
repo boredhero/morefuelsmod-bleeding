@@ -2,7 +2,6 @@ package net.minecraft.client.gui;
 
 import io.netty.buffer.Unpooled;
 import java.io.IOException;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,6 +15,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.CPacketCustomPayload;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -51,7 +51,7 @@ public class GuiRepair extends GuiContainer implements IContainerListener
         this.nameField.setTextColor(-1);
         this.nameField.setDisabledTextColour(-1);
         this.nameField.setEnableBackgroundDrawing(false);
-        this.nameField.setMaxStringLength(30);
+        this.nameField.setMaxStringLength(31);
         this.inventorySlots.removeListener(this);
         this.inventorySlots.addListener(this);
     }
@@ -191,7 +191,7 @@ public class GuiRepair extends GuiContainer implements IContainerListener
     /**
      * update the crafting window inventory with the items in the list
      */
-    public void updateCraftingInventory(Container containerToSend, List<ItemStack> itemsList)
+    public void updateCraftingInventory(Container containerToSend, NonNullList<ItemStack> itemsList)
     {
         this.sendSlotContents(containerToSend, 0, containerToSend.getSlot(0).getStack());
     }
@@ -204,10 +204,10 @@ public class GuiRepair extends GuiContainer implements IContainerListener
     {
         if (slotInd == 0)
         {
-            this.nameField.setText(stack == null ? "" : stack.getDisplayName());
-            this.nameField.setEnabled(stack != null);
+            this.nameField.setText(stack.func_190926_b() ? "" : stack.getDisplayName());
+            this.nameField.setEnabled(!stack.func_190926_b());
 
-            if (stack != null)
+            if (!stack.func_190926_b())
             {
                 this.renameItem();
             }

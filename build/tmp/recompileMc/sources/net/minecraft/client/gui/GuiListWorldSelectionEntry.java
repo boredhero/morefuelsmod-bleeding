@@ -236,8 +236,12 @@ public class GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry
         ISaveHandler isavehandler = this.client.getSaveLoader().getSaveLoader(this.worldSummary.getFileName(), false);
         WorldInfo worldinfo = isavehandler.loadWorldInfo();
         isavehandler.flush();
-        guicreateworld.recreateFromExistingWorld(worldinfo);
-        this.client.displayGuiScreen(guicreateworld);
+
+        if (worldinfo != null)
+        {
+            guicreateworld.recreateFromExistingWorld(worldinfo);
+            this.client.displayGuiScreen(guicreateworld);
+        }
     }
 
     private void loadWorld()

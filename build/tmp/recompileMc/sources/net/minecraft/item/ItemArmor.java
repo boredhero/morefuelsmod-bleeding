@@ -44,7 +44,7 @@ public class ItemArmor extends Item
         protected ItemStack dispenseStack(IBlockSource source, ItemStack stack)
         {
             ItemStack itemstack = ItemArmor.dispenseArmor(source, stack);
-            return itemstack != null ? itemstack : super.dispenseStack(source, stack);
+            return itemstack.func_190926_b() ? super.dispenseStack(source, stack) : itemstack;
         }
     };
     /** Stores the armor type: 0 is helmet, 1 is plate, 2 is legs and 3 is boots */
@@ -62,19 +62,18 @@ public class ItemArmor extends Item
 
     public static ItemStack dispenseArmor(IBlockSource blockSource, ItemStack stack)
     {
-        BlockPos blockpos = blockSource.getBlockPos().offset((EnumFacing)blockSource.func_189992_e().getValue(BlockDispenser.FACING));
+        BlockPos blockpos = blockSource.getBlockPos().offset((EnumFacing)blockSource.getBlockState().getValue(BlockDispenser.FACING));
         List<EntityLivingBase> list = blockSource.getWorld().<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(blockpos), Predicates.<EntityLivingBase>and(EntitySelectors.NOT_SPECTATING, new EntitySelectors.ArmoredMob(stack)));
 
         if (list.isEmpty())
         {
-            return null;
+            return ItemStack.field_190927_a;
         }
         else
         {
             EntityLivingBase entitylivingbase = (EntityLivingBase)list.get(0);
             EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(stack);
-            ItemStack itemstack = stack.copy();
-            itemstack.stackSize = 1;
+            ItemStack itemstack = stack.splitStack(1);
             entitylivingbase.setItemStackToSlot(entityequipmentslot, itemstack);
 
             if (entitylivingbase instanceof EntityLiving)
@@ -82,7 +81,6 @@ public class ItemArmor extends Item
                 ((EntityLiving)entitylivingbase).setDropChance(entityequipmentslot, 2.0F);
             }
 
-            --stack.stackSize;
             return stack;
         }
     }
@@ -224,23 +222,26 @@ public class ItemArmor extends Item
      */
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
     {
-        return this.material.getRepairItem() == repair.getItem() ? true : super.getIsRepairable(toRepair, repair);
+        ItemStack mat = this.material.getRepairItemStack();
+        if (!mat.func_190926_b() && net.minecraftforge.oredict.OreDictionary.itemMatches(mat,repair,false)) return true;
+        return super.getIsRepairable(toRepair, repair);
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemStackIn);
-        ItemStack itemstack = playerIn.getItemStackFromSlot(entityequipmentslot);
+        ItemStack itemstack = worldIn.getHeldItem(playerIn);
+        EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemstack);
+        ItemStack itemstack1 = worldIn.getItemStackFromSlot(entityequipmentslot);
 
-        if (itemstack == null)
+        if (itemstack1.func_190926_b())
         {
-            playerIn.setItemStackToSlot(entityequipmentslot, itemStackIn.copy());
-            itemStackIn.stackSize = 0;
-            return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+            worldIn.setItemStackToSlot(entityequipmentslot, itemstack.copy());
+            itemstack.func_190920_e(0);
+            return new ActionResult(EnumActionResult.SUCCESS, itemstack);
         }
         else
         {
-            return new ActionResult(EnumActionResult.FAIL, itemStackIn);
+            return new ActionResult(EnumActionResult.FAIL, itemstack);
         }
     }
 
@@ -294,16 +295,16 @@ public class ItemArmor extends Item
         private final SoundEvent soundEvent;
         private final float toughness;
         //Added by forge for custom Armor materials.
-        public Item customCraftingMaterial = null;
+        public ItemStack repairMaterial = ItemStack.field_190927_a;
 
-        private ArmorMaterial(String p_i47117_3_, int p_i47117_4_, int[] p_i47117_5_, int p_i47117_6_, SoundEvent p_i47117_7_, float p_i47117_8_)
+        private ArmorMaterial(String nameIn, int maxDamageFactorIn, int[] damageReductionAmountArrayIn, int enchantabilityIn, SoundEvent soundEventIn, float toughnessIn)
         {
-            this.name = p_i47117_3_;
-            this.maxDamageFactor = p_i47117_4_;
-            this.damageReductionAmountArray = p_i47117_5_;
-            this.enchantability = p_i47117_6_;
-            this.soundEvent = p_i47117_7_;
-            this.toughness = p_i47117_8_;
+            this.name = nameIn;
+            this.maxDamageFactor = maxDamageFactorIn;
+            this.damageReductionAmountArray = damageReductionAmountArrayIn;
+            this.enchantability = enchantabilityIn;
+            this.soundEvent = soundEventIn;
+            this.toughness = toughnessIn;
         }
 
         /**
@@ -339,17 +340,10 @@ public class ItemArmor extends Item
         /**
          * Get a main crafting component of this Armor Material (example is Items.iron_ingot)
          */
+        @Deprecated // Use getRepairItemStack below
         public Item getRepairItem()
         {
-            switch (this)
-            {
-                case LEATHER: return Items.LEATHER;
-                case CHAIN:   return Items.IRON_INGOT;
-                case GOLD:    return Items.GOLD_INGOT;
-                case IRON:    return Items.IRON_INGOT;
-                case DIAMOND: return Items.DIAMOND;
-                default:      return customCraftingMaterial;
-            }
+            return this == LEATHER ? Items.LEATHER : (this == CHAIN ? Items.IRON_INGOT : (this == GOLD ? Items.GOLD_INGOT : (this == IRON ? Items.IRON_INGOT : (this == DIAMOND ? Items.DIAMOND : null))));
         }
 
         @SideOnly(Side.CLIENT)
@@ -361,6 +355,22 @@ public class ItemArmor extends Item
         public float getToughness()
         {
             return this.toughness;
+        }
+
+        public ArmorMaterial setRepairItem(ItemStack stack)
+        {
+            if (!this.repairMaterial.func_190926_b()) throw new RuntimeException("Repair material has already been set");
+            if (this == LEATHER || this == CHAIN || this == GOLD || this == IRON || this == DIAMOND) throw new RuntimeException("Can not change vanilla armor repair materials");
+            this.repairMaterial = stack;
+            return this;
+        }
+
+        public ItemStack getRepairItemStack()
+        {
+            if (!repairMaterial.func_190926_b()) return repairMaterial;
+            Item ret = this.getRepairItem();
+            if (ret != null) repairMaterial = new ItemStack(ret,1,net.minecraftforge.oredict.OreDictionary.WILDCARD_VALUE);
+            return repairMaterial;
         }
     }
 }

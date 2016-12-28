@@ -7,6 +7,8 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntitySnowball extends EntityThrowable
 {
@@ -25,9 +27,21 @@ public class EntitySnowball extends EntityThrowable
         super(worldIn, x, y, z);
     }
 
-    public static void func_189662_a(DataFixer p_189662_0_)
+    public static void registerFixesSnowball(DataFixer fixer)
     {
-        EntityThrowable.func_189661_a(p_189662_0_, "Snowball");
+        EntityThrowable.registerFixesThrowable(fixer, "Snowball");
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void handleStatusUpdate(byte id)
+    {
+        if (id == 3)
+        {
+            for (int i = 0; i < 8; ++i)
+            {
+                this.worldObj.spawnParticle(EnumParticleTypes.SNOWBALL, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
+            }
+        }
     }
 
     /**
@@ -47,13 +61,9 @@ public class EntitySnowball extends EntityThrowable
             result.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), (float)i);
         }
 
-        for (int j = 0; j < 8; ++j)
-        {
-            this.worldObj.spawnParticle(EnumParticleTypes.SNOWBALL, this.posX, this.posY, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
-        }
-
         if (!this.worldObj.isRemote)
         {
+            this.worldObj.setEntityState(this, (byte)3);
             this.setDead();
         }
     }

@@ -7,6 +7,7 @@ import java.util.List;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Rotation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -16,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 public class BlockPos extends Vec3i
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    /** The BlockPos with all coordinates 0 */
+    /** An immutable block pos with zero as all coordinates. */
     public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
     private static final int NUM_X_BITS = 1 + MathHelper.calculateLogBaseTwo(MathHelper.roundUpToPowerOfTwo(30000000));
     private static final int NUM_Z_BITS = NUM_X_BITS;
@@ -73,7 +74,7 @@ public class BlockPos extends Vec3i
      */
     public BlockPos add(Vec3i vec)
     {
-        return vec.getX() == 0 && vec.getY() == 0 && vec.getZ() == 0 ? this : new BlockPos(this.getX() + vec.getX(), this.getY() + vec.getY(), this.getZ() + vec.getZ());
+        return this.add(vec.getX(), vec.getY(), vec.getZ());
     }
 
     /**
@@ -81,7 +82,7 @@ public class BlockPos extends Vec3i
      */
     public BlockPos subtract(Vec3i vec)
     {
-        return vec.getX() == 0 && vec.getY() == 0 && vec.getZ() == 0 ? this : new BlockPos(this.getX() - vec.getX(), this.getY() - vec.getY(), this.getZ() - vec.getZ());
+        return this.add(-vec.getX(), -vec.getY(), -vec.getZ());
     }
 
     /**
@@ -196,6 +197,22 @@ public class BlockPos extends Vec3i
         return n == 0 ? this : new BlockPos(this.getX() + facing.getFrontOffsetX() * n, this.getY() + facing.getFrontOffsetY() * n, this.getZ() + facing.getFrontOffsetZ() * n);
     }
 
+    public BlockPos func_190942_a(Rotation p_190942_1_)
+    {
+        switch (p_190942_1_)
+        {
+            case NONE:
+            default:
+                return this;
+            case CLOCKWISE_90:
+                return new BlockPos(-this.getZ(), this.getY(), this.getX());
+            case CLOCKWISE_180:
+                return new BlockPos(-this.getX(), this.getY(), -this.getZ());
+            case COUNTERCLOCKWISE_90:
+                return new BlockPos(this.getZ(), this.getY(), -this.getX());
+        }
+    }
+
     /**
      * Calculate the cross product of this and the given Vector
      */
@@ -225,50 +242,54 @@ public class BlockPos extends Vec3i
 
     public static Iterable<BlockPos> getAllInBox(BlockPos from, BlockPos to)
     {
-        final BlockPos blockpos = new BlockPos(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()));
-        final BlockPos blockpos1 = new BlockPos(Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
+        return func_191532_a(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
+    }
+
+    public static Iterable<BlockPos> func_191532_a(final int p_191532_0_, final int p_191532_1_, final int p_191532_2_, final int p_191532_3_, final int p_191532_4_, final int p_191532_5_)
+    {
         return new Iterable<BlockPos>()
         {
             public Iterator<BlockPos> iterator()
             {
                 return new AbstractIterator<BlockPos>()
                 {
-                    private BlockPos lastReturned;
+                    private boolean field_191534_b = true;
+                    private int field_191535_c;
+                    private int field_191536_d;
+                    private int field_191537_e;
                     protected BlockPos computeNext()
                     {
-                        if (this.lastReturned == null)
+                        if (this.field_191534_b)
                         {
-                            this.lastReturned = blockpos;
-                            return this.lastReturned;
+                            this.field_191534_b = false;
+                            this.field_191535_c = p_191532_0_;
+                            this.field_191536_d = p_191532_1_;
+                            this.field_191537_e = p_191532_2_;
+                            return new BlockPos(p_191532_0_, p_191532_1_, p_191532_2_);
                         }
-                        else if (this.lastReturned.equals(blockpos1))
+                        else if (this.field_191535_c == p_191532_3_ && this.field_191536_d == p_191532_4_ && this.field_191537_e == p_191532_5_)
                         {
                             return (BlockPos)this.endOfData();
                         }
                         else
                         {
-                            int i = this.lastReturned.getX();
-                            int j = this.lastReturned.getY();
-                            int k = this.lastReturned.getZ();
-
-                            if (i < blockpos1.getX())
+                            if (this.field_191535_c < p_191532_3_)
                             {
-                                ++i;
+                                ++this.field_191535_c;
                             }
-                            else if (j < blockpos1.getY())
+                            else if (this.field_191536_d < p_191532_4_)
                             {
-                                i = blockpos.getX();
-                                ++j;
+                                this.field_191535_c = p_191532_0_;
+                                ++this.field_191536_d;
                             }
-                            else if (k < blockpos1.getZ())
+                            else if (this.field_191537_e < p_191532_5_)
                             {
-                                i = blockpos.getX();
-                                j = blockpos.getY();
-                                ++k;
+                                this.field_191535_c = p_191532_0_;
+                                this.field_191536_d = p_191532_1_;
+                                ++this.field_191537_e;
                             }
 
-                            this.lastReturned = new BlockPos(i, j, k);
-                            return this.lastReturned;
+                            return new BlockPos(this.field_191535_c, this.field_191536_d, this.field_191537_e);
                         }
                     }
                 };
@@ -289,8 +310,11 @@ public class BlockPos extends Vec3i
 
     public static Iterable<BlockPos.MutableBlockPos> getAllInBoxMutable(BlockPos from, BlockPos to)
     {
-        final BlockPos blockpos = new BlockPos(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()));
-        final BlockPos blockpos1 = new BlockPos(Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
+        return func_191531_b(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
+    }
+
+    public static Iterable<BlockPos.MutableBlockPos> func_191531_b(final int p_191531_0_, final int p_191531_1_, final int p_191531_2_, final int p_191531_3_, final int p_191531_4_, final int p_191531_5_)
+    {
         return new Iterable<BlockPos.MutableBlockPos>()
         {
             public Iterator<BlockPos.MutableBlockPos> iterator()
@@ -302,38 +326,31 @@ public class BlockPos extends Vec3i
                     {
                         if (this.theBlockPos == null)
                         {
-                            this.theBlockPos = new BlockPos.MutableBlockPos(blockpos.getX(), blockpos.getY(), blockpos.getZ());
+                            this.theBlockPos = new BlockPos.MutableBlockPos(p_191531_0_, p_191531_1_, p_191531_2_);
                             return this.theBlockPos;
                         }
-                        else if (this.theBlockPos.equals(blockpos1))
+                        else if (this.theBlockPos.x == p_191531_3_ && this.theBlockPos.y == p_191531_4_ && this.theBlockPos.z == p_191531_5_)
                         {
                             return (BlockPos.MutableBlockPos)this.endOfData();
                         }
                         else
                         {
-                            int i = this.theBlockPos.getX();
-                            int j = this.theBlockPos.getY();
-                            int k = this.theBlockPos.getZ();
-
-                            if (i < blockpos1.getX())
+                            if (this.theBlockPos.x < p_191531_3_)
                             {
-                                ++i;
+                                ++this.theBlockPos.x;
                             }
-                            else if (j < blockpos1.getY())
+                            else if (this.theBlockPos.y < p_191531_4_)
                             {
-                                i = blockpos.getX();
-                                ++j;
+                                this.theBlockPos.x = p_191531_0_;
+                                ++this.theBlockPos.y;
                             }
-                            else if (k < blockpos1.getZ())
+                            else if (this.theBlockPos.z < p_191531_5_)
                             {
-                                i = blockpos.getX();
-                                j = blockpos.getY();
-                                ++k;
+                                this.theBlockPos.x = p_191531_0_;
+                                this.theBlockPos.y = p_191531_1_;
+                                ++this.theBlockPos.z;
                             }
 
-                            this.theBlockPos.x = i;
-                            this.theBlockPos.y = j;
-                            this.theBlockPos.z = k;
                             return this.theBlockPos;
                         }
                     }
@@ -367,6 +384,35 @@ public class BlockPos extends Vec3i
                 this.x = x_;
                 this.y = y_;
                 this.z = z_;
+            }
+
+            /**
+             * Add the given coordinates to the coordinates of this BlockPos
+             */
+            public BlockPos add(double x, double y, double z)
+            {
+                return super.add(x, y, z).toImmutable();
+            }
+
+            /**
+             * Add the given coordinates to the coordinates of this BlockPos
+             */
+            public BlockPos add(int x, int y, int z)
+            {
+                return super.add(x, y, z).toImmutable();
+            }
+
+            /**
+             * Offsets this BlockPos n blocks in the given direction
+             */
+            public BlockPos offset(EnumFacing facing, int n)
+            {
+                return super.offset(facing, n).toImmutable();
+            }
+
+            public BlockPos func_190942_a(Rotation p_190942_1_)
+            {
+                return super.func_190942_a(p_190942_1_).toImmutable();
             }
 
             /**
@@ -404,30 +450,30 @@ public class BlockPos extends Vec3i
                 return this;
             }
 
-            public BlockPos.MutableBlockPos setPos(double p_189532_1_, double p_189532_3_, double p_189532_5_)
+            public BlockPos.MutableBlockPos setPos(double xIn, double yIn, double zIn)
             {
-                return this.setPos(MathHelper.floor_double(p_189532_1_), MathHelper.floor_double(p_189532_3_), MathHelper.floor_double(p_189532_5_));
+                return this.setPos(MathHelper.floor_double(xIn), MathHelper.floor_double(yIn), MathHelper.floor_double(zIn));
             }
 
             @SideOnly(Side.CLIENT)
-            public BlockPos.MutableBlockPos setPos(Entity p_189535_1_)
+            public BlockPos.MutableBlockPos setPos(Entity entityIn)
             {
-                return this.setPos(p_189535_1_.posX, p_189535_1_.posY, p_189535_1_.posZ);
+                return this.setPos(entityIn.posX, entityIn.posY, entityIn.posZ);
             }
 
-            public BlockPos.MutableBlockPos setPos(Vec3i p_189533_1_)
+            public BlockPos.MutableBlockPos setPos(Vec3i vec)
             {
-                return this.setPos(p_189533_1_.getX(), p_189533_1_.getY(), p_189533_1_.getZ());
+                return this.setPos(vec.getX(), vec.getY(), vec.getZ());
             }
 
-            public BlockPos.MutableBlockPos move(EnumFacing p_189536_1_)
+            public BlockPos.MutableBlockPos move(EnumFacing facing)
             {
-                return this.move(p_189536_1_, 1);
+                return this.move(facing, 1);
             }
 
-            public BlockPos.MutableBlockPos move(EnumFacing p_189534_1_, int p_189534_2_)
+            public BlockPos.MutableBlockPos move(EnumFacing facing, int p_189534_2_)
             {
-                return this.setPos(this.x + p_189534_1_.getFrontOffsetX() * p_189534_2_, this.y + p_189534_1_.getFrontOffsetY() * p_189534_2_, this.z + p_189534_1_.getFrontOffsetZ() * p_189534_2_);
+                return this.setPos(this.x + facing.getFrontOffsetX() * p_189534_2_, this.y + facing.getFrontOffsetY() * p_189534_2_, this.z + facing.getFrontOffsetZ() * p_189534_2_);
             }
 
             public void setY(int yIn)
@@ -521,29 +567,29 @@ public class BlockPos extends Vec3i
             }
 
             @SideOnly(Side.CLIENT)
-            public BlockPos.PooledMutableBlockPos setPos(Entity p_189535_1_)
+            public BlockPos.PooledMutableBlockPos setPos(Entity entityIn)
             {
-                return (BlockPos.PooledMutableBlockPos)super.setPos(p_189535_1_);
+                return (BlockPos.PooledMutableBlockPos)super.setPos(entityIn);
             }
 
-            public BlockPos.PooledMutableBlockPos setPos(double p_189532_1_, double p_189532_3_, double p_189532_5_)
+            public BlockPos.PooledMutableBlockPos setPos(double xIn, double yIn, double zIn)
             {
-                return (BlockPos.PooledMutableBlockPos)super.setPos(p_189532_1_, p_189532_3_, p_189532_5_);
+                return (BlockPos.PooledMutableBlockPos)super.setPos(xIn, yIn, zIn);
             }
 
-            public BlockPos.PooledMutableBlockPos setPos(Vec3i p_189533_1_)
+            public BlockPos.PooledMutableBlockPos setPos(Vec3i vec)
             {
-                return (BlockPos.PooledMutableBlockPos)super.setPos(p_189533_1_);
+                return (BlockPos.PooledMutableBlockPos)super.setPos(vec);
             }
 
-            public BlockPos.PooledMutableBlockPos move(EnumFacing p_189536_1_)
+            public BlockPos.PooledMutableBlockPos move(EnumFacing facing)
             {
-                return (BlockPos.PooledMutableBlockPos)super.move(p_189536_1_);
+                return (BlockPos.PooledMutableBlockPos)super.move(facing);
             }
 
-            public BlockPos.PooledMutableBlockPos move(EnumFacing p_189534_1_, int p_189534_2_)
+            public BlockPos.PooledMutableBlockPos move(EnumFacing facing, int p_189534_2_)
             {
-                return (BlockPos.PooledMutableBlockPos)super.move(p_189534_1_, p_189534_2_);
+                return (BlockPos.PooledMutableBlockPos)super.move(facing, p_189534_2_);
             }
         }
 }

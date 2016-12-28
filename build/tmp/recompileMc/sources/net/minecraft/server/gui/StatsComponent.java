@@ -43,6 +43,7 @@ public class StatsComponent extends JComponent
         System.gc();
         this.msgs[0] = "Memory use: " + i / 1024L / 1024L + " mb (" + Runtime.getRuntime().freeMemory() * 100L / Runtime.getRuntime().maxMemory() + "% free)";
         this.msgs[1] = "Avg tick: " + FORMATTER.format(this.mean(this.server.tickTimeArray) * 1.0E-6D) + " ms";
+        this.values[this.vp++ & 255] = (int)(i * 100L / Runtime.getRuntime().maxMemory());
         this.repaint();
     }
 

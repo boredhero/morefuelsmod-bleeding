@@ -1,13 +1,12 @@
 package net.minecraft.util.datafix.fixes;
 
 import java.util.Random;
-import net.minecraft.entity.monster.ZombieType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.datafix.IFixableData;
 
 public class ZombieProfToType implements IFixableData
 {
-    private static final Random field_190049_a = new Random();
+    private static final Random RANDOM = new Random();
 
     public int getFixVersion()
     {
@@ -20,13 +19,13 @@ public class ZombieProfToType implements IFixableData
         {
             if (!compound.hasKey("ZombieType", 99))
             {
-                ZombieType zombietype = null;
+                int i = -1;
 
                 if (compound.hasKey("VillagerProfession", 99))
                 {
                     try
                     {
-                        zombietype = ZombieType.func_190146_a(compound.getInteger("VillagerProfession") + 1);
+                        i = this.func_191277_a(compound.getInteger("VillagerProfession"));
                     }
                     catch (RuntimeException var4)
                     {
@@ -34,17 +33,22 @@ public class ZombieProfToType implements IFixableData
                     }
                 }
 
-                if (zombietype == null)
+                if (i == -1)
                 {
-                    zombietype = ZombieType.func_190146_a(field_190049_a.nextInt(5) + 1);
+                    i = this.func_191277_a(RANDOM.nextInt(6));
                 }
 
-                compound.setInteger("ZombieType", zombietype.func_190150_a());
+                compound.setInteger("ZombieType", i);
             }
 
             compound.removeTag("IsVillager");
         }
 
         return compound;
+    }
+
+    private int func_191277_a(int p_191277_1_)
+    {
+        return p_191277_1_ >= 0 && p_191277_1_ < 6 ? p_191277_1_ : -1;
     }
 }

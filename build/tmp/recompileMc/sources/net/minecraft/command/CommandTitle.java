@@ -54,7 +54,7 @@ public class CommandTitle extends CommandBase
         {
             if (args.length < 3)
             {
-                if ("title".equals(args[1]) || "subtitle".equals(args[1]))
+                if ("title".equals(args[1]) || "subtitle".equals(args[1]) || "actionbar".equals(args[1]))
                 {
                     throw new WrongUsageException("commands.title.usage.title", new Object[0]);
                 }

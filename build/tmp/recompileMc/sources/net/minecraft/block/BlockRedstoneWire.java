@@ -130,7 +130,7 @@ public class BlockRedstoneWire extends Block
     }
 
     @Nullable
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -161,7 +161,7 @@ public class BlockRedstoneWire extends Block
 
         for (BlockPos blockpos : list)
         {
-            worldIn.notifyNeighborsOfStateChange(blockpos, this);
+            worldIn.notifyNeighborsOfStateChange(blockpos, this, false);
         }
 
         return state;
@@ -253,15 +253,18 @@ public class BlockRedstoneWire extends Block
     {
         if (worldIn.getBlockState(pos).getBlock() == this)
         {
-            worldIn.notifyNeighborsOfStateChange(pos, this);
+            worldIn.notifyNeighborsOfStateChange(pos, this, false);
 
             for (EnumFacing enumfacing : EnumFacing.values())
             {
-                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
+                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this, false);
             }
         }
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         if (!worldIn.isRemote)
@@ -270,7 +273,7 @@ public class BlockRedstoneWire extends Block
 
             for (EnumFacing enumfacing : EnumFacing.Plane.VERTICAL)
             {
-                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
+                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this, false);
             }
 
             for (EnumFacing enumfacing1 : EnumFacing.Plane.HORIZONTAL)
@@ -294,6 +297,9 @@ public class BlockRedstoneWire extends Block
         }
     }
 
+    /**
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+     */
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         super.breakBlock(worldIn, pos, state);
@@ -302,7 +308,7 @@ public class BlockRedstoneWire extends Block
         {
             for (EnumFacing enumfacing : EnumFacing.values())
             {
-                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
+                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this, false);
             }
 
             this.updateSurroundingRedstone(worldIn, pos, state);
@@ -346,7 +352,7 @@ public class BlockRedstoneWire extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         if (!worldIn.isRemote)
         {
@@ -365,7 +371,6 @@ public class BlockRedstoneWire extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Items.REDSTONE;
@@ -451,7 +456,7 @@ public class BlockRedstoneWire extends Block
         }
         else
         {
-            return blockState.getBlock().canConnectRedstone(blockState, world, pos, side);
+            return Blocks.field_190976_dk == blockState.getBlock() ? side == blockState.getValue(BlockObserver.FACING) : blockState.getBlock().canConnectRedstone(blockState, world, pos, side);
         }
     }
 

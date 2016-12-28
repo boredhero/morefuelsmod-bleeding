@@ -1,10 +1,13 @@
 package net.minecraft.entity;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -14,10 +17,11 @@ public interface IMerchant
 
     EntityPlayer getCustomer();
 
+    @Nullable
     MerchantRecipeList getRecipes(EntityPlayer player);
 
     @SideOnly(Side.CLIENT)
-    void setRecipes(MerchantRecipeList recipeList);
+    void setRecipes(@Nullable MerchantRecipeList recipeList);
 
     void useRecipe(MerchantRecipe recipe);
 
@@ -31,4 +35,8 @@ public interface IMerchant
      * Get the formatted ChatComponent that will be used for the sender's username in chat
      */
     ITextComponent getDisplayName();
+
+    World func_190670_t_();
+
+    BlockPos func_190671_u_();
 }

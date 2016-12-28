@@ -94,6 +94,11 @@ public class LootContext
         return worldObj;
     }
 
+    public int getLootingModifier()
+    {
+        return net.minecraftforge.common.ForgeHooks.getLootingLevel(getLootedEntity(), getKiller(), damageSource);
+    }
+
     public static class Builder
         {
             private final WorldServer worldObj;

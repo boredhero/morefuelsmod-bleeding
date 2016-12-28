@@ -12,7 +12,7 @@ public class RayTraceResult
     public Object hitInfo = null;
 
     private BlockPos blockPos;
-    /** What type of ray trace hit was this? 0 = block, 1 = entity */
+    /** The type of hit that occured, see {@link RayTraceResult#Type} for possibilities. */
     public RayTraceResult.Type typeOfHit;
     public EnumFacing sideHit;
     /** The vector position of the hit */

@@ -19,12 +19,17 @@ public class RenderWitch extends RenderLiving<EntityWitch>
         this.addLayer(new LayerHeldItemWitch(this));
     }
 
+    public ModelWitch getMainModel()
+    {
+        return (ModelWitch)super.getMainModel();
+    }
+
     /**
      * Renders the desired {@code T} type Entity.
      */
     public void doRender(EntityWitch entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        ((ModelWitch)this.mainModel).holdingItem = entity.getHeldItemMainhand() != null;
+        ((ModelWitch)this.mainModel).holdingItem = !entity.getHeldItemMainhand().func_190926_b();
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
     }
 

@@ -112,7 +112,7 @@ public class IntegratedServer extends MinecraftServer
      */
     public boolean startServer() throws IOException
     {
-        LOGGER.info("Starting integrated minecraft server version 1.10.2");
+        LOGGER.info("Starting integrated minecraft server version 1.11.2");
         this.setOnlineMode(true);
         this.setCanSpawnAnimals(true);
         this.setCanSpawnNPCs(true);
@@ -233,9 +233,9 @@ public class IntegratedServer extends MinecraftServer
     /**
      * par1 indicates if a log message should be output.
      */
-    public void saveAllWorlds(boolean dontLog)
+    public void saveAllWorlds(boolean isSilent)
     {
-        super.saveAllWorlds(dontLog);
+        super.saveAllWorlds(isSilent);
     }
 
     public File getDataDirectory()
@@ -387,7 +387,10 @@ public class IntegratedServer extends MinecraftServer
             {
                 for (EntityPlayerMP entityplayermp : Lists.newArrayList(IntegratedServer.this.getPlayerList().getPlayerList()))
                 {
-                    IntegratedServer.this.getPlayerList().playerLoggedOut(entityplayermp);
+                    if (!entityplayermp.getUniqueID().equals(IntegratedServer.this.mc.thePlayer.getUniqueID()))
+                    {
+                        IntegratedServer.this.getPlayerList().playerLoggedOut(entityplayermp);
+                    }
                 }
             }
         }));

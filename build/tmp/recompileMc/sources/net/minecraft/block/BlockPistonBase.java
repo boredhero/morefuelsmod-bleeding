@@ -25,7 +25,6 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -49,6 +48,11 @@ public class BlockPistonBase extends BlockDirectional
         this.setSoundType(SoundType.STONE);
         this.setHardness(0.5F);
         this.setCreativeTab(CreativeTabs.REDSTONE);
+    }
+
+    public boolean isVisuallyOpaque(IBlockState p_176214_1_)
+    {
+        return !((Boolean)p_176214_1_.getValue(EXTENDED)).booleanValue();
     }
 
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
@@ -86,7 +90,7 @@ public class BlockPistonBase extends BlockDirectional
         return !((Boolean)state.getValue(EXTENDED)).booleanValue() || state.getValue(FACING) == EnumFacing.DOWN;
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
     {
         addCollisionBoxToList(pos, entityBox, collidingBoxes, state.getBoundingBox(worldIn, pos));
     }
@@ -104,7 +108,7 @@ public class BlockPistonBase extends BlockDirectional
      */
     public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        worldIn.setBlockState(pos, state.withProperty(FACING, getFacingFromEntity(pos, placer)), 2);
+        worldIn.setBlockState(pos, state.withProperty(FACING, EnumFacing.func_190914_a(pos, placer)), 2);
 
         if (!worldIn.isRemote)
         {
@@ -117,7 +121,7 @@ public class BlockPistonBase extends BlockDirectional
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         if (!worldIn.isRemote)
         {
@@ -125,6 +129,9 @@ public class BlockPistonBase extends BlockDirectional
         }
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         if (!worldIn.isRemote && worldIn.getTileEntity(pos) == null)
@@ -139,7 +146,7 @@ public class BlockPistonBase extends BlockDirectional
      */
     public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
     {
-        return this.getDefaultState().withProperty(FACING, getFacingFromEntity(pos, placer)).withProperty(EXTENDED, Boolean.valueOf(false));
+        return this.getDefaultState().withProperty(FACING, EnumFacing.func_190914_a(pos, placer)).withProperty(EXTENDED, Boolean.valueOf(false));
     }
 
     private void checkForMove(World worldIn, BlockPos pos, IBlockState state)
@@ -195,9 +202,6 @@ public class BlockPistonBase extends BlockDirectional
      * changes to the world, like pistons replacing the block with an extended base. On the client, the update may
      * involve replacing tile entities, playing sounds, or performing other visual actions to reflect the server side
      * changes.
-     *  
-     * @param state The block state retrieved from the block position prior to this method being invoked
-     * @param pos The position of the block event. Can be used to retrieve tile entities.
      */
     public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int id, int param)
     {
@@ -226,7 +230,7 @@ public class BlockPistonBase extends BlockDirectional
                 return false;
             }
 
-            worldIn.setBlockState(pos, state.withProperty(EXTENDED, Boolean.valueOf(true)), 2);
+            worldIn.setBlockState(pos, state.withProperty(EXTENDED, Boolean.valueOf(true)), 3);
             worldIn.playSound((EntityPlayer)null, pos, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5F, worldIn.rand.nextFloat() * 0.25F + 0.6F);
         }
         else if (id == 1)
@@ -290,26 +294,6 @@ public class BlockPistonBase extends BlockDirectional
     {
         int i = meta & 7;
         return i > 5 ? null : EnumFacing.getFront(i);
-    }
-
-    public static EnumFacing getFacingFromEntity(BlockPos pos, EntityLivingBase p_185647_1_)
-    {
-        if (MathHelper.abs((float)p_185647_1_.posX - (float)pos.getX()) < 2.0F && MathHelper.abs((float)p_185647_1_.posZ - (float)pos.getZ()) < 2.0F)
-        {
-            double d0 = p_185647_1_.posY + (double)p_185647_1_.getEyeHeight();
-
-            if (d0 - (double)pos.getY() > 2.0D)
-            {
-                return EnumFacing.UP;
-            }
-
-            if ((double)pos.getY() - d0 > 0.0D)
-            {
-                return EnumFacing.DOWN;
-            }
-        }
-
-        return p_185647_1_.getHorizontalFacing().getOpposite();
     }
 
     /**
@@ -402,7 +386,7 @@ public class BlockPistonBase extends BlockDirectional
                 // Forge: With our change to how snowballs are dropped this needs to disallow to mimic vanilla behavior.
                 float chance = iblockstate.getBlock() instanceof BlockSnow ? -1.0f : 1.0f;
                 iblockstate.getBlock().dropBlockAsItemWithChance(worldIn, blockpos1, iblockstate, chance, 0);
-                worldIn.setBlockToAir(blockpos1);
+                worldIn.setBlockState(blockpos1, Blocks.AIR.getDefaultState(), 4);
                 --k;
                 aiblockstate[k] = iblockstate;
             }
@@ -427,23 +411,22 @@ public class BlockPistonBase extends BlockDirectional
                 IBlockState iblockstate3 = Blocks.PISTON_HEAD.getDefaultState().withProperty(BlockPistonExtension.FACING, direction).withProperty(BlockPistonExtension.TYPE, blockpistonextension$enumpistontype);
                 IBlockState iblockstate1 = Blocks.PISTON_EXTENSION.getDefaultState().withProperty(BlockPistonMoving.FACING, direction).withProperty(BlockPistonMoving.TYPE, this.isSticky ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT);
                 worldIn.setBlockState(blockpos2, iblockstate1, 4);
-                worldIn.setTileEntity(blockpos2, BlockPistonMoving.createTilePiston(iblockstate3, direction, true, false));
+                worldIn.setTileEntity(blockpos2, BlockPistonMoving.createTilePiston(iblockstate3, direction, true, true));
             }
 
             for (int i1 = list2.size() - 1; i1 >= 0; --i1)
             {
-                worldIn.notifyNeighborsOfStateChange((BlockPos)list2.get(i1), aiblockstate[k++].getBlock());
+                worldIn.notifyNeighborsOfStateChange((BlockPos)list2.get(i1), aiblockstate[k++].getBlock(), false);
             }
 
             for (int j1 = list.size() - 1; j1 >= 0; --j1)
             {
-                worldIn.notifyNeighborsOfStateChange((BlockPos)list.get(j1), aiblockstate[k++].getBlock());
+                worldIn.notifyNeighborsOfStateChange((BlockPos)list.get(j1), aiblockstate[k++].getBlock(), false);
             }
 
             if (extending)
             {
-                worldIn.notifyNeighborsOfStateChange(blockpos2, Blocks.PISTON_HEAD);
-                worldIn.notifyNeighborsOfStateChange(pos, this);
+                worldIn.notifyNeighborsOfStateChange(blockpos2, Blocks.PISTON_HEAD, false);
             }
 
             return true;

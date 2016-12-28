@@ -36,9 +36,9 @@ public class AxisAlignedBB
     }
 
     @SideOnly(Side.CLIENT)
-    public AxisAlignedBB(Vec3d p_i47144_1_, Vec3d p_i47144_2_)
+    public AxisAlignedBB(Vec3d min, Vec3d max)
     {
-        this(p_i47144_1_.xCoord, p_i47144_1_.yCoord, p_i47144_1_.zCoord, p_i47144_2_.xCoord, p_i47144_2_.yCoord, p_i47144_2_.zCoord);
+        this(min.xCoord, min.yCoord, min.zCoord, max.xCoord, max.yCoord, max.zCoord);
     }
 
     public AxisAlignedBB setMaxY(double y2)
@@ -78,6 +78,45 @@ public class AxisAlignedBB
         i = Double.doubleToLongBits(this.maxZ);
         j = 31 * j + (int)(i ^ i >>> 32);
         return j;
+    }
+
+    public AxisAlignedBB func_191195_a(double p_191195_1_, double p_191195_3_, double p_191195_5_)
+    {
+        double d0 = this.minX;
+        double d1 = this.minY;
+        double d2 = this.minZ;
+        double d3 = this.maxX;
+        double d4 = this.maxY;
+        double d5 = this.maxZ;
+
+        if (p_191195_1_ < 0.0D)
+        {
+            d0 -= p_191195_1_;
+        }
+        else if (p_191195_1_ > 0.0D)
+        {
+            d3 -= p_191195_1_;
+        }
+
+        if (p_191195_3_ < 0.0D)
+        {
+            d1 -= p_191195_3_;
+        }
+        else if (p_191195_3_ > 0.0D)
+        {
+            d4 -= p_191195_3_;
+        }
+
+        if (p_191195_5_ < 0.0D)
+        {
+            d2 -= p_191195_5_;
+        }
+        else if (p_191195_5_ > 0.0D)
+        {
+            d5 -= p_191195_5_;
+        }
+
+        return new AxisAlignedBB(d0, d1, d2, d3, d4, d5);
     }
 
     /**
@@ -141,6 +180,17 @@ public class AxisAlignedBB
         return this.expand(value, value, value);
     }
 
+    public AxisAlignedBB func_191500_a(AxisAlignedBB p_191500_1_)
+    {
+        double d0 = Math.max(this.minX, p_191500_1_.minX);
+        double d1 = Math.max(this.minY, p_191500_1_.minY);
+        double d2 = Math.max(this.minZ, p_191500_1_.minZ);
+        double d3 = Math.min(this.maxX, p_191500_1_.maxX);
+        double d4 = Math.min(this.maxY, p_191500_1_.maxY);
+        double d5 = Math.min(this.maxZ, p_191500_1_.maxZ);
+        return new AxisAlignedBB(d0, d1, d2, d3, d4, d5);
+    }
+
     public AxisAlignedBB union(AxisAlignedBB other)
     {
         double d0 = Math.min(this.minX, other.minX);
@@ -163,6 +213,11 @@ public class AxisAlignedBB
     public AxisAlignedBB offset(BlockPos pos)
     {
         return new AxisAlignedBB(this.minX + (double)pos.getX(), this.minY + (double)pos.getY(), this.minZ + (double)pos.getZ(), this.maxX + (double)pos.getX(), this.maxY + (double)pos.getY(), this.maxZ + (double)pos.getZ());
+    }
+
+    public AxisAlignedBB func_191194_a(Vec3d p_191194_1_)
+    {
+        return this.offset(p_191194_1_.xCoord, p_191194_1_.yCoord, p_191194_1_.zCoord);
     }
 
     /**
@@ -287,9 +342,9 @@ public class AxisAlignedBB
     }
 
     @SideOnly(Side.CLIENT)
-    public boolean func_189973_a(Vec3d p_189973_1_, Vec3d p_189973_2_)
+    public boolean intersects(Vec3d min, Vec3d max)
     {
-        return this.intersects(Math.min(p_189973_1_.xCoord, p_189973_2_.xCoord), Math.min(p_189973_1_.yCoord, p_189973_2_.yCoord), Math.min(p_189973_1_.zCoord, p_189973_2_.zCoord), Math.max(p_189973_1_.xCoord, p_189973_2_.xCoord), Math.max(p_189973_1_.yCoord, p_189973_2_.yCoord), Math.max(p_189973_1_.zCoord, p_189973_2_.zCoord));
+        return this.intersects(Math.min(min.xCoord, max.xCoord), Math.min(min.yCoord, max.yCoord), Math.min(min.zCoord, max.zCoord), Math.max(min.xCoord, max.xCoord), Math.max(min.yCoord, max.yCoord), Math.max(min.zCoord, max.zCoord));
     }
 
     /**
@@ -424,7 +479,7 @@ public class AxisAlignedBB
     }
 
     @SideOnly(Side.CLIENT)
-    public Vec3d func_189972_c()
+    public Vec3d getCenter()
     {
         return new Vec3d(this.minX + (this.maxX - this.minX) * 0.5D, this.minY + (this.maxY - this.minY) * 0.5D, this.minZ + (this.maxZ - this.minZ) * 0.5D);
     }

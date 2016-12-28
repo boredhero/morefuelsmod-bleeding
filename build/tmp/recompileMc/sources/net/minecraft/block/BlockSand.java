@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.List;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -10,6 +9,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -35,7 +35,7 @@ public class BlockSand extends BlockFalling
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> list)
     {
         for (BlockSand.EnumType blocksand$enumtype : BlockSand.EnumType.values())
         {
@@ -73,10 +73,10 @@ public class BlockSand extends BlockFalling
     }
 
     @SideOnly(Side.CLIENT)
-    public int func_189876_x(IBlockState p_189876_1_)
+    public int getDustColor(IBlockState p_189876_1_)
     {
         BlockSand.EnumType blocksand$enumtype = (BlockSand.EnumType)p_189876_1_.getValue(VARIANT);
-        return blocksand$enumtype.func_189865_a();
+        return blocksand$enumtype.getDustColor();
     }
 
     public static enum EnumType implements IStringSerializable
@@ -89,7 +89,7 @@ public class BlockSand extends BlockFalling
         private final String name;
         private final MapColor mapColor;
         private final String unlocalizedName;
-        private final int field_189866_h;
+        private final int dustColor;
 
         private EnumType(int p_i47157_3_, String p_i47157_4_, String p_i47157_5_, MapColor p_i47157_6_, int p_i47157_7_)
         {
@@ -97,13 +97,13 @@ public class BlockSand extends BlockFalling
             this.name = p_i47157_4_;
             this.mapColor = p_i47157_6_;
             this.unlocalizedName = p_i47157_5_;
-            this.field_189866_h = p_i47157_7_;
+            this.dustColor = p_i47157_7_;
         }
 
         @SideOnly(Side.CLIENT)
-        public int func_189865_a()
+        public int getDustColor()
         {
-            return this.field_189866_h;
+            return this.dustColor;
         }
 
         public int getMetadata()

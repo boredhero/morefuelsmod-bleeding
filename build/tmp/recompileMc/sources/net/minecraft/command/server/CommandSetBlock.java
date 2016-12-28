@@ -60,14 +60,16 @@ public class CommandSetBlock extends CommandBase
             sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, 0);
             BlockPos blockpos = parseBlockPos(sender, args, 0, false);
             Block block = CommandBase.getBlockByText(sender, args[3]);
-            int i = 0;
+            IBlockState iblockstate;
 
             if (args.length >= 5)
             {
-                i = parseInt(args[4], 0, 15);
+                iblockstate = func_190794_a(block, args[4]);
             }
-
-            IBlockState state = block.getStateFromMeta(i);
+            else
+            {
+                iblockstate = block.getDefaultState();
+            }
 
             World world = sender.getEntityWorld();
 
@@ -80,7 +82,7 @@ public class CommandSetBlock extends CommandBase
                 NBTTagCompound nbttagcompound = new NBTTagCompound();
                 boolean flag = false;
 
-                if (args.length >= 7 && block.hasTileEntity(state))
+                if (args.length >= 7 && block.hasTileEntity(iblockstate))
                 {
                     String s = getChatComponentFromNthArg(sender, args, 6).getUnformattedText();
 
@@ -125,8 +127,6 @@ public class CommandSetBlock extends CommandBase
                     world.setBlockState(blockpos, Blocks.AIR.getDefaultState(), block == Blocks.AIR ? 2 : 4);
                 }
 
-                IBlockState iblockstate = block.getStateFromMeta(i);
-
                 if (!world.setBlockState(blockpos, iblockstate, 2))
                 {
                     throw new CommandException("commands.setblock.noChange", new Object[0]);
@@ -146,7 +146,7 @@ public class CommandSetBlock extends CommandBase
                         }
                     }
 
-                    world.notifyNeighborsRespectDebug(blockpos, iblockstate.getBlock());
+                    world.notifyNeighborsRespectDebug(blockpos, iblockstate.getBlock(), false);
                     sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, 1);
                     notifyCommandListener(sender, this, "commands.setblock.success", new Object[0]);
                 }

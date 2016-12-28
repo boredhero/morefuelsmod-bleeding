@@ -16,7 +16,7 @@ import net.minecraft.entity.ai.EntityAIMate;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -54,6 +54,9 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
      */
     private final InventoryCrafting inventoryCrafting = new InventoryCrafting(new Container()
     {
+        /**
+         * Determines whether supplied player can use this container
+         */
         public boolean canInteractWith(EntityPlayer playerIn)
         {
             return false;
@@ -89,7 +92,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         this.tasks.addTask(3, new EntityAITempt(this, 1.1D, Items.WHEAT, false));
         this.tasks.addTask(4, new EntityAIFollowParent(this, 1.1D));
         this.tasks.addTask(5, this.entityAIEatGrass);
-        this.tasks.addTask(6, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
     }
@@ -188,11 +191,11 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         }
     }
 
-    @SuppressWarnings("unused")
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        if (false)  //Forge: Moved to onSheared
-        if (stack != null && stack.getItem() == Items.SHEARS && !this.getSheared() && !this.isChild())
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (false && itemstack.getItem() == Items.SHEARS && !this.getSheared() && !this.isChild())   //Forge: Moved to onSheared
         {
             if (!this.worldObj.isRemote)
             {
@@ -208,11 +211,16 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
                 }
             }
 
-            stack.damageItem(1, player);
+            itemstack.damageItem(1, player);
             this.playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1.0F, 1.0F);
         }
 
-        return super.processInteract(player, hand, stack);
+        return super.processInteract(player, hand);
+    }
+
+    public static void registerFixesSheep(DataFixer fixer)
+    {
+        EntityLiving.registerFixesMob(fixer, EntitySheep.class);
     }
 
     @SideOnly(Side.CLIENT)
@@ -233,11 +241,6 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         {
             return this.sheepTimer > 0 ? ((float)Math.PI / 5F) : this.rotationPitch * 0.017453292F;
         }
-    }
-
-    public static void func_189802_b(DataFixer p_189802_0_)
-    {
-        EntityLiving.func_189752_a(p_189802_0_, "Sheep");
     }
 
     /**
@@ -377,7 +380,7 @@ public class EntitySheep extends EntityAnimal implements net.minecraftforge.comm
         ItemStack itemstack = CraftingManager.getInstance().findMatchingRecipe(this.inventoryCrafting, ((EntitySheep)father).worldObj);
         int k;
 
-        if (itemstack != null && itemstack.getItem() == Items.DYE)
+        if (itemstack.getItem() == Items.DYE)
         {
             k = itemstack.getMetadata();
         }

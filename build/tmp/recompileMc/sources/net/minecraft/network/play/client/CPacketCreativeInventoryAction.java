@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class CPacketCreativeInventoryAction implements Packet<INetHandlerPlayServer>
 {
     private int slotId;
-    private ItemStack stack;
+    private ItemStack stack = ItemStack.field_190927_a;
 
     public CPacketCreativeInventoryAction()
     {
@@ -21,7 +21,7 @@ public class CPacketCreativeInventoryAction implements Packet<INetHandlerPlaySer
     public CPacketCreativeInventoryAction(int slotIdIn, ItemStack stackIn)
     {
         this.slotId = slotIdIn;
-        this.stack = stackIn != null ? stackIn.copy() : null;
+        this.stack = stackIn.func_190926_b() ? ItemStack.field_190927_a : stackIn.copy();
     }
 
     /**

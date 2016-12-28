@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -12,7 +11,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +62,7 @@ public class BlockFarmland extends Block
             }
             else if (!this.hasCrops(worldIn, pos))
             {
-                worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
+                this.func_190970_b(worldIn, pos);
             }
         }
         else if (i < 7)
@@ -78,12 +76,24 @@ public class BlockFarmland extends Block
      */
     public void onFallenUpon(World worldIn, BlockPos pos, Entity entityIn, float fallDistance)
     {
-        if (!worldIn.isRemote && worldIn.rand.nextFloat() < fallDistance - 0.5F && entityIn instanceof EntityLivingBase && (entityIn instanceof EntityPlayer || worldIn.getGameRules().getBoolean("mobGriefing")) && entityIn.width * entityIn.width * entityIn.height > 0.512F)
+        if (!worldIn.isRemote && entityIn.canTrample(worldIn, this, pos, fallDistance)) // Forge: Move logic to Entity#canTrample
         {
-            worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
+            this.func_190970_b(worldIn, pos);
         }
 
         super.onFallenUpon(worldIn, pos, entityIn, fallDistance);
+    }
+
+    private void func_190970_b(World p_190970_1_, BlockPos p_190970_2_)
+    {
+        IBlockState iblockstate = Blocks.DIRT.getDefaultState();
+        p_190970_1_.setBlockState(p_190970_2_, iblockstate);
+        AxisAlignedBB axisalignedbb = iblockstate.getCollisionBoundingBox(p_190970_1_, p_190970_2_).offset(p_190970_2_);
+
+        for (Entity entity : p_190970_1_.getEntitiesWithinAABBExcludingEntity((Entity)null, axisalignedbb))
+        {
+            entity.setPosition(entity.posX, axisalignedbb.maxY, entity.posZ);
+        }
     }
 
     private boolean hasCrops(World worldIn, BlockPos pos)
@@ -110,13 +120,26 @@ public class BlockFarmland extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
-        super.neighborChanged(state, worldIn, pos, blockIn);
+        super.neighborChanged(state, worldIn, pos, blockIn, p_189540_5_);
 
         if (worldIn.getBlockState(pos.up()).getMaterial().isSolid())
         {
-            worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
+            this.func_190970_b(worldIn, pos);
+        }
+    }
+
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+    {
+        super.onBlockAdded(worldIn, pos, state);
+
+        if (worldIn.getBlockState(pos.up()).getMaterial().isSolid())
+        {
+            this.func_190970_b(worldIn, pos);
         }
     }
 
@@ -142,15 +165,9 @@ public class BlockFarmland extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Blocks.DIRT.getItemDropped(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT), rand, fortune);
-    }
-
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
-    {
-        return new ItemStack(Blocks.DIRT);
     }
 
     /**

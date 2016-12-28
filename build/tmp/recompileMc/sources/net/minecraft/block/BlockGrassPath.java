@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -44,6 +43,23 @@ public class BlockGrassPath extends Block
         }
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+    {
+        super.onBlockAdded(worldIn, pos, state);
+        this.func_190971_b(worldIn, pos);
+    }
+
+    private void func_190971_b(World p_190971_1_, BlockPos p_190971_2_)
+    {
+        if (p_190971_1_.getBlockState(p_190971_2_.up()).getMaterial().isSolid())
+        {
+            p_190971_1_.setBlockState(p_190971_2_, Blocks.DIRT.getDefaultState());
+        }
+    }
+
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         return GRASS_PATH_AABB;
@@ -65,7 +81,6 @@ public class BlockGrassPath extends Block
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Blocks.DIRT.getItemDropped(Blocks.DIRT.getDefaultState().withProperty(BlockDirt.VARIANT, BlockDirt.DirtType.DIRT), rand, fortune);
@@ -81,13 +96,9 @@ public class BlockGrassPath extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
-        super.neighborChanged(state, worldIn, pos, blockIn);
-
-        if (worldIn.getBlockState(pos.up()).getMaterial().isSolid())
-        {
-            worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState());
-        }
+        super.neighborChanged(state, worldIn, pos, blockIn, p_189540_5_);
+        this.func_190971_b(worldIn, pos);
     }
 }

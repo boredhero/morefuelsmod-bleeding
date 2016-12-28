@@ -66,14 +66,19 @@ public class EntitySlime extends EntityLiving implements IMob
         this.dataManager.register(SLIME_SIZE, Integer.valueOf(1));
     }
 
-    protected void setSlimeSize(int size)
+    protected void setSlimeSize(int size, boolean p_70799_2_)
     {
         this.dataManager.set(SLIME_SIZE, Integer.valueOf(size));
         this.setSize(0.51000005F * (float)size, 0.51000005F * (float)size);
         this.setPosition(this.posX, this.posY, this.posZ);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue((double)(size * size));
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));
-        this.setHealth(this.getMaxHealth());
+
+        if (p_70799_2_)
+        {
+            this.setHealth(this.getMaxHealth());
+        }
+
         this.experienceValue = size;
     }
 
@@ -85,9 +90,9 @@ public class EntitySlime extends EntityLiving implements IMob
         return ((Integer)this.dataManager.get(SLIME_SIZE)).intValue();
     }
 
-    public static void func_189758_c(DataFixer p_189758_0_)
+    public static void registerFixesSlime(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189758_0_, "Slime");
+        EntityLiving.registerFixesMob(fixer, EntitySlime.class);
     }
 
     /**
@@ -113,7 +118,7 @@ public class EntitySlime extends EntityLiving implements IMob
             i = 0;
         }
 
-        this.setSlimeSize(i + 1);
+        this.setSlimeSize(i + 1, false);
         this.wasOnGround = compound.getBoolean("wasOnGround");
     }
 
@@ -233,7 +238,7 @@ public class EntitySlime extends EntityLiving implements IMob
                     entityslime.enablePersistence();
                 }
 
-                entityslime.setSlimeSize(i / 2);
+                entityslime.setSlimeSize(i / 2, true);
                 entityslime.setLocationAndAngles(this.posX + (double)f, this.posY + 0.5D, this.posZ + (double)f1, this.rand.nextFloat() * 360.0F, 0.0F);
                 this.worldObj.spawnEntityInWorld(entityslime);
             }
@@ -340,7 +345,7 @@ public class EntitySlime extends EntityLiving implements IMob
         {
             if (this.worldObj.getDifficulty() != EnumDifficulty.PEACEFUL)
             {
-                Biome biome = this.worldObj.getBiomeGenForCoords(blockpos);
+                Biome biome = this.worldObj.getBiome(blockpos);
 
                 if (biome == Biomes.SWAMPLAND && this.posY > 50.0D && this.posY < 70.0D && this.rand.nextFloat() < 0.5F && this.rand.nextFloat() < this.worldObj.getCurrentMoonPhaseFactor() && this.worldObj.getLightFromNeighbors(new BlockPos(this)) <= this.rand.nextInt(8))
                 {
@@ -406,7 +411,7 @@ public class EntitySlime extends EntityLiving implements IMob
         }
 
         int j = 1 << i;
-        this.setSlimeSize(j);
+        this.setSlimeSize(j, true);
         return super.onInitialSpawn(difficulty, livingdata);
     }
 

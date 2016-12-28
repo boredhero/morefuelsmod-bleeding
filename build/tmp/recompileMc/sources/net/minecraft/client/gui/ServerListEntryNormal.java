@@ -78,8 +78,8 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
             });
         }
 
-        boolean flag = this.server.version > 210;
-        boolean flag1 = this.server.version < 210;
+        boolean flag = this.server.version > 316;
+        boolean flag1 = this.server.version < 316;
         boolean flag2 = flag || flag1;
         this.mc.fontRendererObj.drawString(this.server.serverName, x + 32 + 3, y + 1, 16777215);
         List<String> list = this.mc.fontRendererObj.listFormattedStringToWidth(net.minecraftforge.fml.client.FMLClientHandler.instance().fixDescription(this.server.serverMOTD), listWidth - 48 - 2);
@@ -259,16 +259,17 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
         else
         {
             ByteBuf bytebuf = Unpooled.copiedBuffer((CharSequence)this.server.getBase64EncodedIconData(), Charsets.UTF_8);
-            ByteBuf bytebuf1 = Base64.decode(bytebuf);
+            ByteBuf bytebuf1 = null;
             BufferedImage bufferedimage;
-            label101:
+            label103:
             {
                 try
                 {
+                    bytebuf1 = Base64.decode(bytebuf);
                     bufferedimage = TextureUtil.readBufferedImage(new ByteBufInputStream(bytebuf1));
                     Validate.validState(bufferedimage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
                     Validate.validState(bufferedimage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
-                    break label101;
+                    break label103;
                 }
                 catch (Throwable throwable)
                 {
@@ -278,7 +279,11 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry
                 finally
                 {
                     bytebuf.release();
-                    bytebuf1.release();
+
+                    if (bytebuf1 != null)
+                    {
+                        bytebuf1.release();
+                    }
                 }
 
                 return;

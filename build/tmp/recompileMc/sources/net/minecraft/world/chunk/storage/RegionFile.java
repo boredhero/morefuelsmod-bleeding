@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
+import javax.annotation.Nullable;
 import net.minecraft.server.MinecraftServer;
 
 public class RegionFile
@@ -94,6 +95,8 @@ public class RegionFile
             ioexception.printStackTrace();
         }
     }
+
+    @Nullable
 
     // This is a copy (sort of) of the method below it, make sure they stay in sync
     public synchronized boolean chunkExists(int x, int z)
@@ -203,6 +206,7 @@ public class RegionFile
     /**
      * Returns an output stream used to write chunk data. Data is on disk when the returned stream is closed.
      */
+    @Nullable
     public DataOutputStream getChunkDataOutputStream(int x, int z)
     {
         return this.outOfBounds(x, z) ? null : new DataOutputStream(new BufferedOutputStream(new DeflaterOutputStream(new RegionFile.ChunkBuffer(x, z))));

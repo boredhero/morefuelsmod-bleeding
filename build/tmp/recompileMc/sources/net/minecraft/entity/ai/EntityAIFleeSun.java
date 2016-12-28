@@ -42,7 +42,7 @@ public class EntityAIFleeSun extends EntityAIBase
         {
             return false;
         }
-        else if (this.theCreature.getItemStackFromSlot(EntityEquipmentSlot.HEAD) != null)
+        else if (!this.theCreature.getItemStackFromSlot(EntityEquipmentSlot.HEAD).func_190926_b())
         {
             return false;
         }

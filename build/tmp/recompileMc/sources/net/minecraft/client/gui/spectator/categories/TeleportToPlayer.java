@@ -15,7 +15,7 @@ import net.minecraft.client.gui.spectator.PlayerMenuObject;
 import net.minecraft.client.gui.spectator.SpectatorMenu;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.GameType;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -57,7 +57,7 @@ public class TeleportToPlayer implements ISpectatorMenuView, ISpectatorMenuObjec
 
     public ITextComponent getPrompt()
     {
-        return new TextComponentString("Select a player to teleport to");
+        return new TextComponentTranslation("spectatorMenu.teleport.prompt", new Object[0]);
     }
 
     public void selectItem(SpectatorMenu menu)
@@ -67,7 +67,7 @@ public class TeleportToPlayer implements ISpectatorMenuView, ISpectatorMenuObjec
 
     public ITextComponent getSpectatorName()
     {
-        return new TextComponentString("Teleport to player");
+        return new TextComponentTranslation("spectatorMenu.teleport", new Object[0]);
     }
 
     public void renderIcon(float p_178663_1_, int alpha)

@@ -89,9 +89,9 @@ public class WorldInfo
     {
     }
 
-    public static void func_189967_a(DataFixer p_189967_0_)
+    public static void registerFixes(DataFixer fixer)
     {
-        p_189967_0_.registerWalker(FixTypes.LEVEL, new IDataWalker()
+        fixer.registerWalker(FixTypes.LEVEL, new IDataWalker()
         {
             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
             {
@@ -351,11 +351,12 @@ public class WorldInfo
     private void updateTagCompound(NBTTagCompound nbt, NBTTagCompound playerNbt)
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
-        nbttagcompound.setString("Name", "1.10.2");
-        nbttagcompound.setInteger("Id", 512);
+        nbttagcompound.setString("Name", "1.11.2");
+        nbttagcompound.setInteger("Id", 922);
         nbttagcompound.setBoolean("Snapshot", false);
         nbt.setTag("Version", nbttagcompound);
-        nbt.setInteger("DataVersion", 512);
+        nbt.setInteger("DataVersion", 922);
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
         nbt.setLong("RandomSeed", this.randomSeed);
         nbt.setString("generatorName", this.terrainType.getWorldTypeName());
         nbt.setInteger("generatorVersion", this.terrainType.getGeneratorVersion());

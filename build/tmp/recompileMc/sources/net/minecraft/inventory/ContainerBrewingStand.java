@@ -1,6 +1,5 @@
 package net.minecraft.inventory;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -8,6 +7,7 @@ import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionHelper;
+import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.stats.AchievementList;
 import net.minecraftforge.fml.relauncher.Side;
@@ -84,6 +84,9 @@ public class ContainerBrewingStand extends Container
         this.tileBrewingStand.setField(id, data);
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.tileBrewingStand.isUseableByPlayer(playerIn);
@@ -92,10 +95,9 @@ public class ContainerBrewingStand extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
-    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.field_190927_a;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -105,71 +107,71 @@ public class ContainerBrewingStand extends Container
 
             if ((index < 0 || index > 2) && index != 3 && index != 4)
             {
-                if (!this.theSlot.getHasStack() && this.theSlot.isItemValid(itemstack1))
+                if (this.theSlot.isItemValid(itemstack1))
                 {
                     if (!this.mergeItemStack(itemstack1, 3, 4, false))
                     {
-                        return null;
+                        return ItemStack.field_190927_a;
                     }
                 }
-                else if (ContainerBrewingStand.Potion.canHoldPotion(itemstack))
+                else if (ContainerBrewingStand.Potion.canHoldPotion(itemstack) && itemstack.func_190916_E() == 1)
                 {
                     if (!this.mergeItemStack(itemstack1, 0, 3, false))
                     {
-                        return null;
+                        return ItemStack.field_190927_a;
                     }
                 }
                 else if (ContainerBrewingStand.Fuel.isValidBrewingFuel(itemstack))
                 {
                     if (!this.mergeItemStack(itemstack1, 4, 5, false))
                     {
-                        return null;
+                        return ItemStack.field_190927_a;
                     }
                 }
                 else if (index >= 5 && index < 32)
                 {
                     if (!this.mergeItemStack(itemstack1, 32, 41, false))
                     {
-                        return null;
+                        return ItemStack.field_190927_a;
                     }
                 }
                 else if (index >= 32 && index < 41)
                 {
                     if (!this.mergeItemStack(itemstack1, 5, 32, false))
                     {
-                        return null;
+                        return ItemStack.field_190927_a;
                     }
                 }
                 else if (!this.mergeItemStack(itemstack1, 5, 41, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else
             {
                 if (!this.mergeItemStack(itemstack1, 5, 41, true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
 
                 slot.onSlotChange(itemstack1, itemstack);
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.func_190926_b())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.field_190927_a);
             }
             else
             {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.func_190916_E() == itemstack.func_190916_E())
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            slot.onPickupFromSlot(playerIn, itemstack1);
+            slot.func_190901_a(playerIn, itemstack1);
         }
 
         return itemstack;
@@ -183,9 +185,9 @@ public class ContainerBrewingStand extends Container
             }
 
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
-            public boolean isItemValid(@Nullable ItemStack stack)
+            public boolean isItemValid(ItemStack stack)
             {
                 /**
                  * Returns true if the given ItemStack is usable as a fuel in the brewing stand.
@@ -196,9 +198,9 @@ public class ContainerBrewingStand extends Container
             /**
              * Returns true if the given ItemStack is usable as a fuel in the brewing stand.
              */
-            public static boolean isValidBrewingFuel(@Nullable ItemStack itemStackIn)
+            public static boolean isValidBrewingFuel(ItemStack itemStackIn)
             {
-                return itemStackIn != null && itemStackIn.getItem() == Items.BLAZE_POWDER;
+                return itemStackIn.getItem() == Items.BLAZE_POWDER;
             }
 
             /**
@@ -219,11 +221,11 @@ public class ContainerBrewingStand extends Container
             }
 
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
-            public boolean isItemValid(@Nullable ItemStack stack)
+            public boolean isItemValid(ItemStack stack)
             {
-                return stack != null && net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(stack);
+                return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidIngredient(stack);
             }
 
             /**
@@ -248,9 +250,9 @@ public class ContainerBrewingStand extends Container
             }
 
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
-            public boolean isItemValid(@Nullable ItemStack stack)
+            public boolean isItemValid(ItemStack stack)
             {
                 /**
                  * Returns true if this itemstack can be filled with a potion
@@ -267,30 +269,26 @@ public class ContainerBrewingStand extends Container
                 return 1;
             }
 
-            public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack)
+            public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
             {
-                if (PotionUtils.getPotionFromItem(stack) != PotionTypes.WATER)
+                PotionType potiontype = PotionUtils.getPotionFromItem(p_190901_2_);
+
+                if (potiontype != PotionTypes.WATER && potiontype != PotionTypes.EMPTY)
                 {
-                    net.minecraftforge.event.ForgeEventFactory.onPlayerBrewedPotion(playerIn, stack);
+                    net.minecraftforge.event.ForgeEventFactory.onPlayerBrewedPotion(p_190901_1_, p_190901_2_);
                     this.player.addStat(AchievementList.POTION);
                 }
 
-                super.onPickupFromSlot(playerIn, stack);
+                super.func_190901_a(p_190901_1_, p_190901_2_);
+                return p_190901_2_;
             }
 
             /**
              * Returns true if this itemstack can be filled with a potion
              */
-            public static boolean canHoldPotion(@Nullable ItemStack stack)
+            public static boolean canHoldPotion(ItemStack stack)
             {
-                if (stack == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(stack);
-                }
+                return net.minecraftforge.common.brewing.BrewingRecipeRegistry.isValidInput(stack);
             }
         }
 }

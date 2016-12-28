@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiOptions extends GuiScreen implements GuiYesNoCallback
+public class GuiOptions extends GuiScreen
 {
     private static final GameSettings.Options[] SCREEN_OPTIONS = new GameSettings.Options[] {GameSettings.Options.FOV};
     private final GuiScreen lastScreen;
@@ -107,6 +107,20 @@ public class GuiOptions extends GuiScreen implements GuiYesNoCallback
             this.lockButton.enabled = false;
             this.difficultyButton.enabled = false;
         }
+    }
+
+    /**
+     * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
+     * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
+     */
+    protected void keyTyped(char typedChar, int keyCode) throws IOException
+    {
+        if (keyCode == 1)
+        {
+            this.mc.gameSettings.saveOptions();
+        }
+
+        super.keyTyped(typedChar, keyCode);
     }
 
     /**

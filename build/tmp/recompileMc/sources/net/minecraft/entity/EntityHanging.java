@@ -74,8 +74,8 @@ public abstract class EntityHanging extends Entity
             double d1 = (double)this.hangingPosition.getY() + 0.5D;
             double d2 = (double)this.hangingPosition.getZ() + 0.5D;
             double d3 = 0.46875D;
-            double d4 = this.func_190202_a(this.getWidthPixels());
-            double d5 = this.func_190202_a(this.getHeightPixels());
+            double d4 = this.offs(this.getWidthPixels());
+            double d5 = this.offs(this.getHeightPixels());
             d0 = d0 - (double)this.facingDirection.getFrontOffsetX() * 0.46875D;
             d2 = d2 - (double)this.facingDirection.getFrontOffsetZ() * 0.46875D;
             d1 = d1 + d5;
@@ -105,7 +105,7 @@ public abstract class EntityHanging extends Entity
         }
     }
 
-    private double func_190202_a(int p_190202_1_)
+    private double offs(int p_190202_1_)
     {
         return p_190202_1_ % 32 == 0 ? 0.5D : 0.0D;
     }
@@ -220,9 +220,9 @@ public abstract class EntityHanging extends Entity
     /**
      * Tries to move the entity towards the specified location.
      */
-    public void moveEntity(double x, double y, double z)
+    public void moveEntity(MoverType x, double p_70091_2_, double p_70091_4_, double p_70091_6_)
     {
-        if (!this.worldObj.isRemote && !this.isDead && x * x + y * y + z * z > 0.0D)
+        if (!this.worldObj.isRemote && !this.isDead && p_70091_2_ * p_70091_2_ + p_70091_4_ * p_70091_4_ + p_70091_6_ * p_70091_6_ > 0.0D)
         {
             this.setDead();
             this.onBroken((Entity)null);

@@ -1,6 +1,5 @@
 package net.minecraft.inventory;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
@@ -69,7 +68,7 @@ public class ContainerWorkbench extends Container
             {
                 ItemStack itemstack = this.craftMatrix.removeStackFromSlot(i);
 
-                if (itemstack != null)
+                if (!itemstack.func_190926_b())
                 {
                     playerIn.dropItem(itemstack, false);
                 }
@@ -77,6 +76,9 @@ public class ContainerWorkbench extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.worldObj.getBlockState(this.pos).getBlock() != Blocks.CRAFTING_TABLE ? false : playerIn.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
@@ -85,10 +87,9 @@ public class ContainerWorkbench extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
-    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.field_190927_a;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -98,9 +99,11 @@ public class ContainerWorkbench extends Container
 
             if (index == 0)
             {
+                itemstack1.getItem().onCreated(itemstack1, this.worldObj, playerIn);
+
                 if (!this.mergeItemStack(itemstack1, 10, 46, true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
 
                 slot.onSlotChange(itemstack1, itemstack);
@@ -109,36 +112,41 @@ public class ContainerWorkbench extends Container
             {
                 if (!this.mergeItemStack(itemstack1, 37, 46, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (index >= 37 && index < 46)
             {
                 if (!this.mergeItemStack(itemstack1, 10, 37, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 10, 46, false))
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.func_190926_b())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.field_190927_a);
             }
             else
             {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.func_190916_E() == itemstack.func_190916_E())
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            slot.onPickupFromSlot(playerIn, itemstack1);
+            ItemStack itemstack2 = slot.func_190901_a(playerIn, itemstack1);
+
+            if (index == 0)
+            {
+                playerIn.dropItem(itemstack2, false);
+            }
         }
 
         return itemstack;

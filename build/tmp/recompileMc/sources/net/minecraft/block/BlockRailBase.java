@@ -22,6 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public abstract class BlockRailBase extends Block
 {
     protected static final AxisAlignedBB FLAT_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.125D, 1.0D);
+    protected static final AxisAlignedBB field_190959_b = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.5D, 1.0D);
     protected final boolean isPowered;
 
     public static boolean isRailBlock(World worldIn, BlockPos pos)
@@ -43,7 +44,7 @@ public abstract class BlockRailBase extends Block
     }
 
     @Nullable
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -59,7 +60,7 @@ public abstract class BlockRailBase extends Block
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
     {
         BlockRailBase.EnumRailDirection blockrailbase$enumraildirection = state.getBlock() == this ? (BlockRailBase.EnumRailDirection)state.getValue(this.getShapeProperty()) : null;
-        return blockrailbase$enumraildirection != null && blockrailbase$enumraildirection.isAscending() ? FULL_BLOCK_AABB : FLAT_AABB;
+        return blockrailbase$enumraildirection != null && blockrailbase$enumraildirection.isAscending() ? field_190959_b : FLAT_AABB;
     }
 
     public boolean isFullCube(IBlockState state)
@@ -72,6 +73,9 @@ public abstract class BlockRailBase extends Block
         return worldIn.getBlockState(pos.down()).isSideSolid(worldIn, pos.down(), EnumFacing.UP);
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         if (!worldIn.isRemote)
@@ -80,7 +84,7 @@ public abstract class BlockRailBase extends Block
 
             if (this.isPowered)
             {
-                state.neighborChanged(worldIn, pos, this);
+                state.neighborChanged(worldIn, pos, this, pos);
             }
         }
     }
@@ -90,7 +94,7 @@ public abstract class BlockRailBase extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         if (!worldIn.isRemote)
         {
@@ -151,19 +155,22 @@ public abstract class BlockRailBase extends Block
         return BlockRenderLayer.CUTOUT;
     }
 
+    /**
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+     */
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         super.breakBlock(worldIn, pos, state);
 
         if (((BlockRailBase.EnumRailDirection)state.getValue(this.getShapeProperty())).isAscending())
         {
-            worldIn.notifyNeighborsOfStateChange(pos.up(), this);
+            worldIn.notifyNeighborsOfStateChange(pos.up(), this, false);
         }
 
         if (this.isPowered)
         {
-            worldIn.notifyNeighborsOfStateChange(pos, this);
-            worldIn.notifyNeighborsOfStateChange(pos.down(), this);
+            worldIn.notifyNeighborsOfStateChange(pos, this, false);
+            worldIn.notifyNeighborsOfStateChange(pos.down(), this, false);
         }
     }
 

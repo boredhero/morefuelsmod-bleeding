@@ -1,8 +1,7 @@
 package net.minecraft.inventory;
 
-import javax.annotation.Nullable;
-import net.minecraft.entity.passive.EntityHorse;
-import net.minecraft.entity.passive.HorseArmorType;
+import net.minecraft.entity.passive.AbstractChestHorse;
+import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -12,9 +11,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ContainerHorseInventory extends Container
 {
     private final IInventory horseInventory;
-    private final EntityHorse theHorse;
+    private final AbstractHorse theHorse;
 
-    public ContainerHorseInventory(IInventory playerInventory, final IInventory horseInventoryIn, final EntityHorse horse, EntityPlayer player)
+    public ContainerHorseInventory(IInventory playerInventory, final IInventory horseInventoryIn, final AbstractHorse horse, EntityPlayer player)
     {
         this.horseInventory = horseInventoryIn;
         this.theHorse = horse;
@@ -24,21 +23,11 @@ public class ContainerHorseInventory extends Container
         this.addSlotToContainer(new Slot(horseInventoryIn, 0, 8, 18)
         {
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
-            public boolean isItemValid(@Nullable ItemStack stack)
+            public boolean isItemValid(ItemStack stack)
             {
-                return super.isItemValid(stack) && stack.getItem() == Items.SADDLE && !this.getHasStack();
-            }
-        });
-        this.addSlotToContainer(new Slot(horseInventoryIn, 1, 8, 36)
-        {
-            /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
-             */
-            public boolean isItemValid(@Nullable ItemStack stack)
-            {
-                return super.isItemValid(stack) && horse.getType().isHorse() && HorseArmorType.isHorseArmor(stack.getItem());
+                return stack.getItem() == Items.SADDLE && !this.getHasStack() && horse.func_190685_dA();
             }
             /**
              * Actualy only call when we want to render the white square effect over the slots. Return always True,
@@ -47,17 +36,44 @@ public class ContainerHorseInventory extends Container
             @SideOnly(Side.CLIENT)
             public boolean canBeHovered()
             {
-                return horse.getType().isHorse();
+                return horse.func_190685_dA();
+            }
+        });
+        this.addSlotToContainer(new Slot(horseInventoryIn, 1, 8, 36)
+        {
+            /**
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
+             */
+            public boolean isItemValid(ItemStack stack)
+            {
+                return horse.func_190682_f(stack);
+            }
+            /**
+             * Returns the maximum stack size for a given slot (usually the same as getInventoryStackLimit(), but 1 in
+             * the case of armor slots)
+             */
+            public int getSlotStackLimit()
+            {
+                return 1;
+            }
+            /**
+             * Actualy only call when we want to render the white square effect over the slots. Return always True,
+             * except for the armor slot of the Donkey/Mule (we can't interact with the Undead and Skeleton horses)
+             */
+            @SideOnly(Side.CLIENT)
+            public boolean canBeHovered()
+            {
+                return horse.func_190677_dK();
             }
         });
 
-        if (horse.isChested())
+        if (horse instanceof AbstractChestHorse && ((AbstractChestHorse)horse).func_190695_dh())
         {
             for (int k = 0; k < 3; ++k)
             {
-                for (int l = 0; l < 5; ++l)
+                for (int l = 0; l < ((AbstractChestHorse)horse).func_190696_dl(); ++l)
                 {
-                    this.addSlotToContainer(new Slot(horseInventoryIn, 2 + l + k * 5, 80 + l * 18, 18 + k * 18));
+                    this.addSlotToContainer(new Slot(horseInventoryIn, 2 + l + k * ((AbstractChestHorse)horse).func_190696_dl(), 80 + l * 18, 18 + k * 18));
                 }
             }
         }
@@ -76,6 +92,9 @@ public class ContainerHorseInventory extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.horseInventory.isUseableByPlayer(playerIn) && this.theHorse.isEntityAlive() && this.theHorse.getDistanceToEntity(playerIn) < 8.0F;
@@ -84,10 +103,9 @@ public class ContainerHorseInventory extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
-    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.field_190927_a;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -99,31 +117,31 @@ public class ContainerHorseInventory extends Container
             {
                 if (!this.mergeItemStack(itemstack1, this.horseInventory.getSizeInventory(), this.inventorySlots.size(), true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (this.getSlot(1).isItemValid(itemstack1) && !this.getSlot(1).getHasStack())
             {
                 if (!this.mergeItemStack(itemstack1, 1, 2, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (this.getSlot(0).isItemValid(itemstack1))
             {
                 if (!this.mergeItemStack(itemstack1, 0, 1, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (this.horseInventory.getSizeInventory() <= 2 || !this.mergeItemStack(itemstack1, 2, this.horseInventory.getSizeInventory(), false))
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.func_190926_b())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.field_190927_a);
             }
             else
             {

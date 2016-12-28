@@ -9,12 +9,13 @@ import net.minecraft.block.BlockPrismarine;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.monster.EntityGuardian;
+import net.minecraft.entity.monster.EntityElderGuardian;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.TemplateManager;
 
 public class StructureOceanMonumentPieces
 {
@@ -743,17 +744,17 @@ public class StructureOceanMonumentPieces
                 {
                     if (!structureoceanmonumentpieces$roomdefinition.claimed && !structureoceanmonumentpieces$roomdefinition.isSpecial())
                     {
-                        Iterator iterator = list1.iterator();
+                        Iterator lvt_10_1_ = list1.iterator();
                         StructureOceanMonumentPieces.MonumentRoomFitHelper structureoceanmonumentpieces$monumentroomfithelper;
 
                         while (true)
                         {
-                            if (!iterator.hasNext())
+                            if (!lvt_10_1_.hasNext())
                             {
                                 continue label294;
                             }
 
-                            structureoceanmonumentpieces$monumentroomfithelper = (StructureOceanMonumentPieces.MonumentRoomFitHelper)iterator.next();
+                            structureoceanmonumentpieces$monumentroomfithelper = (StructureOceanMonumentPieces.MonumentRoomFitHelper)lvt_10_1_.next();
 
                             if (structureoceanmonumentpieces$monumentroomfithelper.fits(structureoceanmonumentpieces$roomdefinition))
                             {
@@ -1607,7 +1608,7 @@ public class StructureOceanMonumentPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
             }
 
@@ -1688,12 +1689,11 @@ public class StructureOceanMonumentPieces
 
                 if (p_175817_2_.isVecInside(new BlockPos(i, j, k)))
                 {
-                    EntityGuardian entityguardian = new EntityGuardian(worldIn);
-                    entityguardian.setElder(true);
-                    entityguardian.heal(entityguardian.getMaxHealth());
-                    entityguardian.setLocationAndAngles((double)i + 0.5D, (double)j, (double)k + 0.5D, 0.0F, 0.0F);
-                    entityguardian.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityguardian)), (IEntityLivingData)null);
-                    worldIn.spawnEntityInWorld(entityguardian);
+                    EntityElderGuardian entityelderguardian = new EntityElderGuardian(worldIn);
+                    entityelderguardian.heal(entityelderguardian.getMaxHealth());
+                    entityelderguardian.setLocationAndAngles((double)i + 0.5D, (double)j, (double)k + 0.5D, 0.0F, 0.0F);
+                    entityelderguardian.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(entityelderguardian)), (IEntityLivingData)null);
+                    worldIn.spawnEntityInWorld(entityelderguardian);
                     return true;
                 }
                 else

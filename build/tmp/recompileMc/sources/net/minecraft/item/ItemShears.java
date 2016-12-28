@@ -23,7 +23,11 @@ public class ItemShears extends Item
      */
     public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving)
     {
-        stack.damageItem(1, entityLiving);
+        if (!worldIn.isRemote)
+        {
+            stack.damageItem(1, entityLiving);
+        }
+
         Block block = state.getBlock();
         return state.getMaterial() != Material.LEAVES && block != Blocks.WEB && block != Blocks.TALLGRASS && block != Blocks.VINE && block != Blocks.TRIPWIRE && block != Blocks.WOOL && !(state instanceof net.minecraftforge.common.IShearable) ? super.onBlockDestroyed(stack, worldIn, state, pos, entityLiving) : true;
     }

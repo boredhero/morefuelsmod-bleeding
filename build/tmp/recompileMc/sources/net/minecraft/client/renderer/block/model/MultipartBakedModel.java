@@ -87,9 +87,9 @@ public class MultipartBakedModel implements IBakedModel
         {
             private final Map<Predicate<IBlockState>, IBakedModel> builderSelectors = Maps.<Predicate<IBlockState>, IBakedModel>newLinkedHashMap();
 
-            public void putModel(Predicate<IBlockState> p_188648_1_, IBakedModel p_188648_2_)
+            public void putModel(Predicate<IBlockState> predicate, IBakedModel model)
             {
-                this.builderSelectors.put(p_188648_1_, p_188648_2_);
+                this.builderSelectors.put(predicate, model);
             }
 
             public IBakedModel makeMultipartModel()

@@ -143,7 +143,7 @@ public class GuiScreenResourcePacks extends GuiScreen
                     {
                         this.mc.gameSettings.resourcePacks.add(resourcepackrepository$entry.getResourcePackName());
 
-                        if (resourcepackrepository$entry.getPackFormat() != 2)
+                        if (resourcepackrepository$entry.getPackFormat() != 3)
                         {
                             this.mc.gameSettings.incompatibleResourcePacks.add(resourcepackrepository$entry.getResourcePackName());
                         }

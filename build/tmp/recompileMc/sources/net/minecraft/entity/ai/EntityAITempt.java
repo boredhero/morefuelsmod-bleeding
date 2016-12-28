@@ -2,7 +2,6 @@ package net.minecraft.entity.ai;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
-import javax.annotation.Nullable;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -73,9 +72,9 @@ public class EntityAITempt extends EntityAIBase
         }
     }
 
-    protected boolean isTempting(@Nullable ItemStack stack)
+    protected boolean isTempting(ItemStack stack)
     {
-        return stack == null ? false : this.temptItem.contains(stack.getItem());
+        return this.temptItem.contains(stack.getItem());
     }
 
     /**

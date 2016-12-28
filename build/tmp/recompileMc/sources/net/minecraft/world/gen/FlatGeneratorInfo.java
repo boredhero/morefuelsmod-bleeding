@@ -3,6 +3,7 @@ package net.minecraft.world.gen;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.minecraft.block.Block;
@@ -89,7 +90,7 @@ public class FlatGeneratorInfo
                     stringbuilder.append(",");
                 }
 
-                stringbuilder.append(((String)entry.getKey()).toLowerCase());
+                stringbuilder.append(((String)entry.getKey()).toLowerCase(Locale.ROOT));
                 Map<String, String> map = (Map)entry.getValue();
 
                 if (!map.isEmpty())
@@ -268,7 +269,7 @@ public class FlatGeneratorInfo
 
                     if (i > 0 && astring.length > j)
                     {
-                        String[] astring1 = astring[j++].toLowerCase().split(",");
+                        String[] astring1 = astring[j++].toLowerCase(Locale.ROOT).split(",");
 
                         for (String s : astring1)
                         {

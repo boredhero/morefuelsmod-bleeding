@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.biome.BiomeProviderSingle;
@@ -81,7 +82,7 @@ public class AnvilSaveConverter extends SaveFormatOld
         }
         else
         {
-            throw new AnvilConverterException("Unable to read or access folder where game worlds are saved!");
+            throw new AnvilConverterException(I18n.translateToLocal("selectWorld.load_folder_access"));
         }
     }
 
@@ -150,7 +151,7 @@ public class AnvilSaveConverter extends SaveFormatOld
         WorldInfo worldinfo = this.getWorldInfo(filename);
         BiomeProvider biomeprovider;
 
-        if (worldinfo.getTerrainType() == WorldType.FLAT)
+        if (worldinfo != null && worldinfo.getTerrainType() == WorldType.FLAT)
         {
             biomeprovider = new BiomeProviderSingle(Biomes.PLAINS);
         }

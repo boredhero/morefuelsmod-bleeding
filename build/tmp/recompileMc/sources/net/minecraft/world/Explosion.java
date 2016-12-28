@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -161,7 +162,7 @@ public class Explosion
                         double d14 = (double)this.worldObj.getBlockDensity(vec3d, entity.getEntityBoundingBox());
                         double d10 = (1.0D - d12) * d14;
                         entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), (float)((int)((d10 * d10 + d10) / 2.0D * 7.0D * (double)f3 + 1.0D)));
-                        double d11 = 1.0D;
+                        double d11 = d10;
 
                         if (entity instanceof EntityLivingBase)
                         {
@@ -263,6 +264,7 @@ public class Explosion
     /**
      * Returns either the entity that placed the explosive block, the entity that caused the explosion or null.
      */
+    @Nullable
     public EntityLivingBase getExplosivePlacedBy()
     {
         return this.exploder == null ? null : (this.exploder instanceof EntityTNTPrimed ? ((EntityTNTPrimed)this.exploder).getTntPlacedBy() : (this.exploder instanceof EntityLivingBase ? (EntityLivingBase)this.exploder : null));

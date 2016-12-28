@@ -1,11 +1,13 @@
 package net.minecraft.village;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
@@ -41,7 +43,7 @@ public class Village
     private int numVillagers;
     /** Timestamp of tick count when villager last bred */
     private int noBreedTicks;
-    private final TreeMap<String, Integer> playerReputation = new TreeMap();
+    private final Map<String, Integer> playerReputation = Maps.<String, Integer>newHashMap();
     private final List<Village.VillageAggressor> villageAgressors = Lists.<Village.VillageAggressor>newArrayList();
     private int numIronGolems;
 
@@ -260,6 +262,7 @@ public class Village
     /**
      * if door not existed in this village, null will be returned
      */
+    @Nullable
     public VillageDoorInfo getExistedDoor(BlockPos doorBlock)
     {
         if (this.center.distanceSq(doorBlock) > (double)(this.villageRadius * this.villageRadius))
@@ -310,6 +313,7 @@ public class Village
         this.villageAgressors.add(new Village.VillageAggressor(entitylivingbaseIn, this.tickCounter));
     }
 
+    @Nullable
     public EntityLivingBase findNearestVillageAggressor(EntityLivingBase entitylivingbaseIn)
     {
         double d0 = Double.MAX_VALUE;
@@ -327,7 +331,7 @@ public class Village
             }
         }
 
-        return village$villageaggressor != null ? village$villageaggressor.agressor : null;
+        return village$villageaggressor == null ? null : village$villageaggressor.agressor;
     }
 
     public EntityPlayer getNearestTargetPlayer(EntityLivingBase villageDefender)
@@ -438,7 +442,7 @@ public class Village
     public int getPlayerReputation(String playerName)
     {
         Integer integer = (Integer)this.playerReputation.get(playerName);
-        return integer != null ? integer.intValue() : 0;
+        return integer == null ? 0 : integer.intValue();
     }
 
     /**
@@ -544,13 +548,21 @@ public class Village
         {
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
             PlayerProfileCache playerprofilecache = this.worldObj.getMinecraftServer().getPlayerProfileCache();
-            GameProfile gameprofile = playerprofilecache.getGameProfileForUsername(s);
 
-            if (gameprofile != null)
+            try
             {
-                nbttagcompound1.setString("UUID", gameprofile.getId().toString());
-                nbttagcompound1.setInteger("S", ((Integer)this.playerReputation.get(s)).intValue());
-                nbttaglist1.appendTag(nbttagcompound1);
+                GameProfile gameprofile = playerprofilecache.getGameProfileForUsername(s);
+
+                if (gameprofile != null)
+                {
+                    nbttagcompound1.setString("UUID", gameprofile.getId().toString());
+                    nbttagcompound1.setInteger("S", ((Integer)this.playerReputation.get(s)).intValue());
+                    nbttaglist1.appendTag(nbttagcompound1);
+                }
+            }
+            catch (RuntimeException var9)
+            {
+                ;
             }
         }
 

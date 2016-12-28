@@ -11,6 +11,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.texture.ITextureObject;
@@ -257,9 +258,10 @@ public class ShaderManager
     /**
      * gets a shader uniform for the name given. null if not found.
      */
+    @Nullable
     public ShaderUniform getShaderUniform(String name)
     {
-        return this.mappedShaderUniforms.containsKey(name) ? (ShaderUniform)this.mappedShaderUniforms.get(name) : null;
+        return (ShaderUniform)this.mappedShaderUniforms.get(name);
     }
 
     /**
@@ -267,7 +269,8 @@ public class ShaderManager
      */
     public ShaderUniform getShaderUniformOrDefault(String name)
     {
-        return (ShaderUniform)(this.mappedShaderUniforms.containsKey(name) ? (ShaderUniform)this.mappedShaderUniforms.get(name) : DEFAULT_SHADER_UNIFORM);
+        ShaderUniform shaderuniform = this.getShaderUniform(name);
+        return (ShaderUniform)(shaderuniform == null ? DEFAULT_SHADER_UNIFORM : shaderuniform);
     }
 
     /**

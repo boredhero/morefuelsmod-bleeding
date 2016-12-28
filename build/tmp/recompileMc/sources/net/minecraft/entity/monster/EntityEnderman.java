@@ -21,7 +21,7 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -70,7 +70,7 @@ public class EntityEnderman extends EntityMob
     {
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.0D, false));
-        this.tasks.addTask(7, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D, 0.0F));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.tasks.addTask(10, new EntityEnderman.AIPlaceBlock(this));
@@ -151,9 +151,9 @@ public class EntityEnderman extends EntityMob
         super.notifyDataManagerChange(key);
     }
 
-    public static void func_189763_b(DataFixer p_189763_0_)
+    public static void registerFixesEnderman(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189763_0_, "Enderman");
+        EntityLiving.registerFixesMob(fixer, EntityEnderman.class);
     }
 
     /**
@@ -201,9 +201,9 @@ public class EntityEnderman extends EntityMob
      */
     private boolean shouldAttackPlayer(EntityPlayer player)
     {
-        ItemStack itemstack = player.inventory.armorInventory[3];
+        ItemStack itemstack = (ItemStack)player.inventory.armorInventory.get(3);
 
-        if (itemstack != null && itemstack.getItem() == Item.getItemFromBlock(Blocks.PUMPKIN))
+        if (itemstack.getItem() == Item.getItemFromBlock(Blocks.PUMPKIN))
         {
             return false;
         }
@@ -331,12 +331,8 @@ public class EntityEnderman extends EntityMob
         if (iblockstate != null)
         {
             Item item = Item.getItemFromBlock(iblockstate.getBlock());
-
-            if (item != null)
-            {
-                int i = item.getHasSubtypes() ? iblockstate.getBlock().getMetaFromState(iblockstate) : 0;
-                this.entityDropItem(new ItemStack(item, 1, i), 0.0F);
-            }
+            int i = item.getHasSubtypes() ? iblockstate.getBlock().getMetaFromState(iblockstate) : 0;
+            this.entityDropItem(new ItemStack(item, 1, i), 0.0F);
         }
     }
 

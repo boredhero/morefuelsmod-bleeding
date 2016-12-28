@@ -23,6 +23,7 @@ public class LootTableList
     public static final ResourceLocation CHESTS_JUNGLE_TEMPLE = register("chests/jungle_temple");
     public static final ResourceLocation CHESTS_JUNGLE_TEMPLE_DISPENSER = register("chests/jungle_temple_dispenser");
     public static final ResourceLocation CHESTS_IGLOO_CHEST = register("chests/igloo_chest");
+    public static final ResourceLocation field_191192_o = register("chests/woodland_mansion");
     public static final ResourceLocation ENTITIES_WITCH = register("entities/witch");
     public static final ResourceLocation ENTITIES_BLAZE = register("entities/blaze");
     public static final ResourceLocation ENTITIES_CREEPER = register("entities/creeper");
@@ -39,8 +40,10 @@ public class LootTableList
     public static final ResourceLocation ENTITIES_RABBIT = register("entities/rabbit");
     public static final ResourceLocation ENTITIES_CHICKEN = register("entities/chicken");
     public static final ResourceLocation ENTITIES_PIG = register("entities/pig");
-    public static final ResourceLocation field_189969_E = register("entities/polar_bear");
+    public static final ResourceLocation ENTITIES_POLAR_BEAR = register("entities/polar_bear");
     public static final ResourceLocation ENTITIES_HORSE = register("entities/horse");
+    public static final ResourceLocation field_191190_H = register("entities/donkey");
+    public static final ResourceLocation field_191191_I = register("entities/mule");
     public static final ResourceLocation ENTITIES_ZOMBIE_HORSE = register("entities/zombie_horse");
     public static final ResourceLocation ENTITIES_SKELETON_HORSE = register("entities/skeleton_horse");
     public static final ResourceLocation ENTITIES_COW = register("entities/cow");
@@ -74,7 +77,15 @@ public class LootTableList
     public static final ResourceLocation ENTITIES_ZOMBIE_PIGMAN = register("entities/zombie_pigman");
     public static final ResourceLocation ENTITIES_SKELETON = register("entities/skeleton");
     public static final ResourceLocation ENTITIES_WITHER_SKELETON = register("entities/wither_skeleton");
-    public static final ResourceLocation field_189968_an = register("entities/stray");
+    public static final ResourceLocation ENTITIES_STRAY = register("entities/stray");
+    public static final ResourceLocation field_191182_ar = register("entities/husk");
+    public static final ResourceLocation field_191183_as = register("entities/zombie_villager");
+    public static final ResourceLocation field_191184_at = register("entities/villager");
+    public static final ResourceLocation field_191185_au = register("entities/evocation_illager");
+    public static final ResourceLocation field_191186_av = register("entities/vindication_illager");
+    public static final ResourceLocation field_191187_aw = register("entities/llama");
+    public static final ResourceLocation field_191188_ax = register("entities/vex");
+    public static final ResourceLocation field_191189_ay = register("entities/ender_dragon");
     public static final ResourceLocation GAMEPLAY_FISHING = register("gameplay/fishing");
     public static final ResourceLocation GAMEPLAY_FISHING_JUNK = register("gameplay/fishing/junk");
     public static final ResourceLocation GAMEPLAY_FISHING_TREASURE = register("gameplay/fishing/treasure");

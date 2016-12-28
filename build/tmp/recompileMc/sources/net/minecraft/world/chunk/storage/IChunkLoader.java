@@ -32,4 +32,6 @@ public interface IChunkLoader
      * unused.
      */
     void saveExtraData();
+
+    boolean func_191063_a(int p_191063_1_, int p_191063_2_);
 }

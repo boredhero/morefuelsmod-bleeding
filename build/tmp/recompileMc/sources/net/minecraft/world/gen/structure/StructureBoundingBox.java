@@ -3,7 +3,6 @@ package net.minecraft.world.gen.structure;
 import com.google.common.base.Objects;
 import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 
 public class StructureBoundingBox
@@ -189,11 +188,6 @@ public class StructureBoundingBox
     public int getZSize()
     {
         return this.maxZ - this.minZ + 1;
-    }
-
-    public Vec3i getCenter()
-    {
-        return new BlockPos(this.minX + (this.maxX - this.minX + 1) / 2, this.minY + (this.maxY - this.minY + 1) / 2, this.minZ + (this.maxZ - this.minZ + 1) / 2);
     }
 
     public String toString()

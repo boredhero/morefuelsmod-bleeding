@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.FileUtils;
@@ -150,8 +151,8 @@ public class HttpUtil
 
                 if (p_180192_4_ != null)
                 {
-                    p_180192_4_.resetProgressAndMessage("Downloading Resource Pack");
-                    p_180192_4_.displayLoadingString("Making Request...");
+                    p_180192_4_.resetProgressAndMessage(I18n.translateToLocal("resourcepack.downloading"));
+                    p_180192_4_.displayLoadingString(I18n.translateToLocal("resourcepack.requesting"));
                 }
 
                 try
@@ -181,7 +182,7 @@ public class HttpUtil
 
                         if (p_180192_4_ != null)
                         {
-                            p_180192_4_.displayLoadingString(String.format("Downloading file (%.2f MB)...", new Object[] {Float.valueOf(f1 / 1000.0F / 1000.0F)}));
+                            p_180192_4_.displayLoadingString(I18n.translateToLocalFormatted("resourcepack.progress", new Object[] {String.format("%.2f", new Object[]{Float.valueOf(f1 / 1000.0F / 1000.0F)})}));
                         }
 
                         if (saveFile.exists())

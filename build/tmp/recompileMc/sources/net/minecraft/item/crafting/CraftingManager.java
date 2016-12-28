@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockStone;
@@ -19,6 +18,7 @@ import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 public class CraftingManager
@@ -54,6 +54,7 @@ public class CraftingManager
         this.recipes.add(new RecipeTippedArrow());
         (new RecipesBanners()).addRecipes(this);
         (new ShieldRecipes()).addRecipes(this);
+        (new ShulkerBoxRecipes()).func_190935_a(this);
         this.addRecipe(new ItemStack(Items.PAPER, 3), new Object[] {"###", '#', Items.REEDS});
         this.addShapelessRecipe(new ItemStack(Items.BOOK, 1), new Object[] {Items.PAPER, Items.PAPER, Items.PAPER, Items.LEATHER});
         this.addShapelessRecipe(new ItemStack(Items.WRITABLE_BOOK, 1), new Object[] {Items.BOOK, new ItemStack(Items.DYE, 1, EnumDyeColor.BLACK.getDyeDamage()), Items.FEATHER});
@@ -181,6 +182,7 @@ public class CraftingManager
         this.addRecipe(new ItemStack(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, 1), new Object[] {"##", '#', Items.GOLD_INGOT});
         this.addRecipe(new ItemStack(Blocks.DISPENSER, 1), new Object[] {"###", "#X#", "#R#", '#', Blocks.COBBLESTONE, 'X', Items.BOW, 'R', Items.REDSTONE});
         this.addRecipe(new ItemStack(Blocks.DROPPER, 1), new Object[] {"###", "# #", "#R#", '#', Blocks.COBBLESTONE, 'R', Items.REDSTONE});
+        this.addRecipe(new ItemStack(Blocks.field_190976_dk, 1), new Object[] {"###", "RRQ", "###", '#', Blocks.COBBLESTONE, 'R', Items.REDSTONE, 'Q', Items.QUARTZ});
         this.addRecipe(new ItemStack(Blocks.PISTON, 1), new Object[] {"TTT", "#X#", "#R#", '#', Blocks.COBBLESTONE, 'X', Items.IRON_INGOT, 'R', Items.REDSTONE, 'T', Blocks.PLANKS});
         this.addRecipe(new ItemStack(Blocks.STICKY_PISTON, 1), new Object[] {"S", "P", 'S', Items.SLIME_BALL, 'P', Blocks.PISTON});
         this.addRecipe(new ItemStack(Items.BED, 1), new Object[] {"###", "XXX", '#', Blocks.WOOL, 'X', Blocks.PLANKS});
@@ -195,7 +197,7 @@ public class CraftingManager
         this.addRecipe(new ItemStack(Blocks.HOPPER), new Object[] {"I I", "ICI", " I ", 'I', Items.IRON_INGOT, 'C', Blocks.CHEST});
         this.addRecipe(new ItemStack(Items.ARMOR_STAND, 1), new Object[] {"///", " / ", "/_/", '/', Items.STICK, '_', new ItemStack(Blocks.STONE_SLAB, 1, BlockStoneSlab.EnumType.STONE.getMetadata())});
         this.addRecipe(new ItemStack(Blocks.END_ROD, 4), new Object[] {"/", "#", '/', Items.BLAZE_ROD, '#', Items.CHORUS_FRUIT_POPPED});
-        this.addRecipe(new ItemStack(Blocks.field_189880_di, 1), new Object[] {"XXX", "XXX", "XXX", 'X', new ItemStack(Items.DYE, 1, EnumDyeColor.WHITE.getDyeDamage())});
+        this.addRecipe(new ItemStack(Blocks.BONE_BLOCK, 1), new Object[] {"XXX", "XXX", "XXX", 'X', new ItemStack(Items.DYE, 1, EnumDyeColor.WHITE.getDyeDamage())});
         Collections.sort(this.recipes, new Comparator<IRecipe>()
         {
             public int compare(IRecipe p_compare_1_, IRecipe p_compare_2_)
@@ -242,7 +244,7 @@ public class CraftingManager
         for (map = Maps.<Character, ItemStack>newHashMap(); i < recipeComponents.length; i += 2)
         {
             Character character = (Character)recipeComponents[i];
-            ItemStack itemstack = null;
+            ItemStack itemstack = ItemStack.field_190927_a;
 
             if (recipeComponents[i + 1] instanceof Item)
             {
@@ -272,7 +274,7 @@ public class CraftingManager
             }
             else
             {
-                aitemstack[l] = null;
+                aitemstack[l] = ItemStack.field_190927_a;
             }
         }
 
@@ -323,7 +325,6 @@ public class CraftingManager
     /**
      * Retrieves an ItemStack that has multiple recipes for it.
      */
-    @Nullable
     public ItemStack findMatchingRecipe(InventoryCrafting craftMatrix, World worldIn)
     {
         for (IRecipe irecipe : this.recipes)
@@ -334,10 +335,10 @@ public class CraftingManager
             }
         }
 
-        return null;
+        return ItemStack.field_190927_a;
     }
 
-    public ItemStack[] getRemainingItems(InventoryCrafting craftMatrix, World worldIn)
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting craftMatrix, World worldIn)
     {
         for (IRecipe irecipe : this.recipes)
         {
@@ -347,14 +348,14 @@ public class CraftingManager
             }
         }
 
-        ItemStack[] aitemstack = new ItemStack[craftMatrix.getSizeInventory()];
+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(craftMatrix.getSizeInventory(), ItemStack.field_190927_a);
 
-        for (int i = 0; i < aitemstack.length; ++i)
+        for (int i = 0; i < nonnulllist.size(); ++i)
         {
-            aitemstack[i] = craftMatrix.getStackInSlot(i);
+            nonnulllist.set(i, craftMatrix.getStackInSlot(i));
         }
 
-        return aitemstack;
+        return nonnulllist;
     }
 
     public List<IRecipe> getRecipeList()

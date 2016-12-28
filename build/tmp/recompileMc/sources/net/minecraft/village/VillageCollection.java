@@ -3,6 +3,7 @@ package net.minecraft.village;
 import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
@@ -186,6 +187,7 @@ public class VillageCollection extends WorldSavedData
     /**
      * returns the VillageDoorInfo if it exists in any village or in the newDoor list, otherwise returns null
      */
+    @Nullable
     private VillageDoorInfo checkDoorExistence(BlockPos doorBlock)
     {
         for (VillageDoorInfo villagedoorinfo : this.newDoors)
@@ -282,9 +284,9 @@ public class VillageCollection extends WorldSavedData
         }
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound p_189551_1_)
+    public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
-        p_189551_1_.setInteger("Tick", this.tickCounter);
+        compound.setInteger("Tick", this.tickCounter);
         NBTTagList nbttaglist = new NBTTagList();
 
         for (Village village : this.villageList)
@@ -294,8 +296,8 @@ public class VillageCollection extends WorldSavedData
             nbttaglist.appendTag(nbttagcompound);
         }
 
-        p_189551_1_.setTag("Villages", nbttaglist);
-        return p_189551_1_;
+        compound.setTag("Villages", nbttaglist);
+        return compound;
     }
 
     public static String fileNameForProvider(WorldProvider provider)

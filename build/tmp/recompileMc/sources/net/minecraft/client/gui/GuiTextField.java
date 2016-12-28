@@ -151,11 +151,15 @@ public class GuiTextField extends Gui
         {
             this.text = s;
             this.moveCursorBy(i - this.selectionEnd + l);
+            this.func_190516_a(this.id, this.text);
+        }
+    }
 
-            if (this.guiResponder != null)
-            {
-                this.guiResponder.setEntryValue(this.id, this.text);
-            }
+    public void func_190516_a(int p_190516_1_, String p_190516_2_)
+    {
+        if (this.guiResponder != null)
+        {
+            this.guiResponder.setEntryValue(p_190516_1_, p_190516_2_);
         }
     }
 
@@ -216,10 +220,7 @@ public class GuiTextField extends Gui
                         this.moveCursorBy(num);
                     }
 
-                    if (this.guiResponder != null)
-                    {
-                        this.guiResponder.setEntryValue(this.id, this.text);
-                    }
+                    this.func_190516_a(this.id, this.text);
                 }
             }
         }

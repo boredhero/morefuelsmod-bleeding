@@ -16,6 +16,7 @@ import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
@@ -80,7 +81,7 @@ public class CommandSummon extends CommandBase
             {
                 throw new CommandException("commands.summon.outOfWorld", new Object[0]);
             }
-            else if ("LightningBolt".equals(s))
+            else if (EntityList.field_191307_a.equals(new ResourceLocation(s)))
             {
                 world.addWeatherEffect(new EntityLightningBolt(world, d0, d1, d2, false));
                 notifyCommandListener(sender, this, "commands.summon.success", new Object[0]);

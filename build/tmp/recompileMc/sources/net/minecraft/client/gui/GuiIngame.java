@@ -73,7 +73,7 @@ public class GuiIngame extends Gui
     /** Remaining ticks the item highlight should be visible */
     protected int remainingHighlightTicks;
     /** The ItemStack that is currently being highlighted */
-    protected ItemStack highlightingItemStack;
+    protected ItemStack highlightingItemStack = ItemStack.field_190927_a;
     protected final GuiOverlayDebug overlayDebug;
     protected final GuiSubtitleOverlay overlaySubtitle;
     /** The spectator GUI for this in-game GUI instance */
@@ -128,7 +128,6 @@ public class GuiIngame extends Gui
         int i = scaledresolution.getScaledWidth();
         int j = scaledresolution.getScaledHeight();
         FontRenderer fontrenderer = this.getFontRenderer();
-        this.mc.entityRenderer.setupOverlayRendering();
         GlStateManager.enableBlend();
 
         if (Minecraft.isFancyGraphicsEnabled())
@@ -143,7 +142,7 @@ public class GuiIngame extends Gui
 
         ItemStack itemstack = this.mc.thePlayer.inventory.armorItemInSlot(3);
 
-        if (this.mc.gameSettings.thirdPersonView == 0 && itemstack != null && itemstack.getItem() == Item.getItemFromBlock(Blocks.PUMPKIN))
+        if (this.mc.gameSettings.thirdPersonView == 0 && itemstack.getItem() == Item.getItemFromBlock(Blocks.PUMPKIN))
         {
             this.renderPumpkinOverlay(scaledresolution);
         }
@@ -408,11 +407,23 @@ public class GuiIngame extends Gui
                 if (this.mc.gameSettings.attackIndicator == 1)
                 {
                     float f = this.mc.thePlayer.getCooledAttackStrength(0.0F);
+                    boolean flag = false;
 
-                    if (f < 1.0F)
+                    if (this.mc.pointedEntity != null && this.mc.pointedEntity instanceof EntityLivingBase && f >= 1.0F)
                     {
-                        int i = i1 / 2 - 7 + 16;
-                        int j = l / 2 - 7;
+                        flag = this.mc.thePlayer.getCooldownPeriod() > 5.0F;
+                        flag = flag & ((EntityLivingBase)this.mc.pointedEntity).isEntityAlive();
+                    }
+
+                    int i = i1 / 2 - 7 + 16;
+                    int j = l / 2 - 8;
+
+                    if (flag)
+                    {
+                        this.drawTexturedModalRect(j, i, 68, 94, 16, 16);
+                    }
+                    else if (f < 1.0F)
+                    {
                         int k = (int)(f * 17.0F);
                         this.drawTexturedModalRect(j, i, 36, 94, 16, 4);
                         this.drawTexturedModalRect(j, i, 52, 94, k, 4);
@@ -444,6 +455,12 @@ public class GuiIngame extends Gui
                 {
                     int k = resolution.getScaledWidth();
                     int l = 1;
+
+                    if (this.mc.isDemo())
+                    {
+                        l += 15;
+                    }
+
                     int i1 = potion.getStatusIconIndex();
 
                     if (potion.isBeneficial())
@@ -503,7 +520,7 @@ public class GuiIngame extends Gui
             this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
             this.drawTexturedModalRect(i - 91 - 1 + entityplayer.inventory.currentItem * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
 
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 if (enumhandside == EnumHandSide.LEFT)
                 {
@@ -525,10 +542,10 @@ public class GuiIngame extends Gui
             {
                 int i1 = i - 90 + l * 20 + 2;
                 int j1 = sr.getScaledHeight() - 16 - 3;
-                this.renderHotbarItem(i1, j1, partialTicks, entityplayer, entityplayer.inventory.mainInventory[l]);
+                this.renderHotbarItem(i1, j1, partialTicks, entityplayer, (ItemStack)entityplayer.inventory.mainInventory.get(l));
             }
 
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 int l1 = sr.getScaledHeight() - 16 - 3;
 
@@ -628,7 +645,7 @@ public class GuiIngame extends Gui
     {
         this.mc.mcProfiler.startSection("selectedItemName");
 
-        if (this.remainingHighlightTicks > 0 && this.highlightingItemStack != null)
+        if (this.remainingHighlightTicks > 0 && !this.highlightingItemStack.func_190926_b())
         {
             String s = this.highlightingItemStack.getDisplayName();
 
@@ -905,7 +922,7 @@ public class GuiIngame extends Gui
 
             Entity entity = entityplayer.getRidingEntity();
 
-            if (entity == null)
+            if (entity == null || !(entity instanceof EntityLivingBase))
             {
                 this.mc.mcProfiler.endStartSection("food");
 
@@ -1126,11 +1143,11 @@ public class GuiIngame extends Gui
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    protected void renderHotbarItem(int p_184044_1_, int p_184044_2_, float p_184044_3_, EntityPlayer player, @Nullable ItemStack stack)
+    protected void renderHotbarItem(int p_184044_1_, int p_184044_2_, float p_184044_3_, EntityPlayer player, ItemStack stack)
     {
-        if (stack != null)
+        if (!stack.func_190926_b())
         {
-            float f = (float)stack.animationsToGo - p_184044_3_;
+            float f = (float)stack.func_190921_D() - p_184044_3_;
 
             if (f > 0.0F)
             {
@@ -1179,11 +1196,11 @@ public class GuiIngame extends Gui
         {
             ItemStack itemstack = this.mc.thePlayer.inventory.getCurrentItem();
 
-            if (itemstack == null)
+            if (itemstack.func_190926_b())
             {
                 this.remainingHighlightTicks = 0;
             }
-            else if (this.highlightingItemStack != null && itemstack.getItem() == this.highlightingItemStack.getItem() && ItemStack.areItemStackTagsEqual(itemstack, this.highlightingItemStack) && (itemstack.isItemStackDamageable() || itemstack.getMetadata() == this.highlightingItemStack.getMetadata()))
+            else if (!this.highlightingItemStack.func_190926_b() && itemstack.getItem() == this.highlightingItemStack.getItem() && ItemStack.areItemStackTagsEqual(itemstack, this.highlightingItemStack) && (itemstack.isItemStackDamageable() || itemstack.getMetadata() == this.highlightingItemStack.getMetadata()))
             {
                 if (this.remainingHighlightTicks > 0)
                 {

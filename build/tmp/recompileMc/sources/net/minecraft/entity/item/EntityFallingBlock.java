@@ -11,6 +11,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -127,12 +128,12 @@ public class EntityFallingBlock extends Entity
                 }
             }
 
-            if (!this.func_189652_ae())
+            if (!this.hasNoGravity())
             {
                 this.motionY -= 0.03999999910593033D;
             }
 
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            this.moveEntity(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.9800000190734863D;
             this.motionY *= 0.9800000190734863D;
             this.motionZ *= 0.9800000190734863D;
@@ -162,7 +163,7 @@ public class EntityFallingBlock extends Entity
 
                         if (!this.canSetAsBlock)
                         {
-                            if (this.worldObj.canBlockBePlaced(block, blockpos1, true, EnumFacing.UP, (Entity)null, (ItemStack)null) && !BlockFalling.canFallThrough(this.worldObj.getBlockState(blockpos1.down())) && this.worldObj.setBlockState(blockpos1, this.fallTile, 3))
+                            if (this.worldObj.func_190527_a(block, blockpos1, true, EnumFacing.UP, (Entity)null) && !BlockFalling.canFallThrough(this.worldObj.getBlockState(blockpos1.down())) && this.worldObj.setBlockState(blockpos1, this.fallTile, 3))
                             {
                                 if (block instanceof BlockFalling)
                                 {
@@ -196,6 +197,10 @@ public class EntityFallingBlock extends Entity
                             {
                                 this.entityDropItem(new ItemStack(block, 1, block.damageDropped(this.fallTile)), 0.0F);
                             }
+                        }
+                        else if (block instanceof BlockFalling)
+                        {
+                            ((BlockFalling)block).func_190974_b(this.worldObj, blockpos1);
                         }
                     }
                 }
@@ -249,7 +254,7 @@ public class EntityFallingBlock extends Entity
         }
     }
 
-    public static void func_189741_a(DataFixer p_189741_0_)
+    public static void registerFixesFallingBlock(DataFixer fixer)
     {
     }
 

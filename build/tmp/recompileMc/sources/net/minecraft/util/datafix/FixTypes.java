@@ -8,5 +8,6 @@ public enum FixTypes implements IFixType
     BLOCK_ENTITY,
     ENTITY,
     ITEM_INSTANCE,
-    OPTIONS;
+    OPTIONS,
+    STRUCTURE;
 }

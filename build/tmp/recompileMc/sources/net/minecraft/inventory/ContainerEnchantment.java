@@ -2,7 +2,6 @@ package net.minecraft.inventory;
 
 import java.util.List;
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -71,9 +70,9 @@ public class ContainerEnchantment extends Container
         this.addSlotToContainer(new Slot(this.tableInventory, 0, 15, 47)
         {
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
-            public boolean isItemValid(@Nullable ItemStack stack)
+            public boolean isItemValid(ItemStack stack)
             {
                 return true;
             }
@@ -90,9 +89,9 @@ public class ContainerEnchantment extends Container
         {
             java.util.List<ItemStack> ores = net.minecraftforge.oredict.OreDictionary.getOres("gemLapis");
             /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+             * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
              */
-            public boolean isItemValid(@Nullable ItemStack stack)
+            public boolean isItemValid(ItemStack stack)
             {
                 for (ItemStack ore : ores)
                     if (net.minecraftforge.oredict.OreDictionary.itemMatches(ore, stack, false)) return true;
@@ -182,7 +181,7 @@ public class ContainerEnchantment extends Container
         {
             ItemStack itemstack = inventoryIn.getStackInSlot(0);
 
-            if (itemstack != null && itemstack.isItemEnchantable())
+            if (!itemstack.func_190926_b() && itemstack.isItemEnchantable())
             {
                 if (!this.worldPointer.isRemote)
                 {
@@ -220,6 +219,7 @@ public class ContainerEnchantment extends Container
                         {
                             this.enchantLevels[i1] = 0;
                         }
+                        this.enchantLevels[i1] = net.minecraftforge.event.ForgeEventFactory.onEnchantmentLevelSet(worldPointer, position, i1, (int)power, itemstack, enchantLevels[i1]);
                     }
 
                     for (int j1 = 0; j1 < 3; ++j1)
@@ -261,24 +261,25 @@ public class ContainerEnchantment extends Container
         ItemStack itemstack1 = this.tableInventory.getStackInSlot(1);
         int i = id + 1;
 
-        if ((itemstack1 == null || itemstack1.stackSize < i) && !playerIn.capabilities.isCreativeMode)
+        if ((itemstack1.func_190926_b() || itemstack1.func_190916_E() < i) && !playerIn.capabilities.isCreativeMode)
         {
             return false;
         }
-        else if (this.enchantLevels[id] > 0 && itemstack != null && (playerIn.experienceLevel >= i && playerIn.experienceLevel >= this.enchantLevels[id] || playerIn.capabilities.isCreativeMode))
+        else if (this.enchantLevels[id] > 0 && !itemstack.func_190926_b() && (playerIn.experienceLevel >= i && playerIn.experienceLevel >= this.enchantLevels[id] || playerIn.capabilities.isCreativeMode))
         {
             if (!this.worldPointer.isRemote)
             {
                 List<EnchantmentData> list = this.getEnchantmentList(itemstack, id, this.enchantLevels[id]);
-                boolean flag = itemstack.getItem() == Items.BOOK;
 
-                if (list != null)
+                if (!list.isEmpty())
                 {
                     playerIn.removeExperienceLevel(i);
+                    boolean flag = itemstack.getItem() == Items.BOOK;
 
                     if (flag)
                     {
-                        itemstack.setItem(Items.ENCHANTED_BOOK);
+                        itemstack = new ItemStack(Items.ENCHANTED_BOOK);
+                        this.tableInventory.setInventorySlotContents(0, itemstack);
                     }
 
                     for (int j = 0; j < list.size(); ++j)
@@ -297,11 +298,11 @@ public class ContainerEnchantment extends Container
 
                     if (!playerIn.capabilities.isCreativeMode)
                     {
-                        itemstack1.stackSize -= i;
+                        itemstack1.func_190918_g(i);
 
-                        if (itemstack1.stackSize <= 0)
+                        if (itemstack1.func_190926_b())
                         {
-                            this.tableInventory.setInventorySlotContents(1, (ItemStack)null);
+                            this.tableInventory.setInventorySlotContents(1, ItemStack.field_190927_a);
                         }
                     }
 
@@ -309,7 +310,7 @@ public class ContainerEnchantment extends Container
                     this.tableInventory.markDirty();
                     this.xpSeed = playerIn.getXPSeed();
                     this.onCraftMatrixChanged(this.tableInventory);
-                    this.worldPointer.playSound((EntityPlayer)null, this.position, SoundEvents.field_190021_aL, SoundCategory.BLOCKS, 1.0F, this.worldPointer.rand.nextFloat() * 0.1F + 0.9F);
+                    this.worldPointer.playSound((EntityPlayer)null, this.position, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, this.worldPointer.rand.nextFloat() * 0.1F + 0.9F);
                 }
             }
 
@@ -338,7 +339,7 @@ public class ContainerEnchantment extends Container
     public int getLapisAmount()
     {
         ItemStack itemstack = this.tableInventory.getStackInSlot(1);
-        return itemstack == null ? 0 : itemstack.stackSize;
+        return itemstack.func_190926_b() ? 0 : itemstack.func_190916_E();
     }
 
     /**
@@ -354,7 +355,7 @@ public class ContainerEnchantment extends Container
             {
                 ItemStack itemstack = this.tableInventory.removeStackFromSlot(i);
 
-                if (itemstack != null)
+                if (!itemstack.func_190926_b())
                 {
                     playerIn.dropItem(itemstack, false);
                 }
@@ -362,6 +363,9 @@ public class ContainerEnchantment extends Container
         }
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.worldPointer.getBlockState(this.position).getBlock() != Blocks.ENCHANTING_TABLE ? false : playerIn.getDistanceSq((double)this.position.getX() + 0.5D, (double)this.position.getY() + 0.5D, (double)this.position.getZ() + 0.5D) <= 64.0D;
@@ -370,10 +374,9 @@ public class ContainerEnchantment extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
-    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.field_190927_a;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -385,57 +388,57 @@ public class ContainerEnchantment extends Container
             {
                 if (!this.mergeItemStack(itemstack1, 2, 38, true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (index == 1)
             {
                 if (!this.mergeItemStack(itemstack1, 2, 38, true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (itemstack1.getItem() == Items.DYE && EnumDyeColor.byDyeDamage(itemstack1.getMetadata()) == EnumDyeColor.BLUE)
             {
                 if (!this.mergeItemStack(itemstack1, 1, 2, true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else
             {
                 if (((Slot)this.inventorySlots.get(0)).getHasStack() || !((Slot)this.inventorySlots.get(0)).isItemValid(itemstack1))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
 
-                if (itemstack1.hasTagCompound() && itemstack1.stackSize == 1)
+                if (itemstack1.hasTagCompound() && itemstack1.func_190916_E() == 1)
                 {
                     ((Slot)this.inventorySlots.get(0)).putStack(itemstack1.copy());
-                    itemstack1.stackSize = 0;
+                    itemstack1.func_190920_e(0);
                 }
-                else if (itemstack1.stackSize >= 1)
+                else if (!itemstack1.func_190926_b())
                 {
                     ((Slot)this.inventorySlots.get(0)).putStack(new ItemStack(itemstack1.getItem(), 1, itemstack1.getMetadata()));
-                    --itemstack1.stackSize;
+                    itemstack1.func_190918_g(1);
                 }
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.func_190926_b())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.field_190927_a);
             }
             else
             {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.func_190916_E() == itemstack.func_190916_E())
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            slot.onPickupFromSlot(playerIn, itemstack1);
+            slot.func_190901_a(playerIn, itemstack1);
         }
 
         return itemstack;

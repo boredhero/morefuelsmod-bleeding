@@ -1,7 +1,5 @@
 package net.minecraft.block;
 
-import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
@@ -20,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -82,7 +81,7 @@ public class BlockAnvil extends BlockFalling
 
                 if (placer instanceof EntityPlayer)
                 {
-                    ((EntityPlayer)placer).addChatMessage(new TextComponentTranslation("Invalid damage property. Please pick in [0, 1, 2]", new Object[0]));
+                    placer.addChatMessage(new TextComponentTranslation("Invalid damage property. Please pick in [0, 1, 2]", new Object[0]));
                 }
             }
 
@@ -90,7 +89,7 @@ public class BlockAnvil extends BlockFalling
         }
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY)
     {
         if (!worldIn.isRemote)
         {
@@ -119,7 +118,7 @@ public class BlockAnvil extends BlockFalling
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> list)
     {
         list.add(new ItemStack(itemIn));
         list.add(new ItemStack(itemIn, 1, 1));
@@ -134,6 +133,11 @@ public class BlockAnvil extends BlockFalling
     public void onEndFalling(World worldIn, BlockPos pos)
     {
         worldIn.playEvent(1031, pos, 0);
+    }
+
+    public void func_190974_b(World p_190974_1_, BlockPos p_190974_2_)
+    {
+        p_190974_1_.playEvent(1029, p_190974_2_, 0);
     }
 
     @SideOnly(Side.CLIENT)

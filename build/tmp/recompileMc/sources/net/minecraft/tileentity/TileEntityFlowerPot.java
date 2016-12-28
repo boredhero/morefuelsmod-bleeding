@@ -23,7 +23,7 @@ public class TileEntityFlowerPot extends TileEntity
         this.flowerPotData = potData;
     }
 
-    public static void func_189699_a(DataFixer p_189699_0_)
+    public static void registerFixesFlowerPot(DataFixer fixer)
     {
     }
 
@@ -63,16 +63,15 @@ public class TileEntityFlowerPot extends TileEntity
         return this.writeToNBT(new NBTTagCompound());
     }
 
-    public void setFlowerPotData(Item potItem, int potData)
+    public void func_190614_a(ItemStack p_190614_1_)
     {
-        this.flowerPotItem = potItem;
-        this.flowerPotData = potData;
+        this.flowerPotItem = p_190614_1_.getItem();
+        this.flowerPotData = p_190614_1_.getMetadata();
     }
 
-    @Nullable
     public ItemStack getFlowerItemStack()
     {
-        return this.flowerPotItem == null ? null : new ItemStack(this.flowerPotItem, 1, this.flowerPotData);
+        return this.flowerPotItem == null ? ItemStack.field_190927_a : new ItemStack(this.flowerPotItem, 1, this.flowerPotData);
     }
 
     @Nullable

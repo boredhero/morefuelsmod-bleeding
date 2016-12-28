@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import javax.annotation.Nullable;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,11 +46,8 @@ public class ItemFood extends Item
      * Called when the player finishes using this Item (E.g. finishes eating.). Not called when the player stops using
      * the Item before the action is complete.
      */
-    @Nullable
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
     {
-        --stack.stackSize;
-
         if (entityLiving instanceof EntityPlayer)
         {
             EntityPlayer entityplayer = (EntityPlayer)entityLiving;
@@ -61,6 +57,7 @@ public class ItemFood extends Item
             entityplayer.addStat(StatList.getObjectUseStats(this));
         }
 
+        stack.func_190918_g(1);
         return stack;
     }
 
@@ -88,16 +85,18 @@ public class ItemFood extends Item
         return EnumAction.EAT;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        if (playerIn.canEat(this.alwaysEdible))
+        ItemStack itemstack = worldIn.getHeldItem(playerIn);
+
+        if (worldIn.canEat(this.alwaysEdible))
         {
-            playerIn.setActiveHand(hand);
-            return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+            worldIn.setActiveHand(playerIn);
+            return new ActionResult(EnumActionResult.SUCCESS, itemstack);
         }
         else
         {
-            return new ActionResult(EnumActionResult.FAIL, itemStackIn);
+            return new ActionResult(EnumActionResult.FAIL, itemstack);
         }
     }
 

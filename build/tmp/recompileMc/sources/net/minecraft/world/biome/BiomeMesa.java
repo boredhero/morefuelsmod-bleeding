@@ -68,11 +68,6 @@ public class BiomeMesa extends Biome
         return TREE_FEATURE;
     }
 
-    public void decorate(World worldIn, Random rand, BlockPos pos)
-    {
-        super.decorate(worldIn, rand, pos);
-    }
-
     public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal)
     {
         if (this.clayBands == null || this.worldSeed != worldIn.getSeed())
@@ -134,7 +129,7 @@ public class BiomeMesa extends Biome
             {
                 chunkPrimerIn.setBlockState(l1, j1, k1, BEDROCK);
             }
-            else if (i1 < 15)
+            else if (i1 < 15 || this.brycePillars)
             {
                 IBlockState iblockstate1 = chunkPrimerIn.getBlockState(l1, j1, k1);
 

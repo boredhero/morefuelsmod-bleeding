@@ -48,7 +48,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
         if (p_i46648_3_)
         {
             this.playersDirectory.mkdirs();
-            this.structureTemplateManager = new TemplateManager((new File(this.worldDirectory, "structures")).toString());
+            this.structureTemplateManager = new TemplateManager((new File(this.worldDirectory, "structures")).toString(), dataFixerIn);
         }
         else
         {
@@ -131,6 +131,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
     /**
      * Loads and returns the world info
      */
+    @Nullable
     public WorldInfo loadWorldInfo()
     {
         File file1 = new File(this.worldDirectory, "level.dat");
@@ -230,6 +231,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData
     /**
      * Reads the player data from disk into the specified PlayerEntityMP.
      */
+    @Nullable
     public NBTTagCompound readPlayerData(EntityPlayer player)
     {
         NBTTagCompound nbttagcompound = null;

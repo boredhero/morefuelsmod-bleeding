@@ -9,6 +9,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -30,7 +31,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -116,7 +116,7 @@ public class EntityBoat extends Entity
     @Nullable
     public AxisAlignedBB getCollisionBox(Entity entityIn)
     {
-        return entityIn.getEntityBoundingBox();
+        return entityIn.canBePushed() ? entityIn.getEntityBoundingBox() : null;
     }
 
     /**
@@ -319,7 +319,7 @@ public class EntityBoat extends Entity
                 this.worldObj.sendPacketToServer(new CPacketSteerBoat(this.getPaddleState(0), this.getPaddleState(1)));
             }
 
-            this.moveEntity(this.motionX, this.motionY, this.motionZ);
+            this.moveEntity(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
         }
         else
         {
@@ -466,7 +466,7 @@ public class EntityBoat extends Entity
 
                         if (iblockstate.getMaterial() == Material.WATER)
                         {
-                            f = Math.max(f, getBlockLiquidHeight(iblockstate, this.worldObj, blockpos$pooledmutableblockpos));
+                            f = Math.max(f, BlockLiquid.func_190973_f(iblockstate, this.worldObj, blockpos$pooledmutableblockpos));
                         }
 
                         if (f >= 1.0F)
@@ -522,7 +522,7 @@ public class EntityBoat extends Entity
                             {
                                 blockpos$pooledmutableblockpos.setPos(l1, k2, i2);
                                 IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
-                                iblockstate.addCollisionBoxToList(this.worldObj, blockpos$pooledmutableblockpos, axisalignedbb1, list, this);
+                                iblockstate.addCollisionBoxToList(this.worldObj, blockpos$pooledmutableblockpos, axisalignedbb1, list, this, false);
 
                                 if (!list.isEmpty())
                                 {
@@ -571,7 +571,7 @@ public class EntityBoat extends Entity
 
                         if (iblockstate.getMaterial() == Material.WATER)
                         {
-                            float f = getLiquidHeight(iblockstate, this.worldObj, blockpos$pooledmutableblockpos);
+                            float f = BlockLiquid.func_190972_g(iblockstate, this.worldObj, blockpos$pooledmutableblockpos);
                             this.waterLevel = Math.max((double)f, this.waterLevel);
                             flag |= axisalignedbb.minY < (double)f;
                         }
@@ -615,7 +615,7 @@ public class EntityBoat extends Entity
                         blockpos$pooledmutableblockpos.setPos(k1, l1, i2);
                         IBlockState iblockstate = this.worldObj.getBlockState(blockpos$pooledmutableblockpos);
 
-                        if (iblockstate.getMaterial() == Material.WATER && d0 < (double)getLiquidHeight(iblockstate, this.worldObj, blockpos$pooledmutableblockpos))
+                        if (iblockstate.getMaterial() == Material.WATER && d0 < (double)BlockLiquid.func_190972_g(iblockstate, this.worldObj, blockpos$pooledmutableblockpos))
                         {
                             if (((Integer)iblockstate.getValue(BlockLiquid.LEVEL)).intValue() != 0)
                             {
@@ -637,24 +637,13 @@ public class EntityBoat extends Entity
         return flag ? EntityBoat.Status.UNDER_WATER : null;
     }
 
-    public static float getBlockLiquidHeight(IBlockState p_184456_0_, IBlockAccess p_184456_1_, BlockPos p_184456_2_)
-    {
-        int i = ((Integer)p_184456_0_.getValue(BlockLiquid.LEVEL)).intValue();
-        return (i & 7) == 0 && p_184456_1_.getBlockState(p_184456_2_.up()).getMaterial() == Material.WATER ? 1.0F : 1.0F - BlockLiquid.getLiquidHeightPercent(i);
-    }
-
-    public static float getLiquidHeight(IBlockState p_184452_0_, IBlockAccess p_184452_1_, BlockPos p_184452_2_)
-    {
-        return (float)p_184452_2_.getY() + getBlockLiquidHeight(p_184452_0_, p_184452_1_, p_184452_2_);
-    }
-
     /**
      * Update the boat's speed, based on momentum.
      */
     private void updateMotion()
     {
         double d0 = -0.03999999910593033D;
-        double d1 = this.func_189652_ae() ? 0.0D : -0.03999999910593033D;
+        double d1 = this.hasNoGravity() ? 0.0D : -0.03999999910593033D;
         double d2 = 0.0D;
         this.momentum = 0.05F;
 
@@ -747,7 +736,7 @@ public class EntityBoat extends Entity
 
             this.motionX += (double)(MathHelper.sin(-this.rotationYaw * 0.017453292F) * f);
             this.motionZ += (double)(MathHelper.cos(this.rotationYaw * 0.017453292F) * f);
-            this.setPaddleState(this.rightInputDown || this.forwardInputDown, this.leftInputDown || this.forwardInputDown);
+            this.setPaddleState(this.rightInputDown && !this.leftInputDown || this.forwardInputDown, this.leftInputDown && !this.rightInputDown || this.forwardInputDown);
         }
     }
 
@@ -833,14 +822,21 @@ public class EntityBoat extends Entity
         }
     }
 
-    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand stack)
     {
-        if (!this.worldObj.isRemote && !player.isSneaking() && this.outOfControlTicks < 60.0F)
+        if (player.isSneaking())
         {
-            player.startRiding(this);
+            return false;
         }
+        else
+        {
+            if (!this.worldObj.isRemote && this.outOfControlTicks < 60.0F)
+            {
+                player.startRiding(this);
+            }
 
-        return true;
+            return true;
+        }
     }
 
     protected void updateFallState(double y, boolean onGroundIn, IBlockState state, BlockPos pos)

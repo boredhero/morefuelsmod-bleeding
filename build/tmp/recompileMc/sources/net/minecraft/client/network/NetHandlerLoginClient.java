@@ -9,6 +9,7 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import java.math.BigInteger;
 import java.security.PublicKey;
+import javax.annotation.Nullable;
 import javax.crypto.SecretKey;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiDisconnected;
@@ -36,11 +37,12 @@ public class NetHandlerLoginClient implements INetHandlerLoginClient
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Minecraft mc;
+    @Nullable
     private final GuiScreen previousGuiScreen;
     private final NetworkManager networkManager;
     private GameProfile gameProfile;
 
-    public NetHandlerLoginClient(NetworkManager networkManagerIn, Minecraft mcIn, GuiScreen previousScreenIn)
+    public NetHandlerLoginClient(NetworkManager networkManagerIn, Minecraft mcIn, @Nullable GuiScreen previousScreenIn)
     {
         this.networkManager = networkManagerIn;
         this.mc = mcIn;

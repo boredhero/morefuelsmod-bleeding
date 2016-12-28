@@ -26,12 +26,15 @@ public class ItemOverride
     private final ResourceLocation location;
     private final Map<ResourceLocation, Float> mapResourceValues;
 
-    public ItemOverride(ResourceLocation locationIn, Map<ResourceLocation, Float> p_i46571_2_)
+    public ItemOverride(ResourceLocation locationIn, Map<ResourceLocation, Float> propertyValues)
     {
         this.location = locationIn;
-        this.mapResourceValues = p_i46571_2_;
+        this.mapResourceValues = propertyValues;
     }
 
+    /**
+     * Get the location of the target model
+     */
     public ResourceLocation getLocation()
     {
         return this.location;

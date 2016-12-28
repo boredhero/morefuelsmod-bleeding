@@ -32,9 +32,9 @@ public class ModelBlockDefinition
     private final Map<String, VariantList> mapVariants = Maps.<String, VariantList>newHashMap();
     private Multipart multipart;
 
-    public static ModelBlockDefinition parseFromReader(Reader p_178331_0_)
+    public static ModelBlockDefinition parseFromReader(Reader reader)
     {
-        return net.minecraftforge.client.model.BlockStateLoader.load(p_178331_0_, GSON);
+        return net.minecraftforge.client.model.BlockStateLoader.load(reader, GSON);
     }
 
     public ModelBlockDefinition(Map<String, VariantList> variants, Multipart multipartIn)

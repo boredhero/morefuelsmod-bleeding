@@ -3,13 +3,13 @@ package net.minecraft.entity.item;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -97,7 +97,7 @@ public class EntityXPOrb extends Entity
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
 
-        if (!this.func_189652_ae())
+        if (!this.hasNoGravity())
         {
             this.motionY -= 0.029999999329447746D;
         }
@@ -145,7 +145,7 @@ public class EntityXPOrb extends Entity
             }
         }
 
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.moveEntity(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
         float f = 0.98F;
 
         if (this.onGround)
@@ -241,11 +241,10 @@ public class EntityXPOrb extends Entity
             {
                 if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerPickupXpEvent(entityIn, this))) return;
                 entityIn.xpCooldown = 2;
-                this.worldObj.playSound((EntityPlayer)null, entityIn.posX, entityIn.posY, entityIn.posZ, SoundEvents.ENTITY_EXPERIENCE_ORB_TOUCH, SoundCategory.PLAYERS, 0.1F, 0.5F * ((this.rand.nextFloat() - this.rand.nextFloat()) * 0.7F + 1.8F));
                 entityIn.onItemPickup(this, 1);
                 ItemStack itemstack = EnchantmentHelper.getEnchantedItem(Enchantments.MENDING, entityIn);
 
-                if (itemstack != null && itemstack.isItemDamaged())
+                if (!itemstack.func_190926_b() && itemstack.isItemDamaged())
                 {
                     int i = Math.min(this.xpToDurability(this.xpValue), itemstack.getItemDamage());
                     this.xpValue -= this.durabilityToXp(i);

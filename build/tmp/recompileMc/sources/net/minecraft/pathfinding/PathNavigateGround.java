@@ -89,8 +89,7 @@ public class PathNavigateGround extends PathNavigate
      */
     public Path getPathToEntityLiving(Entity entityIn)
     {
-        BlockPos blockpos = new BlockPos(entityIn);
-        return this.getPathToPos(blockpos);
+        return this.getPathToPos(new BlockPos(entityIn));
     }
 
     /**

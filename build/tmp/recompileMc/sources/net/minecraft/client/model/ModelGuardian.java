@@ -51,11 +51,6 @@ public class ModelGuardian extends ModelBase
         this.guardianTail[1].addChild(this.guardianTail[2]);
     }
 
-    public int getModelVersion()
-    {
-        return 54;
-    }
-
     /**
      * Sets the models various rotation angles then renders the model.
      */

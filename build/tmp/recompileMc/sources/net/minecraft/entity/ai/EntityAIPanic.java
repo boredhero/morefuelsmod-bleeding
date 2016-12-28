@@ -1,10 +1,10 @@
 package net.minecraft.entity.ai;
 
-import net.minecraft.block.Block;
+import javax.annotation.Nullable;
+import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -33,37 +33,39 @@ public class EntityAIPanic extends EntityAIBase
         {
             return false;
         }
-        else if (!this.theEntityCreature.isBurning())
+        else
         {
-            Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.theEntityCreature, 5, 4);
+            if (this.theEntityCreature.isBurning())
+            {
+                BlockPos blockpos = this.getRandPos(this.theEntityCreature.worldObj, this.theEntityCreature, 5, 4);
 
-            if (vec3d == null)
-            {
-                return false;
+                if (blockpos != null)
+                {
+                    this.randPosX = (double)blockpos.getX();
+                    this.randPosY = (double)blockpos.getY();
+                    this.randPosZ = (double)blockpos.getZ();
+                    return true;
+                }
             }
-            else
-            {
-                this.randPosX = vec3d.xCoord;
-                this.randPosY = vec3d.yCoord;
-                this.randPosZ = vec3d.zCoord;
-                return true;
-            }
+
+            return this.func_190863_f();
+        }
+    }
+
+    private boolean func_190863_f()
+    {
+        Vec3d vec3d = RandomPositionGenerator.findRandomTarget(this.theEntityCreature, 5, 4);
+
+        if (vec3d == null)
+        {
+            return false;
         }
         else
         {
-            BlockPos blockpos = this.getRandPos(this.theEntityCreature.worldObj, this.theEntityCreature, 5, 4);
-
-            if (blockpos == null)
-            {
-                return false;
-            }
-            else
-            {
-                this.randPosX = (double)blockpos.getX();
-                this.randPosY = (double)blockpos.getY();
-                this.randPosZ = (double)blockpos.getZ();
-                return true;
-            }
+            this.randPosX = vec3d.xCoord;
+            this.randPosY = vec3d.yCoord;
+            this.randPosZ = vec3d.zCoord;
+            return true;
         }
     }
 
@@ -83,15 +85,16 @@ public class EntityAIPanic extends EntityAIBase
         return !this.theEntityCreature.getNavigator().noPath();
     }
 
+    @Nullable
     private BlockPos getRandPos(World worldIn, Entity entityIn, int horizontalRange, int verticalRange)
     {
         BlockPos blockpos = new BlockPos(entityIn);
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
         int i = blockpos.getX();
         int j = blockpos.getY();
         int k = blockpos.getZ();
         float f = (float)(horizontalRange * horizontalRange * verticalRange * 2);
         BlockPos blockpos1 = null;
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
 
         for (int l = i - horizontalRange; l <= i + horizontalRange; ++l)
         {
@@ -101,9 +104,8 @@ public class EntityAIPanic extends EntityAIBase
                 {
                     blockpos$mutableblockpos.setPos(l, i1, j1);
                     IBlockState iblockstate = worldIn.getBlockState(blockpos$mutableblockpos);
-                    Block block = iblockstate.getBlock();
 
-                    if (block == Blocks.WATER || block == Blocks.FLOWING_WATER)
+                    if (iblockstate.getMaterial() == Material.WATER)
                     {
                         float f1 = (float)((l - i) * (l - i) + (i1 - j) * (i1 - j) + (j1 - k) * (j1 - k));
 

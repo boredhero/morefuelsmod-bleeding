@@ -49,7 +49,7 @@ public abstract class BlockBasePressurePlate extends Block
     }
 
     @Nullable
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -90,7 +90,7 @@ public abstract class BlockBasePressurePlate extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         if (!this.canBePlacedOn(worldIn, pos.down()))
         {
@@ -176,6 +176,9 @@ public abstract class BlockBasePressurePlate extends Block
 
     protected abstract void playClickOffSound(World worldIn, BlockPos pos);
 
+    /**
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+     */
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         if (this.getRedstoneStrength(state) > 0)
@@ -191,8 +194,8 @@ public abstract class BlockBasePressurePlate extends Block
      */
     protected void updateNeighbors(World worldIn, BlockPos pos)
     {
-        worldIn.notifyNeighborsOfStateChange(pos, this);
-        worldIn.notifyNeighborsOfStateChange(pos.down(), this);
+        worldIn.notifyNeighborsOfStateChange(pos, this, false);
+        worldIn.notifyNeighborsOfStateChange(pos.down(), this, false);
     }
 
     public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)

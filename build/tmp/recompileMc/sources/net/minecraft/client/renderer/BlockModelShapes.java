@@ -111,6 +111,91 @@ public class BlockModelShapes
             {
                 return this.modelManager.getTextureMap().getAtlasSprite("minecraft:items/barrier");
             }
+
+            if (block == Blocks.STRUCTURE_VOID)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:items/structure_void");
+            }
+
+            if (block == Blocks.field_190977_dl)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_white");
+            }
+
+            if (block == Blocks.field_190978_dm)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_orange");
+            }
+
+            if (block == Blocks.field_190979_dn)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_magenta");
+            }
+
+            if (block == Blocks.field_190980_do)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_light_blue");
+            }
+
+            if (block == Blocks.field_190981_dp)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_yellow");
+            }
+
+            if (block == Blocks.field_190982_dq)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_lime");
+            }
+
+            if (block == Blocks.field_190983_dr)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_pink");
+            }
+
+            if (block == Blocks.field_190984_ds)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_gray");
+            }
+
+            if (block == Blocks.field_190985_dt)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_silver");
+            }
+
+            if (block == Blocks.field_190986_du)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_cyan");
+            }
+
+            if (block == Blocks.field_190987_dv)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_purple");
+            }
+
+            if (block == Blocks.field_190988_dw)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_blue");
+            }
+
+            if (block == Blocks.field_190989_dx)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_brown");
+            }
+
+            if (block == Blocks.field_190990_dy)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_green");
+            }
+
+            if (block == Blocks.field_190991_dz)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_red");
+            }
+
+            if (block == Blocks.field_190975_dA)
+            {
+                return this.modelManager.getTextureMap().getAtlasSprite("minecraft:blocks/shulker_top_black");
+            }
         }
 
         if (ibakedmodel == null)
@@ -160,7 +245,7 @@ public class BlockModelShapes
 
     private void registerAllBlocks()
     {
-        this.registerBuiltInBlocks(new Block[] {Blocks.AIR, Blocks.FLOWING_WATER, Blocks.WATER, Blocks.FLOWING_LAVA, Blocks.LAVA, Blocks.PISTON_EXTENSION, Blocks.CHEST, Blocks.ENDER_CHEST, Blocks.TRAPPED_CHEST, Blocks.STANDING_SIGN, Blocks.SKULL, Blocks.END_PORTAL, Blocks.BARRIER, Blocks.WALL_SIGN, Blocks.WALL_BANNER, Blocks.STANDING_BANNER, Blocks.END_GATEWAY});
+        this.registerBuiltInBlocks(new Block[] {Blocks.AIR, Blocks.FLOWING_WATER, Blocks.WATER, Blocks.FLOWING_LAVA, Blocks.LAVA, Blocks.PISTON_EXTENSION, Blocks.CHEST, Blocks.ENDER_CHEST, Blocks.TRAPPED_CHEST, Blocks.STANDING_SIGN, Blocks.SKULL, Blocks.END_PORTAL, Blocks.BARRIER, Blocks.WALL_SIGN, Blocks.WALL_BANNER, Blocks.STANDING_BANNER, Blocks.END_GATEWAY, Blocks.STRUCTURE_VOID, Blocks.field_190977_dl, Blocks.field_190978_dm, Blocks.field_190979_dn, Blocks.field_190980_do, Blocks.field_190981_dp, Blocks.field_190982_dq, Blocks.field_190983_dr, Blocks.field_190984_ds, Blocks.field_190985_dt, Blocks.field_190986_du, Blocks.field_190987_dv, Blocks.field_190988_dw, Blocks.field_190989_dx, Blocks.field_190990_dy, Blocks.field_190991_dz, Blocks.field_190975_dA});
         this.registerBlockWithStateMapper(Blocks.STONE, (new StateMap.Builder()).withName(BlockStone.VARIANT).build());
         this.registerBlockWithStateMapper(Blocks.PRISMARINE, (new StateMap.Builder()).withName(BlockPrismarine.VARIANT).build());
         this.registerBlockWithStateMapper(Blocks.LEAVES, (new StateMap.Builder()).withName(BlockOldLeaf.VARIANT).withSuffix("_leaves").ignore(new IProperty[] {BlockLeaves.CHECK_DECAY, BlockLeaves.DECAYABLE}).build());

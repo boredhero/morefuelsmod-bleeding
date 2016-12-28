@@ -23,12 +23,7 @@ public class RandomChanceWithLooting implements LootCondition
 
     public boolean testCondition(Random rand, LootContext context)
     {
-        int i = 0;
-
-        if (context.getKiller() instanceof EntityLivingBase)
-        {
-            i = EnchantmentHelper.getLootingModifier((EntityLivingBase)context.getKiller());
-        }
+        int i = context.getLootingModifier();
 
         return rand.nextFloat() < this.chance + (float)i * this.lootingMultiplier;
     }

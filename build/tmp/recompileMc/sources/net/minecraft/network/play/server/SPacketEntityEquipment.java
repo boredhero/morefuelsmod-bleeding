@@ -1,7 +1,6 @@
 package net.minecraft.network.play.server;
 
 import java.io.IOException;
-import javax.annotation.Nullable;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
@@ -14,17 +13,17 @@ public class SPacketEntityEquipment implements Packet<INetHandlerPlayClient>
 {
     private int entityID;
     private EntityEquipmentSlot equipmentSlot;
-    private ItemStack itemStack;
+    private ItemStack itemStack = ItemStack.field_190927_a;
 
     public SPacketEntityEquipment()
     {
     }
 
-    public SPacketEntityEquipment(int entityIdIn, EntityEquipmentSlot equipmentSlotIn, @Nullable ItemStack itemStackIn)
+    public SPacketEntityEquipment(int entityIdIn, EntityEquipmentSlot equipmentSlotIn, ItemStack itemStackIn)
     {
         this.entityID = entityIdIn;
         this.equipmentSlot = equipmentSlotIn;
-        this.itemStack = itemStackIn == null ? null : itemStackIn.copy();
+        this.itemStack = itemStackIn.func_190926_b() ? ItemStack.field_190927_a : itemStackIn.copy();
     }
 
     /**

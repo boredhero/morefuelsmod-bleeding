@@ -25,6 +25,7 @@ import net.minecraft.world.gen.structure.MapGenScatteredFeature;
 import net.minecraft.world.gen.structure.MapGenStronghold;
 import net.minecraft.world.gen.structure.MapGenVillage;
 import net.minecraft.world.gen.structure.StructureOceanMonument;
+import net.minecraft.world.gen.structure.WoodlandMansion;
 
 public class ChunkProviderOverworld implements IChunkGenerator
 {
@@ -52,6 +53,7 @@ public class ChunkProviderOverworld implements IChunkGenerator
     private MapGenScatteredFeature scatteredFeatureGenerator = new MapGenScatteredFeature();
     private MapGenBase ravineGenerator = new MapGenRavine();
     private StructureOceanMonument oceanMonumentGenerator = new StructureOceanMonument();
+    private final WoodlandMansion field_191060_C = new WoodlandMansion(this);
     private Biome[] biomesForGeneration;
     double[] mainNoiseRegion;
     double[] minLimitRegion;
@@ -201,7 +203,7 @@ public class ChunkProviderOverworld implements IChunkGenerator
         this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
         ChunkPrimer chunkprimer = new ChunkPrimer();
         this.setBlocksInChunk(x, z, chunkprimer);
-        this.biomesForGeneration = this.worldObj.getBiomeProvider().loadBlockGeneratorData(this.biomesForGeneration, x * 16, z * 16, 16, 16);
+        this.biomesForGeneration = this.worldObj.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
         this.replaceBiomeBlocks(x, z, chunkprimer, this.biomesForGeneration);
 
         if (this.settings.useCaves)
@@ -239,6 +241,11 @@ public class ChunkProviderOverworld implements IChunkGenerator
             if (this.settings.useMonuments)
             {
                 this.oceanMonumentGenerator.generate(this.worldObj, x, z, chunkprimer);
+            }
+
+            if (this.settings.field_191077_z)
+            {
+                this.field_191060_C.generate(this.worldObj, x, z, chunkprimer);
             }
         }
 
@@ -377,7 +384,7 @@ public class ChunkProviderOverworld implements IChunkGenerator
         int i = x * 16;
         int j = z * 16;
         BlockPos blockpos = new BlockPos(i, 0, j);
-        Biome biome = this.worldObj.getBiomeGenForCoords(blockpos.add(16, 0, 16));
+        Biome biome = this.worldObj.getBiome(blockpos.add(16, 0, 16));
         this.rand.setSeed(this.worldObj.getSeed());
         long k = this.rand.nextLong() / 2L * 2L + 1L;
         long l = this.rand.nextLong() / 2L * 2L + 1L;
@@ -412,6 +419,11 @@ public class ChunkProviderOverworld implements IChunkGenerator
             if (this.settings.useMonuments)
             {
                 this.oceanMonumentGenerator.generateStructure(this.worldObj, this.rand, chunkpos);
+            }
+
+            if (this.settings.field_191077_z)
+            {
+                this.field_191060_C.generateStructure(this.worldObj, this.rand, chunkpos);
             }
         }
 
@@ -495,7 +507,7 @@ public class ChunkProviderOverworld implements IChunkGenerator
 
     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
     {
-        Biome biome = this.worldObj.getBiomeGenForCoords(pos);
+        Biome biome = this.worldObj.getBiome(pos);
 
         if (this.mapFeaturesEnabled)
         {
@@ -514,9 +526,9 @@ public class ChunkProviderOverworld implements IChunkGenerator
     }
 
     @Nullable
-    public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position)
+    public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position, boolean p_180513_4_)
     {
-        return "Stronghold".equals(structureName) && this.strongholdGenerator != null ? this.strongholdGenerator.getClosestStrongholdPos(worldIn, position) : null;
+        return !this.mapFeaturesEnabled ? null : ("Stronghold".equals(structureName) && this.strongholdGenerator != null ? this.strongholdGenerator.getClosestStrongholdPos(worldIn, position, p_180513_4_) : ("Mansion".equals(structureName) && this.field_191060_C != null ? this.field_191060_C.getClosestStrongholdPos(worldIn, position, p_180513_4_) : ("Monument".equals(structureName) && this.oceanMonumentGenerator != null ? this.oceanMonumentGenerator.getClosestStrongholdPos(worldIn, position, p_180513_4_) : ("Village".equals(structureName) && this.villageGenerator != null ? this.villageGenerator.getClosestStrongholdPos(worldIn, position, p_180513_4_) : ("Mineshaft".equals(structureName) && this.mineshaftGenerator != null ? this.mineshaftGenerator.getClosestStrongholdPos(worldIn, position, p_180513_4_) : ("Temple".equals(structureName) && this.scatteredFeatureGenerator != null ? this.scatteredFeatureGenerator.getClosestStrongholdPos(worldIn, position, p_180513_4_) : null))))));
     }
 
     public void recreateStructures(Chunk chunkIn, int x, int z)
@@ -546,6 +558,11 @@ public class ChunkProviderOverworld implements IChunkGenerator
             if (this.settings.useMonuments)
             {
                 this.oceanMonumentGenerator.generate(this.worldObj, x, z, (ChunkPrimer)null);
+            }
+
+            if (this.settings.field_191077_z)
+            {
+                this.field_191060_C.generate(this.worldObj, x, z, (ChunkPrimer)null);
             }
         }
     }

@@ -9,8 +9,9 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.init.SoundEvents;
@@ -49,16 +50,16 @@ public class EntityBlaze extends EntityMob
         this.experienceValue = 10;
     }
 
-    public static void func_189761_b(DataFixer p_189761_0_)
+    public static void registerFixesBlaze(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189761_0_, "Blaze");
+        EntityLiving.registerFixesMob(fixer, EntityBlaze.class);
     }
 
     protected void initEntityAI()
     {
         this.tasks.addTask(4, new EntityBlaze.AIFireballAttack(this));
         this.tasks.addTask(5, new EntityAIMoveTowardsRestriction(this, 1.0D));
-        this.tasks.addTask(7, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D, 0.0F));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[0]));
@@ -264,7 +265,7 @@ public class EntityBlaze extends EntityMob
 
                     this.blaze.getMoveHelper().setMoveTo(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, 1.0D);
                 }
-                else if (d0 < 256.0D)
+                else if (d0 < this.func_191523_f() * this.func_191523_f())
                 {
                     double d1 = entitylivingbase.posX - this.blaze.posX;
                     double d2 = entitylivingbase.getEntityBoundingBox().minY + (double)(entitylivingbase.height / 2.0F) - (this.blaze.posY + (double)(this.blaze.height / 2.0F));
@@ -313,6 +314,12 @@ public class EntityBlaze extends EntityMob
                 }
 
                 super.updateTask();
+            }
+
+            private double func_191523_f()
+            {
+                IAttributeInstance iattributeinstance = this.blaze.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+                return iattributeinstance == null ? 16.0D : iattributeinstance.getAttributeValue();
             }
         }
 }

@@ -26,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreenWorking;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.client.resources.data.PackMetadataSection;
 import net.minecraft.client.settings.GameSettings;
@@ -56,7 +57,8 @@ public class ResourcePackRepository
             return flag || flag1;
         }
     };
-    private static final Pattern field_190117_e = Pattern.compile("^[a-fA-F0-9]{40}$");
+    private static final Pattern SHA1 = Pattern.compile("^[a-fA-F0-9]{40}$");
+    private static final ResourceLocation field_191400_f = new ResourceLocation("textures/misc/unknown_pack.png");
     private final File dirResourcepacks;
     public final IResourcePack rprDefaultResourcePack;
     private final File dirServerResourcepacks;
@@ -85,7 +87,7 @@ public class ResourcePackRepository
             {
                 if (resourcepackrepository$entry.getResourcePackName().equals(s))
                 {
-                    if (resourcepackrepository$entry.getPackFormat() == 2 || settings.incompatibleResourcePacks.contains(resourcepackrepository$entry.getResourcePackName()))
+                    if (resourcepackrepository$entry.getPackFormat() == 3 || settings.incompatibleResourcePacks.contains(resourcepackrepository$entry.getResourcePackName()))
                     {
                         this.repositoryEntries.add(resourcepackrepository$entry);
                         break;
@@ -98,12 +100,12 @@ public class ResourcePackRepository
         }
     }
 
-    public static Map<String, String> func_190115_a()
+    public static Map<String, String> getDownloadHeaders()
     {
         Map<String, String> map = Maps.<String, String>newHashMap();
         map.put("X-Minecraft-Username", Minecraft.getMinecraft().getSession().getUsername());
         map.put("X-Minecraft-UUID", Minecraft.getMinecraft().getSession().getPlayerID());
-        map.put("X-Minecraft-Version", "1.10.2");
+        map.put("X-Minecraft-Version", "1.11.2");
         return map;
     }
 
@@ -125,6 +127,36 @@ public class ResourcePackRepository
     private List<File> getResourcePackFiles()
     {
         return this.dirResourcepacks.isDirectory() ? Arrays.asList(this.dirResourcepacks.listFiles(RESOURCE_PACK_FILTER)) : Collections.<File>emptyList();
+    }
+
+    private IResourcePack func_191399_b(File p_191399_1_)
+    {
+        IResourcePack iresourcepack;
+
+        if (p_191399_1_.isDirectory())
+        {
+            iresourcepack = new FolderResourcePack(p_191399_1_);
+        }
+        else
+        {
+            iresourcepack = new FileResourcePack(p_191399_1_);
+        }
+
+        try
+        {
+            PackMetadataSection packmetadatasection = (PackMetadataSection)iresourcepack.getPackMetadata(this.rprMetadataSerializer, "pack");
+
+            if (packmetadatasection != null && packmetadatasection.getPackFormat() == 2)
+            {
+                return new LegacyV2Adapter(iresourcepack);
+            }
+        }
+        catch (Exception var4)
+        {
+            ;
+        }
+
+        return iresourcepack;
     }
 
     public void updateRepositoryEntriesAll()
@@ -213,7 +245,7 @@ public class ResourcePackRepository
     public ListenableFuture<Object> downloadResourcePack(String url, String hash)
     {
         String s = DigestUtils.sha1Hex(url);
-        final String s1 = field_190117_e.matcher(hash).matches() ? hash : "";
+        final String s1 = SHA1.matcher(hash).matches() ? hash : "";
         final File file1 = new File(this.dirServerResourcepacks, s);
         this.lock.lock();
 
@@ -223,7 +255,7 @@ public class ResourcePackRepository
 
             if (file1.exists())
             {
-                if (this.func_190113_a(s1, file1))
+                if (this.checkHash(s1, file1))
                 {
                     ListenableFuture listenablefuture1 = this.setResourcePackInstance(file1);
                     return listenablefuture1;
@@ -235,7 +267,7 @@ public class ResourcePackRepository
 
             this.deleteOldServerResourcesPacks();
             final GuiScreenWorking guiscreenworking = new GuiScreenWorking();
-            Map<String, String> map = func_190115_a();
+            Map<String, String> map = getDownloadHeaders();
             final Minecraft minecraft = Minecraft.getMinecraft();
             Futures.getUnchecked(minecraft.addScheduledTask(new Runnable()
             {
@@ -250,7 +282,7 @@ public class ResourcePackRepository
             {
                 public void onSuccess(@Nullable Object p_onSuccess_1_)
                 {
-                    if (ResourcePackRepository.this.func_190113_a(s1, file1))
+                    if (ResourcePackRepository.this.checkHash(s1, file1))
                     {
                         ResourcePackRepository.this.setResourcePackInstance(file1);
                         settablefuture.set((Object)null);
@@ -276,7 +308,7 @@ public class ResourcePackRepository
         }
     }
 
-    private boolean func_190113_a(String p_190113_1_, File p_190113_2_)
+    private boolean checkHash(String p_190113_1_, File p_190113_2_)
     {
         try
         {
@@ -288,7 +320,7 @@ public class ResourcePackRepository
                 return true;
             }
 
-            if (s.toLowerCase().equals(p_190113_1_.toLowerCase()))
+            if (s.toLowerCase(java.util.Locale.ROOT).equals(p_190113_1_.toLowerCase(java.util.Locale.ROOT)))
             {
                 LOGGER.info("Found file {} matching requested hash {}", new Object[] {p_190113_2_, p_190113_1_});
                 return true;
@@ -304,9 +336,9 @@ public class ResourcePackRepository
         return false;
     }
 
-    private boolean func_190112_b(File p_190112_1_)
+    private boolean validatePack(File p_190112_1_)
     {
-        ResourcePackRepository.Entry resourcepackrepository$entry = new ResourcePackRepository.Entry(new FileResourcePack(p_190112_1_));
+        ResourcePackRepository.Entry resourcepackrepository$entry = new ResourcePackRepository.Entry(p_190112_1_);
 
         try
         {
@@ -348,7 +380,7 @@ public class ResourcePackRepository
 
     public ListenableFuture<Object> setResourcePackInstance(File resourceFile)
     {
-        if (!this.func_190112_b(resourceFile))
+        if (!this.validatePack(resourceFile))
         {
             return Futures.<Object>immediateFailedFuture(new RuntimeException("Invalid resourcepack"));
         }
@@ -362,6 +394,7 @@ public class ResourcePackRepository
     /**
      * Getter for the IResourcePack instance associated with this ResourcePackRepository
      */
+    @Nullable
     public IResourcePack getResourcePackInstance()
     {
         return this.resourcePackInstance;
@@ -401,7 +434,7 @@ public class ResourcePackRepository
 
         private Entry(File resourcePackFileIn)
         {
-            this((IResourcePack)(resourcePackFileIn.isDirectory() ? new FolderResourcePack(resourcePackFileIn) : new FileResourcePack(resourcePackFileIn)));
+            this((IResourcePack)ResourcePackRepository.this.func_191399_b(resourcePackFileIn));
         }
 
         private Entry(IResourcePack reResourcePackIn)
@@ -432,7 +465,7 @@ public class ResourcePackRepository
             {
                 try
                 {
-                    bufferedimage = ResourcePackRepository.this.rprDefaultResourcePack.getPackImage();
+                    bufferedimage = TextureUtil.readBufferedImage(Minecraft.getMinecraft().getResourceManager().getResource(ResourcePackRepository.field_191400_f).getInputStream());
                 }
                 catch (IOException ioexception)
                 {

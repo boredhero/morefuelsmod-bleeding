@@ -60,11 +60,12 @@ public class TextComponentScore extends TextComponentBase
             {
                 Score score = scoreboard.getOrCreateScore(this.name, scoreobjective);
                 this.setValue(String.format("%d", new Object[] {Integer.valueOf(score.getScorePoints())}));
-                return;
+            }
+            else
+            {
+                this.value = "";
             }
         }
-
-        this.value = "";
     }
 
     /**

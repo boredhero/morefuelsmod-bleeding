@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Map.Entry;
 import net.minecraft.init.Biomes;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -81,6 +82,12 @@ public class MapGenVillage extends MapGenStructure
         }
 
         return false;
+    }
+
+    public BlockPos getClosestStrongholdPos(World worldIn, BlockPos pos, boolean p_180706_3_)
+    {
+        this.worldObj = worldIn;
+        return func_191069_a(worldIn, this, pos, this.distance, 8, 10387312, false, 100, p_180706_3_);
     }
 
     protected StructureStart getStructureStart(int chunkX, int chunkZ)

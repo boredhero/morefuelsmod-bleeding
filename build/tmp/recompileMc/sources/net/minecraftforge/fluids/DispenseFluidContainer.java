@@ -19,6 +19,8 @@
 
 package net.minecraftforge.fluids;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.dispenser.BehaviorDefaultDispenseItem;
 import net.minecraft.dispenser.IBlockSource;
@@ -27,7 +29,7 @@ import net.minecraft.tileentity.TileEntityDispenser;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
 /**
  * Fills or drains a fluid container item using a Dispenser.
@@ -48,7 +50,8 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
     /**
      * Dispense the specified stack, play the dispense sound and spawn particles.
      */
-    public ItemStack dispenseStack(IBlockSource source, ItemStack stack)
+    @Nonnull
+    public ItemStack dispenseStack(@Nonnull IBlockSource source, @Nonnull ItemStack stack)
     {
         if (FluidUtil.getFluidContained(stack) != null)
         {
@@ -63,61 +66,70 @@ public class DispenseFluidContainer extends BehaviorDefaultDispenseItem
     /**
      * Picks up fluid in front of a Dispenser and fills a container with it.
      */
-    private ItemStack fillContainer(IBlockSource source, ItemStack stack)
+    @Nonnull
+    private ItemStack fillContainer(@Nonnull IBlockSource source, @Nonnull ItemStack stack)
     {
         World world = source.getWorld();
-        EnumFacing dispenserFacing = source.func_189992_e().getValue(BlockDispenser.FACING);
+        EnumFacing dispenserFacing = source.getBlockState().getValue(BlockDispenser.FACING);
         BlockPos blockpos = source.getBlockPos().offset(dispenserFacing);
 
-        ItemStack result = FluidUtil.tryPickUpFluid(stack, null, world, blockpos, dispenserFacing.getOpposite());
-        if (result == null)
+        FluidActionResult actionResult = FluidUtil.tryPickUpFluid(stack, null, world, blockpos, dispenserFacing.getOpposite());
+        ItemStack resultStack = actionResult.getResult();
+
+        if (!actionResult.isSuccess() || resultStack.func_190926_b())
         {
             return super.dispenseStack(source, stack);
         }
 
-        if (--stack.stackSize == 0)
+        if (stack.func_190916_E() == 1)
         {
-            stack.deserializeNBT(result.serializeNBT());
+            return resultStack;
         }
-        else if (((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(result) < 0)
+        else if (((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(resultStack) < 0)
         {
-            this.dispenseBehavior.dispense(source, result);
+            this.dispenseBehavior.dispense(source, resultStack);
         }
 
-        return stack;
+        ItemStack stackCopy = stack.copy();
+        stackCopy.func_190918_g(1);
+        return stackCopy;
     }
 
     /**
      * Drains a filled container and places the fluid in front of the Dispenser.
      */
-    private ItemStack dumpContainer(IBlockSource source, ItemStack stack)
+    @Nonnull
+    private ItemStack dumpContainer(IBlockSource source, @Nonnull ItemStack stack)
     {
-        ItemStack dispensedStack = stack.copy();
-        dispensedStack.stackSize = 1;
-        IFluidHandler fluidHandler = FluidUtil.getFluidHandler(dispensedStack);
+        ItemStack singleStack = stack.copy();
+        singleStack.func_190920_e(1);
+        IFluidHandlerItem fluidHandler = FluidUtil.getFluidHandler(singleStack);
         if (fluidHandler == null)
         {
             return super.dispenseStack(source, stack);
         }
 
         FluidStack fluidStack = fluidHandler.drain(Fluid.BUCKET_VOLUME, false);
-        EnumFacing dispenserFacing = source.func_189992_e().getValue(BlockDispenser.FACING);
+        EnumFacing dispenserFacing = source.getBlockState().getValue(BlockDispenser.FACING);
         BlockPos blockpos = source.getBlockPos().offset(dispenserFacing);
+        FluidActionResult result = fluidStack != null ? FluidUtil.tryPlaceFluid(null, source.getWorld(), blockpos, stack, fluidStack) : FluidActionResult.FAILURE;
 
-        if (fluidStack != null && fluidStack.amount == Fluid.BUCKET_VOLUME && FluidUtil.tryPlaceFluid(null, source.getWorld(), fluidStack, blockpos))
+        if (result.isSuccess())
         {
-            fluidHandler.drain(Fluid.BUCKET_VOLUME, true);
+            ItemStack drainedStack = result.getResult();
 
-            if (--stack.stackSize == 0)
+            if (drainedStack.func_190916_E() == 1)
             {
-                stack.deserializeNBT(dispensedStack.serializeNBT());
+                return drainedStack;
             }
-            else if (((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(dispensedStack) < 0)
+            else if (!drainedStack.func_190926_b() && ((TileEntityDispenser)source.getBlockTileEntity()).addItemStack(drainedStack) < 0)
             {
-                this.dispenseBehavior.dispense(source, dispensedStack);
+                this.dispenseBehavior.dispense(source, drainedStack);
             }
 
-            return stack;
+            ItemStack stackCopy = drainedStack.copy();
+            stackCopy.func_190918_g(1);
+            return stackCopy;
         }
         else
         {

@@ -16,10 +16,10 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
@@ -30,42 +30,31 @@ import net.minecraft.world.World;
 
 public class TileEntityHopper extends TileEntityLockableLoot implements IHopper, ITickable
 {
-    private ItemStack[] inventory = new ItemStack[5];
-    private String customName;
+    private NonNullList<ItemStack> inventory = NonNullList.<ItemStack>func_191197_a(5, ItemStack.field_190927_a);
     private int transferCooldown = -1;
+    private long field_190578_g;
 
-    public static void func_189683_a(DataFixer p_189683_0_)
+    public static void registerFixesHopper(DataFixer fixer)
     {
-        p_189683_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists("Hopper", new String[] {"Items"}));
+        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityHopper.class, new String[] {"Items"}));
     }
 
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        this.inventory = new ItemStack[this.getSizeInventory()];
-
-        if (compound.hasKey("CustomName", 8))
-        {
-            this.customName = compound.getString("CustomName");
-        }
-
-        this.transferCooldown = compound.getInteger("TransferCooldown");
+        this.inventory = NonNullList.<ItemStack>func_191197_a(this.getSizeInventory(), ItemStack.field_190927_a);
 
         if (!this.checkLootAndRead(compound))
         {
-            NBTTagList nbttaglist = compound.getTagList("Items", 10);
-
-            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-            {
-                NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-                int j = nbttagcompound.getByte("Slot");
-
-                if (j >= 0 && j < this.inventory.length)
-                {
-                    this.inventory[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
-                }
-            }
+            ItemStackHelper.func_191283_b(compound, this.inventory);
         }
+
+        if (compound.hasKey("CustomName", 8))
+        {
+            this.field_190577_o = compound.getString("CustomName");
+        }
+
+        this.transferCooldown = compound.getInteger("TransferCooldown");
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
@@ -74,27 +63,14 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
 
         if (!this.checkLootAndWrite(compound))
         {
-            NBTTagList nbttaglist = new NBTTagList();
-
-            for (int i = 0; i < this.inventory.length; ++i)
-            {
-                if (this.inventory[i] != null)
-                {
-                    NBTTagCompound nbttagcompound = new NBTTagCompound();
-                    nbttagcompound.setByte("Slot", (byte)i);
-                    this.inventory[i].writeToNBT(nbttagcompound);
-                    nbttaglist.appendTag(nbttagcompound);
-                }
-            }
-
-            compound.setTag("Items", nbttaglist);
+            ItemStackHelper.func_191282_a(compound, this.inventory);
         }
 
         compound.setInteger("TransferCooldown", this.transferCooldown);
 
         if (this.hasCustomName())
         {
-            compound.setString("CustomName", this.customName);
+            compound.setString("CustomName", this.field_190577_o);
         }
 
         return compound;
@@ -105,50 +81,30 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
      */
     public int getSizeInventory()
     {
-        return this.inventory.length;
-    }
-
-    /**
-     * Returns the stack in the given slot.
-     */
-    @Nullable
-    public ItemStack getStackInSlot(int index)
-    {
-        this.fillWithLoot((EntityPlayer)null);
-        return this.inventory[index];
+        return this.inventory.size();
     }
 
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
-    @Nullable
     public ItemStack decrStackSize(int index, int count)
     {
         this.fillWithLoot((EntityPlayer)null);
-        return ItemStackHelper.getAndSplit(this.inventory, index, count);
-    }
-
-    /**
-     * Removes a stack from the given slot and returns it.
-     */
-    @Nullable
-    public ItemStack removeStackFromSlot(int index)
-    {
-        this.fillWithLoot((EntityPlayer)null);
-        return ItemStackHelper.getAndRemove(this.inventory, index);
+        ItemStack itemstack = ItemStackHelper.getAndSplit(this.func_190576_q(), index, count);
+        return itemstack;
     }
 
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
+    public void setInventorySlotContents(int index, ItemStack stack)
     {
         this.fillWithLoot((EntityPlayer)null);
-        this.inventory[index] = stack;
+        this.func_190576_q().set(index, stack);
 
-        if (stack != null && stack.stackSize > this.getInventoryStackLimit())
+        if (stack.func_190916_E() > this.getInventoryStackLimit())
         {
-            stack.stackSize = this.getInventoryStackLimit();
+            stack.func_190920_e(this.getInventoryStackLimit());
         }
     }
 
@@ -157,20 +113,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
      */
     public String getName()
     {
-        return this.hasCustomName() ? this.customName : "container.hopper";
-    }
-
-    /**
-     * Returns true if this thing is named
-     */
-    public boolean hasCustomName()
-    {
-        return this.customName != null && !this.customName.isEmpty();
-    }
-
-    public void setCustomName(String customNameIn)
-    {
-        this.customName = customNameIn;
+        return this.hasCustomName() ? this.field_190577_o : "container.hopper";
     }
 
     /**
@@ -182,30 +125,6 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
     }
 
     /**
-     * Do not make give this method the name canInteractWith because it clashes with Container
-     */
-    public boolean isUseableByPlayer(EntityPlayer player)
-    {
-        return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
-    }
-
-    public void openInventory(EntityPlayer player)
-    {
-    }
-
-    public void closeInventory(EntityPlayer player)
-    {
-    }
-
-    /**
-     * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot.
-     */
-    public boolean isItemValidForSlot(int index, ItemStack stack)
-    {
-        return true;
-    }
-
-    /**
      * Like the old updateEntity(), except more generic.
      */
     public void update()
@@ -213,6 +132,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         if (this.worldObj != null && !this.worldObj.isRemote)
         {
             --this.transferCooldown;
+            this.field_190578_g = this.worldObj.getTotalWorldTime();
 
             if (!this.isOnTransferCooldown())
             {
@@ -222,7 +142,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         }
     }
 
-    public boolean updateHopper()
+    private boolean updateHopper()
     {
         if (this.worldObj != null && !this.worldObj.isRemote)
         {
@@ -260,7 +180,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
     {
         for (ItemStack itemstack : this.inventory)
         {
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 return false;
             }
@@ -269,11 +189,16 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         return true;
     }
 
+    public boolean func_191420_l()
+    {
+        return this.isEmpty();
+    }
+
     private boolean isFull()
     {
         for (ItemStack itemstack : this.inventory)
         {
-            if (itemstack == null || itemstack.stackSize != itemstack.getMaxStackSize())
+            if (itemstack.func_190926_b() || itemstack.func_190916_E() != itemstack.getMaxStackSize())
             {
                 return false;
             }
@@ -303,12 +228,12 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
             {
                 for (int i = 0; i < this.getSizeInventory(); ++i)
                 {
-                    if (this.getStackInSlot(i) != null)
+                    if (!this.getStackInSlot(i).func_190926_b())
                     {
                         ItemStack itemstack = this.getStackInSlot(i).copy();
-                        ItemStack itemstack1 = putStackInInventoryAllSlots(iinventory, this.decrStackSize(i, 1), enumfacing);
+                        ItemStack itemstack1 = putStackInInventoryAllSlots(this, iinventory, this.decrStackSize(i, 1), enumfacing);
 
-                        if (itemstack1 == null || itemstack1.stackSize == 0)
+                        if (itemstack1.func_190926_b())
                         {
                             iinventory.markDirty();
                             return true;
@@ -337,7 +262,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
             {
                 ItemStack itemstack1 = isidedinventory.getStackInSlot(k);
 
-                if (itemstack1 == null || itemstack1.stackSize != itemstack1.getMaxStackSize())
+                if (itemstack1.func_190926_b() || itemstack1.func_190916_E() != itemstack1.getMaxStackSize())
                 {
                     return false;
                 }
@@ -351,7 +276,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
             {
                 ItemStack itemstack = inventoryIn.getStackInSlot(j);
 
-                if (itemstack == null || itemstack.stackSize != itemstack.getMaxStackSize())
+                if (itemstack.func_190926_b() || itemstack.func_190916_E() != itemstack.getMaxStackSize())
                 {
                     return false;
                 }
@@ -373,7 +298,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
 
             for (int i : aint)
             {
-                if (isidedinventory.getStackInSlot(i) != null)
+                if (!isidedinventory.getStackInSlot(i).func_190926_b())
                 {
                     return false;
                 }
@@ -385,7 +310,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
 
             for (int k = 0; k < j; ++k)
             {
-                if (inventoryIn.getStackInSlot(k) != null)
+                if (!inventoryIn.getStackInSlot(k).func_190926_b())
                 {
                     return false;
                 }
@@ -440,7 +365,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         {
             for (EntityItem entityitem : getCaptureItems(hopper.getWorld(), hopper.getXPos(), hopper.getYPos(), hopper.getZPos()))
             {
-                if (putDropInInventoryAllSlots(hopper, entityitem))
+                if (putDropInInventoryAllSlots((IInventory)null, hopper, entityitem))
                 {
                     return true;
                 }
@@ -458,12 +383,12 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
     {
         ItemStack itemstack = inventoryIn.getStackInSlot(index);
 
-        if (itemstack != null && canExtractItemFromSlot(inventoryIn, itemstack, index, direction))
+        if (!itemstack.func_190926_b() && canExtractItemFromSlot(inventoryIn, itemstack, index, direction))
         {
             ItemStack itemstack1 = itemstack.copy();
-            ItemStack itemstack2 = putStackInInventoryAllSlots(hopper, inventoryIn.decrStackSize(index, 1), (EnumFacing)null);
+            ItemStack itemstack2 = putStackInInventoryAllSlots(inventoryIn, hopper, inventoryIn.decrStackSize(index, 1), (EnumFacing)null);
 
-            if (itemstack2 == null || itemstack2.stackSize == 0)
+            if (itemstack2.func_190926_b())
             {
                 inventoryIn.markDirty();
                 return true;
@@ -479,64 +404,65 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
      * Attempts to place the passed EntityItem's stack into the inventory using as many slots as possible. Returns false
      * if the stackSize of the drop was not depleted.
      */
-    public static boolean putDropInInventoryAllSlots(IInventory p_145898_0_, EntityItem itemIn)
+    public static boolean putDropInInventoryAllSlots(IInventory p_145898_0_, IInventory itemIn, EntityItem p_145898_2_)
     {
         boolean flag = false;
 
-        if (itemIn == null)
+        if (p_145898_2_ == null)
         {
             return false;
         }
         else
         {
-            ItemStack itemstack = itemIn.getEntityItem().copy();
-            ItemStack itemstack1 = putStackInInventoryAllSlots(p_145898_0_, itemstack, (EnumFacing)null);
+            ItemStack itemstack = p_145898_2_.getEntityItem().copy();
+            ItemStack itemstack1 = putStackInInventoryAllSlots(p_145898_0_, itemIn, itemstack, (EnumFacing)null);
 
-            if (itemstack1 != null && itemstack1.stackSize != 0)
+            if (itemstack1.func_190926_b())
             {
-                itemIn.setEntityItemStack(itemstack1);
+                flag = true;
+                p_145898_2_.setDead();
             }
             else
             {
-                flag = true;
-                itemIn.setDead();
+                p_145898_2_.setEntityItemStack(itemstack1);
             }
 
             return flag;
         }
     }
 
+
+    protected net.minecraftforge.items.IItemHandler createUnSidedHandler()
+    {
+        return new net.minecraftforge.items.VanillaHopperItemHandler(this);
+    }
+
     /**
      * Attempts to place the passed stack in the inventory, using as many slots as required. Returns leftover items
      */
-    public static ItemStack putStackInInventoryAllSlots(IInventory inventoryIn, ItemStack stack, @Nullable EnumFacing side)
+    public static ItemStack putStackInInventoryAllSlots(IInventory inventoryIn, IInventory stack, ItemStack side, @Nullable EnumFacing p_174918_3_)
     {
-        if (inventoryIn instanceof ISidedInventory && side != null)
+        if (stack instanceof ISidedInventory && p_174918_3_ != null)
         {
-            ISidedInventory isidedinventory = (ISidedInventory)inventoryIn;
-            int[] aint = isidedinventory.getSlotsForFace(side);
+            ISidedInventory isidedinventory = (ISidedInventory)stack;
+            int[] aint = isidedinventory.getSlotsForFace(p_174918_3_);
 
-            for (int k = 0; k < aint.length && stack != null && stack.stackSize > 0; ++k)
+            for (int k = 0; k < aint.length && !side.func_190926_b(); ++k)
             {
-                stack = insertStack(inventoryIn, stack, aint[k], side);
+                side = insertStack(inventoryIn, stack, side, aint[k], p_174918_3_);
             }
         }
         else
         {
-            int i = inventoryIn.getSizeInventory();
+            int i = stack.getSizeInventory();
 
-            for (int j = 0; j < i && stack != null && stack.stackSize > 0; ++j)
+            for (int j = 0; j < i && !side.func_190926_b(); ++j)
             {
-                stack = insertStack(inventoryIn, stack, j, side);
+                side = insertStack(inventoryIn, stack, side, j, p_174918_3_);
             }
         }
 
-        if (stack != null && stack.stackSize == 0)
-        {
-            stack = null;
-        }
-
-        return stack;
+        return side;
     }
 
     /**
@@ -558,62 +484,59 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
     /**
      * Insert the specified stack to the specified inventory and return any leftover items
      */
-    private static ItemStack insertStack(IInventory inventoryIn, ItemStack stack, int index, EnumFacing side)
+    private static ItemStack insertStack(IInventory inventoryIn, IInventory stack, ItemStack index, int side, EnumFacing p_174916_4_)
     {
-        ItemStack itemstack = inventoryIn.getStackInSlot(index);
+        ItemStack itemstack = stack.getStackInSlot(side);
 
-        if (canInsertItemInSlot(inventoryIn, stack, index, side))
+        if (canInsertItemInSlot(stack, index, side, p_174916_4_))
         {
             boolean flag = false;
+            boolean flag1 = stack.func_191420_l();
 
-            if (itemstack == null)
+            if (itemstack.func_190926_b())
             {
-                //Forge: BUGFIX: Again, make things respect max stack sizes.
-                int max = Math.min(stack.getMaxStackSize(), inventoryIn.getInventoryStackLimit());
-                if (max >= stack.stackSize)
-                {
-                inventoryIn.setInventorySlotContents(index, stack);
-                stack = null;
-                }
-                else
-                {
-                    inventoryIn.setInventorySlotContents(index, stack.splitStack(max));
-                }
+                stack.setInventorySlotContents(side, index);
+                index = ItemStack.field_190927_a;
                 flag = true;
             }
-            else if (canCombine(itemstack, stack))
+            else if (canCombine(itemstack, index))
             {
-                //Forge: BUGFIX: Again, make things respect max stack sizes.
-                int max = Math.min(stack.getMaxStackSize(), inventoryIn.getInventoryStackLimit());
-                if (max > itemstack.stackSize)
-                {
-                int i = max - itemstack.stackSize;
-                int j = Math.min(stack.stackSize, i);
-                stack.stackSize -= j;
-                itemstack.stackSize += j;
+                int i = index.getMaxStackSize() - itemstack.func_190916_E();
+                int j = Math.min(index.func_190916_E(), i);
+                index.func_190918_g(j);
+                itemstack.func_190917_f(j);
                 flag = j > 0;
-                }
             }
 
             if (flag)
             {
-                if (inventoryIn instanceof TileEntityHopper)
+                if (flag1 && stack instanceof TileEntityHopper)
                 {
-                    TileEntityHopper tileentityhopper = (TileEntityHopper)inventoryIn;
+                    TileEntityHopper tileentityhopper1 = (TileEntityHopper)stack;
 
-                    if (tileentityhopper.mayTransfer())
+                    if (!tileentityhopper1.mayTransfer())
                     {
-                        tileentityhopper.setTransferCooldown(8);
-                    }
+                        int k = 0;
 
-                    inventoryIn.markDirty();
+                        if (inventoryIn != null && inventoryIn instanceof TileEntityHopper)
+                        {
+                            TileEntityHopper tileentityhopper = (TileEntityHopper)inventoryIn;
+
+                            if (tileentityhopper1.field_190578_g >= tileentityhopper.field_190578_g)
+                            {
+                                k = 1;
+                            }
+                        }
+
+                        tileentityhopper1.setTransferCooldown(8 - k);
+                    }
                 }
 
-                inventoryIn.markDirty();
+                stack.markDirty();
             }
         }
 
-        return stack;
+        return index;
     }
 
     /**
@@ -654,9 +577,10 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         int j = MathHelper.floor_double(y);
         int k = MathHelper.floor_double(z);
         BlockPos blockpos = new BlockPos(i, j, k);
-        Block block = worldIn.getBlockState(blockpos).getBlock();
+        net.minecraft.block.state.IBlockState state = worldIn.getBlockState(blockpos);
+        Block block = state.getBlock();
 
-        if (block.hasTileEntity())
+        if (block.hasTileEntity(state))
         {
             TileEntity tileentity = worldIn.getTileEntity(blockpos);
 
@@ -686,7 +610,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
 
     private static boolean canCombine(ItemStack stack1, ItemStack stack2)
     {
-        return stack1.getItem() != stack2.getItem() ? false : (stack1.getMetadata() != stack2.getMetadata() ? false : (stack1.stackSize > stack1.getMaxStackSize() ? false : ItemStack.areItemStackTagsEqual(stack1, stack2)));
+        return stack1.getItem() != stack2.getItem() ? false : (stack1.getMetadata() != stack2.getMetadata() ? false : (stack1.func_190916_E() > stack1.getMaxStackSize() ? false : ItemStack.areItemStackTagsEqual(stack1, stack2)));
     }
 
     /**
@@ -718,14 +642,14 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         this.transferCooldown = ticks;
     }
 
-    public boolean isOnTransferCooldown()
+    private boolean isOnTransferCooldown()
     {
         return this.transferCooldown > 0;
     }
 
     public boolean mayTransfer()
     {
-        return this.transferCooldown <= 1;
+        return this.transferCooldown > 8;
     }
 
     public String getGuiID()
@@ -739,33 +663,10 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         return new ContainerHopper(playerInventory, this, playerIn);
     }
 
-    public int getField(int id)
+    protected NonNullList<ItemStack> func_190576_q()
     {
-        return 0;
+        return this.inventory;
     }
 
-    public void setField(int id, int value)
-    {
-    }
-
-    public int getFieldCount()
-    {
-        return 0;
-    }
-
-    public void clear()
-    {
-        this.fillWithLoot((EntityPlayer)null);
-
-        for (int i = 0; i < this.inventory.length; ++i)
-        {
-            this.inventory[i] = null;
-        }
-    }
-
-
-    protected net.minecraftforge.items.IItemHandler createUnSidedHandler()
-    {
-        return new net.minecraftforge.items.VanillaHopperItemHandler(this);
-    }
+    public long getLastUpdateTime() { return field_190578_g; } // Forge
 }

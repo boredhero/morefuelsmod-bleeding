@@ -261,9 +261,9 @@ public class ForgeHooksClient
         GameSettings settings = Minecraft.getMinecraft().gameSettings;
         int[] ranges = ForgeModContainer.blendRanges;
         int distance = 0;
-        if (settings.fancyGraphics && settings.renderDistanceChunks >= 0 && settings.renderDistanceChunks < ranges.length)
+        if (settings.fancyGraphics && ranges.length > 0)
         {
-            distance = ranges[settings.renderDistanceChunks];
+            distance = ranges[MathHelper.clamp_int(settings.renderDistanceChunks, 0, ranges.length-1)];
         }
 
         int r = 0;
@@ -276,7 +276,7 @@ public class ForgeHooksClient
             for (int z = -distance; z <= distance; ++z)
             {
                 BlockPos pos = center.add(x, 0, z);
-                Biome biome = world.getBiomeGenForCoords(pos);
+                Biome biome = world.getBiome(pos);
                 int colour = biome.getSkyColorByTemp(biome.getFloatTemperature(pos));
                 r += (colour & 0xFF0000) >> 16;
                 g += (colour & 0x00FF00) >> 8;
@@ -669,12 +669,15 @@ public class ForgeHooksClient
     }
 
     private static int slotMainHand = 0;
-    // FIXME
-    public static boolean shouldCauseReequipAnimation(ItemStack from, ItemStack to, int slot)
+
+    public static boolean shouldCauseReequipAnimation(@Nonnull ItemStack from, @Nonnull ItemStack to, int slot)
     {
-        if (from == null && to != null) return true;
-        if (from == null && to == null) return false;
-        if (from != null && to == null) return true;
+        boolean fromInvalid = from.func_190926_b();
+        boolean toInvalid   = to.func_190926_b();
+
+        if (fromInvalid && toInvalid) return false;
+        if (fromInvalid || toInvalid) return true;
+
         boolean changed = false;
         if (slot != -1)
         {

@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import javax.annotation.Nullable;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,12 +22,11 @@ public class ItemBucketMilk extends Item
      * Called when the player finishes using this Item (E.g. finishes eating.). Not called when the player stops using
      * the Item before the action is complete.
      */
-    @Nullable
     public ItemStack onItemUseFinish(ItemStack stack, World worldIn, EntityLivingBase entityLiving)
     {
         if (entityLiving instanceof EntityPlayer && !((EntityPlayer)entityLiving).capabilities.isCreativeMode)
         {
-            --stack.stackSize;
+            stack.func_190918_g(1);
         }
 
         if (!worldIn.isRemote)
@@ -41,7 +39,7 @@ public class ItemBucketMilk extends Item
             ((EntityPlayer)entityLiving).addStat(StatList.getObjectUseStats(this));
         }
 
-        return stack.stackSize <= 0 ? new ItemStack(Items.BUCKET) : stack;
+        return stack.func_190926_b() ? new ItemStack(Items.BUCKET) : stack;
     }
 
     /**
@@ -60,10 +58,10 @@ public class ItemBucketMilk extends Item
         return EnumAction.DRINK;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        playerIn.setActiveHand(hand);
-        return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+        worldIn.setActiveHand(playerIn);
+        return new ActionResult(EnumActionResult.SUCCESS, worldIn.getHeldItem(playerIn));
     }
 
     @Override

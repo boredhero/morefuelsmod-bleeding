@@ -3,6 +3,7 @@ package net.minecraft.client.model;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -315,7 +316,16 @@ public class ModelBiped extends ModelBase
 
     protected EnumHandSide getMainHand(Entity entityIn)
     {
-        return entityIn instanceof EntityLivingBase ? ((EntityLivingBase)entityIn).getPrimaryHand() : EnumHandSide.RIGHT;
+        if (entityIn instanceof EntityLivingBase)
+        {
+            EntityLivingBase entitylivingbase = (EntityLivingBase)entityIn;
+            EnumHandSide enumhandside = entitylivingbase.getPrimaryHand();
+            return entitylivingbase.swingingHand == EnumHand.MAIN_HAND ? enumhandside : enumhandside.opposite();
+        }
+        else
+        {
+            return EnumHandSide.RIGHT;
+        }
     }
 
     @SideOnly(Side.CLIENT)

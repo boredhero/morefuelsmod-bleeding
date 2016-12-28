@@ -1,13 +1,11 @@
 package net.minecraft.entity.projectile;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -19,11 +17,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class EntityFireball extends Entity
 {
-    private int xTile = -1;
-    private int yTile = -1;
-    private int zTile = -1;
-    private Block inTile;
-    private boolean inGround;
     public EntityLivingBase shootingEntity;
     private int ticksAlive;
     private int ticksInAir;
@@ -103,32 +96,7 @@ public abstract class EntityFireball extends Entity
                 this.setFire(1);
             }
 
-            if (this.inGround)
-            {
-                if (this.worldObj.getBlockState(new BlockPos(this.xTile, this.yTile, this.zTile)).getBlock() == this.inTile)
-                {
-                    ++this.ticksAlive;
-
-                    if (this.ticksAlive == 600)
-                    {
-                        this.setDead();
-                    }
-
-                    return;
-                }
-
-                this.inGround = false;
-                this.motionX *= (double)(this.rand.nextFloat() * 0.2F);
-                this.motionY *= (double)(this.rand.nextFloat() * 0.2F);
-                this.motionZ *= (double)(this.rand.nextFloat() * 0.2F);
-                this.ticksAlive = 0;
-                this.ticksInAir = 0;
-            }
-            else
-            {
-                ++this.ticksInAir;
-            }
-
+            ++this.ticksInAir;
             RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, this.ticksInAir >= 25, this.shootingEntity);
 
             if (raytraceresult != null)
@@ -191,7 +159,7 @@ public abstract class EntityFireball extends Entity
      */
     protected abstract void onImpact(RayTraceResult result);
 
-    public static void func_189743_a(DataFixer p_189743_0_, String p_189743_1_)
+    public static void registerFixesFireball(DataFixer fixer, String name)
     {
     }
 
@@ -200,12 +168,6 @@ public abstract class EntityFireball extends Entity
      */
     public void writeEntityToNBT(NBTTagCompound compound)
     {
-        compound.setInteger("xTile", this.xTile);
-        compound.setInteger("yTile", this.yTile);
-        compound.setInteger("zTile", this.zTile);
-        ResourceLocation resourcelocation = (ResourceLocation)Block.REGISTRY.getNameForObject(this.inTile);
-        compound.setString("inTile", resourcelocation == null ? "" : resourcelocation.toString());
-        compound.setByte("inGround", (byte)(this.inGround ? 1 : 0));
         compound.setTag("direction", this.newDoubleNBTList(new double[] {this.motionX, this.motionY, this.motionZ}));
         compound.setTag("power", this.newDoubleNBTList(new double[] {this.accelerationX, this.accelerationY, this.accelerationZ}));
         compound.setInteger("life", this.ticksAlive);
@@ -216,21 +178,6 @@ public abstract class EntityFireball extends Entity
      */
     public void readEntityFromNBT(NBTTagCompound compound)
     {
-        this.xTile = compound.getInteger("xTile");
-        this.yTile = compound.getInteger("yTile");
-        this.zTile = compound.getInteger("zTile");
-
-        if (compound.hasKey("inTile", 8))
-        {
-            this.inTile = Block.getBlockFromName(compound.getString("inTile"));
-        }
-        else
-        {
-            this.inTile = Block.getBlockById(compound.getByte("inTile") & 255);
-        }
-
-        this.inGround = compound.getByte("inGround") == 1;
-
         if (compound.hasKey("power", 9))
         {
             NBTTagList nbttaglist = compound.getTagList("power", 6);

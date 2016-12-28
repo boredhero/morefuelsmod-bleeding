@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeMesa;
 
@@ -36,9 +37,44 @@ public class MapGenMineshaft extends MapGenStructure
         return this.rand.nextDouble() < this.chance && this.rand.nextInt(80) < Math.max(Math.abs(chunkX), Math.abs(chunkZ));
     }
 
+    public BlockPos getClosestStrongholdPos(World worldIn, BlockPos pos, boolean p_180706_3_)
+    {
+        int i = 1000;
+        int j = pos.getX() >> 4;
+        int k = pos.getZ() >> 4;
+
+        for (int l = 0; l <= 1000; ++l)
+        {
+            for (int i1 = -l; i1 <= l; ++i1)
+            {
+                boolean flag = i1 == -l || i1 == l;
+
+                for (int j1 = -l; j1 <= l; ++j1)
+                {
+                    boolean flag1 = j1 == -l || j1 == l;
+
+                    if (flag || flag1)
+                    {
+                        int k1 = j + i1;
+                        int l1 = k + j1;
+                        this.rand.setSeed((long)(k1 ^ l1) ^ worldIn.getSeed());
+                        this.rand.nextInt();
+
+                        if (this.canSpawnStructureAtCoords(k1, l1) && (!p_180706_3_ || !worldIn.func_190526_b(k1, l1)))
+                        {
+                            return new BlockPos((k1 << 4) + 8, 64, (l1 << 4) + 8);
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     protected StructureStart getStructureStart(int chunkX, int chunkZ)
     {
-        Biome biome = this.worldObj.getBiomeGenForCoords(new BlockPos((chunkX << 4) + 8, 64, (chunkZ << 4) + 8));
+        Biome biome = this.worldObj.getBiome(new BlockPos((chunkX << 4) + 8, 64, (chunkZ << 4) + 8));
         MapGenMineshaft.Type mapgenmineshaft$type = biome instanceof BiomeMesa ? MapGenMineshaft.Type.MESA : MapGenMineshaft.Type.NORMAL;
         return new StructureMineshaftStart(this.worldObj, this.rand, chunkX, chunkZ, mapgenmineshaft$type);
     }
@@ -48,9 +84,9 @@ public class MapGenMineshaft extends MapGenStructure
         NORMAL,
         MESA;
 
-        public static MapGenMineshaft.Type func_189910_a(int p_189910_0_)
+        public static MapGenMineshaft.Type byId(int id)
         {
-            return p_189910_0_ >= 0 && p_189910_0_ < values().length ? values()[p_189910_0_] : NORMAL;
+            return id >= 0 && id < values().length ? values()[id] : NORMAL;
         }
     }
 }

@@ -10,7 +10,9 @@ import net.minecraft.block.BlockRailBase;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.item.EntityMinecartChest;
+import net.minecraft.entity.monster.EntityCaveSpider;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -20,6 +22,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.TemplateManager;
 import net.minecraft.world.storage.loot.LootTableList;
 
 public class StructureMineshaftPieces
@@ -75,7 +78,7 @@ public class StructureMineshaftPieces
         }
         else if (Math.abs(p_189938_3_ - p_189938_0_.getBoundingBox().minX) <= 80 && Math.abs(p_189938_5_ - p_189938_0_.getBoundingBox().minZ) <= 80)
         {
-            MapGenMineshaft.Type mapgenmineshaft$type = ((StructureMineshaftPieces.Peice)p_189938_0_).field_189920_a;
+            MapGenMineshaft.Type mapgenmineshaft$type = ((StructureMineshaftPieces.Peice)p_189938_0_).mineShaftType;
             StructureMineshaftPieces.Peice structuremineshaftpieces$peice = func_189940_a(p_189938_1_, p_189938_2_, p_189938_3_, p_189938_4_, p_189938_5_, p_189938_6_, p_189938_7_ + 1, mapgenmineshaft$type);
 
             if (structuremineshaftpieces$peice != null)
@@ -119,9 +122,9 @@ public class StructureMineshaftPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.hasRails = tagCompound.getBoolean("hr");
                 this.hasSpiders = tagCompound.getBoolean("sc");
                 this.spawnerPlaced = tagCompound.getBoolean("hps");
@@ -387,7 +390,7 @@ public class StructureMineshaftPieces
 
                                 if (tileentity instanceof TileEntityMobSpawner)
                                 {
-                                    ((TileEntityMobSpawner)tileentity).getSpawnerBaseLogic().setEntityName("CaveSpider");
+                                    ((TileEntityMobSpawner)tileentity).getSpawnerBaseLogic().func_190894_a(EntityList.func_191306_a(EntityCaveSpider.class));
                                 }
                             }
                         }
@@ -483,9 +486,9 @@ public class StructureMineshaftPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.isMultipleFloors = tagCompound.getBoolean("tf");
                 this.corridorDirection = EnumFacing.getHorizontal(tagCompound.getInteger("D"));
             }
@@ -648,7 +651,7 @@ public class StructureMineshaftPieces
 
     abstract static class Peice extends StructureComponent
         {
-            protected MapGenMineshaft.Type field_189920_a;
+            protected MapGenMineshaft.Type mineShaftType;
 
             public Peice()
             {
@@ -657,7 +660,7 @@ public class StructureMineshaftPieces
             public Peice(int p_i47138_1_, MapGenMineshaft.Type p_i47138_2_)
             {
                 super(p_i47138_1_);
-                this.field_189920_a = p_i47138_2_;
+                this.mineShaftType = p_i47138_2_;
             }
 
             /**
@@ -665,20 +668,20 @@ public class StructureMineshaftPieces
              */
             protected void writeStructureToNBT(NBTTagCompound tagCompound)
             {
-                tagCompound.setInteger("MST", this.field_189920_a.ordinal());
+                tagCompound.setInteger("MST", this.mineShaftType.ordinal());
             }
 
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                this.field_189920_a = MapGenMineshaft.Type.func_189910_a(tagCompound.getInteger("MST"));
+                this.mineShaftType = MapGenMineshaft.Type.byId(tagCompound.getInteger("MST"));
             }
 
             protected IBlockState func_189917_F_()
             {
-                switch (this.field_189920_a)
+                switch (this.mineShaftType)
                 {
                     case NORMAL:
                     default:
@@ -690,7 +693,7 @@ public class StructureMineshaftPieces
 
             protected IBlockState func_189919_b()
             {
-                switch (this.field_189920_a)
+                switch (this.mineShaftType)
                 {
                     case NORMAL:
                     default:
@@ -725,7 +728,7 @@ public class StructureMineshaftPieces
             public Room(int p_i47137_1_, Random p_i47137_2_, int p_i47137_3_, int p_i47137_4_, MapGenMineshaft.Type p_i47137_5_)
             {
                 super(p_i47137_1_, p_i47137_5_);
-                this.field_189920_a = p_i47137_5_;
+                this.mineShaftType = p_i47137_5_;
                 this.boundingBox = new StructureBoundingBox(p_i47137_3_, 50, p_i47137_4_, p_i47137_3_ + 7 + p_i47137_2_.nextInt(6), 54 + p_i47137_2_.nextInt(6), p_i47137_4_ + 7 + p_i47137_2_.nextInt(6));
             }
 
@@ -871,9 +874,9 @@ public class StructureMineshaftPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 NBTTagList nbttaglist = tagCompound.getTagList("Entrances", 11);
 
                 for (int i = 0; i < nbttaglist.tagCount(); ++i)
@@ -894,22 +897,6 @@ public class StructureMineshaftPieces
                 super(p_i47136_1_, p_i47136_5_);
                 this.setCoordBaseMode(p_i47136_4_);
                 this.boundingBox = p_i47136_3_;
-            }
-
-            /**
-             * (abstract) Helper method to write subclass data to NBT
-             */
-            protected void writeStructureToNBT(NBTTagCompound tagCompound)
-            {
-                super.writeStructureToNBT(tagCompound);
-            }
-
-            /**
-             * (abstract) Helper method to read subclass data from NBT
-             */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
-            {
-                super.readStructureFromNBT(tagCompound);
             }
 
             public static StructureBoundingBox findStairs(List<StructureComponent> listIn, Random rand, int x, int y, int z, EnumFacing facing)

@@ -167,7 +167,7 @@ public class PhaseHoldingPattern extends PhaseBase
 
     public void onCrystalDestroyed(EntityEnderCrystal crystal, BlockPos pos, DamageSource dmgSrc, @Nullable EntityPlayer plyr)
     {
-        if (plyr != null)
+        if (plyr != null && !plyr.capabilities.disableDamage)
         {
             this.strafePlayer(plyr);
         }

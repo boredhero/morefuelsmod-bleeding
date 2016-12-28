@@ -1,6 +1,6 @@
 package net.minecraft.world.gen;
 
-import com.google.common.collect.Lists;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -31,7 +31,7 @@ public class ChunkProviderFlat implements IChunkGenerator
     private final Random random;
     private final IBlockState[] cachedBlockIDs = new IBlockState[256];
     private final FlatGeneratorInfo flatWorldGenInfo;
-    private final List<MapGenStructure> structureGenerators = Lists.<MapGenStructure>newArrayList();
+    private final Map<String, MapGenStructure> structureGenerators = new HashMap();
     private final boolean hasDecoration;
     private final boolean hasDungeons;
     private WorldGenLakes waterLakeGenerator;
@@ -56,27 +56,27 @@ public class ChunkProviderFlat implements IChunkGenerator
                     map1.put("size", "1");
                 }
 
-                this.structureGenerators.add(new MapGenVillage(map1));
+                this.structureGenerators.put("Village", new MapGenVillage(map1));
             }
 
             if (map.containsKey("biome_1"))
             {
-                this.structureGenerators.add(new MapGenScatteredFeature((Map)map.get("biome_1")));
+                this.structureGenerators.put("Temple", new MapGenScatteredFeature((Map)map.get("biome_1")));
             }
 
             if (map.containsKey("mineshaft"))
             {
-                this.structureGenerators.add(new MapGenMineshaft((Map)map.get("mineshaft")));
+                this.structureGenerators.put("Mineshaft", new MapGenMineshaft((Map)map.get("mineshaft")));
             }
 
             if (map.containsKey("stronghold"))
             {
-                this.structureGenerators.add(new MapGenStronghold((Map)map.get("stronghold")));
+                this.structureGenerators.put("Stronghold", new MapGenStronghold((Map)map.get("stronghold")));
             }
 
             if (map.containsKey("oceanmonument"))
             {
-                this.structureGenerators.add(new StructureOceanMonument((Map)map.get("oceanmonument")));
+                this.structureGenerators.put("Monument", new StructureOceanMonument((Map)map.get("oceanmonument")));
             }
         }
 
@@ -143,13 +143,13 @@ public class ChunkProviderFlat implements IChunkGenerator
             }
         }
 
-        for (MapGenBase mapgenbase : this.structureGenerators)
+        for (MapGenBase mapgenbase : this.structureGenerators.values())
         {
             mapgenbase.generate(this.worldObj, x, z, chunkprimer);
         }
 
         Chunk chunk = new Chunk(this.worldObj, chunkprimer, x, z);
-        Biome[] abiome = this.worldObj.getBiomeProvider().loadBlockGeneratorData((Biome[])null, x * 16, z * 16, 16, 16);
+        Biome[] abiome = this.worldObj.getBiomeProvider().getBiomes((Biome[])null, x * 16, z * 16, 16, 16);
         byte[] abyte = chunk.getBiomeArray();
 
         for (int l = 0; l < abyte.length; ++l)
@@ -167,7 +167,7 @@ public class ChunkProviderFlat implements IChunkGenerator
         int i = x * 16;
         int j = z * 16;
         BlockPos blockpos = new BlockPos(i, 0, j);
-        Biome biome = this.worldObj.getBiomeGenForCoords(new BlockPos(i + 16, 0, j + 16));
+        Biome biome = this.worldObj.getBiome(new BlockPos(i + 16, 0, j + 16));
         boolean flag = false;
         this.random.setSeed(this.worldObj.getSeed());
         long k = this.random.nextLong() / 2L * 2L + 1L;
@@ -177,7 +177,7 @@ public class ChunkProviderFlat implements IChunkGenerator
 
         net.minecraftforge.event.ForgeEventFactory.onChunkPopulate(true, this, this.worldObj, this.random, x, z, flag);
 
-        for (MapGenStructure mapgenstructure : this.structureGenerators)
+        for (MapGenStructure mapgenstructure : this.structureGenerators.values())
         {
             boolean flag1 = mapgenstructure.generateStructure(this.worldObj, this.random, chunkpos);
 
@@ -226,30 +226,20 @@ public class ChunkProviderFlat implements IChunkGenerator
 
     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
     {
-        Biome biome = this.worldObj.getBiomeGenForCoords(pos);
+        Biome biome = this.worldObj.getBiome(pos);
         return biome.getSpawnableList(creatureType);
     }
 
     @Nullable
-    public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position)
+    public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position, boolean p_180513_4_)
     {
-        if ("Stronghold".equals(structureName))
-        {
-            for (MapGenStructure mapgenstructure : this.structureGenerators)
-            {
-                if (mapgenstructure instanceof MapGenStronghold)
-                {
-                    return mapgenstructure.getClosestStrongholdPos(worldIn, position);
-                }
-            }
-        }
-
-        return null;
+        MapGenStructure mapgenstructure = (MapGenStructure)this.structureGenerators.get(structureName);
+        return mapgenstructure != null ? mapgenstructure.getClosestStrongholdPos(worldIn, position, p_180513_4_) : null;
     }
 
     public void recreateStructures(Chunk chunkIn, int x, int z)
     {
-        for (MapGenStructure mapgenstructure : this.structureGenerators)
+        for (MapGenStructure mapgenstructure : this.structureGenerators.values())
         {
             mapgenstructure.generate(this.worldObj, x, z, (ChunkPrimer)null);
         }

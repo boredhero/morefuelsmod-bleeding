@@ -25,13 +25,14 @@ public class ItemSeeds extends Item implements net.minecraftforge.common.IPlanta
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        net.minecraft.block.state.IBlockState state = worldIn.getBlockState(pos);
-        if (facing == EnumFacing.UP && playerIn.canPlayerEdit(pos.offset(facing), facing, stack) && state.getBlock().canSustainPlant(state, worldIn, pos, EnumFacing.UP, this) && worldIn.isAirBlock(pos.up()))
+        ItemStack itemstack = stack.getHeldItem(pos);
+        net.minecraft.block.state.IBlockState state = playerIn.getBlockState(worldIn);
+        if (hand == EnumFacing.UP && stack.canPlayerEdit(worldIn.offset(hand), hand, itemstack) && state.getBlock().canSustainPlant(state, playerIn, worldIn, EnumFacing.UP, this) && playerIn.isAirBlock(worldIn.up()))
         {
-            worldIn.setBlockState(pos.up(), this.crops.getDefaultState());
-            --stack.stackSize;
+            playerIn.setBlockState(worldIn.up(), this.crops.getDefaultState());
+            itemstack.func_190918_g(1);
             return EnumActionResult.SUCCESS;
         }
         else

@@ -1,14 +1,14 @@
 package net.minecraft.inventory;
 
-import java.util.List;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 
 public interface IContainerListener
 {
     /**
      * update the crafting window inventory with the items in the list
      */
-    void updateCraftingInventory(Container containerToSend, List<ItemStack> itemsList);
+    void updateCraftingInventory(Container containerToSend, NonNullList<ItemStack> itemsList);
 
     /**
      * Sends the contents of an inventory slot to the client-side Container. This doesn't have to match the actual

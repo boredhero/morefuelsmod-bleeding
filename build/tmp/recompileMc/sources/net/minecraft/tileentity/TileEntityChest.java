@@ -13,9 +13,9 @@ import net.minecraft.inventory.InventoryLargeChest;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
@@ -23,9 +23,9 @@ import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
-public class TileEntityChest extends TileEntityLockableLoot implements ITickable, IInventory
+public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 {
-    private ItemStack[] chestContents = new ItemStack[27];
+    private NonNullList<ItemStack> chestContents = NonNullList.<ItemStack>func_191197_a(27, ItemStack.field_190927_a);
     /** Determines if the check for adjacent chests has taken place. */
     public boolean adjacentChestChecked;
     /** Contains the chest tile located adjacent to this one (if any) */
@@ -45,7 +45,6 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     /** Server sync counter (once per 20 ticks) */
     private int ticksSinceSync;
     private BlockChest.Type cachedChestType;
-    private String customName;
 
     public TileEntityChest()
     {
@@ -64,57 +63,17 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
         return 27;
     }
 
-    /**
-     * Returns the stack in the given slot.
-     */
-    @Nullable
-    public ItemStack getStackInSlot(int index)
+    public boolean func_191420_l()
     {
-        this.fillWithLoot((EntityPlayer)null);
-        return this.chestContents[index];
-    }
-
-    /**
-     * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
-     */
-    @Nullable
-    public ItemStack decrStackSize(int index, int count)
-    {
-        this.fillWithLoot((EntityPlayer)null);
-        ItemStack itemstack = ItemStackHelper.getAndSplit(this.chestContents, index, count);
-
-        if (itemstack != null)
+        for (ItemStack itemstack : this.chestContents)
         {
-            this.markDirty();
+            if (!itemstack.func_190926_b())
+            {
+                return false;
+            }
         }
 
-        return itemstack;
-    }
-
-    /**
-     * Removes a stack from the given slot and returns it.
-     */
-    @Nullable
-    public ItemStack removeStackFromSlot(int index)
-    {
-        this.fillWithLoot((EntityPlayer)null);
-        return ItemStackHelper.getAndRemove(this.chestContents, index);
-    }
-
-    /**
-     * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
-     */
-    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
-    {
-        this.fillWithLoot((EntityPlayer)null);
-        this.chestContents[index] = stack;
-
-        if (stack != null && stack.stackSize > this.getInventoryStackLimit())
-        {
-            stack.stackSize = this.getInventoryStackLimit();
-        }
-
-        this.markDirty();
+        return true;
     }
 
     /**
@@ -122,51 +81,27 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
      */
     public String getName()
     {
-        return this.hasCustomName() ? this.customName : "container.chest";
+        return this.hasCustomName() ? this.field_190577_o : "container.chest";
     }
 
-    /**
-     * Returns true if this thing is named
-     */
-    public boolean hasCustomName()
+    public static void registerFixesChest(DataFixer fixer)
     {
-        return this.customName != null && !this.customName.isEmpty();
-    }
-
-    public void setCustomName(String name)
-    {
-        this.customName = name;
-    }
-
-    public static void func_189677_a(DataFixer p_189677_0_)
-    {
-        p_189677_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists("Chest", new String[] {"Items"}));
+        fixer.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists(TileEntityChest.class, new String[] {"Items"}));
     }
 
     public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        this.chestContents = new ItemStack[this.getSizeInventory()];
-
-        if (compound.hasKey("CustomName", 8))
-        {
-            this.customName = compound.getString("CustomName");
-        }
+        this.chestContents = NonNullList.<ItemStack>func_191197_a(this.getSizeInventory(), ItemStack.field_190927_a);
 
         if (!this.checkLootAndRead(compound))
         {
-            NBTTagList nbttaglist = compound.getTagList("Items", 10);
+            ItemStackHelper.func_191283_b(compound, this.chestContents);
+        }
 
-            for (int i = 0; i < nbttaglist.tagCount(); ++i)
-            {
-                NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-                int j = nbttagcompound.getByte("Slot") & 255;
-
-                if (j >= 0 && j < this.chestContents.length)
-                {
-                    this.chestContents[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
-                }
-            }
+        if (compound.hasKey("CustomName", 8))
+        {
+            this.field_190577_o = compound.getString("CustomName");
         }
     }
 
@@ -176,25 +111,12 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 
         if (!this.checkLootAndWrite(compound))
         {
-            NBTTagList nbttaglist = new NBTTagList();
-
-            for (int i = 0; i < this.chestContents.length; ++i)
-            {
-                if (this.chestContents[i] != null)
-                {
-                    NBTTagCompound nbttagcompound = new NBTTagCompound();
-                    nbttagcompound.setByte("Slot", (byte)i);
-                    this.chestContents[i].writeToNBT(nbttagcompound);
-                    nbttaglist.appendTag(nbttagcompound);
-                }
-            }
-
-            compound.setTag("Items", nbttaglist);
+            ItemStackHelper.func_191282_a(compound, this.chestContents);
         }
 
         if (this.hasCustomName())
         {
-            compound.setString("CustomName", this.customName);
+            compound.setString("CustomName", this.field_190577_o);
         }
 
         return compound;
@@ -206,14 +128,6 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     public int getInventoryStackLimit()
     {
         return 64;
-    }
-
-    /**
-     * Do not make give this method the name canInteractWith because it clashes with Container
-     */
-    public boolean isUseableByPlayer(EntityPlayer player)
-    {
-        return this.worldObj.getTileEntity(this.pos) != this ? false : player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
     }
 
     public void updateContainingBlockInfo()
@@ -436,8 +350,12 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 
             ++this.numPlayersUsing;
             this.worldObj.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
-            this.worldObj.notifyNeighborsOfStateChange(this.pos, this.getBlockType());
-            this.worldObj.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType());
+            this.worldObj.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+
+            if (this.getChestType() == BlockChest.Type.TRAP)
+            {
+                this.worldObj.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType(), false);
+            }
         }
     }
 
@@ -447,18 +365,36 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
         {
             --this.numPlayersUsing;
             this.worldObj.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
-            this.worldObj.notifyNeighborsOfStateChange(this.pos, this.getBlockType());
-            this.worldObj.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType());
+            this.worldObj.notifyNeighborsOfStateChange(this.pos, this.getBlockType(), false);
+
+            if (this.getChestType() == BlockChest.Type.TRAP)
+            {
+                this.worldObj.notifyNeighborsOfStateChange(this.pos.down(), this.getBlockType(), false);
+            }
         }
     }
 
-    /**
-     * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot.
-     */
-    public boolean isItemValidForSlot(int index, ItemStack stack)
+    public net.minecraftforge.items.VanillaDoubleChestItemHandler doubleChestHandler;
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, net.minecraft.util.EnumFacing facing)
     {
-        return true;
+        if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        {
+            if(doubleChestHandler == null || doubleChestHandler.needsRefresh())
+                doubleChestHandler = net.minecraftforge.items.VanillaDoubleChestItemHandler.get(this);
+            if (doubleChestHandler != null && doubleChestHandler != net.minecraftforge.items.VanillaDoubleChestItemHandler.NO_ADJACENT_CHESTS_INSTANCE)
+                return (T) doubleChestHandler;
+        }
+        return super.getCapability(capability, facing);
     }
+
+    public net.minecraftforge.items.IItemHandler getSingleChestHandler()
+    {
+        return super.getCapability(net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+    }
+
 
     /**
      * invalidates a tile entity
@@ -496,49 +432,8 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
         return new ContainerChest(playerInventory, this, playerIn);
     }
 
-    public int getField(int id)
+    protected NonNullList<ItemStack> func_190576_q()
     {
-        return 0;
+        return this.chestContents;
     }
-
-    public void setField(int id, int value)
-    {
-    }
-
-    public int getFieldCount()
-    {
-        return 0;
-    }
-
-    public void clear()
-    {
-        this.fillWithLoot((EntityPlayer)null);
-
-        for (int i = 0; i < this.chestContents.length; ++i)
-        {
-            this.chestContents[i] = null;
-        }
-    }
-
-    public net.minecraftforge.items.VanillaDoubleChestItemHandler doubleChestHandler;
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, net.minecraft.util.EnumFacing facing)
-    {
-        if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-        {
-            if(doubleChestHandler == null || doubleChestHandler.needsRefresh())
-                doubleChestHandler = net.minecraftforge.items.VanillaDoubleChestItemHandler.get(this);
-            if (doubleChestHandler != null && doubleChestHandler != net.minecraftforge.items.VanillaDoubleChestItemHandler.NO_ADJACENT_CHESTS_INSTANCE)
-                return (T) doubleChestHandler;
-        }
-        return super.getCapability(capability, facing);
-    }
-
-    public net.minecraftforge.items.IItemHandler getSingleChestHandler()
-    {
-        return super.getCapability(net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-    }
-
 }

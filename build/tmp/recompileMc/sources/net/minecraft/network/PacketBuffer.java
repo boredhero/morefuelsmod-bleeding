@@ -66,13 +66,13 @@ public class PacketBuffer extends ByteBuf
         return this.readByteArray(this.readableBytes());
     }
 
-    public byte[] readByteArray(int p_189425_1_)
+    public byte[] readByteArray(int maxLength)
     {
         int i = this.readVarIntFromBuffer();
 
-        if (i > p_189425_1_)
+        if (i > maxLength)
         {
-            throw new DecoderException("ByteArray with size " + i + " is bigger than allowed " + p_189425_1_);
+            throw new DecoderException("ByteArray with size " + i + " is bigger than allowed " + maxLength);
         }
         else
         {
@@ -102,13 +102,13 @@ public class PacketBuffer extends ByteBuf
         return this.readVarIntArray(this.readableBytes());
     }
 
-    public int[] readVarIntArray(int p_189424_1_)
+    public int[] readVarIntArray(int maxLength)
     {
         int i = this.readVarIntFromBuffer();
 
-        if (i > p_189424_1_)
+        if (i > maxLength)
         {
-            throw new DecoderException("VarIntArray with size " + i + " is bigger than allowed " + p_189424_1_);
+            throw new DecoderException("VarIntArray with size " + i + " is bigger than allowed " + maxLength);
         }
         else
         {
@@ -350,22 +350,22 @@ public class PacketBuffer extends ByteBuf
     /**
      * Writes the ItemStack's ID (short), then size (byte), then damage. (short)
      */
-    public PacketBuffer writeItemStackToBuffer(@Nullable ItemStack stack)
+    public PacketBuffer writeItemStackToBuffer(ItemStack stack)
     {
-        if (stack == null)
+        if (stack.func_190926_b())
         {
             this.writeShort(-1);
         }
         else
         {
             this.writeShort(Item.getIdFromItem(stack.getItem()));
-            this.writeByte(stack.stackSize);
+            this.writeByte(stack.func_190916_E());
             this.writeShort(stack.getMetadata());
             NBTTagCompound nbttagcompound = null;
 
             if (stack.getItem().isDamageable() || stack.getItem().getShareTag())
             {
-                nbttagcompound = stack.getTagCompound();
+                nbttagcompound = stack.getItem().getNBTShareTag(stack);
             }
 
             this.writeNBTTagCompoundToBuffer(nbttagcompound);
@@ -377,21 +377,22 @@ public class PacketBuffer extends ByteBuf
     /**
      * Reads an ItemStack from this buffer
      */
-    @Nullable
     public ItemStack readItemStackFromBuffer() throws IOException
     {
-        ItemStack itemstack = null;
         int i = this.readShort();
 
-        if (i >= 0)
+        if (i < 0)
+        {
+            return ItemStack.field_190927_a;
+        }
+        else
         {
             int j = this.readByte();
             int k = this.readShort();
-            itemstack = new ItemStack(Item.getItemById(i), j, k);
+            ItemStack itemstack = new ItemStack(Item.getItemById(i), j, k);
             itemstack.setTagCompound(this.readNBTTagCompoundFromBuffer());
+            return itemstack;
         }
-
-        return itemstack;
     }
 
     /**
@@ -431,7 +432,7 @@ public class PacketBuffer extends ByteBuf
 
         if (abyte.length > 32767)
         {
-            throw new EncoderException("String too big (was " + string.length() + " bytes encoded, max " + 32767 + ")");
+            throw new EncoderException("String too big (was " + abyte.length + " bytes encoded, max " + 32767 + ")");
         }
         else
         {

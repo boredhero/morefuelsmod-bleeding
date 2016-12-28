@@ -1,17 +1,27 @@
 package net.minecraft.command;
 
 import com.google.common.base.Functions;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.primitives.Doubles;
 import com.google.gson.JsonParseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
+import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -28,6 +38,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 public abstract class CommandBase implements ICommand
 {
     private static ICommandListener commandListener;
+    private static final Splitter field_190796_b = Splitter.on(',');
+    private static final Splitter field_190797_c = Splitter.on('=').limit(2);
 
     /**
      * Convert a JsonParseException into a user-friendly exception
@@ -58,7 +70,7 @@ public abstract class CommandBase implements ICommand
         {
             ItemStack itemstack = ((EntityPlayer)theEntity).inventory.getCurrentItem();
 
-            if (itemstack != null && itemstack.getItem() != null)
+            if (!itemstack.func_190926_b())
             {
                 nbttagcompound.setTag("SelectedItem", itemstack.writeToNBT(new NBTTagCompound()));
             }
@@ -196,11 +208,11 @@ public abstract class CommandBase implements ICommand
 
         if (d0 < min)
         {
-            throw new NumberInvalidException("commands.generic.double.tooSmall", new Object[] {Double.valueOf(d0), Double.valueOf(min)});
+            throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {String.format("%.2f", new Object[]{Double.valueOf(d0)}), String.format("%.2f", new Object[]{Double.valueOf(min)})});
         }
         else if (d0 > max)
         {
-            throw new NumberInvalidException("commands.generic.double.tooBig", new Object[] {Double.valueOf(d0), Double.valueOf(max)});
+            throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {String.format("%.2f", new Object[]{Double.valueOf(d0)}), String.format("%.2f", new Object[]{Double.valueOf(max)})});
         }
         else
         {
@@ -238,11 +250,11 @@ public abstract class CommandBase implements ICommand
         }
         else
         {
-            throw new PlayerNotFoundException("You must specify which player you wish to perform this action on.", new Object[0]);
+            throw new PlayerNotFoundException("commands.generic.player.unspecified");
         }
     }
 
-    public static EntityPlayerMP getPlayer(MinecraftServer server, ICommandSender sender, String target) throws PlayerNotFoundException
+    public static EntityPlayerMP getPlayer(MinecraftServer server, ICommandSender sender, String target) throws PlayerNotFoundException, CommandException
     {
         EntityPlayerMP entityplayermp = EntitySelector.matchOnePlayer(sender, target);
 
@@ -265,7 +277,7 @@ public abstract class CommandBase implements ICommand
 
         if (entityplayermp == null)
         {
-            throw new PlayerNotFoundException();
+            throw new PlayerNotFoundException("commands.generic.player.notFound", new Object[] {target});
         }
         else
         {
@@ -273,12 +285,12 @@ public abstract class CommandBase implements ICommand
         }
     }
 
-    public static Entity getEntity(MinecraftServer server, ICommandSender sender, String target) throws EntityNotFoundException
+    public static Entity getEntity(MinecraftServer server, ICommandSender sender, String target) throws EntityNotFoundException, CommandException
     {
         return getEntity(server, sender, target, Entity.class);
     }
 
-    public static <T extends Entity> T getEntity(MinecraftServer server, ICommandSender sender, String target, Class <? extends T > targetClass) throws EntityNotFoundException
+    public static <T extends Entity> T getEntity(MinecraftServer server, ICommandSender sender, String target, Class <? extends T > targetClass) throws EntityNotFoundException, CommandException
     {
         Entity entity = EntitySelector.matchOneEntity(sender, target, targetClass);
 
@@ -301,7 +313,10 @@ public abstract class CommandBase implements ICommand
             }
             catch (IllegalArgumentException var6)
             {
-                throw new EntityNotFoundException("commands.generic.entity.invalidUuid", new Object[0]);
+                if (target.split("-").length == 5)
+                {
+                    throw new EntityNotFoundException("commands.generic.entity.invalidUuid", new Object[] {target});
+                }
             }
         }
 
@@ -311,35 +326,35 @@ public abstract class CommandBase implements ICommand
         }
         else
         {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException(target);
         }
     }
 
-    public static List<Entity> getEntityList(MinecraftServer server, ICommandSender sender, String target) throws EntityNotFoundException
+    public static List<Entity> getEntityList(MinecraftServer server, ICommandSender sender, String target) throws EntityNotFoundException, CommandException
     {
         return (List<Entity>)(EntitySelector.hasArguments(target) ? EntitySelector.matchEntities(sender, target, Entity.class) : Lists.newArrayList(new Entity[] {getEntity(server, sender, target)}));
     }
 
-    public static String getPlayerName(MinecraftServer server, ICommandSender sender, String target) throws PlayerNotFoundException
+    public static String getPlayerName(MinecraftServer server, ICommandSender sender, String target) throws PlayerNotFoundException, CommandException
     {
         try
         {
             return getPlayer(server, sender, target).getName();
         }
-        catch (PlayerNotFoundException playernotfoundexception)
+        catch (CommandException commandexception)
         {
-            if (target != null && !target.startsWith("@"))
+            if (EntitySelector.hasArguments(target))
             {
-                return target;
+                throw commandexception;
             }
             else
             {
-                throw playernotfoundexception;
+                return target;
             }
         }
     }
 
-    public static String getEntityName(MinecraftServer server, ICommandSender sender, String target) throws EntityNotFoundException
+    public static String getEntityName(MinecraftServer server, ICommandSender sender, String target) throws EntityNotFoundException, CommandException
     {
         try
         {
@@ -353,13 +368,13 @@ public abstract class CommandBase implements ICommand
             }
             catch (EntityNotFoundException entitynotfoundexception)
             {
-                if (target != null && !target.startsWith("@"))
+                if (EntitySelector.hasArguments(target))
                 {
-                    return target;
+                    throw entitynotfoundexception;
                 }
                 else
                 {
-                    throw entitynotfoundexception;
+                    return target;
                 }
             }
         }
@@ -370,7 +385,7 @@ public abstract class CommandBase implements ICommand
         return getChatComponentFromNthArg(sender, args, index, false);
     }
 
-    public static ITextComponent getChatComponentFromNthArg(ICommandSender sender, String[] args, int index, boolean p_147176_3_) throws PlayerNotFoundException
+    public static ITextComponent getChatComponentFromNthArg(ICommandSender sender, String[] args, int index, boolean p_147176_3_) throws PlayerNotFoundException, CommandException
     {
         ITextComponent itextcomponent = new TextComponentString("");
 
@@ -391,7 +406,7 @@ public abstract class CommandBase implements ICommand
                 {
                     if (EntitySelector.hasArguments(args[i]))
                     {
-                        throw new PlayerNotFoundException();
+                        throw new PlayerNotFoundException("commands.generic.selector.notFound", new Object[] {args[i]});
                     }
                 }
                 else
@@ -467,12 +482,12 @@ public abstract class CommandBase implements ICommand
             {
                 if (d1 < (double)min)
                 {
-                    throw new NumberInvalidException("commands.generic.double.tooSmall", new Object[] {Double.valueOf(d1), Integer.valueOf(min)});
+                    throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {String.format("%.2f", new Object[]{Double.valueOf(d1)}), Integer.valueOf(min)});
                 }
 
                 if (d1 > (double)max)
                 {
-                    throw new NumberInvalidException("commands.generic.double.tooBig", new Object[] {Double.valueOf(d1), Integer.valueOf(max)});
+                    throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {String.format("%.2f", new Object[]{Double.valueOf(d1)}), Integer.valueOf(max)});
                 }
             }
 
@@ -518,12 +533,12 @@ public abstract class CommandBase implements ICommand
             {
                 if (d0 < (double)min)
                 {
-                    throw new NumberInvalidException("commands.generic.double.tooSmall", new Object[] {Double.valueOf(d0), Integer.valueOf(min)});
+                    throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {String.format("%.2f", new Object[]{Double.valueOf(d0)}), Integer.valueOf(min)});
                 }
 
                 if (d0 > (double)max)
                 {
-                    throw new NumberInvalidException("commands.generic.double.tooBig", new Object[] {Double.valueOf(d0), Integer.valueOf(max)});
+                    throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {String.format("%.2f", new Object[]{Double.valueOf(d0)}), Integer.valueOf(max)});
                 }
             }
 
@@ -566,17 +581,156 @@ public abstract class CommandBase implements ICommand
         }
         else
         {
-            Block block = (Block)Block.REGISTRY.getObject(resourcelocation);
+            return (Block)Block.REGISTRY.getObject(resourcelocation);
+        }
+    }
 
-            if (block == null)
+    public static IBlockState func_190794_a(Block p_190794_0_, String p_190794_1_) throws NumberInvalidException, InvalidBlockStateException
+    {
+        try
+        {
+            int i = Integer.parseInt(p_190794_1_);
+
+            if (i < 0)
             {
-                throw new NumberInvalidException("commands.give.block.notFound", new Object[] {resourcelocation});
+                throw new NumberInvalidException("commands.generic.num.tooSmall", new Object[] {Integer.valueOf(i), Integer.valueOf(0)});
+            }
+            else if (i > 15)
+            {
+                throw new NumberInvalidException("commands.generic.num.tooBig", new Object[] {Integer.valueOf(i), Integer.valueOf(15)});
             }
             else
             {
-                return block;
+                return p_190794_0_.getStateFromMeta(Integer.parseInt(p_190794_1_));
             }
         }
+        catch (RuntimeException var7)
+        {
+            try
+            {
+                Map < IProperty<?>, Comparable<? >> map = func_190795_c(p_190794_0_, p_190794_1_);
+                IBlockState iblockstate = p_190794_0_.getDefaultState();
+
+                for (Entry < IProperty<?>, Comparable<? >> entry : map.entrySet())
+                {
+                    iblockstate = func_190793_a(iblockstate, (IProperty)entry.getKey(), (Comparable)entry.getValue());
+                }
+
+                return iblockstate;
+            }
+            catch (RuntimeException var6)
+            {
+                throw new InvalidBlockStateException("commands.generic.blockstate.invalid", new Object[] {p_190794_1_, Block.REGISTRY.getNameForObject(p_190794_0_)});
+            }
+        }
+    }
+
+    private static <T extends Comparable<T>> IBlockState func_190793_a(IBlockState p_190793_0_, IProperty<T> p_190793_1_, Comparable<?> p_190793_2_)
+    {
+        return p_190793_0_.withProperty(p_190793_1_, (T)p_190793_2_);
+    }
+
+    public static Predicate<IBlockState> func_190791_b(final Block p_190791_0_, String p_190791_1_) throws InvalidBlockStateException
+    {
+        if (!"*".equals(p_190791_1_) && !"-1".equals(p_190791_1_))
+        {
+            try
+            {
+                final int i = Integer.parseInt(p_190791_1_);
+                return new Predicate<IBlockState>()
+                {
+                    public boolean apply(@Nullable IBlockState p_apply_1_)
+                    {
+                        return i == p_apply_1_.getBlock().getMetaFromState(p_apply_1_);
+                    }
+                };
+            }
+            catch (RuntimeException var3)
+            {
+                final Map < IProperty<?>, Comparable<? >> map = func_190795_c(p_190791_0_, p_190791_1_);
+                return new Predicate<IBlockState>()
+                {
+                    public boolean apply(@Nullable IBlockState p_apply_1_)
+                    {
+                        if (p_apply_1_ != null && p_190791_0_ == p_apply_1_.getBlock())
+                        {
+                            for (Entry < IProperty<?>, Comparable<? >> entry : map.entrySet())
+                            {
+                                if (!p_apply_1_.getValue((IProperty)entry.getKey()).equals(entry.getValue()))
+                                {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                };
+            }
+        }
+        else
+        {
+            return Predicates.alwaysTrue();
+        }
+    }
+
+    private static Map < IProperty<?>, Comparable<? >> func_190795_c(Block p_190795_0_, String p_190795_1_) throws InvalidBlockStateException
+    {
+        Map < IProperty<?>, Comparable<? >> map = Maps. < IProperty<?>, Comparable<? >> newHashMap();
+
+        if ("default".equals(p_190795_1_))
+        {
+            return p_190795_0_.getDefaultState().getProperties();
+        }
+        else
+        {
+            BlockStateContainer blockstatecontainer = p_190795_0_.getBlockState();
+            Iterator iterator = field_190796_b.split(p_190795_1_).iterator();
+
+            while (true)
+            {
+                if (!iterator.hasNext())
+                {
+                    return map;
+                }
+
+                String s = (String)iterator.next();
+                Iterator<String> iterator1 = field_190797_c.split(s).iterator();
+
+                if (!iterator1.hasNext())
+                {
+                    break;
+                }
+
+                IProperty<?> iproperty = blockstatecontainer.getProperty((String)iterator1.next());
+
+                if (iproperty == null || !iterator1.hasNext())
+                {
+                    break;
+                }
+
+                Comparable<?> comparable = func_190792_a(iproperty, (String)iterator1.next());
+
+                if (comparable == null)
+                {
+                    break;
+                }
+
+                map.put(iproperty, comparable);
+            }
+
+            throw new InvalidBlockStateException("commands.generic.blockstate.invalid", new Object[] {p_190795_1_, Block.REGISTRY.getNameForObject(p_190795_0_)});
+        }
+    }
+
+    @Nullable
+    private static <T extends Comparable<T>> T func_190792_a(IProperty<T> p_190792_0_, String p_190792_1_)
+    {
+        return (T)((Comparable)p_190792_0_.parseValue(p_190792_1_).orNull());
     }
 
     /**
@@ -680,7 +834,6 @@ public abstract class CommandBase implements ICommand
         }
     }
 
-    @Nullable
     public static List<String> getTabCompletionCoordinateXZ(String[] inputArgs, int index, @Nullable BlockPos lookedPos)
     {
         if (lookedPos == null)
@@ -700,7 +853,7 @@ public abstract class CommandBase implements ICommand
             {
                 if (i != index + 1)
                 {
-                    return null;
+                    return Collections.<String>emptyList();
                 }
 
                 s = Integer.toString(lookedPos.getZ());

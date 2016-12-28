@@ -1,8 +1,6 @@
 package net.minecraft.entity.item;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.world.World;
@@ -19,14 +17,14 @@ public class EntityMinecartEmpty extends EntityMinecart
         super(worldIn, x, y, z);
     }
 
-    public static void func_189673_a(DataFixer p_189673_0_)
+    public static void registerFixesMinecartEmpty(DataFixer fixer)
     {
-        EntityMinecart.func_189669_a(p_189673_0_, "MinecartRideable");
+        EntityMinecart.registerFixesMinecart(fixer, EntityMinecartEmpty.class);
     }
 
-    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand stack)
     {
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand))) return true;
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack))) return true;
 
         if (player.isSneaking())
         {

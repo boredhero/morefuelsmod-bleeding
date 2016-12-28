@@ -26,32 +26,34 @@ public class ItemDoor extends Item
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        if (facing != EnumFacing.UP)
+        if (hand != EnumFacing.UP)
         {
             return EnumActionResult.FAIL;
         }
         else
         {
-            IBlockState iblockstate = worldIn.getBlockState(pos);
+            IBlockState iblockstate = playerIn.getBlockState(worldIn);
             Block block = iblockstate.getBlock();
 
-            if (!block.isReplaceable(worldIn, pos))
+            if (!block.isReplaceable(playerIn, worldIn))
             {
-                pos = pos.offset(facing);
+                worldIn = worldIn.offset(hand);
             }
 
-            if (playerIn.canPlayerEdit(pos, facing, stack) && this.block.canPlaceBlockAt(worldIn, pos))
+            ItemStack itemstack = stack.getHeldItem(pos);
+
+            if (stack.canPlayerEdit(worldIn, hand, itemstack) && this.block.canPlaceBlockAt(playerIn, worldIn))
             {
-                EnumFacing enumfacing = EnumFacing.fromAngle((double)playerIn.rotationYaw);
+                EnumFacing enumfacing = EnumFacing.fromAngle((double)stack.rotationYaw);
                 int i = enumfacing.getFrontOffsetX();
                 int j = enumfacing.getFrontOffsetZ();
-                boolean flag = i < 0 && hitZ < 0.5F || i > 0 && hitZ > 0.5F || j < 0 && hitX > 0.5F || j > 0 && hitX < 0.5F;
-                placeDoor(worldIn, pos, enumfacing, this.block, flag);
-                SoundType soundtype = worldIn.getBlockState(pos).getBlock().getSoundType(worldIn.getBlockState(pos), worldIn, pos, playerIn);
-                worldIn.playSound(playerIn, pos, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
-                --stack.stackSize;
+                boolean flag = i < 0 && hitY < 0.5F || i > 0 && hitY > 0.5F || j < 0 && facing > 0.5F || j > 0 && facing < 0.5F;
+                placeDoor(playerIn, worldIn, enumfacing, this.block, flag);
+                SoundType soundtype = playerIn.getBlockState(worldIn).getBlock().getSoundType(playerIn.getBlockState(worldIn), playerIn, worldIn, stack);
+                playerIn.playSound(stack, worldIn, soundtype.getPlaceSound(), SoundCategory.BLOCKS, (soundtype.getVolume() + 1.0F) / 2.0F, soundtype.getPitch() * 0.8F);
+                itemstack.func_190918_g(1);
                 return EnumActionResult.SUCCESS;
             }
             else
@@ -87,7 +89,7 @@ public class ItemDoor extends Item
         IBlockState iblockstate = door.getDefaultState().withProperty(BlockDoor.FACING, facing).withProperty(BlockDoor.HINGE, isRightHinge ? BlockDoor.EnumHingePosition.RIGHT : BlockDoor.EnumHingePosition.LEFT).withProperty(BlockDoor.POWERED, Boolean.valueOf(flag2)).withProperty(BlockDoor.OPEN, Boolean.valueOf(flag2));
         worldIn.setBlockState(pos, iblockstate.withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.LOWER), 2);
         worldIn.setBlockState(blockpos2, iblockstate.withProperty(BlockDoor.HALF, BlockDoor.EnumDoorHalf.UPPER), 2);
-        worldIn.notifyNeighborsOfStateChange(pos, door);
-        worldIn.notifyNeighborsOfStateChange(blockpos2, door);
+        worldIn.notifyNeighborsOfStateChange(pos, door, false);
+        worldIn.notifyNeighborsOfStateChange(blockpos2, door, false);
     }
 }

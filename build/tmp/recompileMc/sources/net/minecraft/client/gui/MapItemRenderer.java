@@ -2,6 +2,7 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -10,8 +11,8 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec4b;
 import net.minecraft.world.storage.MapData;
+import net.minecraft.world.storage.MapDecoration;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -56,6 +57,12 @@ public class MapItemRenderer
         return mapitemrenderer$instance;
     }
 
+    @Nullable
+    public MapItemRenderer.Instance func_191205_a(String p_191205_1_)
+    {
+        return (MapItemRenderer.Instance)this.loadedMaps.get(p_191205_1_);
+    }
+
     /**
      * Clears the currently loaded maps and removes their corresponding textures
      */
@@ -67,6 +74,12 @@ public class MapItemRenderer
         }
 
         this.loadedMaps.clear();
+    }
+
+    @Nullable
+    public MapData func_191207_a(@Nullable MapItemRenderer.Instance p_191207_1_)
+    {
+        return p_191207_1_ != null ? p_191207_1_.mapData : null;
     }
 
     @SideOnly(Side.CLIENT)
@@ -137,16 +150,16 @@ public class MapItemRenderer
             MapItemRenderer.this.textureManager.bindTexture(MapItemRenderer.TEXTURE_MAP_ICONS);
             int k = 0;
 
-            for (Vec4b vec4b : this.mapData.mapDecorations.values())
+            for (MapDecoration mapdecoration : this.mapData.mapDecorations.values())
             {
-                if (!noOverlayRendering || vec4b.getType() == 1)
+                if (!noOverlayRendering || mapdecoration.func_191180_f())
                 {
                     GlStateManager.pushMatrix();
-                    GlStateManager.translate(0.0F + (float)vec4b.getX() / 2.0F + 64.0F, 0.0F + (float)vec4b.getY() / 2.0F + 64.0F, -0.02F);
-                    GlStateManager.rotate((float)(vec4b.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
+                    GlStateManager.translate(0.0F + (float)mapdecoration.getX() / 2.0F + 64.0F, 0.0F + (float)mapdecoration.getY() / 2.0F + 64.0F, -0.02F);
+                    GlStateManager.rotate((float)(mapdecoration.getRotation() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
                     GlStateManager.scale(4.0F, 4.0F, 3.0F);
                     GlStateManager.translate(-0.125F, 0.125F, 0.0F);
-                    byte b0 = vec4b.getType();
+                    byte b0 = mapdecoration.getType();
                     float f1 = (float)(b0 % 4 + 0) / 4.0F;
                     float f2 = (float)(b0 / 4 + 0) / 4.0F;
                     float f3 = (float)(b0 % 4 + 1) / 4.0F;

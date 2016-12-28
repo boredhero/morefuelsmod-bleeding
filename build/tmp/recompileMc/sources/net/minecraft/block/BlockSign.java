@@ -16,6 +16,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockSign extends BlockContainer
 {
@@ -32,7 +34,7 @@ public class BlockSign extends BlockContainer
     }
 
     @Nullable
-    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos)
+    public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
     {
         return NULL_AABB;
     }
@@ -40,6 +42,12 @@ public class BlockSign extends BlockContainer
     public boolean isFullCube(IBlockState state)
     {
         return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public boolean func_190946_v(IBlockState p_190946_1_)
+    {
+        return true;
     }
 
     public boolean isPassable(IBlockAccess worldIn, BlockPos pos)
@@ -74,7 +82,6 @@ public class BlockSign extends BlockContainer
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Items.SIGN;
@@ -85,7 +92,7 @@ public class BlockSign extends BlockContainer
         return new ItemStack(Items.SIGN);
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY)
     {
         if (worldIn.isRemote)
         {

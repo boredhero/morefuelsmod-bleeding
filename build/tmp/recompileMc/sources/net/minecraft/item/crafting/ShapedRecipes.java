@@ -1,8 +1,8 @@
 package net.minecraft.item.crafting;
 
-import javax.annotation.Nullable;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 public class ShapedRecipes implements IRecipe
@@ -22,26 +22,34 @@ public class ShapedRecipes implements IRecipe
         this.recipeWidth = width;
         this.recipeHeight = height;
         this.recipeItems = p_i1917_3_;
+
+        for (int i = 0; i < this.recipeItems.length; ++i)
+        {
+            if (this.recipeItems[i] == null)
+            {
+                this.recipeItems[i] = ItemStack.field_190927_a;
+            }
+        }
+
         this.recipeOutput = output;
     }
 
-    @Nullable
     public ItemStack getRecipeOutput()
     {
         return this.recipeOutput;
     }
 
-    public ItemStack[] getRemainingItems(InventoryCrafting inv)
+    public NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv)
     {
-        ItemStack[] aitemstack = new ItemStack[inv.getSizeInventory()];
+        NonNullList<ItemStack> nonnulllist = NonNullList.<ItemStack>func_191197_a(inv.getSizeInventory(), ItemStack.field_190927_a);
 
-        for (int i = 0; i < aitemstack.length; ++i)
+        for (int i = 0; i < nonnulllist.size(); ++i)
         {
             ItemStack itemstack = inv.getStackInSlot(i);
-            aitemstack[i] = net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack);
+            nonnulllist.set(i, net.minecraftforge.common.ForgeHooks.getContainerItem(itemstack));
         }
 
-        return aitemstack;
+        return nonnulllist;
     }
 
     /**
@@ -79,7 +87,7 @@ public class ShapedRecipes implements IRecipe
             {
                 int k = i - p_77573_2_;
                 int l = j - p_77573_3_;
-                ItemStack itemstack = null;
+                ItemStack itemstack = ItemStack.field_190927_a;
 
                 if (k >= 0 && l >= 0 && k < this.recipeWidth && l < this.recipeHeight)
                 {
@@ -95,9 +103,9 @@ public class ShapedRecipes implements IRecipe
 
                 ItemStack itemstack1 = p_77573_1_.getStackInRowAndColumn(i, j);
 
-                if (itemstack1 != null || itemstack != null)
+                if (!itemstack1.func_190926_b() || !itemstack.func_190926_b())
                 {
-                    if (itemstack1 == null && itemstack != null || itemstack1 != null && itemstack == null)
+                    if (itemstack1.func_190926_b() != itemstack.func_190926_b())
                     {
                         return false;
                     }
@@ -121,7 +129,6 @@ public class ShapedRecipes implements IRecipe
     /**
      * Returns an Item that is the result of this recipe
      */
-    @Nullable
     public ItemStack getCraftingResult(InventoryCrafting inv)
     {
         ItemStack itemstack = this.getRecipeOutput().copy();
@@ -132,7 +139,7 @@ public class ShapedRecipes implements IRecipe
             {
                 ItemStack itemstack1 = inv.getStackInSlot(i);
 
-                if (itemstack1 != null && itemstack1.hasTagCompound())
+                if (!itemstack1.func_190926_b() && itemstack1.hasTagCompound())
                 {
                     itemstack.setTagCompound(itemstack1.getTagCompound().copy());
                 }

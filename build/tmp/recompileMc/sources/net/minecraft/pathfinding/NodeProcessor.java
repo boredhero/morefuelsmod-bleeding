@@ -66,7 +66,7 @@ public abstract class NodeProcessor
 
     public abstract PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z, EntityLiving entitylivingIn, int xSize, int ySize, int zSize, boolean canBreakDoorsIn, boolean canEnterDoorsIn);
 
-    public abstract PathNodeType getPathNodeType(IBlockAccess x, int y, int z, int p_186330_4_);
+    public abstract PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z);
 
     public void setCanEnterDoors(boolean canEnterDoorsIn)
     {

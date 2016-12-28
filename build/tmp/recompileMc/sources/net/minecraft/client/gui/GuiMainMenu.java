@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -23,6 +22,7 @@ import net.minecraft.client.resources.IResource;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StringUtils;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.demo.DemoWorldServer;
@@ -38,9 +38,8 @@ import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.glu.Project;
 
 @SideOnly(Side.CLIENT)
-public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
+public class GuiMainMenu extends GuiScreen
 {
-    private static final AtomicInteger UNIQUE_THREAD_ID = new AtomicInteger(0);
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Random RANDOM = new Random();
     /** Counts the number of screen updates. */
@@ -52,19 +51,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private int panoramaTimer;
     /** Texture allocated for the current viewport of the main menu's panorama background. */
     private DynamicTexture viewportTexture;
-    private final boolean mcoEnabled = true;
     /** The Object object utilized as a thread lock when performing non thread-safe operations */
     private final Object threadLock = new Object();
-    /** OpenGL graphics card warning. */
-    private String openGLWarning1;
-    /** OpenGL graphics card warning. */
-    private String openGLWarning2;
-    /** Link to the Mojang Support about minimum requirements */
-    private String openGLWarningLink;
-    private static final ResourceLocation SPLASH_TEXTS = new ResourceLocation("texts/splashes.txt");
-    private static final ResourceLocation MINECRAFT_TITLE_TEXTURES = new ResourceLocation("textures/gui/title/minecraft.png");
-    /** An array of all the paths to the panorama pictures. */
-    private static final ResourceLocation[] TITLE_PANORAMA_PATHS = new ResourceLocation[] {new ResourceLocation("textures/gui/title/background/panorama_0.png"), new ResourceLocation("textures/gui/title/background/panorama_1.png"), new ResourceLocation("textures/gui/title/background/panorama_2.png"), new ResourceLocation("textures/gui/title/background/panorama_3.png"), new ResourceLocation("textures/gui/title/background/panorama_4.png"), new ResourceLocation("textures/gui/title/background/panorama_5.png")};
     public static final String MORE_INFO_TEXT = "Please click " + TextFormatting.UNDERLINE + "here" + TextFormatting.RESET + " for more information.";
     /** Width of openGLWarning2 */
     private int openGLWarning2Width;
@@ -78,6 +66,16 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private int openGLWarningX2;
     /** Bottom y coordinate of the OpenGL warning */
     private int openGLWarningY2;
+    /** OpenGL graphics card warning. */
+    private String openGLWarning1;
+    /** OpenGL graphics card warning. */
+    private String openGLWarning2;
+    /** Link to the Mojang Support about minimum requirements */
+    private String openGLWarningLink;
+    private static final ResourceLocation SPLASH_TEXTS = new ResourceLocation("texts/splashes.txt");
+    private static final ResourceLocation MINECRAFT_TITLE_TEXTURES = new ResourceLocation("textures/gui/title/minecraft.png");
+    /** An array of all the paths to the panorama pictures. */
+    private static final ResourceLocation[] TITLE_PANORAMA_PATHS = new ResourceLocation[] {new ResourceLocation("textures/gui/title/background/panorama_0.png"), new ResourceLocation("textures/gui/title/background/panorama_1.png"), new ResourceLocation("textures/gui/title/background/panorama_2.png"), new ResourceLocation("textures/gui/title/background/panorama_3.png"), new ResourceLocation("textures/gui/title/background/panorama_4.png"), new ResourceLocation("textures/gui/title/background/panorama_5.png")};
     private ResourceLocation backgroundTexture;
     /** Minecraft Realms button. */
     private GuiButton realmsButton;
@@ -144,6 +142,15 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
             this.openGLWarning1 = I18n.format("title.oldgl1", new Object[0]);
             this.openGLWarning2 = I18n.format("title.oldgl2", new Object[0]);
             this.openGLWarningLink = "https://help.mojang.com/customer/portal/articles/325948?ref=game";
+        }
+
+        String s1 = System.getProperty("java.version");
+
+        if (s1 != null && (s1.startsWith("1.6") || s1.startsWith("1.7")))
+        {
+            this.openGLWarning1 = I18n.format("title.oldjava1", new Object[0]);
+            this.openGLWarning2 = I18n.format("title.oldjava2", new Object[0]);
+            this.openGLWarningLink = "https://help.mojang.com/customer/portal/articles/2636196?ref=game";
         }
     }
 
@@ -259,7 +266,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     {
         this.buttonList.add(new GuiButton(1, this.width / 2 - 100, p_73969_1_, I18n.format("menu.singleplayer", new Object[0])));
         this.buttonList.add(new GuiButton(2, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 1, I18n.format("menu.multiplayer", new Object[0])));
-        this.realmsButton = this.func_189646_b(new GuiButton(14, this.width / 2 + 2, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("menu.online", new Object[0]).replace("Minecraft", "").trim()));
+        this.realmsButton = this.addButton(new GuiButton(14, this.width / 2 + 2, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("menu.online", new Object[0]).replace("Minecraft", "").trim()));
         this.buttonList.add(modButton = new GuiButton(6, this.width / 2 - 100, p_73969_1_ + p_73969_2_ * 2, 98, 20, I18n.format("fml.menu.mods")));
     }
 
@@ -269,7 +276,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private void addDemoButtons(int p_73972_1_, int p_73972_2_)
     {
         this.buttonList.add(new GuiButton(11, this.width / 2 - 100, p_73972_1_, I18n.format("menu.playdemo", new Object[0])));
-        this.buttonResetDemo = this.func_189646_b(new GuiButton(12, this.width / 2 - 100, p_73972_1_ + p_73972_2_ * 1, I18n.format("menu.resetdemo", new Object[0])));
+        this.buttonResetDemo = this.addButton(new GuiButton(12, this.width / 2 - 100, p_73972_1_ + p_73972_2_ * 1, I18n.format("menu.resetdemo", new Object[0])));
         ISaveFormat isaveformat = this.mc.getSaveLoader();
         WorldInfo worldinfo = isaveformat.getWorldInfo("Demo_World");
 
@@ -349,6 +356,10 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
             ISaveFormat isaveformat = this.mc.getSaveLoader();
             isaveformat.flushCache();
             isaveformat.deleteWorldDirectory("Demo_World");
+            this.mc.displayGuiScreen(this);
+        }
+        else if (id == 12)
+        {
             this.mc.displayGuiScreen(this);
         }
         else if (id == 13)
@@ -568,7 +579,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
         GlStateManager.scale(f, f, f);
         this.drawCenteredString(this.fontRendererObj, this.splashText, 0, -8, -256);
         GlStateManager.popMatrix();
-        String s = "Minecraft 1.10.2";
+        String s = "Minecraft 1.11.2";
 
         if (this.mc.isDemo())
         {
@@ -616,7 +627,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
         synchronized (this.threadLock)
         {
-            if (!this.openGLWarning1.isEmpty() && mouseX >= this.openGLWarningX1 && mouseX <= this.openGLWarningX2 && mouseY >= this.openGLWarningY1 && mouseY <= this.openGLWarningY2)
+            if (!this.openGLWarning1.isEmpty() && !StringUtils.isNullOrEmpty(this.openGLWarningLink) && mouseX >= this.openGLWarningX1 && mouseX <= this.openGLWarningX2 && mouseY >= this.openGLWarningY1 && mouseY <= this.openGLWarningY2)
             {
                 GuiConfirmOpenLink guiconfirmopenlink = new GuiConfirmOpenLink(this, this.openGLWarningLink, 13, true);
                 guiconfirmopenlink.disableSecurityWarning();

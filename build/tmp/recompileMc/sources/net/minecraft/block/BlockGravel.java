@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import javax.annotation.Nullable;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Items;
@@ -14,7 +13,6 @@ public class BlockGravel extends BlockFalling
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         if (fortune > 3)
@@ -22,7 +20,7 @@ public class BlockGravel extends BlockFalling
             fortune = 3;
         }
 
-        return rand.nextInt(10 - fortune * 3) == 0 ? Items.FLINT : Item.getItemFromBlock(this);
+        return rand.nextInt(10 - fortune * 3) == 0 ? Items.FLINT : super.getItemDropped(state, rand, fortune);
     }
 
     /**
@@ -34,7 +32,7 @@ public class BlockGravel extends BlockFalling
     }
 
     @SideOnly(Side.CLIENT)
-    public int func_189876_x(IBlockState p_189876_1_)
+    public int getDustColor(IBlockState p_189876_1_)
     {
         return -8356741;
     }

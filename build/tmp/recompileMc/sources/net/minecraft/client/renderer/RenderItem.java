@@ -54,7 +54,6 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -119,10 +118,10 @@ public class RenderItem implements IResourceManagerReloadListener
 
     private void renderModel(IBakedModel model, int color)
     {
-        this.renderModel(model, color, (ItemStack)null);
+        this.renderModel(model, color, ItemStack.field_190927_a);
     }
 
-    private void renderModel(IBakedModel model, int color, @Nullable ItemStack stack)
+    private void renderModel(IBakedModel model, int color, ItemStack stack)
     {
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vertexbuffer = tessellator.getBuffer();
@@ -139,7 +138,7 @@ public class RenderItem implements IResourceManagerReloadListener
 
     public void renderItem(ItemStack stack, IBakedModel model)
     {
-        if (stack != null)
+        if (!stack.func_190926_b())
         {
             GlStateManager.pushMatrix();
             GlStateManager.translate(-0.5F, -0.5F, -0.5F);
@@ -207,9 +206,9 @@ public class RenderItem implements IResourceManagerReloadListener
         this.putQuadNormal(renderer, quad);
     }
 
-    private void renderQuads(VertexBuffer renderer, List<BakedQuad> quads, int color, @Nullable ItemStack stack)
+    private void renderQuads(VertexBuffer renderer, List<BakedQuad> quads, int color, ItemStack stack)
     {
-        boolean flag = color == -1 && stack != null;
+        boolean flag = color == -1 && !stack.func_190926_b();
         int i = 0;
 
         for (int j = quads.size(); i < j; ++i)
@@ -241,7 +240,7 @@ public class RenderItem implements IResourceManagerReloadListener
 
     public void renderItem(ItemStack stack, ItemCameraTransforms.TransformType cameraTransformType)
     {
-        if (stack != null)
+        if (!stack.func_190926_b())
         {
             IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, (World)null, (EntityLivingBase)null);
             this.renderItemModel(stack, ibakedmodel, cameraTransformType, false);
@@ -256,7 +255,7 @@ public class RenderItem implements IResourceManagerReloadListener
 
     public void renderItem(ItemStack stack, EntityLivingBase entitylivingbaseIn, ItemCameraTransforms.TransformType transform, boolean leftHanded)
     {
-        if (stack != null && entitylivingbaseIn != null && stack.getItem() != null)
+        if (!stack.func_190926_b() && entitylivingbaseIn != null)
         {
             IBakedModel ibakedmodel = this.getItemModelWithOverrides(stack, entitylivingbaseIn.worldObj, entitylivingbaseIn);
             this.renderItemModel(stack, ibakedmodel, transform, leftHanded);
@@ -265,7 +264,7 @@ public class RenderItem implements IResourceManagerReloadListener
 
     protected void renderItemModel(ItemStack stack, IBakedModel bakedmodel, ItemCameraTransforms.TransformType transform, boolean leftHanded)
     {
-        if (stack.getItem() != null)
+        if (!stack.func_190926_b())
         {
             this.textureManager.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
             this.textureManager.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
@@ -347,7 +346,7 @@ public class RenderItem implements IResourceManagerReloadListener
 
     public void renderItemAndEffectIntoGUI(@Nullable EntityLivingBase p_184391_1_, final ItemStack p_184391_2_, int p_184391_3_, int p_184391_4_)
     {
-        if (p_184391_2_ != null && p_184391_2_.getItem() != null)
+        if (!p_184391_2_.func_190926_b())
         {
             this.zLevel += 50.0F;
 
@@ -404,17 +403,11 @@ public class RenderItem implements IResourceManagerReloadListener
      */
     public void renderItemOverlayIntoGUI(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, @Nullable String text)
     {
-        if (stack != null)
+        if (!stack.func_190926_b())
         {
-            if (stack.stackSize != 1 || text != null)
+            if (stack.func_190916_E() != 1 || text != null)
             {
-                String s = text == null ? String.valueOf(stack.stackSize) : text;
-
-                if (text == null && stack.stackSize < 1)
-                {
-                    s = TextFormatting.RED + String.valueOf(stack.stackSize);
-                }
-
+                String s = text == null ? String.valueOf(stack.func_190916_E()) : text;
                 GlStateManager.disableLighting();
                 GlStateManager.disableDepth();
                 GlStateManager.disableBlend();
@@ -428,9 +421,6 @@ public class RenderItem implements IResourceManagerReloadListener
 
             if (stack.getItem().showDurabilityBar(stack))
             {
-                double health = stack.getItem().getDurabilityForDisplay(stack);
-                int j = (int)Math.round(13.0D - health * 13.0D);
-                int i = (int)Math.round(255.0D - health * 255.0D);
                 GlStateManager.disableLighting();
                 GlStateManager.disableDepth();
                 GlStateManager.disableTexture2D();
@@ -438,9 +428,12 @@ public class RenderItem implements IResourceManagerReloadListener
                 GlStateManager.disableBlend();
                 Tessellator tessellator = Tessellator.getInstance();
                 VertexBuffer vertexbuffer = tessellator.getBuffer();
+                double health = stack.getItem().getDurabilityForDisplay(stack);
+                int rgbfordisplay = stack.getItem().getRGBDurabilityForDisplay(stack);
+                int i = Math.round(13.0F - (float)health * 13.0F);
+                int j = rgbfordisplay;
                 this.draw(vertexbuffer, xPosition + 2, yPosition + 13, 13, 2, 0, 0, 0, 255);
-                this.draw(vertexbuffer, xPosition + 2, yPosition + 13, 12, 1, (255 - i) / 4, 64, 0, 255);
-                this.draw(vertexbuffer, xPosition + 2, yPosition + 13, j, 1, 255 - i, i, 0, 255);
+                this.draw(vertexbuffer, xPosition + 2, yPosition + 13, i, 1, j >> 16 & 255, j >> 8 & 255, j & 255, 255);
                 GlStateManager.enableBlend();
                 GlStateManager.enableAlpha();
                 GlStateManager.enableTexture2D();
@@ -449,16 +442,16 @@ public class RenderItem implements IResourceManagerReloadListener
             }
 
             EntityPlayerSP entityplayersp = Minecraft.getMinecraft().thePlayer;
-            float f = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
+            float f3 = entityplayersp == null ? 0.0F : entityplayersp.getCooldownTracker().getCooldown(stack.getItem(), Minecraft.getMinecraft().getRenderPartialTicks());
 
-            if (f > 0.0F)
+            if (f3 > 0.0F)
             {
                 GlStateManager.disableLighting();
                 GlStateManager.disableDepth();
                 GlStateManager.disableTexture2D();
                 Tessellator tessellator1 = Tessellator.getInstance();
                 VertexBuffer vertexbuffer1 = tessellator1.getBuffer();
-                this.draw(vertexbuffer1, xPosition, yPosition + MathHelper.floor_float(16.0F * (1.0F - f)), 16, MathHelper.ceiling_float_int(16.0F * f), 255, 255, 255, 127);
+                this.draw(vertexbuffer1, xPosition, yPosition + MathHelper.floor_float(16.0F * (1.0F - f3)), 16, MathHelper.ceiling_float_int(16.0F * f3), 255, 255, 255, 127);
                 GlStateManager.enableTexture2D();
                 GlStateManager.enableLighting();
                 GlStateManager.enableDepth();
@@ -781,11 +774,28 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerBlock(Blocks.PURPUR_SLAB, "purpur_slab");
         this.registerBlock(Blocks.PURPUR_DOUBLE_SLAB, "purpur_double_slab");
         this.registerBlock(Blocks.END_BRICKS, "end_bricks");
-        this.registerBlock(Blocks.field_189877_df, "magma");
-        this.registerBlock(Blocks.field_189878_dg, "nether_wart_block");
-        this.registerBlock(Blocks.field_189879_dh, "red_nether_brick");
-        this.registerBlock(Blocks.field_189880_di, "bone_block");
-        this.registerBlock(Blocks.field_189881_dj, "structure_void");
+        this.registerBlock(Blocks.MAGMA, "magma");
+        this.registerBlock(Blocks.NETHER_WART_BLOCK, "nether_wart_block");
+        this.registerBlock(Blocks.RED_NETHER_BRICK, "red_nether_brick");
+        this.registerBlock(Blocks.BONE_BLOCK, "bone_block");
+        this.registerBlock(Blocks.STRUCTURE_VOID, "structure_void");
+        this.registerBlock(Blocks.field_190976_dk, "observer");
+        this.registerBlock(Blocks.field_190977_dl, "white_shulker_box");
+        this.registerBlock(Blocks.field_190978_dm, "orange_shulker_box");
+        this.registerBlock(Blocks.field_190979_dn, "magenta_shulker_box");
+        this.registerBlock(Blocks.field_190980_do, "light_blue_shulker_box");
+        this.registerBlock(Blocks.field_190981_dp, "yellow_shulker_box");
+        this.registerBlock(Blocks.field_190982_dq, "lime_shulker_box");
+        this.registerBlock(Blocks.field_190983_dr, "pink_shulker_box");
+        this.registerBlock(Blocks.field_190984_ds, "gray_shulker_box");
+        this.registerBlock(Blocks.field_190985_dt, "silver_shulker_box");
+        this.registerBlock(Blocks.field_190986_du, "cyan_shulker_box");
+        this.registerBlock(Blocks.field_190987_dv, "purple_shulker_box");
+        this.registerBlock(Blocks.field_190988_dw, "blue_shulker_box");
+        this.registerBlock(Blocks.field_190989_dx, "brown_shulker_box");
+        this.registerBlock(Blocks.field_190990_dy, "green_shulker_box");
+        this.registerBlock(Blocks.field_190991_dz, "red_shulker_box");
+        this.registerBlock(Blocks.field_190975_dA, "black_shulker_box");
         this.registerBlock(Blocks.CHEST, "chest");
         this.registerBlock(Blocks.TRAPPED_CHEST, "trapped_chest");
         this.registerBlock(Blocks.ENDER_CHEST, "ender_chest");
@@ -948,6 +958,7 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerItem(Items.BEETROOT, "beetroot");
         this.registerItem(Items.BEETROOT_SEEDS, "beetroot_seeds");
         this.registerItem(Items.BEETROOT_SOUP, "beetroot_soup");
+        this.registerItem(Items.field_190929_cY, "totem");
         this.registerItem(Items.POTIONITEM, "bottle_drinkable");
         this.registerItem(Items.SPLASH_POTION, "bottle_splash");
         this.registerItem(Items.LINGERING_POTION, "bottle_lingering");
@@ -1019,6 +1030,8 @@ public class RenderItem implements IResourceManagerReloadListener
         this.registerItem(Items.ELYTRA, "elytra");
         this.registerItem(Items.CHORUS_FRUIT, "chorus_fruit");
         this.registerItem(Items.CHORUS_FRUIT_POPPED, "chorus_fruit_popped");
+        this.registerItem(Items.field_190930_cZ, "shulker_shell");
+        this.registerItem(Items.field_191525_da, "iron_nugget");
         this.registerItem(Items.RECORD_13, "record_13");
         this.registerItem(Items.RECORD_CAT, "record_cat");
         this.registerItem(Items.RECORD_BLOCKS, "record_blocks");

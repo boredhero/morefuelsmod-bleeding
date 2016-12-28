@@ -14,6 +14,8 @@ import net.minecraft.block.BlockStoneBrick;
 import net.minecraft.block.BlockStoneSlab;
 import net.minecraft.block.BlockTorch;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntitySilverfish;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -21,6 +23,7 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.TemplateManager;
 import net.minecraft.world.storage.loot.LootTableList;
 
 @SuppressWarnings("incomplete-switch")
@@ -268,9 +271,9 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.hasMadeChest = tagCompound.getBoolean("Chest");
             }
 
@@ -356,9 +359,9 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.steps = tagCompound.getInteger("Steps");
             }
 
@@ -470,9 +473,9 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.leftLow = tagCompound.getBoolean("leftLow");
                 this.leftHigh = tagCompound.getBoolean("leftHigh");
                 this.rightLow = tagCompound.getBoolean("rightLow");
@@ -680,9 +683,9 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.isLargeRoom = tagCompound.getBoolean("Tall");
             }
 
@@ -880,9 +883,9 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.hasSpawner = tagCompound.getBoolean("Mob");
             }
 
@@ -1002,7 +1005,7 @@ public class StructureStrongholdPieces
 
                         if (tileentity instanceof TileEntityMobSpawner)
                         {
-                            ((TileEntityMobSpawner)tileentity).getSpawnerBaseLogic().setEntityName("Silverfish");
+                            ((TileEntityMobSpawner)tileentity).getSpawnerBaseLogic().func_190894_a(EntityList.func_191306_a(EntitySilverfish.class));
                         }
                     }
                 }
@@ -1154,9 +1157,9 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.roomType = tagCompound.getInteger("Type");
             }
 
@@ -1338,9 +1341,9 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.source = tagCompound.getBoolean("Source");
             }
 
@@ -1416,11 +1419,6 @@ public class StructureStrongholdPieces
             public Stairs2(int p_i2083_1_, Random p_i2083_2_, int p_i2083_3_, int p_i2083_4_)
             {
                 super(0, p_i2083_2_, p_i2083_3_, p_i2083_4_);
-            }
-
-            public BlockPos getBoundingBoxCenter()
-            {
-                return this.strongholdPortalRoom != null ? this.strongholdPortalRoom.getBoundingBoxCenter() : super.getBoundingBoxCenter();
             }
         }
 
@@ -1562,9 +1560,9 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.expandsX = tagCompound.getBoolean("Left");
                 this.expandsZ = tagCompound.getBoolean("Right");
             }
@@ -1657,7 +1655,7 @@ public class StructureStrongholdPieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
                 this.entryDoor = StructureStrongholdPieces.Stronghold.Door.valueOf(tagCompound.getString("EntryDoor"));
             }
@@ -1731,6 +1729,7 @@ public class StructureStrongholdPieces
             /**
              * Gets the next component in any cardinal direction
              */
+            @Nullable
             protected StructureComponent getNextComponentNormal(StructureStrongholdPieces.Stairs2 p_74986_1_, List<StructureComponent> p_74986_2_, Random p_74986_3_, int p_74986_4_, int p_74986_5_)
             {
                 EnumFacing enumfacing = this.getCoordBaseMode();
@@ -1756,6 +1755,7 @@ public class StructureStrongholdPieces
             /**
              * Gets the next component in the +/- X direction
              */
+            @Nullable
             protected StructureComponent getNextComponentX(StructureStrongholdPieces.Stairs2 p_74989_1_, List<StructureComponent> p_74989_2_, Random p_74989_3_, int p_74989_4_, int p_74989_5_)
             {
                 EnumFacing enumfacing = this.getCoordBaseMode();
@@ -1781,6 +1781,7 @@ public class StructureStrongholdPieces
             /**
              * Gets the next component in the +/- Z direction
              */
+            @Nullable
             protected StructureComponent getNextComponentZ(StructureStrongholdPieces.Stairs2 p_74987_1_, List<StructureComponent> p_74987_2_, Random p_74987_3_, int p_74987_4_, int p_74987_5_)
             {
                 EnumFacing enumfacing = this.getCoordBaseMode();

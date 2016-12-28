@@ -66,7 +66,8 @@ public class BlockFlowerPot extends BlockContainer
     }
 
     /**
-     * The type of render function called. 3 for standard block models, 2 for TESR's, 1 for liquids, -1 is no render
+     * The type of render function called. MODEL for mixed tesr and static model, MODELBLOCK_ANIMATED for TESR-only,
+     * LIQUID for vanilla liquids, INVISIBLE to skip all rendering
      */
     public EnumBlockRenderType getRenderType(IBlockState state)
     {
@@ -78,53 +79,67 @@ public class BlockFlowerPot extends BlockContainer
         return false;
     }
 
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, @Nullable ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ)
+    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing heldItem, float side, float hitX, float hitY)
     {
-        if (heldItem != null && heldItem.getItem() instanceof ItemBlock)
-        {
-            TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
+        ItemStack itemstack = playerIn.getHeldItem(hand);
+        TileEntityFlowerPot tileentityflowerpot = this.getTileEntity(worldIn, pos);
 
-            if (tileentityflowerpot == null)
-            {
-                return false;
-            }
-            else if (tileentityflowerpot.getFlowerPotItem() != null)
-            {
-                return false;
-            }
-            else
-            {
-                Block block = Block.getBlockFromItem(heldItem.getItem());
-
-                if (!this.canContain(block, heldItem.getMetadata()))
-                {
-                    return false;
-                }
-                else
-                {
-                    tileentityflowerpot.setFlowerPotData(heldItem.getItem(), heldItem.getMetadata());
-                    tileentityflowerpot.markDirty();
-                    worldIn.notifyBlockUpdate(pos, state, state, 3);
-                    playerIn.addStat(StatList.FLOWER_POTTED);
-
-                    if (!playerIn.capabilities.isCreativeMode)
-                    {
-                        --heldItem.stackSize;
-                    }
-
-                    return true;
-                }
-            }
-        }
-        else
+        if (tileentityflowerpot == null)
         {
             return false;
         }
+        else
+        {
+            ItemStack itemstack1 = tileentityflowerpot.getFlowerItemStack();
+
+            if (itemstack1.func_190926_b())
+            {
+                if (!this.func_190951_a(itemstack))
+                {
+                    return false;
+                }
+
+                tileentityflowerpot.func_190614_a(itemstack);
+                playerIn.addStat(StatList.FLOWER_POTTED);
+
+                if (!playerIn.capabilities.isCreativeMode)
+                {
+                    itemstack.func_190918_g(1);
+                }
+            }
+            else
+            {
+                if (itemstack.func_190926_b())
+                {
+                    playerIn.setHeldItem(hand, itemstack1);
+                }
+                else if (!playerIn.func_191521_c(itemstack1))
+                {
+                    playerIn.dropItem(itemstack1, false);
+                }
+
+                tileentityflowerpot.func_190614_a(ItemStack.field_190927_a);
+            }
+
+            tileentityflowerpot.markDirty();
+            worldIn.notifyBlockUpdate(pos, state, state, 3);
+            return true;
+        }
     }
 
-    private boolean canContain(@Nullable Block blockIn, int meta)
+    private boolean func_190951_a(ItemStack p_190951_1_)
     {
-        return blockIn != Blocks.YELLOW_FLOWER && blockIn != Blocks.RED_FLOWER && blockIn != Blocks.CACTUS && blockIn != Blocks.BROWN_MUSHROOM && blockIn != Blocks.RED_MUSHROOM && blockIn != Blocks.SAPLING && blockIn != Blocks.DEADBUSH ? blockIn == Blocks.TALLGRASS && meta == BlockTallGrass.EnumType.FERN.getMeta() : true;
+        Block block = Block.getBlockFromItem(p_190951_1_.getItem());
+
+        if (block != Blocks.YELLOW_FLOWER && block != Blocks.RED_FLOWER && block != Blocks.CACTUS && block != Blocks.BROWN_MUSHROOM && block != Blocks.RED_MUSHROOM && block != Blocks.SAPLING && block != Blocks.DEADBUSH)
+        {
+            int i = p_190951_1_.getMetadata();
+            return block == Blocks.TALLGRASS && i == BlockTallGrass.EnumType.FERN.getMeta();
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
@@ -135,7 +150,7 @@ public class BlockFlowerPot extends BlockContainer
         {
             ItemStack itemstack = tileentityflowerpot.getFlowerItemStack();
 
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 return itemstack;
             }
@@ -154,7 +169,7 @@ public class BlockFlowerPot extends BlockContainer
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         if (!worldIn.getBlockState(pos.down()).isFullyOpaque())
         {
@@ -163,6 +178,9 @@ public class BlockFlowerPot extends BlockContainer
         }
     }
 
+    /**
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+     */
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         super.breakBlock(worldIn, pos, state);
@@ -178,7 +196,7 @@ public class BlockFlowerPot extends BlockContainer
 
             if (tileentityflowerpot != null)
             {
-                tileentityflowerpot.setFlowerPotData((Item)null, 0);
+                tileentityflowerpot.func_190614_a(ItemStack.field_190927_a);
             }
         }
     }
@@ -186,7 +204,6 @@ public class BlockFlowerPot extends BlockContainer
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return Items.FLOWER_POT;
@@ -280,7 +297,7 @@ public class BlockFlowerPot extends BlockContainer
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
         BlockFlowerPot.EnumFlowerType blockflowerpot$enumflowertype = BlockFlowerPot.EnumFlowerType.EMPTY;
-        TileEntity tileentity = worldIn instanceof ChunkCache ? ((ChunkCache)worldIn).func_190300_a(pos, Chunk.EnumCreateEntityType.CHECK) : worldIn.getTileEntity(pos);
+        TileEntity tileentity = worldIn instanceof ChunkCache ? ((ChunkCache)worldIn).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : worldIn.getTileEntity(pos);
 
         if (tileentity instanceof TileEntityFlowerPot)
         {

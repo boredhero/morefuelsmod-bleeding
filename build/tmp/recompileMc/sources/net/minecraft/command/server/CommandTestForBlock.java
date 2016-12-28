@@ -59,7 +59,7 @@ public class CommandTestForBlock extends CommandBase
         {
             sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, 0);
             BlockPos blockpos = parseBlockPos(sender, args, 0, false);
-            Block block = Block.getBlockFromName(args[3]);
+            Block block = getBlockByText(sender, args[3]);
 
             if (block == null)
             {
@@ -67,13 +67,6 @@ public class CommandTestForBlock extends CommandBase
             }
             else
             {
-                int i = -1;
-
-                if (args.length >= 5)
-                {
-                    i = parseInt(args[4], -1, 15);
-                }
-
                 World world = sender.getEntityWorld();
 
                 if (!world.isBlockLoaded(blockpos))
@@ -85,7 +78,7 @@ public class CommandTestForBlock extends CommandBase
                     NBTTagCompound nbttagcompound = new NBTTagCompound();
                     boolean flag = false;
 
-                    if (args.length >= 6 && block.hasTileEntity(block.getStateFromMeta(i)))
+                    if (args.length >= 6 && block.hasTileEntity())
                     {
                         String s = getChatComponentFromNthArg(sender, args, 5).getUnformattedText();
 
@@ -107,18 +100,20 @@ public class CommandTestForBlock extends CommandBase
                     {
                         throw new CommandException("commands.testforblock.failed.tile", new Object[] {Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ()), block1.getLocalizedName(), block.getLocalizedName()});
                     }
+                    else if (args.length >= 5 && !CommandBase.func_190791_b(block, args[4]).apply(iblockstate))
+                    {
+                        try
+                        {
+                            int i = iblockstate.getBlock().getMetaFromState(iblockstate);
+                            throw new CommandException("commands.testforblock.failed.data", new Object[] {Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ()), Integer.valueOf(i), Integer.valueOf(Integer.parseInt(args[4]))});
+                        }
+                        catch (NumberFormatException var13)
+                        {
+                            throw new CommandException("commands.testforblock.failed.data", new Object[] {Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ()), iblockstate.toString(), args[4]});
+                        }
+                    }
                     else
                     {
-                        if (i > -1)
-                        {
-                            int j = iblockstate.getBlock().getMetaFromState(iblockstate);
-
-                            if (j != i)
-                            {
-                                throw new CommandException("commands.testforblock.failed.data", new Object[] {Integer.valueOf(blockpos.getX()), Integer.valueOf(blockpos.getY()), Integer.valueOf(blockpos.getZ()), Integer.valueOf(j), Integer.valueOf(i)});
-                            }
-                        }
-
                         if (flag)
                         {
                             TileEntity tileentity = world.getTileEntity(blockpos);

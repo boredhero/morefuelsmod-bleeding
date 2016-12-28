@@ -8,9 +8,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemBanner;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemFireworkCharge;
+import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemMonsterPlacer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -39,13 +39,6 @@ public class ItemColors
                 return tintIndex > 0 ? -1 : ((ItemArmor)stack.getItem()).getColor(stack);
             }
         }, new Item[] {Items.LEATHER_HELMET, Items.LEATHER_CHESTPLATE, Items.LEATHER_LEGGINGS, Items.LEATHER_BOOTS});
-        itemcolors.registerItemColorHandler(new IItemColor()
-        {
-            public int getColorFromItemstack(ItemStack stack, int tintIndex)
-            {
-                return tintIndex > 0 ? -1 : ItemBanner.getBaseColor(stack).getMapColor().colorValue;
-            }
-        }, new Item[] {Items.BANNER, Items.SHIELD});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
@@ -104,14 +97,14 @@ public class ItemColors
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
             {
-                return tintIndex > 0 ? -1 : PotionUtils.getPotionColorFromEffectList(PotionUtils.getEffectsFromStack(stack));
+                return tintIndex > 0 ? -1 : PotionUtils.func_190932_c(stack);
             }
         }, new Item[] {Items.POTIONITEM, Items.SPLASH_POTION, Items.LINGERING_POTION});
         itemcolors.registerItemColorHandler(new IItemColor()
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
             {
-                EntityList.EntityEggInfo entitylist$entityegginfo = (EntityList.EntityEggInfo)EntityList.ENTITY_EGGS.get(ItemMonsterPlacer.getEntityIdFromItem(stack));
+                EntityList.EntityEggInfo entitylist$entityegginfo = (EntityList.EntityEggInfo)EntityList.ENTITY_EGGS.get(ItemMonsterPlacer.func_190908_h(stack));
                 return entitylist$entityegginfo == null ? -1 : (tintIndex == 0 ? entitylist$entityegginfo.primaryColor : entitylist$entityegginfo.secondaryColor);
             }
         }, new Item[] {Items.SPAWN_EGG});
@@ -127,9 +120,16 @@ public class ItemColors
         {
             public int getColorFromItemstack(ItemStack stack, int tintIndex)
             {
-                return tintIndex == 0 ? PotionUtils.getPotionColorFromEffectList(PotionUtils.getEffectsFromStack(stack)) : -1;
+                return tintIndex == 0 ? PotionUtils.func_190932_c(stack) : -1;
             }
         }, new Item[] {Items.TIPPED_ARROW});
+        itemcolors.registerItemColorHandler(new IItemColor()
+        {
+            public int getColorFromItemstack(ItemStack stack, int tintIndex)
+            {
+                return tintIndex == 0 ? -1 : ItemMap.func_190907_h(stack);
+            }
+        }, new Item[] {Items.FILLED_MAP});
         return itemcolors;
     }
 

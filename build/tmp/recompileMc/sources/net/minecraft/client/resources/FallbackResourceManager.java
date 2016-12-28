@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import net.minecraft.client.resources.data.MetadataSerializer;
@@ -34,7 +35,7 @@ public class FallbackResourceManager implements IResourceManager
 
     public Set<String> getResourceDomains()
     {
-        return null;
+        return Collections.<String>emptySet();
     }
 
     public IResource getResource(ResourceLocation location) throws IOException

@@ -6,6 +6,8 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityList;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -13,6 +15,7 @@ import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.gen.structure.template.TemplateManager;
 import net.minecraft.world.storage.loot.LootTableList;
 
 @SuppressWarnings("incomplete-switch")
@@ -120,9 +123,9 @@ public class StructureNetherBridgePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.chest = tagCompound.getBoolean("Chest");
             }
 
@@ -207,9 +210,9 @@ public class StructureNetherBridgePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.chest = tagCompound.getBoolean("Chest");
             }
 
@@ -735,9 +738,9 @@ public class StructureNetherBridgePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.fillSeed = tagCompound.getInteger("Seed");
             }
 
@@ -1081,7 +1084,7 @@ public class StructureNetherBridgePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
             }
 
@@ -1183,6 +1186,7 @@ public class StructureNetherBridgePieces
             /**
              * Gets the next component in any cardinal direction
              */
+            @Nullable
             protected StructureComponent getNextComponentNormal(StructureNetherBridgePieces.Start p_74963_1_, List<StructureComponent> p_74963_2_, Random p_74963_3_, int p_74963_4_, int p_74963_5_, boolean p_74963_6_)
             {
                 EnumFacing enumfacing = this.getCoordBaseMode();
@@ -1208,6 +1212,7 @@ public class StructureNetherBridgePieces
             /**
              * Gets the next component in the +/- X direction
              */
+            @Nullable
             protected StructureComponent getNextComponentX(StructureNetherBridgePieces.Start p_74961_1_, List<StructureComponent> p_74961_2_, Random p_74961_3_, int p_74961_4_, int p_74961_5_, boolean p_74961_6_)
             {
                 EnumFacing enumfacing = this.getCoordBaseMode();
@@ -1233,6 +1238,7 @@ public class StructureNetherBridgePieces
             /**
              * Gets the next component in the +/- Z direction
              */
+            @Nullable
             protected StructureComponent getNextComponentZ(StructureNetherBridgePieces.Start p_74965_1_, List<StructureComponent> p_74965_2_, Random p_74965_3_, int p_74965_4_, int p_74965_5_, boolean p_74965_6_)
             {
                 EnumFacing enumfacing = this.getCoordBaseMode();
@@ -1395,22 +1401,6 @@ public class StructureNetherBridgePieces
                     this.secondaryWeights.add(structurenetherbridgepieces$pieceweight1);
                 }
             }
-
-            /**
-             * (abstract) Helper method to read subclass data from NBT
-             */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
-            {
-                super.readStructureFromNBT(tagCompound);
-            }
-
-            /**
-             * (abstract) Helper method to write subclass data to NBT
-             */
-            protected void writeStructureToNBT(NBTTagCompound tagCompound)
-            {
-                super.writeStructureToNBT(tagCompound);
-            }
         }
 
     public static class Straight extends StructureNetherBridgePieces.Piece
@@ -1497,9 +1487,9 @@ public class StructureNetherBridgePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.hasSpawner = tagCompound.getBoolean("Mob");
             }
 
@@ -1558,7 +1548,7 @@ public class StructureNetherBridgePieces
 
                         if (tileentity instanceof TileEntityMobSpawner)
                         {
-                            ((TileEntityMobSpawner)tileentity).getSpawnerBaseLogic().setEntityName("Blaze");
+                            ((TileEntityMobSpawner)tileentity).getSpawnerBaseLogic().func_190894_a(EntityList.func_191306_a(EntityBlaze.class));
                         }
                     }
                 }

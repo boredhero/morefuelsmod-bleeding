@@ -3,6 +3,7 @@ package net.minecraft.util;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import com.mojang.util.UUIDTypeAdapter;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -106,7 +107,7 @@ public class Session
         @Nullable
         public static Session.Type setSessionType(String sessionTypeIn)
         {
-            return (Session.Type)SESSION_TYPES.get(sessionTypeIn.toLowerCase());
+            return (Session.Type)SESSION_TYPES.get(sessionTypeIn.toLowerCase(Locale.ROOT));
         }
 
         static

@@ -11,7 +11,7 @@ import net.minecraft.entity.ai.EntityAIMate;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -33,9 +33,9 @@ public class EntityCow extends EntityAnimal
         this.setSize(0.9F, 1.4F);
     }
 
-    public static void func_189790_b(DataFixer p_189790_0_)
+    public static void registerFixesCow(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189790_0_, "Cow");
+        EntityLiving.registerFixesMob(fixer, EntityCow.class);
     }
 
     protected void initEntityAI()
@@ -45,7 +45,7 @@ public class EntityCow extends EntityAnimal
         this.tasks.addTask(2, new EntityAIMate(this, 1.0D));
         this.tasks.addTask(3, new EntityAITempt(this, 1.25D, Items.WHEAT, false));
         this.tasks.addTask(4, new EntityAIFollowParent(this, 1.25D));
-        this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(7, new EntityAILookIdle(this));
     }
@@ -91,13 +91,16 @@ public class EntityCow extends EntityAnimal
         return LootTableList.ENTITIES_COW;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        if (stack != null && stack.getItem() == Items.BUCKET && !player.capabilities.isCreativeMode && !this.isChild())
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (itemstack.getItem() == Items.BUCKET && !player.capabilities.isCreativeMode && !this.isChild())
         {
             player.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
+            itemstack.func_190918_g(1);
 
-            if (--stack.stackSize == 0)
+            if (itemstack.func_190926_b())
             {
                 player.setHeldItem(hand, new ItemStack(Items.MILK_BUCKET));
             }
@@ -110,7 +113,7 @@ public class EntityCow extends EntityAnimal
         }
         else
         {
-            return super.processInteract(player, hand, stack);
+            return super.processInteract(player, hand);
         }
     }
 

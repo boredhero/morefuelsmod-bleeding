@@ -27,8 +27,10 @@ import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityEgg;
+import net.minecraft.entity.projectile.EntityEvokerFangs;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityFishHook;
+import net.minecraft.entity.projectile.EntityLlamaSpit;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityShulkerBullet;
 import net.minecraft.entity.projectile.EntitySmallFireball;
@@ -104,11 +106,15 @@ public class EntityTracker
         }
         else if (entityIn instanceof EntityFireball)
         {
-            this.addEntityToTracker(entityIn, 64, 10, false);
+            this.addEntityToTracker(entityIn, 64, 10, true);
         }
         else if (entityIn instanceof EntitySnowball)
         {
             this.addEntityToTracker(entityIn, 64, 10, true);
+        }
+        else if (entityIn instanceof EntityLlamaSpit)
+        {
+            this.addEntityToTracker(entityIn, 64, 10, false);
         }
         else if (entityIn instanceof EntityEnderPearl)
         {
@@ -197,6 +203,10 @@ public class EntityTracker
         else if (entityIn instanceof EntityEnderCrystal)
         {
             this.addEntityToTracker(entityIn, 256, Integer.MAX_VALUE, false);
+        }
+        else if (entityIn instanceof EntityEvokerFangs)
+        {
+            this.addEntityToTracker(entityIn, 160, 2, false);
         }
     }
 

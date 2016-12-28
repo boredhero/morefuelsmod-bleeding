@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -139,7 +140,7 @@ public abstract class EntityAITarget extends EntityAIBase
     /**
      * A static method used to see if an entity is a suitable target through a number of checks.
      */
-    public static boolean isSuitableTarget(EntityLiving attacker, EntityLivingBase target, boolean includeInvincibles, boolean checkSight)
+    public static boolean isSuitableTarget(EntityLiving attacker, @Nullable EntityLivingBase target, boolean includeInvincibles, boolean checkSight)
     {
         if (target == null)
         {
@@ -188,7 +189,7 @@ public abstract class EntityAITarget extends EntityAIBase
      * A method used to see if an entity is a suitable target through a number of checks. Args : entity,
      * canTargetInvinciblePlayer
      */
-    protected boolean isSuitableTarget(EntityLivingBase target, boolean includeInvincibles)
+    protected boolean isSuitableTarget(@Nullable EntityLivingBase target, boolean includeInvincibles)
     {
         if (!isSuitableTarget(this.taskOwner, target, includeInvincibles, this.shouldCheckSight))
         {
@@ -249,5 +250,11 @@ public abstract class EntityAITarget extends EntityAIBase
                 return (double)(i * i + j * j) <= 2.25D;
             }
         }
+    }
+
+    public EntityAITarget func_190882_b(int p_190882_1_)
+    {
+        this.unseenMemoryTicks = p_190882_1_;
+        return this;
     }
 }

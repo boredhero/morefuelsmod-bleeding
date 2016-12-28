@@ -16,6 +16,7 @@ public class ParticleSimpleAnimated extends Particle
     private final int numAgingFrames;
     /** Added to the ySpeed every tick. Usually a small (thousandths), negative value. */
     private final float yAccel;
+    private float field_191239_M = 0.91F;
     /** The red value to drift toward */
     private float fadeTargetRed;
     /** The green value to drift toward */
@@ -84,9 +85,9 @@ public class ParticleSimpleAnimated extends Particle
         this.setParticleTextureIndex(this.textureIdx + (this.numAgingFrames - 1 - this.particleAge * this.numAgingFrames / this.particleMaxAge));
         this.motionY += (double)this.yAccel;
         this.moveEntity(this.motionX, this.motionY, this.motionZ);
-        this.motionX *= 0.9100000262260437D;
-        this.motionY *= 0.9100000262260437D;
-        this.motionZ *= 0.9100000262260437D;
+        this.motionX *= (double)this.field_191239_M;
+        this.motionY *= (double)this.field_191239_M;
+        this.motionZ *= (double)this.field_191239_M;
 
         if (this.isCollided)
         {
@@ -98,5 +99,10 @@ public class ParticleSimpleAnimated extends Particle
     public int getBrightnessForRender(float p_189214_1_)
     {
         return 15728880;
+    }
+
+    protected void func_191238_f(float p_191238_1_)
+    {
+        this.field_191239_M = p_191238_1_;
     }
 }

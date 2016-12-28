@@ -47,11 +47,6 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
         return this.layerRenderers.add((LayerRenderer<T>)layer);
     }
 
-    public <V extends EntityLivingBase, U extends LayerRenderer<V>> boolean removeLayer(U layer)
-    {
-        return this.layerRenderers.remove(layer);
-    }
-
     public ModelBase getMainModel()
     {
         return this.mainModel;

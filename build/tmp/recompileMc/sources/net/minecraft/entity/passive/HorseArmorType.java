@@ -60,17 +60,17 @@ public enum HorseArmorType
         return values()[ordinal];
     }
 
-    public static HorseArmorType getByItemStack(@Nullable ItemStack stack)
+    public static HorseArmorType getByItemStack(ItemStack stack)
     {
-        return stack == null ? NONE : getByItem(stack.getItem());
+        return stack.func_190926_b() ? NONE : getByItem(stack.getItem());
     }
 
-    public static HorseArmorType getByItem(@Nullable Item itemIn)
+    public static HorseArmorType getByItem(Item itemIn)
     {
         return itemIn == Items.IRON_HORSE_ARMOR ? IRON : (itemIn == Items.GOLDEN_HORSE_ARMOR ? GOLD : (itemIn == Items.DIAMOND_HORSE_ARMOR ? DIAMOND : NONE));
     }
 
-    public static boolean isHorseArmor(@Nullable Item itemIn)
+    public static boolean isHorseArmor(Item itemIn)
     {
         return getByItem(itemIn) != NONE;
     }

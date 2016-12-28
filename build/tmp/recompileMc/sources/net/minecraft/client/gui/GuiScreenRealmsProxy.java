@@ -18,7 +18,7 @@ public class GuiScreenRealmsProxy extends GuiScreen
     public GuiScreenRealmsProxy(RealmsScreen proxyIn)
     {
         this.proxy = proxyIn;
-        super.buttonList = Collections.<GuiButton>synchronizedList(Lists.<GuiButton>newArrayList());
+        this.buttonList = Collections.<GuiButton>synchronizedList(Lists.<GuiButton>newArrayList());
     }
 
     public RealmsScreen getProxy()
@@ -161,19 +161,19 @@ public class GuiScreenRealmsProxy extends GuiScreen
 
     public void buttonsClear()
     {
-        super.buttonList.clear();
+        this.buttonList.clear();
     }
 
     public void buttonsAdd(RealmsButton button)
     {
-        super.buttonList.add(button.getProxy());
+        this.buttonList.add(button.getProxy());
     }
 
     public List<RealmsButton> buttons()
     {
-        List<RealmsButton> list = Lists.<RealmsButton>newArrayListWithExpectedSize(super.buttonList.size());
+        List<RealmsButton> list = Lists.<RealmsButton>newArrayListWithExpectedSize(this.buttonList.size());
 
-        for (GuiButton guibutton : super.buttonList)
+        for (GuiButton guibutton : this.buttonList)
         {
             list.add(((GuiButtonRealmsProxy)guibutton).getRealmsButton());
         }
@@ -183,7 +183,7 @@ public class GuiScreenRealmsProxy extends GuiScreen
 
     public void buttonsRemove(RealmsButton button)
     {
-        super.buttonList.remove(button.getProxy());
+        this.buttonList.remove(button.getProxy());
     }
 
     /**

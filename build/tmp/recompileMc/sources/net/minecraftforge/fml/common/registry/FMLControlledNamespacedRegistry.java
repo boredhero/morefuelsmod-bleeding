@@ -45,6 +45,7 @@ import net.minecraft.util.registry.RegistryNamespacedDefaultedByKey;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.functions.GenericIterableFactory;
 import net.minecraftforge.fml.common.registry.RegistryDelegate.Delegate;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 import net.minecraftforge.fml.common.registry.IForgeRegistry.AddCallback;
 import net.minecraftforge.fml.common.registry.IForgeRegistry.ClearCallback;
@@ -103,7 +104,7 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
         this.optionalDefaultKey = defaultKey;
         this.minId = minIdValue;
         this.maxId = maxIdValue;
-        this.availabilityMap = new BitSet(maxIdValue + 1);
+        this.availabilityMap = new BitSet(Math.min(maxIdValue + 1, 0xFFFF)); //No need to pre-allocate large sets, it will resize when we need it.
         this.isDelegated = IForgeRegistryEntry.Impl.class.isAssignableFrom(type);
         this.addCallback = addCallback;
         this.clearCallback = clearCallback;
@@ -117,6 +118,15 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
 
     void validateContent(ResourceLocation registryName)
     {
+        try
+        {
+            ReflectionHelper.findMethod(BitSet.class, this.availabilityMap, new String[]{"trimToSize"}).invoke(this.availabilityMap);
+        }
+        catch (Exception e)
+        {
+            //We don't care... Just a micro-optimization
+        }
+
         for (I obj : typeSafeIterable())
         {
             int id = getId(obj);
@@ -186,7 +196,6 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
         this.persistentSubstitutions.clear();
         this.persistentSubstitutions.putAll(otherRegistry.getPersistentSubstitutions());
         this.activeSubstitutions.clear();
-        this.substitutionOriginals.clear();
         this.dummiedLocations.clear();
         this.dummiedLocations.addAll(otherRegistry.dummiedLocations);
 
@@ -195,16 +204,14 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
 
         for (I thing : otherRegistry.typeSafeIterable())
         {
-            ResourceLocation name = otherRegistry.getNameForObject(thing);
-            if (otherRegistry.activeSubstitutions.containsKey(name)) // If this is subed, use the orig, the loop below will reinstate the sub.
-                addObjectRaw(otherRegistry.getId(thing), name, otherRegistry.substitutionOriginals.get(name));
-            else
-                addObjectRaw(otherRegistry.getId(thing), name, thing);
+            addObjectRaw(otherRegistry.getId(thing), otherRegistry.getNameForObject(thing), thing);
         }
         for (ResourceLocation resloc : otherRegistry.activeSubstitutions.keySet())
         {
             activateSubstitution(resloc);
         }
+        this.substitutionOriginals.clear();
+        this.substitutionOriginals.putAll(otherRegistry.substitutionOriginals);
     }
 
     // public api
@@ -429,6 +436,7 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
     }
 
     public void serializeDummied(Set<ResourceLocation> set) { set.addAll(this.dummiedLocations); }
+    public boolean isDummied(ResourceLocation key){ return this.dummiedLocations.contains(key); }
 
 
     /**
@@ -880,6 +888,12 @@ public class FMLControlledNamespacedRegistry<I extends IForgeRegistryEntry<I>> e
          * Gets the name we use to identify the given object.
          */
         return getNameForObject(value);
+    }
+
+    @Override //Bouncer for OBF, as the super class's function is NotchCode and gets obfed. This plus the SRG lines prevents a AbstractMethodException
+    public Set<ResourceLocation> getKeys()
+    {
+        return super.getKeys();
     }
 
     @Override

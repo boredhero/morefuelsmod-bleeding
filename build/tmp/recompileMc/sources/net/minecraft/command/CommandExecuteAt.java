@@ -63,7 +63,6 @@ public class CommandExecuteAt extends CommandBase
                 double d4 = parseDouble(d1, args[6], false);
                 double d5 = parseDouble(d2, args[7], false);
                 Block block = getBlockByText(sender, args[8]);
-                int j = parseInt(args[9], -1, 15);
                 BlockPos blockpos1 = new BlockPos(d3, d4, d5);
 
                 if (!world.isBlockLoaded(blockpos1))
@@ -73,7 +72,12 @@ public class CommandExecuteAt extends CommandBase
 
                 IBlockState iblockstate = world.getBlockState(blockpos1);
 
-                if (iblockstate.getBlock() != block || j >= 0 && iblockstate.getBlock().getMetaFromState(iblockstate) != j)
+                if (iblockstate.getBlock() != block)
+                {
+                    throw new CommandException("commands.execute.failed", new Object[] {"detect", entity.getName()});
+                }
+
+                if (!CommandBase.func_190791_b(block, args[9]).apply(iblockstate))
                 {
                     throw new CommandException("commands.execute.failed", new Object[] {"detect", entity.getName()});
                 }
@@ -166,14 +170,14 @@ public class CommandExecuteAt extends CommandBase
 
             try
             {
-                int k = icommandmanager.executeCommand(icommandsender, s);
+                int j = icommandmanager.executeCommand(icommandsender, s);
 
-                if (k < 1)
+                if (j < 1)
                 {
                     throw new CommandException("commands.execute.allInvocationsFailed", new Object[] {s});
                 }
             }
-            catch (Throwable var24)
+            catch (Throwable var23)
             {
                 throw new CommandException("commands.execute.failed", new Object[] {s, entity.getName()});
             }

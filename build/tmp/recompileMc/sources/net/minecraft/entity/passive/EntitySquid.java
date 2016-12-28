@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.MobEffects;
@@ -45,9 +46,9 @@ public class EntitySquid extends EntityWaterMob
         this.rotationVelocity = 1.0F / (this.rand.nextFloat() + 1.0F) * 0.2F;
     }
 
-    public static void func_189804_b(DataFixer p_189804_0_)
+    public static void registerFixesSquid(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189804_0_, "Squid");
+        EntityLiving.registerFixesMob(fixer, EntitySquid.class);
     }
 
     protected void initEntityAI()
@@ -102,15 +103,6 @@ public class EntitySquid extends EntityWaterMob
     protected ResourceLocation getLootTable()
     {
         return LootTableList.ENTITIES_SQUID;
-    }
-
-    /**
-     * Checks if this entity is inside water (if inWater field is true as a result of handleWaterMovement() returning
-     * true)
-     */
-    public boolean isInWater()
-    {
-        return super.isInWater();
     }
 
     /**
@@ -195,7 +187,7 @@ public class EntitySquid extends EntityWaterMob
                 {
                     this.motionY += 0.05D * (double)(this.getActivePotionEffect(MobEffects.LEVITATION).getAmplifier() + 1) - this.motionY;
                 }
-                else if (!this.func_189652_ae())
+                else if (!this.hasNoGravity())
                 {
                     this.motionY -= 0.08D;
                 }
@@ -212,7 +204,7 @@ public class EntitySquid extends EntityWaterMob
      */
     public void moveEntityWithHeading(float strafe, float forward)
     {
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.moveEntity(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
     }
 
     /**

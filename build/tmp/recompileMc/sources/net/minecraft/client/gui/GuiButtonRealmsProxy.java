@@ -24,17 +24,17 @@ public class GuiButtonRealmsProxy extends GuiButton
 
     public int getId()
     {
-        return super.id;
+        return this.id;
     }
 
     public boolean getEnabled()
     {
-        return super.enabled;
+        return this.enabled;
     }
 
     public void setEnabled(boolean isEnabled)
     {
-        super.enabled = isEnabled;
+        this.enabled = isEnabled;
     }
 
     public void setText(String text)
@@ -49,7 +49,7 @@ public class GuiButtonRealmsProxy extends GuiButton
 
     public int getPositionY()
     {
-        return super.yPosition;
+        return this.yPosition;
     }
 
     /**

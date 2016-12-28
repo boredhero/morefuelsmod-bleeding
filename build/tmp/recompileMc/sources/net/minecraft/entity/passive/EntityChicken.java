@@ -15,7 +15,7 @@ import net.minecraft.entity.ai.EntityAIMate;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -59,7 +59,7 @@ public class EntityChicken extends EntityAnimal
         this.tasks.addTask(2, new EntityAIMate(this, 1.0D));
         this.tasks.addTask(3, new EntityAITempt(this, 1.0D, false, TEMPTATION_ITEMS));
         this.tasks.addTask(4, new EntityAIFollowParent(this, 1.1D));
-        this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(7, new EntityAILookIdle(this));
     }
@@ -149,9 +149,9 @@ public class EntityChicken extends EntityAnimal
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(@Nullable ItemStack stack)
+    public boolean isBreedingItem(ItemStack stack)
     {
-        return stack != null && TEMPTATION_ITEMS.contains(stack.getItem());
+        return TEMPTATION_ITEMS.contains(stack.getItem());
     }
 
     /**
@@ -162,9 +162,9 @@ public class EntityChicken extends EntityAnimal
         return this.isChickenJockey() ? 10 : super.getExperiencePoints(player);
     }
 
-    public static void func_189789_b(DataFixer p_189789_0_)
+    public static void registerFixesChicken(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189789_0_, "Chicken");
+        EntityLiving.registerFixesMob(fixer, EntityChicken.class);
     }
 
     /**

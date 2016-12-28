@@ -15,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.translation.I18n;
@@ -50,6 +51,9 @@ public class BlockSponge extends Block
         return ((Boolean)state.getValue(WET)).booleanValue() ? 1 : 0;
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         this.tryAbsorb(worldIn, pos, state);
@@ -60,10 +64,10 @@ public class BlockSponge extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         this.tryAbsorb(worldIn, pos, state);
-        super.neighborChanged(state, worldIn, pos, blockIn);
+        super.neighborChanged(state, worldIn, pos, blockIn, p_189540_5_);
     }
 
     protected void tryAbsorb(World worldIn, BlockPos pos, IBlockState state)
@@ -113,7 +117,7 @@ public class BlockSponge extends Block
 
         for (BlockPos blockpos2 : list)
         {
-            worldIn.notifyNeighborsOfStateChange(blockpos2, Blocks.AIR);
+            worldIn.notifyNeighborsOfStateChange(blockpos2, Blocks.AIR, false);
         }
 
         return i > 0;
@@ -123,7 +127,7 @@ public class BlockSponge extends Block
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> list)
     {
         list.add(new ItemStack(itemIn, 1, 0));
         list.add(new ItemStack(itemIn, 1, 1));

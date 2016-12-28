@@ -12,7 +12,7 @@ public class TextComponentUtils
 {
     public static ITextComponent processComponent(ICommandSender commandSender, ITextComponent component, Entity entityIn) throws CommandException
     {
-        ITextComponent itextcomponent = null;
+        ITextComponent itextcomponent;
 
         if (component instanceof TextComponentScore)
         {
@@ -25,7 +25,7 @@ public class TextComponentUtils
 
                 if (list.size() != 1)
                 {
-                    throw new EntityNotFoundException();
+                    throw new EntityNotFoundException("commands.generic.selector.notFound", new Object[] {s});
                 }
 
                 Entity entity = (Entity)list.get(0);
@@ -40,7 +40,9 @@ public class TextComponentUtils
                 }
             }
 
-            itextcomponent = entityIn != null && s.equals("*") ? new TextComponentScore(entityIn.getName(), textcomponentscore.getObjective()) : new TextComponentScore(s, textcomponentscore.getObjective());
+            String s2 = entityIn != null && s.equals("*") ? entityIn.getName() : s;
+            itextcomponent = new TextComponentScore(s2, textcomponentscore.getObjective());
+            ((TextComponentScore)itextcomponent).setValue(textcomponentscore.getUnformattedComponentText());
             ((TextComponentScore)itextcomponent).resolve(commandSender);
         }
         else if (component instanceof TextComponentSelector)

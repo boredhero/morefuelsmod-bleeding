@@ -41,65 +41,80 @@ public abstract class CommandHandler implements ICommandManager
         String s = astring[0];
         astring = dropFirstString(astring);
         ICommand icommand = (ICommand)this.commandMap.get(s);
-        int i = this.getUsernameIndex(icommand, astring);
-        int j = 0;
+        int i = 0;
 
-        if (icommand == null)
+        try
         {
-            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation("commands.generic.notFound", new Object[0]);
-            textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
-            sender.addChatMessage(textcomponenttranslation);
-        }
-        else if (icommand.checkPermission(this.getServer(), sender))
-        {
-            net.minecraftforge.event.CommandEvent event = new net.minecraftforge.event.CommandEvent(icommand, sender, astring);
-            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
+            int j = this.getUsernameIndex(icommand, astring);
+
+            if (icommand == null)
             {
-                if (event.getException() != null)
-                {
-                    com.google.common.base.Throwables.propagateIfPossible(event.getException());
-                }
-                return 1;
+                TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.notFound", new Object[0]);
+                textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
+                sender.addChatMessage(textcomponenttranslation1);
             }
-            if (event.getParameters() != null) astring = event.getParameters();
-
-            if (i > -1)
+            else if (icommand.checkPermission(this.getServer(), sender))
             {
-                List<Entity> list = EntitySelector.<Entity>matchEntities(sender, astring[i], Entity.class);
-                String s1 = astring[i];
-                sender.setCommandStat(CommandResultStats.Type.AFFECTED_ENTITIES, list.size());
-
-                for (Entity entity : list)
+                net.minecraftforge.event.CommandEvent event = new net.minecraftforge.event.CommandEvent(icommand, sender, astring);
+                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
                 {
-                    astring[i] = entity.getCachedUniqueIdString();
+                    if (event.getException() != null)
+                    {
+                        com.google.common.base.Throwables.propagateIfPossible(event.getException());
+                    }
+                    return 1;
+                }
+                if (event.getParameters() != null) astring = event.getParameters();
+
+                if (j > -1)
+                {
+                    List<Entity> list = EntitySelector.<Entity>matchEntities(sender, astring[j], Entity.class);
+                    String s1 = astring[j];
+                    sender.setCommandStat(CommandResultStats.Type.AFFECTED_ENTITIES, list.size());
+
+                    if (list.isEmpty())
+                    {
+                        throw new PlayerNotFoundException("commands.generic.selector.notFound", new Object[] {astring[j]});
+                    }
+
+                    for (Entity entity : list)
+                    {
+                        astring[j] = entity.getCachedUniqueIdString();
+
+                        if (this.tryExecute(sender, astring, icommand, rawCommand))
+                        {
+                            ++i;
+                        }
+                    }
+
+                    astring[j] = s1;
+                }
+                else
+                {
+                    sender.setCommandStat(CommandResultStats.Type.AFFECTED_ENTITIES, 1);
 
                     if (this.tryExecute(sender, astring, icommand, rawCommand))
                     {
-                        ++j;
+                        ++i;
                     }
                 }
-
-                astring[i] = s1;
             }
             else
             {
-                sender.setCommandStat(CommandResultStats.Type.AFFECTED_ENTITIES, 1);
-
-                if (this.tryExecute(sender, astring, icommand, rawCommand))
-                {
-                    ++j;
-                }
+                TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.generic.permission", new Object[0]);
+                textcomponenttranslation2.getStyle().setColor(TextFormatting.RED);
+                sender.addChatMessage(textcomponenttranslation2);
             }
         }
-        else
+        catch (CommandException commandexception)
         {
-            TextComponentTranslation textcomponenttranslation1 = new TextComponentTranslation("commands.generic.permission", new Object[0]);
-            textcomponenttranslation1.getStyle().setColor(TextFormatting.RED);
-            sender.addChatMessage(textcomponenttranslation1);
+            TextComponentTranslation textcomponenttranslation = new TextComponentTranslation(commandexception.getMessage(), commandexception.getErrorObjects());
+            textcomponenttranslation.getStyle().setColor(TextFormatting.RED);
+            sender.addChatMessage(textcomponenttranslation);
         }
 
-        sender.setCommandStat(CommandResultStats.Type.SUCCESS_COUNT, j);
-        return j;
+        sender.setCommandStat(CommandResultStats.Type.SUCCESS_COUNT, i);
+        return i;
     }
 
     protected boolean tryExecute(ICommandSender sender, String[] args, ICommand command, String input)
@@ -223,7 +238,7 @@ public abstract class CommandHandler implements ICommandManager
     /**
      * Return a command's first parameter index containing a valid username.
      */
-    private int getUsernameIndex(ICommand command, String[] args)
+    private int getUsernameIndex(ICommand command, String[] args) throws CommandException
     {
         if (command == null)
         {

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
-import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -37,9 +36,9 @@ public class EnchantmentHelper
     /**
      * Returns the level of enchantment on the ItemStack passed.
      */
-    public static int getEnchantmentLevel(Enchantment enchID, @Nullable ItemStack stack)
+    public static int getEnchantmentLevel(Enchantment enchID, ItemStack stack)
     {
-        if (stack == null)
+        if (stack.func_190926_b())
         {
             return 0;
         }
@@ -131,7 +130,7 @@ public class EnchantmentHelper
      */
     private static void applyEnchantmentModifier(EnchantmentHelper.IModifier modifier, ItemStack stack)
     {
-        if (stack != null)
+        if (!stack.func_190926_b())
         {
             NBTTagList nbttaglist = stack.getEnchantmentTagList();
 
@@ -179,6 +178,12 @@ public class EnchantmentHelper
         ENCHANTMENT_MODIFIER_LIVING.entityLiving = creatureAttribute;
         applyEnchantmentModifier(ENCHANTMENT_MODIFIER_LIVING, stack);
         return ENCHANTMENT_MODIFIER_LIVING.livingModifier;
+    }
+
+    public static float func_191527_a(EntityLivingBase p_191527_0_)
+    {
+        int i = getMaxEnchantmentLevel(Enchantments.field_191530_r, p_191527_0_);
+        return i > 0 ? EnchantmentSweepingEdge.func_191526_e(i) : 0.0F;
     }
 
     public static void applyThornEnchantments(EntityLivingBase p_151384_0_, Entity p_151384_1_)
@@ -270,20 +275,20 @@ public class EnchantmentHelper
         return getMaxEnchantmentLevel(Enchantments.EFFICIENCY, p_185293_0_);
     }
 
-    /**
-     * Returns the level of the 'Luck Of The Sea' enchantment.
-     */
-    public static int getLuckOfSeaModifier(EntityLivingBase player)
+    public static int func_191529_b(ItemStack p_191529_0_)
     {
-        return getMaxEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, player);
+        /**
+         * Returns the level of enchantment on the ItemStack passed.
+         */
+        return getEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, p_191529_0_);
     }
 
-    /**
-     * Returns the level of the 'Lure' enchantment on the players held item.
-     */
-    public static int getLureModifier(EntityLivingBase player)
+    public static int func_191528_c(ItemStack p_191528_0_)
     {
-        return getMaxEnchantmentLevel(Enchantments.LURE, player);
+        /**
+         * Returns the level of enchantment on the ItemStack passed.
+         */
+        return getEnchantmentLevel(Enchantments.LURE, p_191528_0_);
     }
 
     public static int getLootingModifier(EntityLivingBase p_185283_0_)
@@ -296,33 +301,54 @@ public class EnchantmentHelper
         return getMaxEnchantmentLevel(Enchantments.AQUA_AFFINITY, p_185287_0_) > 0;
     }
 
-    public static boolean func_189869_j(EntityLivingBase p_189869_0_)
+    /**
+     * Checks if the player has any armor enchanted with the frost walker enchantment. 
+     *  @return If player has equipment with frost walker
+     *  
+     * @param player The player to check enchantment for
+     */
+    public static boolean hasFrostWalkerEnchantment(EntityLivingBase player)
     {
-        return getMaxEnchantmentLevel(Enchantments.FROST_WALKER, p_189869_0_) > 0;
+        return getMaxEnchantmentLevel(Enchantments.FROST_WALKER, player) > 0;
     }
 
-    @Nullable
+    public static boolean func_190938_b(ItemStack p_190938_0_)
+    {
+        /**
+         * Returns the level of enchantment on the ItemStack passed.
+         */
+        return getEnchantmentLevel(Enchantments.field_190941_k, p_190938_0_) > 0;
+    }
+
+    public static boolean func_190939_c(ItemStack p_190939_0_)
+    {
+        /**
+         * Returns the level of enchantment on the ItemStack passed.
+         */
+        return getEnchantmentLevel(Enchantments.field_190940_C, p_190939_0_) > 0;
+    }
+
     public static ItemStack getEnchantedItem(Enchantment p_92099_0_, EntityLivingBase p_92099_1_)
     {
-        Iterable<ItemStack> iterable = p_92099_0_.getEntityEquipment(p_92099_1_);
+        List<ItemStack> list = p_92099_0_.getEntityEquipment(p_92099_1_);
 
-        if (iterable == null)
+        if (list.isEmpty())
         {
-            return null;
+            return ItemStack.field_190927_a;
         }
         else
         {
-            List<ItemStack> list = Lists.<ItemStack>newArrayList();
+            List<ItemStack> list1 = Lists.<ItemStack>newArrayList();
 
-            for (ItemStack itemstack : iterable)
+            for (ItemStack itemstack : list)
             {
-                if (itemstack != null && getEnchantmentLevel(p_92099_0_, itemstack) > 0)
+                if (!itemstack.func_190926_b() && getEnchantmentLevel(p_92099_0_, itemstack) > 0)
                 {
-                    list.add(itemstack);
+                    list1.add(itemstack);
                 }
             }
 
-            return list.isEmpty() ? null : (ItemStack)list.get(p_92099_1_.getRNG().nextInt(list.size()));
+            return list1.isEmpty() ? ItemStack.field_190927_a : (ItemStack)list1.get(p_92099_1_.getRNG().nextInt(list1.size()));
         }
     }
 
@@ -356,12 +382,12 @@ public class EnchantmentHelper
      */
     public static ItemStack addRandomEnchantment(Random random, ItemStack p_77504_1_, int p_77504_2_, boolean allowTreasure)
     {
-        boolean flag = p_77504_1_.getItem() == Items.BOOK;
         List<EnchantmentData> list = buildEnchantmentList(random, p_77504_1_, p_77504_2_, allowTreasure);
+        boolean flag = p_77504_1_.getItem() == Items.BOOK;
 
         if (flag)
         {
-            p_77504_1_.setItem(Items.ENCHANTED_BOOK);
+            p_77504_1_ = new ItemStack(Items.ENCHANTED_BOOK);
         }
 
         for (EnchantmentData enchantmentdata : list)
@@ -424,8 +450,7 @@ public class EnchantmentHelper
 
         while (iterator.hasNext())
         {
-            Enchantment e2 = iterator.next().enchantmentobj;
-            if (!p_185282_1_.enchantmentobj.canApplyTogether(e2) || !e2.canApplyTogether(p_185282_1_.enchantmentobj)) //Forge BugFix: Let Both enchantments veto being together
+            if (!p_185282_1_.enchantmentobj.func_191560_c(((EnchantmentData)iterator.next()).enchantmentobj))
             {
                 iterator.remove();
             }

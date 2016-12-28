@@ -51,17 +51,17 @@ public class GuiClickableScrolledSelectionListProxy extends GuiSlot
 
     public int width()
     {
-        return super.width;
+        return this.width;
     }
 
     public int mouseY()
     {
-        return super.mouseY;
+        return this.mouseY;
     }
 
     public int mouseX()
     {
-        return super.mouseX;
+        return this.mouseX;
     }
 
     /**

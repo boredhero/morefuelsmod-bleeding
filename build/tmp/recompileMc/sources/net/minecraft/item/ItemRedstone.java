@@ -20,15 +20,16 @@ public class ItemRedstone extends Item
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        boolean flag = worldIn.getBlockState(pos).getBlock().isReplaceable(worldIn, pos);
-        BlockPos blockpos = flag ? pos : pos.offset(facing);
+        boolean flag = playerIn.getBlockState(worldIn).getBlock().isReplaceable(playerIn, worldIn);
+        BlockPos blockpos = flag ? worldIn : worldIn.offset(hand);
+        ItemStack itemstack = stack.getHeldItem(pos);
 
-        if (playerIn.canPlayerEdit(blockpos, facing, stack) && worldIn.canBlockBePlaced(worldIn.getBlockState(blockpos).getBlock(), blockpos, false, facing, (Entity)null, stack) && Blocks.REDSTONE_WIRE.canPlaceBlockAt(worldIn, blockpos))
+        if (stack.canPlayerEdit(blockpos, hand, itemstack) && playerIn.func_190527_a(playerIn.getBlockState(blockpos).getBlock(), blockpos, false, hand, (Entity)null) && Blocks.REDSTONE_WIRE.canPlaceBlockAt(playerIn, blockpos))
         {
-            --stack.stackSize;
-            worldIn.setBlockState(blockpos, Blocks.REDSTONE_WIRE.getDefaultState());
+            itemstack.func_190918_g(1);
+            playerIn.setBlockState(blockpos, Blocks.REDSTONE_WIRE.getDefaultState());
             return EnumActionResult.SUCCESS;
         }
         else

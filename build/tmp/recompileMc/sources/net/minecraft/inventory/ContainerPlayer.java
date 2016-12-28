@@ -1,6 +1,7 @@
 package net.minecraft.inventory;
 
 import javax.annotation.Nullable;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -48,18 +49,20 @@ public class ContainerPlayer extends Container
                     return 1;
                 }
                 /**
-                 * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+                 * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace
+                 * fuel.
                  */
-                public boolean isItemValid(@Nullable ItemStack stack)
+                public boolean isItemValid(ItemStack stack)
                 {
-                    if (stack == null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return stack.getItem().isValidArmor(stack, entityequipmentslot, thePlayer);
-                    }
+                    return stack.getItem().isValidArmor(stack, entityequipmentslot, thePlayer);
+                }
+                /**
+                 * Return whether this slot's stack can be taken from this slot.
+                 */
+                public boolean canTakeStack(EntityPlayer playerIn)
+                {
+                    ItemStack itemstack = this.getStack();
+                    return !itemstack.func_190926_b() && !playerIn.isCreative() && EnchantmentHelper.func_190938_b(itemstack) ? false : super.canTakeStack(playerIn);
                 }
                 @Nullable
                 @SideOnly(Side.CLIENT)
@@ -85,13 +88,6 @@ public class ContainerPlayer extends Container
 
         this.addSlotToContainer(new Slot(playerInventory, 40, 77, 62)
         {
-            /**
-             * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
-             */
-            public boolean isItemValid(@Nullable ItemStack stack)
-            {
-                return super.isItemValid(stack);
-            }
             @Nullable
             @SideOnly(Side.CLIENT)
             public String getSlotTexture()
@@ -121,15 +117,18 @@ public class ContainerPlayer extends Container
         {
             ItemStack itemstack = this.craftMatrix.removeStackFromSlot(i);
 
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 playerIn.dropItem(itemstack, false);
             }
         }
 
-        this.craftResult.setInventorySlotContents(0, (ItemStack)null);
+        this.craftResult.setInventorySlotContents(0, ItemStack.field_190927_a);
     }
 
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return true;
@@ -138,10 +137,9 @@ public class ContainerPlayer extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
-    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.field_190927_a;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -154,7 +152,7 @@ public class ContainerPlayer extends Container
             {
                 if (!this.mergeItemStack(itemstack1, 9, 45, true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
 
                 slot.onSlotChange(itemstack1, itemstack);
@@ -163,14 +161,14 @@ public class ContainerPlayer extends Container
             {
                 if (!this.mergeItemStack(itemstack1, 9, 45, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (index >= 5 && index < 9)
             {
                 if (!this.mergeItemStack(itemstack1, 9, 45, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR && !((Slot)this.inventorySlots.get(8 - entityequipmentslot.getIndex())).getHasStack())
@@ -179,50 +177,55 @@ public class ContainerPlayer extends Container
 
                 if (!this.mergeItemStack(itemstack1, i, i + 1, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (entityequipmentslot == EntityEquipmentSlot.OFFHAND && !((Slot)this.inventorySlots.get(45)).getHasStack())
             {
                 if (!this.mergeItemStack(itemstack1, 45, 46, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (index >= 9 && index < 36)
             {
                 if (!this.mergeItemStack(itemstack1, 36, 45, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (index >= 36 && index < 45)
             {
                 if (!this.mergeItemStack(itemstack1, 9, 36, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 9, 45, false))
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.func_190926_b())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.field_190927_a);
             }
             else
             {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.func_190916_E() == itemstack.func_190916_E())
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            slot.onPickupFromSlot(playerIn, itemstack1);
+            ItemStack itemstack2 = slot.func_190901_a(playerIn, itemstack1);
+
+            if (index == 0)
+            {
+                playerIn.dropItem(itemstack2, false);
+            }
         }
 
         return itemstack;

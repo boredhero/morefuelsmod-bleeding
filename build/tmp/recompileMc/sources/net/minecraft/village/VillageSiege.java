@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.monster.ZombieType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -178,7 +177,6 @@ public class VillageSiege
             {
                 entityzombie = new EntityZombie(this.worldObj);
                 entityzombie.onInitialSpawn(this.worldObj.getDifficultyForLocation(new BlockPos(entityzombie)), (IEntityLivingData)null);
-                entityzombie.func_189778_a(ZombieType.NORMAL);
             }
             catch (Exception exception)
             {

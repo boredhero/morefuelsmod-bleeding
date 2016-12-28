@@ -243,7 +243,7 @@ public class PotionEffect implements Comparable<PotionEffect>
                 flag1 = nbt.getBoolean("ShowParticles");
             }
 
-            return new PotionEffect(potion, k, j, flag, flag1);
+            return new PotionEffect(potion, k, j < 0 ? 0 : j, flag, flag1);
         }
     }
 
@@ -262,6 +262,9 @@ public class PotionEffect implements Comparable<PotionEffect>
         return (this.getDuration() <= 32147 || p_compareTo_1_.getDuration() <= 32147) && (!this.getIsAmbient() || !p_compareTo_1_.getIsAmbient()) ? ComparisonChain.start().compare(Boolean.valueOf(this.getIsAmbient()), Boolean.valueOf(p_compareTo_1_.getIsAmbient())).compare(this.getDuration(), p_compareTo_1_.getDuration()).compare(this.getPotion().getLiquidColor(), p_compareTo_1_.getPotion().getLiquidColor()).result() : ComparisonChain.start().compare(Boolean.valueOf(this.getIsAmbient()), Boolean.valueOf(p_compareTo_1_.getIsAmbient())).compare(this.getPotion().getLiquidColor(), p_compareTo_1_.getPotion().getLiquidColor()).result();
     }
 
+    /**
+     * Get the value of the isPotionDurationMax field.
+     */
     @SideOnly(Side.CLIENT)
     public boolean getIsPotionDurationMax()
     {

@@ -19,7 +19,7 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
@@ -71,7 +71,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
     {
         public boolean apply(@Nullable Entity p_apply_1_)
         {
-            return p_apply_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_apply_1_).getCreatureAttribute() != EnumCreatureAttribute.UNDEAD;
+            return p_apply_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_apply_1_).getCreatureAttribute() != EnumCreatureAttribute.UNDEAD && ((EntityLivingBase)p_apply_1_).func_190631_cK();
         }
     };
 
@@ -90,7 +90,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
         this.tasks.addTask(0, new EntityWither.AIDoNothing());
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityAIAttackRanged(this, 1.0D, 40, 20.0F));
-        this.tasks.addTask(5, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(7, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false, new Class[0]));
@@ -106,9 +106,9 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
         this.dataManager.register(INVULNERABILITY_TIME, Integer.valueOf(0));
     }
 
-    public static void func_189782_b(DataFixer p_189782_0_)
+    public static void registerFixesWither(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189782_0_, "WitherBoss");
+        EntityLiving.registerFixesMob(fixer, EntityWither.class);
     }
 
     /**
@@ -127,6 +127,20 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
     {
         super.readEntityFromNBT(compound);
         this.setInvulTime(compound.getInteger("Invul"));
+
+        if (this.hasCustomName())
+        {
+            this.bossInfo.setName(this.getDisplayName());
+        }
+    }
+
+    /**
+     * Sets the custom name tag for this entity
+     */
+    public void setCustomNameTag(String name)
+    {
+        super.setCustomNameTag(name);
+        this.bossInfo.setName(this.getDisplayName());
     }
 
     protected SoundEvent getAmbientSound()
@@ -409,7 +423,7 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
 
     public static boolean canDestroyBlock(Block blockIn)
     {
-        return blockIn != Blocks.BEDROCK && blockIn != Blocks.END_PORTAL && blockIn != Blocks.END_PORTAL_FRAME && blockIn != Blocks.COMMAND_BLOCK && blockIn != Blocks.REPEATING_COMMAND_BLOCK && blockIn != Blocks.CHAIN_COMMAND_BLOCK && blockIn != Blocks.BARRIER;
+        return blockIn != Blocks.BEDROCK && blockIn != Blocks.END_PORTAL && blockIn != Blocks.END_PORTAL_FRAME && blockIn != Blocks.COMMAND_BLOCK && blockIn != Blocks.REPEATING_COMMAND_BLOCK && blockIn != Blocks.CHAIN_COMMAND_BLOCK && blockIn != Blocks.BARRIER && blockIn != Blocks.STRUCTURE_BLOCK && blockIn != Blocks.STRUCTURE_VOID;
     }
 
     /**
@@ -530,8 +544,10 @@ public class EntityWither extends EntityMob implements IRangedAttackMob
 
     /**
      * Attack the specified entity using a ranged attack.
+     *  
+     * @param distanceFactor How far the target is, normalized and clamped between 0.1 and 1.0
      */
-    public void attackEntityWithRangedAttack(EntityLivingBase target, float p_82196_2_)
+    public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor)
     {
         this.launchWitherSkullToEntity(0, target);
     }

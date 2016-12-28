@@ -70,9 +70,9 @@ public class GuiCreateFlatWorld extends GuiScreen
         this.materialText = I18n.format("createWorld.customize.flat.tile", new Object[0]);
         this.heightText = I18n.format("createWorld.customize.flat.height", new Object[0]);
         this.createFlatWorldListSlotGui = new GuiCreateFlatWorld.Details();
-        this.addLayerButton = this.func_189646_b(new GuiButton(2, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("createWorld.customize.flat.addLayer", new Object[0]) + " (NYI)"));
-        this.editLayerButton = this.func_189646_b(new GuiButton(3, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("createWorld.customize.flat.editLayer", new Object[0]) + " (NYI)"));
-        this.removeLayerButton = this.func_189646_b(new GuiButton(4, this.width / 2 - 155, this.height - 52, 150, 20, I18n.format("createWorld.customize.flat.removeLayer", new Object[0])));
+        this.addLayerButton = this.addButton(new GuiButton(2, this.width / 2 - 154, this.height - 52, 100, 20, I18n.format("createWorld.customize.flat.addLayer", new Object[0]) + " (NYI)"));
+        this.editLayerButton = this.addButton(new GuiButton(3, this.width / 2 - 50, this.height - 52, 100, 20, I18n.format("createWorld.customize.flat.editLayer", new Object[0]) + " (NYI)"));
+        this.removeLayerButton = this.addButton(new GuiButton(4, this.width / 2 - 155, this.height - 52, 150, 20, I18n.format("createWorld.customize.flat.removeLayer", new Object[0])));
         this.buttonList.add(new GuiButton(0, this.width / 2 - 155, this.height - 28, 150, 20, I18n.format("gui.done", new Object[0])));
         this.buttonList.add(new GuiButton(5, this.width / 2 + 5, this.height - 52, 150, 20, I18n.format("createWorld.customize.presets", new Object[0])));
         this.buttonList.add(new GuiButton(1, this.width / 2 + 5, this.height - 28, 150, 20, I18n.format("gui.cancel", new Object[0])));
@@ -179,7 +179,7 @@ public class GuiCreateFlatWorld extends GuiScreen
             this.drawItemBackground(x + 1, z + 1);
             GlStateManager.enableRescaleNormal();
 
-            if (itemToDraw != null && itemToDraw.getItem() != null)
+            if (!itemToDraw.func_190926_b())
             {
                 RenderHelper.enableGUIStandardItemLighting();
                 GuiCreateFlatWorld.this.itemRender.renderItemIntoGUI(itemToDraw, x + 2, z + 2);
@@ -250,10 +250,8 @@ public class GuiCreateFlatWorld extends GuiScreen
             IBlockState iblockstate = flatlayerinfo.getLayerMaterial();
             Block block = iblockstate.getBlock();
             Item item = Item.getItemFromBlock(block);
-            ItemStack itemstack = block != Blocks.AIR && item != null ? new ItemStack(item, 1, block.getMetaFromState(iblockstate)) : null;
-            String s = itemstack == null ? I18n.format("createWorld.customize.flat.air", new Object[0]) : item.getItemStackDisplayName(itemstack);
 
-            if (item == null)
+            if (item == Items.field_190931_a)
             {
                 if (block != Blocks.WATER && block != Blocks.FLOWING_WATER)
                 {
@@ -266,14 +264,10 @@ public class GuiCreateFlatWorld extends GuiScreen
                 {
                     item = Items.WATER_BUCKET;
                 }
-
-                if (item != null)
-                {
-                    itemstack = new ItemStack(item, 1, block.getMetaFromState(iblockstate));
-                    s = block.getLocalizedName();
-                }
             }
 
+            ItemStack itemstack = new ItemStack(item, 1, item.getHasSubtypes() ? block.getMetaFromState(iblockstate) : 0);
+            String s = item.getItemStackDisplayName(itemstack);
             this.drawItem(insideLeft, yPos, itemstack);
             GuiCreateFlatWorld.this.fontRendererObj.drawString(s, insideLeft + 18 + 5, yPos + 3, 16777215);
             String s1;

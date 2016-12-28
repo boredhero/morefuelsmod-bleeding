@@ -73,7 +73,7 @@ public class MapGenScatteredFeature extends MapGenStructure
 
         if (i == k && j == l)
         {
-            Biome biome = this.worldObj.getBiomeProvider().getBiomeGenerator(new BlockPos(i * 16 + 8, 0, j * 16 + 8));
+            Biome biome = this.worldObj.getBiomeProvider().getBiome(new BlockPos(i * 16 + 8, 0, j * 16 + 8));
 
             if (biome == null)
             {
@@ -90,6 +90,12 @@ public class MapGenScatteredFeature extends MapGenStructure
         }
 
         return false;
+    }
+
+    public BlockPos getClosestStrongholdPos(World worldIn, BlockPos pos, boolean p_180706_3_)
+    {
+        this.worldObj = worldIn;
+        return func_191069_a(worldIn, this, pos, this.maxDistanceBetweenScatteredFeatures, 8, 14357617, false, 100, p_180706_3_);
     }
 
     protected StructureStart getStructureStart(int chunkX, int chunkZ)
@@ -125,7 +131,7 @@ public class MapGenScatteredFeature extends MapGenStructure
 
             public Start(World worldIn, Random random, int chunkX, int chunkZ)
             {
-                this(worldIn, random, chunkX, chunkZ, worldIn.getBiomeGenForCoords(new BlockPos(chunkX * 16 + 8, 0, chunkZ * 16 + 8)));
+                this(worldIn, random, chunkX, chunkZ, worldIn.getBiome(new BlockPos(chunkX * 16 + 8, 0, chunkZ * 16 + 8)));
             }
 
             public Start(World worldIn, Random random, int chunkX, int chunkZ, Biome biomeIn)

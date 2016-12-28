@@ -8,10 +8,10 @@ public class ItemStackDataLists extends Filtered
 {
     private final String[] matchingTags;
 
-    public ItemStackDataLists(String id, String... tags)
+    public ItemStackDataLists(Class<?> p_i47310_1_, String... p_i47310_2_)
     {
-        super("id", id);
-        this.matchingTags = tags;
+        super(p_i47310_1_);
+        this.matchingTags = p_i47310_2_;
     }
 
     NBTTagCompound filteredProcess(IDataFixer fixer, NBTTagCompound compound, int versionIn)

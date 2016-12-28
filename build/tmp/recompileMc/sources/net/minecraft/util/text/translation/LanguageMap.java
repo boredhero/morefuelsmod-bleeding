@@ -27,7 +27,7 @@ public class LanguageMap
 
     public LanguageMap()
     {
-        InputStream inputstream = LanguageMap.class.getResourceAsStream("/assets/minecraft/lang/en_US.lang");
+        InputStream inputstream = LanguageMap.class.getResourceAsStream("/assets/minecraft/lang/en_us.lang");
         inject(this, inputstream);
     }
 

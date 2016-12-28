@@ -72,9 +72,9 @@ public class ComponentScatteredFeaturePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.hasPlacedChest[0] = tagCompound.getBoolean("hasPlacedChest0");
                 this.hasPlacedChest[1] = tagCompound.getBoolean("hasPlacedChest1");
                 this.hasPlacedChest[2] = tagCompound.getBoolean("hasPlacedChest2");
@@ -334,7 +334,7 @@ public class ComponentScatteredFeaturePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
                 this.scatteredFeatureSizeX = tagCompound.getInteger("Width");
                 this.scatteredFeatureSizeY = tagCompound.getInteger("Height");
@@ -417,7 +417,7 @@ public class ComponentScatteredFeaturePieces
                     Rotation[] arotation = Rotation.values();
                     MinecraftServer minecraftserver = worldIn.getMinecraftServer();
                     TemplateManager templatemanager = worldIn.getSaveHandler().getStructureTemplateManager();
-                    PlacementSettings placementsettings = (new PlacementSettings()).setRotation(arotation[randomIn.nextInt(arotation.length)]).setReplacedBlock(Blocks.field_189881_dj).setBoundingBox(structureboundingbox);
+                    PlacementSettings placementsettings = (new PlacementSettings()).setRotation(arotation[randomIn.nextInt(arotation.length)]).setReplacedBlock(Blocks.STRUCTURE_VOID).setBoundingBox(structureboundingbox);
                     Template template = templatemanager.getTemplate(minecraftserver, IGLOO_TOP_ID);
                     template.addBlocksToWorldChunk(worldIn, blockpos, placementsettings);
 
@@ -496,9 +496,9 @@ public class ComponentScatteredFeaturePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.placedMainChest = tagCompound.getBoolean("placedMainChest");
                 this.placedHiddenChest = tagCompound.getBoolean("placedHiddenChest");
                 this.placedTrap1 = tagCompound.getBoolean("placedTrap1");
@@ -755,9 +755,9 @@ public class ComponentScatteredFeaturePieces
             /**
              * (abstract) Helper method to read subclass data from NBT
              */
-            protected void readStructureFromNBT(NBTTagCompound tagCompound)
+            protected void readStructureFromNBT(NBTTagCompound tagCompound, TemplateManager p_143011_2_)
             {
-                super.readStructureFromNBT(tagCompound);
+                super.readStructureFromNBT(tagCompound, p_143011_2_);
                 this.hasWitch = tagCompound.getBoolean("Witch");
             }
 
@@ -821,6 +821,7 @@ public class ComponentScatteredFeaturePieces
                         {
                             this.hasWitch = true;
                             EntityWitch entitywitch = new EntityWitch(worldIn);
+                            entitywitch.enablePersistence();
                             entitywitch.setLocationAndAngles((double)l + 0.5D, (double)i1, (double)k + 0.5D, 0.0F, 0.0F);
                             entitywitch.onInitialSpawn(worldIn.getDifficultyForLocation(new BlockPos(l, i1, k)), (IEntityLivingData)null);
                             worldIn.spawnEntityInWorld(entitywitch);

@@ -1,7 +1,5 @@
 package net.minecraft.tileentity;
 
-import com.google.common.collect.Maps;
-import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockJukebox;
@@ -12,8 +10,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.util.Mirror;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -24,8 +24,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class TileEntity implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Map < String, Class <? extends TileEntity >> nameToClassMap = Maps. < String, Class <? extends TileEntity >> newHashMap();
-    private static final Map < Class <? extends TileEntity > , String > classToNameMap = Maps. < Class <? extends TileEntity > , String > newHashMap();
+    private static final RegistryNamespaced < ResourceLocation, Class <? extends TileEntity >> field_190562_f = net.minecraftforge.fml.common.registry.GameData.getTileEntityRegistry();
     /** the instance of the world the tile entity is in. */
     protected World worldObj;
     protected BlockPos pos = BlockPos.ORIGIN;
@@ -34,20 +33,15 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
     /** the Block type that this TileEntity is contained within */
     protected Block blockType;
 
-    /**
-     * Adds a new two-way mapping between the class and its string name in both hashmaps.
-     */
-    public static void addMapping(Class <? extends TileEntity > cl, String id)
+    private static void func_190560_a(String p_190560_0_, Class <? extends TileEntity > p_190560_1_)
     {
-        if (nameToClassMap.containsKey(id))
-        {
-            throw new IllegalArgumentException("Duplicate id: " + id);
-        }
-        else
-        {
-            nameToClassMap.put(id, cl);
-            classToNameMap.put(cl, id);
-        }
+        field_190562_f.putObject(new ResourceLocation(p_190560_0_), p_190560_1_);
+    }
+
+    @Nullable
+    public static ResourceLocation func_190559_a(Class <? extends TileEntity > p_190559_0_)
+    {
+        return (ResourceLocation)field_190562_f.getNameForObject(p_190559_0_);
     }
 
     /**
@@ -88,15 +82,15 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
     private NBTTagCompound writeInternal(NBTTagCompound compound)
     {
-        String s = (String)classToNameMap.get(this.getClass());
+        ResourceLocation resourcelocation = (ResourceLocation)field_190562_f.getNameForObject(this.getClass());
 
-        if (s == null)
+        if (resourcelocation == null)
         {
             throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
         }
         else
         {
-            compound.setString("id", s);
+            compound.setString("id", resourcelocation.toString());
             compound.setInteger("x", this.pos.getX());
             compound.setInteger("y", this.pos.getY());
             compound.setInteger("z", this.pos.getZ());
@@ -106,15 +100,16 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         }
     }
 
-    public static TileEntity func_190200_a(World p_190200_0_, NBTTagCompound p_190200_1_)
+    @Nullable
+    public static TileEntity create(World worldIn, NBTTagCompound compound)
     {
         TileEntity tileentity = null;
-        String s = p_190200_1_.getString("id");
+        String s = compound.getString("id");
         Class <? extends TileEntity > oclass = null;
 
         try
         {
-            oclass = nameToClassMap.get(s);
+            oclass = (Class)field_190562_f.getObject(new ResourceLocation(s));
 
             if (oclass != null)
             {
@@ -133,8 +128,8 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         {
             try
             {
-                tileentity.func_190201_b(p_190200_0_);
-                tileentity.readFromNBT(p_190200_1_);
+                tileentity.setWorldCreate(worldIn);
+                tileentity.readFromNBT(compound);
             }
             catch (Throwable throwable)
             {
@@ -153,7 +148,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         return tileentity;
     }
 
-    protected void func_190201_b(World p_190201_1_)
+    protected void setWorldCreate(World worldIn)
     {
     }
 
@@ -271,7 +266,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         {
             public String call() throws Exception
             {
-                return (String)TileEntity.classToNameMap.get(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
+                return TileEntity.field_190562_f.getNameForObject(TileEntity.this.getClass()) + " // " + TileEntity.this.getClass().getCanonicalName();
             }
         });
 
@@ -317,13 +312,7 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
     public void setPos(BlockPos posIn)
     {
-        if (posIn instanceof BlockPos.MutableBlockPos || posIn instanceof BlockPos.PooledMutableBlockPos)
-        {
-            LOGGER.warn((String)"Tried to assign a mutable BlockPos to a block entity...", (Throwable)(new Error(posIn.getClass().toString())));
-            posIn = new BlockPos(posIn);
-        }
-
-        this.pos = posIn;
+        this.pos = posIn.toImmutable();
     }
 
     public boolean onlyOpsCanSetNbt()
@@ -340,11 +329,11 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         return null;
     }
 
-    public void func_189667_a(Rotation p_189667_1_)
+    public void rotate(Rotation p_189667_1_)
     {
     }
 
-    public void func_189668_a(Mirror p_189668_1_)
+    public void mirror(Mirror p_189668_1_)
     {
     }
 
@@ -522,12 +511,15 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
         capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
     }
 
-    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, net.minecraft.util.EnumFacing facing)
+    @Override
+    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
     {
         return capabilities == null ? false : capabilities.hasCapability(capability, facing);
     }
 
-    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, net.minecraft.util.EnumFacing facing)
+    @Override
+    @Nullable
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
     {
         return capabilities == null ? null : capabilities.getCapability(capability, facing);
     }
@@ -546,28 +538,29 @@ public abstract class TileEntity implements net.minecraftforge.common.capabiliti
 
     static
     {
-        addMapping(TileEntityFurnace.class, "Furnace");
-        addMapping(TileEntityChest.class, "Chest");
-        addMapping(TileEntityEnderChest.class, "EnderChest");
-        addMapping(BlockJukebox.TileEntityJukebox.class, "RecordPlayer");
-        addMapping(TileEntityDispenser.class, "Trap");
-        addMapping(TileEntityDropper.class, "Dropper");
-        addMapping(TileEntitySign.class, "Sign");
-        addMapping(TileEntityMobSpawner.class, "MobSpawner");
-        addMapping(TileEntityNote.class, "Music");
-        addMapping(TileEntityPiston.class, "Piston");
-        addMapping(TileEntityBrewingStand.class, "Cauldron");
-        addMapping(TileEntityEnchantmentTable.class, "EnchantTable");
-        addMapping(TileEntityEndPortal.class, "Airportal");
-        addMapping(TileEntityBeacon.class, "Beacon");
-        addMapping(TileEntitySkull.class, "Skull");
-        addMapping(TileEntityDaylightDetector.class, "DLDetector");
-        addMapping(TileEntityHopper.class, "Hopper");
-        addMapping(TileEntityComparator.class, "Comparator");
-        addMapping(TileEntityFlowerPot.class, "FlowerPot");
-        addMapping(TileEntityBanner.class, "Banner");
-        addMapping(TileEntityStructure.class, "Structure");
-        addMapping(TileEntityEndGateway.class, "EndGateway");
-        addMapping(TileEntityCommandBlock.class, "Control");
+        func_190560_a("furnace", TileEntityFurnace.class);
+        func_190560_a("chest", TileEntityChest.class);
+        func_190560_a("ender_chest", TileEntityEnderChest.class);
+        func_190560_a("jukebox", BlockJukebox.TileEntityJukebox.class);
+        func_190560_a("dispenser", TileEntityDispenser.class);
+        func_190560_a("dropper", TileEntityDropper.class);
+        func_190560_a("sign", TileEntitySign.class);
+        func_190560_a("mob_spawner", TileEntityMobSpawner.class);
+        func_190560_a("noteblock", TileEntityNote.class);
+        func_190560_a("piston", TileEntityPiston.class);
+        func_190560_a("brewing_stand", TileEntityBrewingStand.class);
+        func_190560_a("enchanting_table", TileEntityEnchantmentTable.class);
+        func_190560_a("end_portal", TileEntityEndPortal.class);
+        func_190560_a("beacon", TileEntityBeacon.class);
+        func_190560_a("skull", TileEntitySkull.class);
+        func_190560_a("daylight_detector", TileEntityDaylightDetector.class);
+        func_190560_a("hopper", TileEntityHopper.class);
+        func_190560_a("comparator", TileEntityComparator.class);
+        func_190560_a("flower_pot", TileEntityFlowerPot.class);
+        func_190560_a("banner", TileEntityBanner.class);
+        func_190560_a("structure_block", TileEntityStructure.class);
+        func_190560_a("end_gateway", TileEntityEndGateway.class);
+        func_190560_a("command_block", TileEntityCommandBlock.class);
+        func_190560_a("shulker_box", TileEntityShulkerBox.class);
     }
 }

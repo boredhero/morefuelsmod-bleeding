@@ -30,8 +30,8 @@ public class EntityAreaEffectCloud extends Entity
     private static final DataParameter<Integer> COLOR = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> IGNORE_RADIUS = EntityDataManager.<Boolean>createKey(EntityAreaEffectCloud.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Integer> PARTICLE = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
-    private static final DataParameter<Integer> field_189736_e = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
-    private static final DataParameter<Integer> field_189737_f = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> PARTICLE_PARAM_1 = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> PARTICLE_PARAM_2 = EntityDataManager.<Integer>createKey(EntityAreaEffectCloud.class, DataSerializers.VARINT);
     private PotionType potion;
     private final List<PotionEffect> effects;
     private final Map<Entity, Integer> reapplicationDelayMap;
@@ -71,8 +71,8 @@ public class EntityAreaEffectCloud extends Entity
         this.getDataManager().register(RADIUS, Float.valueOf(0.5F));
         this.getDataManager().register(IGNORE_RADIUS, Boolean.valueOf(false));
         this.getDataManager().register(PARTICLE, Integer.valueOf(EnumParticleTypes.SPELL_MOB.getParticleID()));
-        this.getDataManager().register(field_189736_e, Integer.valueOf(0));
-        this.getDataManager().register(field_189737_f, Integer.valueOf(0));
+        this.getDataManager().register(PARTICLE_PARAM_1, Integer.valueOf(0));
+        this.getDataManager().register(PARTICLE_PARAM_2, Integer.valueOf(0));
     }
 
     public void setRadius(float radiusIn)
@@ -100,14 +100,19 @@ public class EntityAreaEffectCloud extends Entity
 
         if (!this.colorSet)
         {
-            if (potionIn == PotionTypes.EMPTY && this.effects.isEmpty())
-            {
-                this.getDataManager().set(COLOR, Integer.valueOf(0));
-            }
-            else
-            {
-                this.getDataManager().set(COLOR, Integer.valueOf(PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(potionIn, this.effects))));
-            }
+            this.func_190618_C();
+        }
+    }
+
+    private void func_190618_C()
+    {
+        if (this.potion == PotionTypes.EMPTY && this.effects.isEmpty())
+        {
+            this.getDataManager().set(COLOR, Integer.valueOf(0));
+        }
+        else
+        {
+            this.getDataManager().set(COLOR, Integer.valueOf(PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, this.effects))));
         }
     }
 
@@ -117,7 +122,7 @@ public class EntityAreaEffectCloud extends Entity
 
         if (!this.colorSet)
         {
-            this.getDataManager().set(COLOR, Integer.valueOf(PotionUtils.getPotionColorFromEffectList(PotionUtils.mergeEffects(this.potion, this.effects))));
+            this.func_190618_C();
         }
     }
 
@@ -142,24 +147,24 @@ public class EntityAreaEffectCloud extends Entity
         this.getDataManager().set(PARTICLE, Integer.valueOf(particleIn.getParticleID()));
     }
 
-    public int func_189733_n()
+    public int getParticleParam1()
     {
-        return ((Integer)this.getDataManager().get(field_189736_e)).intValue();
+        return ((Integer)this.getDataManager().get(PARTICLE_PARAM_1)).intValue();
     }
 
-    public void func_189734_b(int p_189734_1_)
+    public void setParticleParam1(int particleParam)
     {
-        this.getDataManager().set(field_189736_e, Integer.valueOf(p_189734_1_));
+        this.getDataManager().set(PARTICLE_PARAM_1, Integer.valueOf(particleParam));
     }
 
-    public int func_189735_o()
+    public int getParticleParam2()
     {
-        return ((Integer)this.getDataManager().get(field_189737_f)).intValue();
+        return ((Integer)this.getDataManager().get(PARTICLE_PARAM_2)).intValue();
     }
 
-    public void func_189732_d(int p_189732_1_)
+    public void setParticleParam2(int particleParam)
     {
-        this.getDataManager().set(field_189737_f, Integer.valueOf(p_189732_1_));
+        this.getDataManager().set(PARTICLE_PARAM_2, Integer.valueOf(particleParam));
     }
 
     /**
@@ -204,12 +209,12 @@ public class EntityAreaEffectCloud extends Entity
 
             if (aint.length > 0)
             {
-                aint[0] = this.func_189733_n();
+                aint[0] = this.getParticleParam1();
             }
 
             if (aint.length > 1)
             {
-                aint[1] = this.func_189735_o();
+                aint[1] = this.getParticleParam2();
             }
 
             if (flag)
@@ -229,11 +234,11 @@ public class EntityAreaEffectCloud extends Entity
                             int k = j >> 16 & 255;
                             int l = j >> 8 & 255;
                             int i1 = j & 255;
-                            this.worldObj.spawnParticle(EnumParticleTypes.SPELL_MOB, this.posX + (double)f3, this.posY, this.posZ + (double)f4, (double)((float)k / 255.0F), (double)((float)l / 255.0F), (double)((float)i1 / 255.0F), new int[0]);
+                            this.worldObj.func_190523_a(EnumParticleTypes.SPELL_MOB.getParticleID(), this.posX + (double)f3, this.posY, this.posZ + (double)f4, (double)((float)k / 255.0F), (double)((float)l / 255.0F), (double)((float)i1 / 255.0F), new int[0]);
                         }
                         else
                         {
-                            this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)f3, this.posY, this.posZ + (double)f4, 0.0D, 0.0D, 0.0D, aint);
+                            this.worldObj.func_190523_a(enumparticletypes.getParticleID(), this.posX + (double)f3, this.posY, this.posZ + (double)f4, 0.0D, 0.0D, 0.0D, aint);
                         }
                     }
                 }
@@ -255,11 +260,11 @@ public class EntityAreaEffectCloud extends Entity
                         int i2 = l1 >> 16 & 255;
                         int j2 = l1 >> 8 & 255;
                         int j1 = l1 & 255;
-                        this.worldObj.spawnParticle(EnumParticleTypes.SPELL_MOB, this.posX + (double)f8, this.posY, this.posZ + (double)f9, (double)((float)i2 / 255.0F), (double)((float)j2 / 255.0F), (double)((float)j1 / 255.0F), new int[0]);
+                        this.worldObj.func_190523_a(EnumParticleTypes.SPELL_MOB.getParticleID(), this.posX + (double)f8, this.posY, this.posZ + (double)f9, (double)((float)i2 / 255.0F), (double)((float)j2 / 255.0F), (double)((float)j1 / 255.0F), new int[0]);
                     }
                     else
                     {
-                        this.worldObj.spawnParticle(enumparticletypes, this.posX + (double)f8, this.posY, this.posZ + (double)f9, (0.5D - this.rand.nextDouble()) * 0.15D, 0.009999999776482582D, (0.5D - this.rand.nextDouble()) * 0.15D, aint);
+                        this.worldObj.func_190523_a(enumparticletypes.getParticleID(), this.posX + (double)f8, this.posY, this.posZ + (double)f9, (0.5D - this.rand.nextDouble()) * 0.15D, 0.009999999776482582D, (0.5D - this.rand.nextDouble()) * 0.15D, aint);
                     }
                 }
             }
@@ -445,8 +450,8 @@ public class EntityAreaEffectCloud extends Entity
             if (enumparticletypes != null)
             {
                 this.setParticle(enumparticletypes);
-                this.func_189734_b(compound.getInteger("ParticleParam1"));
-                this.func_189732_d(compound.getInteger("ParticleParam2"));
+                this.setParticleParam1(compound.getInteger("ParticleParam1"));
+                this.setParticleParam2(compound.getInteger("ParticleParam2"));
             }
         }
 
@@ -491,8 +496,8 @@ public class EntityAreaEffectCloud extends Entity
         compound.setFloat("RadiusPerTick", this.radiusPerTick);
         compound.setFloat("Radius", this.getRadius());
         compound.setString("Particle", this.getParticle().getParticleName());
-        compound.setInteger("ParticleParam1", this.func_189733_n());
-        compound.setInteger("ParticleParam2", this.func_189735_o());
+        compound.setInteger("ParticleParam1", this.getParticleParam1());
+        compound.setInteger("ParticleParam2", this.getParticleParam2());
 
         if (this.ownerUniqueId != null)
         {

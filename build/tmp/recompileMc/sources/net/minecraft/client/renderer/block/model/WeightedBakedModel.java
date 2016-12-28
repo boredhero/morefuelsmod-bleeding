@@ -71,9 +71,9 @@ public class WeightedBakedModel implements IBakedModel
         {
             private final List<WeightedBakedModel.WeightedModel> listItems = Lists.<WeightedBakedModel.WeightedModel>newArrayList();
 
-            public WeightedBakedModel.Builder add(IBakedModel p_177677_1_, int p_177677_2_)
+            public WeightedBakedModel.Builder add(IBakedModel model, int weight)
             {
-                this.listItems.add(new WeightedBakedModel.WeightedModel(p_177677_1_, p_177677_2_));
+                this.listItems.add(new WeightedBakedModel.WeightedModel(model, weight));
                 return this;
             }
 

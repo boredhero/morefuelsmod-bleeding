@@ -1,15 +1,14 @@
 package net.minecraft.entity.item;
 
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerHopper;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.IHopper;
 import net.minecraft.tileentity.TileEntityHopper;
@@ -60,9 +59,9 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
         return 5;
     }
 
-    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand stack)
     {
-        if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand))) return true;
+        if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack))) return true;
         if (!this.worldObj.isRemote)
         {
             player.displayGUIChest(this);
@@ -177,7 +176,7 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
 
             if (!list.isEmpty())
             {
-                TileEntityHopper.putDropInInventoryAllSlots(this, (EntityItem)list.get(0));
+                TileEntityHopper.putDropInInventoryAllSlots((IInventory)null, this, (EntityItem)list.get(0));
             }
 
             return false;
@@ -194,9 +193,9 @@ public class EntityMinecartHopper extends EntityMinecartContainer implements IHo
         }
     }
 
-    public static void func_189682_a(DataFixer p_189682_0_)
+    public static void registerFixesMinecartHopper(DataFixer fixer)
     {
-        EntityMinecartContainer.func_189680_b(p_189682_0_, "MinecartHopper");
+        EntityMinecartContainer.func_190574_b(fixer, EntityMinecartHopper.class);
     }
 
     /**

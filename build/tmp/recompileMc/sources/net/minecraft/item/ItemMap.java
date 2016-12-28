@@ -19,6 +19,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.MapData;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,21 +32,30 @@ public class ItemMap extends ItemMapBase
         this.setHasSubtypes(true);
     }
 
+    public static ItemStack func_190906_a(World p_190906_0_, double p_190906_1_, double p_190906_3_, byte p_190906_5_, boolean p_190906_6_, boolean p_190906_7_)
+    {
+        ItemStack itemstack = new ItemStack(Items.FILLED_MAP, 1, p_190906_0_.getUniqueDataId("map"));
+        String s = "map_" + itemstack.getMetadata();
+        MapData mapdata = new MapData(s);
+        p_190906_0_.setItemData(s, mapdata);
+        mapdata.scale = p_190906_5_;
+        mapdata.calculateMapCenter(p_190906_1_, p_190906_3_, mapdata.scale);
+        mapdata.dimension = p_190906_0_.provider.getDimension();
+        mapdata.trackingPosition = p_190906_6_;
+        mapdata.field_191096_f = p_190906_7_;
+        mapdata.markDirty();
+        return itemstack;
+    }
+
+    @Nullable
     @SideOnly(Side.CLIENT)
     public static MapData loadMapData(int mapId, World worldIn)
     {
         String s = "map_" + mapId;
-        MapData mapdata = (MapData)worldIn.loadItemData(MapData.class, s);
-
-        if (mapdata == null)
-        {
-            mapdata = new MapData(s);
-            worldIn.setItemData(s, mapdata);
-        }
-
-        return mapdata;
+        return (MapData)worldIn.loadItemData(MapData.class, s);
     }
 
+    @Nullable
     public MapData getMapData(ItemStack stack, World worldIn)
     {
         String s = "map_" + stack.getMetadata();
@@ -139,7 +149,11 @@ public class ItemMap extends ItemMapBase
                                             int k4 = chunk.getHeightValue(i4 + i3, j4 + j3) + 1;
                                             IBlockState iblockstate = Blocks.AIR.getDefaultState();
 
-                                            if (k4 > 1)
+                                            if (k4 <= 1)
+                                            {
+                                                iblockstate = Blocks.BEDROCK.getDefaultState();
+                                            }
+                                            else
                                             {
                                                 label542:
                                                 {
@@ -232,6 +246,135 @@ public class ItemMap extends ItemMapBase
         }
     }
 
+    public static void func_190905_a(World p_190905_0_, ItemStack p_190905_1_)
+    {
+        if (p_190905_1_.getItem() == Items.FILLED_MAP)
+        {
+            MapData mapdata = Items.FILLED_MAP.getMapData(p_190905_1_, p_190905_0_);
+
+            if (mapdata != null)
+            {
+                if (p_190905_0_.provider.getDimensionType().getId() == mapdata.dimension)
+                {
+                    int i = 1 << mapdata.scale;
+                    int j = mapdata.xCenter;
+                    int k = mapdata.zCenter;
+                    Biome[] abiome = p_190905_0_.getBiomeProvider().getBiomes((Biome[])null, (j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
+
+                    for (int l = 0; l < 128; ++l)
+                    {
+                        for (int i1 = 0; i1 < 128; ++i1)
+                        {
+                            int j1 = l * i;
+                            int k1 = i1 * i;
+                            Biome biome = abiome[j1 + k1 * 128 * i];
+                            MapColor mapcolor = MapColor.AIR;
+                            int l1 = 3;
+                            int i2 = 8;
+
+                            if (l > 0 && i1 > 0 && l < 127 && i1 < 127)
+                            {
+                                if (abiome[(l - 1) * i + (i1 - 1) * i * 128 * i].getBaseHeight() >= 0.0F)
+                                {
+                                    --i2;
+                                }
+
+                                if (abiome[(l - 1) * i + (i1 + 1) * i * 128 * i].getBaseHeight() >= 0.0F)
+                                {
+                                    --i2;
+                                }
+
+                                if (abiome[(l - 1) * i + i1 * i * 128 * i].getBaseHeight() >= 0.0F)
+                                {
+                                    --i2;
+                                }
+
+                                if (abiome[(l + 1) * i + (i1 - 1) * i * 128 * i].getBaseHeight() >= 0.0F)
+                                {
+                                    --i2;
+                                }
+
+                                if (abiome[(l + 1) * i + (i1 + 1) * i * 128 * i].getBaseHeight() >= 0.0F)
+                                {
+                                    --i2;
+                                }
+
+                                if (abiome[(l + 1) * i + i1 * i * 128 * i].getBaseHeight() >= 0.0F)
+                                {
+                                    --i2;
+                                }
+
+                                if (abiome[l * i + (i1 - 1) * i * 128 * i].getBaseHeight() >= 0.0F)
+                                {
+                                    --i2;
+                                }
+
+                                if (abiome[l * i + (i1 + 1) * i * 128 * i].getBaseHeight() >= 0.0F)
+                                {
+                                    --i2;
+                                }
+
+                                if (biome.getBaseHeight() < 0.0F)
+                                {
+                                    mapcolor = MapColor.ADOBE;
+
+                                    if (i2 > 7 && i1 % 2 == 0)
+                                    {
+                                        l1 = (l + (int)(MathHelper.sin((float)i1 + 0.0F) * 7.0F)) / 8 % 5;
+
+                                        if (l1 == 3)
+                                        {
+                                            l1 = 1;
+                                        }
+                                        else if (l1 == 4)
+                                        {
+                                            l1 = 0;
+                                        }
+                                    }
+                                    else if (i2 > 7)
+                                    {
+                                        mapcolor = MapColor.AIR;
+                                    }
+                                    else if (i2 > 5)
+                                    {
+                                        l1 = 1;
+                                    }
+                                    else if (i2 > 3)
+                                    {
+                                        l1 = 0;
+                                    }
+                                    else if (i2 > 1)
+                                    {
+                                        l1 = 0;
+                                    }
+                                }
+                                else if (i2 > 0)
+                                {
+                                    mapcolor = MapColor.BROWN;
+
+                                    if (i2 > 3)
+                                    {
+                                        l1 = 1;
+                                    }
+                                    else
+                                    {
+                                        l1 = 3;
+                                    }
+                                }
+                            }
+
+                            if (mapcolor != MapColor.AIR)
+                            {
+                                mapdata.colors[l + i1 * 128] = (byte)(mapcolor.colorIndex * 4 + l1);
+                                mapdata.updateMapData(l, i1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Called each tick as long the item is on a player inventory. Uses by maps to check if is on a player hand and
      * update it's contents.
@@ -288,12 +431,16 @@ public class ItemMap extends ItemMapBase
         MapData mapdata = Items.FILLED_MAP.getMapData(p_185063_0_, p_185063_1_);
         p_185063_0_.setItemDamage(p_185063_1_.getUniqueDataId("map"));
         MapData mapdata1 = new MapData("map_" + p_185063_0_.getMetadata());
-        mapdata1.scale = (byte)MathHelper.clamp_int(mapdata.scale + p_185063_2_, 0, 4);
-        mapdata1.trackingPosition = mapdata.trackingPosition;
-        mapdata1.calculateMapCenter((double)mapdata.xCenter, (double)mapdata.zCenter, mapdata1.scale);
-        mapdata1.dimension = mapdata.dimension;
-        mapdata1.markDirty();
-        p_185063_1_.setItemData("map_" + p_185063_0_.getMetadata(), mapdata1);
+
+        if (mapdata != null)
+        {
+            mapdata1.scale = (byte)MathHelper.clamp_int(mapdata.scale + p_185063_2_, 0, 4);
+            mapdata1.trackingPosition = mapdata.trackingPosition;
+            mapdata1.calculateMapCenter((double)mapdata.xCenter, (double)mapdata.zCenter, mapdata1.scale);
+            mapdata1.dimension = mapdata.dimension;
+            mapdata1.markDirty();
+            p_185063_1_.setItemData("map_" + p_185063_0_.getMetadata(), mapdata1);
+        }
     }
 
     protected static void enableMapTracking(ItemStack p_185064_0_, World p_185064_1_)
@@ -302,12 +449,16 @@ public class ItemMap extends ItemMapBase
         p_185064_0_.setItemDamage(p_185064_1_.getUniqueDataId("map"));
         MapData mapdata1 = new MapData("map_" + p_185064_0_.getMetadata());
         mapdata1.trackingPosition = true;
-        mapdata1.xCenter = mapdata.xCenter;
-        mapdata1.zCenter = mapdata.zCenter;
-        mapdata1.scale = mapdata.scale;
-        mapdata1.dimension = mapdata.dimension;
-        mapdata1.markDirty();
-        p_185064_1_.setItemData("map_" + p_185064_0_.getMetadata(), mapdata1);
+
+        if (mapdata != null)
+        {
+            mapdata1.xCenter = mapdata.xCenter;
+            mapdata1.zCenter = mapdata.zCenter;
+            mapdata1.scale = mapdata.scale;
+            mapdata1.dimension = mapdata.dimension;
+            mapdata1.markDirty();
+            p_185064_1_.setItemData("map_" + p_185064_0_.getMetadata(), mapdata1);
+        }
     }
 
     /**
@@ -329,6 +480,22 @@ public class ItemMap extends ItemMapBase
                 tooltip.add("Scaling at 1:" + (1 << mapdata.scale));
                 tooltip.add("(Level " + mapdata.scale + "/" + 4 + ")");
             }
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public static int func_190907_h(ItemStack p_190907_0_)
+    {
+        NBTTagCompound nbttagcompound = p_190907_0_.getSubCompound("display");
+
+        if (nbttagcompound != null && nbttagcompound.hasKey("MapColor", 99))
+        {
+            int i = nbttagcompound.getInteger("MapColor");
+            return -16777216 | i & 16777215;
+        }
+        else
+        {
+            return -12173266;
         }
     }
 }

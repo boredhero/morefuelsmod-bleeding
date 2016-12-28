@@ -46,7 +46,7 @@ public class SwimNodeProcessor extends NodeProcessor
         return PathNodeType.WATER;
     }
 
-    public PathNodeType getPathNodeType(IBlockAccess x, int y, int z, int p_186330_4_)
+    public PathNodeType getPathNodeType(IBlockAccess blockaccessIn, int x, int y, int z)
     {
         return PathNodeType.WATER;
     }

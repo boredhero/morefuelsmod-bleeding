@@ -18,7 +18,7 @@ public interface IChunkGenerator
     List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos);
 
     @Nullable
-    BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position);
+    BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position, boolean p_180513_4_);
 
     void recreateStructures(Chunk chunkIn, int x, int z);
 }

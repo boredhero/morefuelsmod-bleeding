@@ -38,18 +38,19 @@ public class ItemRecord extends Item
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        IBlockState iblockstate = worldIn.getBlockState(pos);
+        IBlockState iblockstate = playerIn.getBlockState(worldIn);
 
         if (iblockstate.getBlock() == Blocks.JUKEBOX && !((Boolean)iblockstate.getValue(BlockJukebox.HAS_RECORD)).booleanValue())
         {
-            if (!worldIn.isRemote)
+            if (!playerIn.isRemote)
             {
-                ((BlockJukebox)Blocks.JUKEBOX).insertRecord(worldIn, pos, iblockstate, stack);
-                worldIn.playEvent((EntityPlayer)null, 1010, pos, Item.getIdFromItem(this));
-                --stack.stackSize;
-                playerIn.addStat(StatList.RECORD_PLAYED);
+                ItemStack itemstack = stack.getHeldItem(pos);
+                ((BlockJukebox)Blocks.JUKEBOX).insertRecord(playerIn, worldIn, iblockstate, itemstack);
+                playerIn.playEvent((EntityPlayer)null, 1010, worldIn, Item.getIdFromItem(this));
+                itemstack.func_190918_g(1);
+                stack.addStat(StatList.RECORD_PLAYED);
             }
 
             return EnumActionResult.SUCCESS;

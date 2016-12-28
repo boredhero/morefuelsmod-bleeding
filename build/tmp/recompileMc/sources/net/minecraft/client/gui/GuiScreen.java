@@ -14,6 +14,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
@@ -22,7 +23,6 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.EntityList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTBase;
@@ -70,6 +70,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
     /** Tracks the number of fingers currently on the screen. Prevents subsequent fingers registering as clicks. */
     private int touchValue;
     private URI clickedLinkURI;
+    protected boolean keyHandled, mouseHandled; // Forge: allow canceling key and mouse Post events from handleMouseInput and handleKeyboardInput
 
     /**
      * Draws the screen and all the components in it.
@@ -104,7 +105,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         }
     }
 
-    protected <T extends GuiButton> T func_189646_b(T p_189646_1_)
+    protected <T extends GuiButton> T addButton(T p_189646_1_)
     {
         this.buttonList.add(p_189646_1_);
         return (T)p_189646_1_;
@@ -278,7 +279,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
             if (hoverevent.getAction() == HoverEvent.Action.SHOW_ITEM)
             {
-                ItemStack itemstack = null;
+                ItemStack itemstack = ItemStack.field_190927_a;
 
                 try
                 {
@@ -286,7 +287,7 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
 
                     if (nbtbase instanceof NBTTagCompound)
                     {
-                        itemstack = ItemStack.loadItemStackFromNBT((NBTTagCompound)nbtbase);
+                        itemstack = new ItemStack((NBTTagCompound)nbtbase);
                     }
                 }
                 catch (NBTException var11)
@@ -294,13 +295,13 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                     ;
                 }
 
-                if (itemstack != null)
+                if (itemstack.func_190926_b())
                 {
-                    this.renderToolTip(itemstack, x, y);
+                    this.drawCreativeTabHoveringText(TextFormatting.RED + "Invalid Item!", x, y);
                 }
                 else
                 {
-                    this.drawCreativeTabHoveringText(TextFormatting.RED + "Invalid Item!", x, y);
+                    this.renderToolTip(itemstack, x, y);
                 }
             }
             else if (hoverevent.getAction() == HoverEvent.Action.SHOW_ENTITY)
@@ -309,27 +310,18 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                 {
                     try
                     {
-                        NBTBase nbtbase1 = JsonToNBT.getTagFromJson(hoverevent.getValue().getUnformattedText());
+                        NBTTagCompound nbttagcompound = JsonToNBT.getTagFromJson(hoverevent.getValue().getUnformattedText());
+                        List<String> list1 = Lists.<String>newArrayList();
+                        list1.add(nbttagcompound.getString("name"));
 
-                        if (nbtbase1 instanceof NBTTagCompound)
+                        if (nbttagcompound.hasKey("type", 8))
                         {
-                            List<String> list1 = Lists.<String>newArrayList();
-                            NBTTagCompound nbttagcompound = (NBTTagCompound)nbtbase1;
-                            list1.add(nbttagcompound.getString("name"));
-
-                            if (nbttagcompound.hasKey("type", 8))
-                            {
-                                String s = nbttagcompound.getString("type");
-                                list1.add("Type: " + s + " (" + EntityList.getIDFromString(s) + ")");
-                            }
-
-                            list1.add(nbttagcompound.getString("id"));
-                            this.drawHoveringText(list1, x, y);
+                            String s = nbttagcompound.getString("type");
+                            list1.add("Type: " + s);
                         }
-                        else
-                        {
-                            this.drawCreativeTabHoveringText(TextFormatting.RED + "Invalid Entity!", x, y);
-                        }
+
+                        list1.add(nbttagcompound.getString("id"));
+                        this.drawHoveringText(list1, x, y);
                     }
                     catch (NBTException var10)
                     {
@@ -416,9 +408,9 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
                             throw new URISyntaxException(clickevent.getValue(), "Missing protocol");
                         }
 
-                        if (!PROTOCOLS.contains(s.toLowerCase()))
+                        if (!PROTOCOLS.contains(s.toLowerCase(Locale.ROOT)))
                         {
-                            throw new URISyntaxException(clickevent.getValue(), "Unsupported protocol: " + s.toLowerCase());
+                            throw new URISyntaxException(clickevent.getValue(), "Unsupported protocol: " + s.toLowerCase(Locale.ROOT));
                         }
 
                         if (this.mc.gameSettings.chatLinksPrompt)
@@ -579,9 +571,10 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         {
             while (Mouse.next())
             {
+                this.mouseHandled = false;
                 if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent.Pre(this))) continue;
                 this.handleMouseInput();
-                if (this.equals(this.mc.currentScreen)) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent.Post(this));
+                if (this.equals(this.mc.currentScreen) && !this.mouseHandled) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent.Post(this));
             }
         }
 
@@ -589,9 +582,10 @@ public abstract class GuiScreen extends Gui implements GuiYesNoCallback
         {
             while (Keyboard.next())
             {
+                this.keyHandled = false;
                 if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent.Pre(this))) continue;
                 this.handleKeyboardInput();
-                if (this.equals(this.mc.currentScreen)) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent.Post(this));
+                if (this.equals(this.mc.currentScreen) && !this.keyHandled) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent.Post(this));
             }
         }
     }

@@ -2,13 +2,11 @@ package net.minecraft.item;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.stats.StatList;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.MapData;
 
 public class ItemEmptyMap extends ItemMapBase
 {
@@ -17,32 +15,25 @@ public class ItemEmptyMap extends ItemMapBase
         this.setCreativeTab(CreativeTabs.MISC);
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        ItemStack itemstack = new ItemStack(Items.FILLED_MAP, 1, worldIn.getUniqueDataId("map"));
-        String s = "map_" + itemstack.getMetadata();
-        MapData mapdata = new MapData(s);
-        worldIn.setItemData(s, mapdata);
-        mapdata.scale = 0;
-        mapdata.calculateMapCenter(playerIn.posX, playerIn.posZ, mapdata.scale);
-        mapdata.dimension = worldIn.provider.getDimension();
-        mapdata.trackingPosition = true;
-        mapdata.markDirty();
-        --itemStackIn.stackSize;
+        ItemStack itemstack = ItemMap.func_190906_a(itemStackIn, worldIn.posX, worldIn.posZ, (byte)0, true, false);
+        ItemStack itemstack1 = worldIn.getHeldItem(playerIn);
+        itemstack1.func_190918_g(1);
 
-        if (itemStackIn.stackSize <= 0)
+        if (itemstack1.func_190926_b())
         {
             return new ActionResult(EnumActionResult.SUCCESS, itemstack);
         }
         else
         {
-            if (!playerIn.inventory.addItemStackToInventory(itemstack.copy()))
+            if (!worldIn.inventory.addItemStackToInventory(itemstack.copy()))
             {
-                playerIn.dropItem(itemstack, false);
+                worldIn.dropItem(itemstack, false);
             }
 
-            playerIn.addStat(StatList.getObjectUseStats(this));
-            return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+            worldIn.addStat(StatList.getObjectUseStats(this));
+            return new ActionResult(EnumActionResult.SUCCESS, itemstack1);
         }
     }
 }

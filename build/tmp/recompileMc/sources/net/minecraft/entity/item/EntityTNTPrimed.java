@@ -1,7 +1,9 @@
 package net.minecraft.entity.item;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.MoverType;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -12,6 +14,7 @@ import net.minecraft.world.World;
 public class EntityTNTPrimed extends Entity
 {
     private static final DataParameter<Integer> FUSE = EntityDataManager.<Integer>createKey(EntityTNTPrimed.class, DataSerializers.VARINT);
+    @Nullable
     private EntityLivingBase tntPlacedBy;
     /** How long the fuse is */
     private int fuse;
@@ -70,12 +73,12 @@ public class EntityTNTPrimed extends Entity
         this.prevPosY = this.posY;
         this.prevPosZ = this.posZ;
 
-        if (!this.func_189652_ae())
+        if (!this.hasNoGravity())
         {
             this.motionY -= 0.03999999910593033D;
         }
 
-        this.moveEntity(this.motionX, this.motionY, this.motionZ);
+        this.moveEntity(MoverType.SELF, this.motionX, this.motionY, this.motionZ);
         this.motionX *= 0.9800000190734863D;
         this.motionY *= 0.9800000190734863D;
         this.motionZ *= 0.9800000190734863D;
@@ -130,6 +133,7 @@ public class EntityTNTPrimed extends Entity
     /**
      * returns null or the entityliving it was placed or ignited by
      */
+    @Nullable
     public EntityLivingBase getTntPlacedBy()
     {
         return this.tntPlacedBy;

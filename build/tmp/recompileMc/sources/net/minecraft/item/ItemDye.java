@@ -1,6 +1,5 @@
 package net.minecraft.item;
 
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockOldLog;
 import net.minecraft.block.BlockPlanks;
@@ -16,6 +15,7 @@ import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -45,23 +45,25 @@ public class ItemDye extends Item
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        if (!playerIn.canPlayerEdit(pos.offset(facing), facing, stack))
+        ItemStack itemstack = stack.getHeldItem(pos);
+
+        if (!stack.canPlayerEdit(worldIn.offset(hand), hand, itemstack))
         {
             return EnumActionResult.FAIL;
         }
         else
         {
-            EnumDyeColor enumdyecolor = EnumDyeColor.byDyeDamage(stack.getMetadata());
+            EnumDyeColor enumdyecolor = EnumDyeColor.byDyeDamage(itemstack.getMetadata());
 
             if (enumdyecolor == EnumDyeColor.WHITE)
             {
-                if (applyBonemeal(stack, worldIn, pos, playerIn))
+                if (applyBonemeal(itemstack, playerIn, worldIn, stack))
                 {
-                    if (!worldIn.isRemote)
+                    if (!playerIn.isRemote)
                     {
-                        worldIn.playEvent(2005, pos, 0);
+                        playerIn.playEvent(2005, worldIn, 0);
                     }
 
                     return EnumActionResult.SUCCESS;
@@ -69,30 +71,30 @@ public class ItemDye extends Item
             }
             else if (enumdyecolor == EnumDyeColor.BROWN)
             {
-                IBlockState iblockstate = worldIn.getBlockState(pos);
+                IBlockState iblockstate = playerIn.getBlockState(worldIn);
                 Block block = iblockstate.getBlock();
 
                 if (block == Blocks.LOG && iblockstate.getValue(BlockOldLog.VARIANT) == BlockPlanks.EnumType.JUNGLE)
                 {
-                    if (facing != EnumFacing.DOWN && facing != EnumFacing.UP)
+                    if (hand == EnumFacing.DOWN || hand == EnumFacing.UP)
                     {
-                        pos = pos.offset(facing);
+                        return EnumActionResult.FAIL;
+                    }
 
-                        if (worldIn.isAirBlock(pos))
+                    worldIn = worldIn.offset(hand);
+
+                    if (playerIn.isAirBlock(worldIn))
+                    {
+                        IBlockState iblockstate1 = Blocks.COCOA.getStateForPlacement(playerIn, worldIn, hand, facing, hitX, hitY, 0, stack, pos);
+                        playerIn.setBlockState(worldIn, iblockstate1, 10);
+
+                        if (!stack.capabilities.isCreativeMode)
                         {
-                            IBlockState iblockstate1 = Blocks.COCOA.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, 0, playerIn);
-                            worldIn.setBlockState(pos, iblockstate1, 10);
-
-                            if (!playerIn.capabilities.isCreativeMode)
-                            {
-                                --stack.stackSize;
-                            }
+                            itemstack.func_190918_g(1);
                         }
 
                         return EnumActionResult.SUCCESS;
                     }
-
-                    return EnumActionResult.FAIL;
                 }
 
                 return EnumActionResult.FAIL;
@@ -129,7 +131,7 @@ public class ItemDye extends Item
                         igrowable.grow(worldIn, worldIn.rand, target, iblockstate);
                     }
 
-                    --stack.stackSize;
+                    stack.func_190918_g(1);
                 }
 
                 return true;
@@ -184,7 +186,7 @@ public class ItemDye extends Item
             if (!entitysheep.getSheared() && entitysheep.getFleeceColor() != enumdyecolor)
             {
                 entitysheep.setFleeceColor(enumdyecolor);
-                --stack.stackSize;
+                stack.func_190918_g(1);
             }
 
             return true;
@@ -199,7 +201,7 @@ public class ItemDye extends Item
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
+    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
     {
         for (int i = 0; i < 16; ++i)
         {

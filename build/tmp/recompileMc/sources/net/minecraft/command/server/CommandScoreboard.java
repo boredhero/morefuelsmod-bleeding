@@ -6,12 +6,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandResultStats;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.SyntaxErrorException;
 import net.minecraft.command.WrongUsageException;
@@ -496,7 +498,7 @@ public class CommandScoreboard extends CommandBase
 
         if (scoreplayerteam != null)
         {
-            String s = p_184923_2_[p_184923_3_++].toLowerCase();
+            String s = p_184923_2_[p_184923_3_++].toLowerCase(Locale.ROOT);
 
             if (!"color".equalsIgnoreCase(s) && !"friendlyfire".equalsIgnoreCase(s) && !"seeFriendlyInvisibles".equalsIgnoreCase(s) && !"nametagVisibility".equalsIgnoreCase(s) && !"deathMessageVisibility".equalsIgnoreCase(s) && !"collisionRule".equalsIgnoreCase(s))
             {
@@ -690,7 +692,7 @@ public class CommandScoreboard extends CommandBase
             {
                 String s1 = p_184916_2_[p_184916_3_++];
 
-                if (s1.startsWith("@"))
+                if (EntitySelector.hasArguments(s1))
                 {
                     for (Entity entity : getEntityList(server, sender, s1))
                     {
@@ -759,7 +761,7 @@ public class CommandScoreboard extends CommandBase
             {
                 String s = p_184911_2_[p_184911_3_++];
 
-                if (s.startsWith("@"))
+                if (EntitySelector.hasArguments(s))
                 {
                     for (Entity entity : getEntityList(server, sender, s))
                     {

@@ -70,6 +70,7 @@ public class ParticleManager
     private void registerVanillaParticles()
     {
         this.registerParticle(EnumParticleTypes.EXPLOSION_NORMAL.getParticleID(), new ParticleExplosion.Factory());
+        this.registerParticle(EnumParticleTypes.SPIT.getParticleID(), new ParticleSpit.Factory());
         this.registerParticle(EnumParticleTypes.WATER_BUBBLE.getParticleID(), new ParticleBubble.Factory());
         this.registerParticle(EnumParticleTypes.WATER_SPLASH.getParticleID(), new ParticleSplash.Factory());
         this.registerParticle(EnumParticleTypes.WATER_WAKE.getParticleID(), new ParticleWaterWake.Factory());
@@ -115,6 +116,7 @@ public class ParticleManager
         this.registerParticle(EnumParticleTypes.END_ROD.getParticleID(), new ParticleEndRod.Factory());
         this.registerParticle(EnumParticleTypes.DAMAGE_INDICATOR.getParticleID(), new ParticleCrit.DamageIndicatorFactory());
         this.registerParticle(EnumParticleTypes.SWEEP_ATTACK.getParticleID(), new ParticleSweepAttack.Factory());
+        this.registerParticle(EnumParticleTypes.TOTEM.getParticleID(), new ParticleTotem.Factory());
     }
 
     public void registerParticle(int id, IParticleFactory particleFactory)
@@ -127,6 +129,11 @@ public class ParticleManager
         this.particleEmitters.add(new ParticleEmitter(this.worldObj, entityIn, particleTypes));
     }
 
+    public void func_191271_a(Entity p_191271_1_, EnumParticleTypes p_191271_2_, int p_191271_3_)
+    {
+        this.particleEmitters.add(new ParticleEmitter(this.worldObj, p_191271_1_, p_191271_2_, p_191271_3_));
+    }
+
     /**
      * Spawns the relevant particle according to the particle id.
      */
@@ -137,7 +144,7 @@ public class ParticleManager
 
         if (iparticlefactory != null)
         {
-            Particle particle = iparticlefactory.getEntityFX(particleId, this.worldObj, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
+            Particle particle = iparticlefactory.createParticle(particleId, this.worldObj, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
 
             if (particle != null)
             {
@@ -271,7 +278,7 @@ public class ParticleManager
         Particle.interpPosX = entityIn.lastTickPosX + (entityIn.posX - entityIn.lastTickPosX) * (double)partialTicks;
         Particle.interpPosY = entityIn.lastTickPosY + (entityIn.posY - entityIn.lastTickPosY) * (double)partialTicks;
         Particle.interpPosZ = entityIn.lastTickPosZ + (entityIn.posZ - entityIn.lastTickPosZ) * (double)partialTicks;
-        Particle.field_190016_K = entityIn.getLook(partialTicks);
+        Particle.cameraViewDir = entityIn.getLook(partialTicks);
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         GlStateManager.alphaFunc(516, 0.003921569F);
@@ -400,10 +407,10 @@ public class ParticleManager
                 {
                     for (int l = 0; l < 4; ++l)
                     {
-                        double d0 = (double)pos.getX() + ((double)j + 0.5D) / 4.0D;
-                        double d1 = (double)pos.getY() + ((double)k + 0.5D) / 4.0D;
-                        double d2 = (double)pos.getZ() + ((double)l + 0.5D) / 4.0D;
-                        this.addEffect((new ParticleDigging(this.worldObj, d0, d1, d2, d0 - (double)pos.getX() - 0.5D, d1 - (double)pos.getY() - 0.5D, d2 - (double)pos.getZ() - 0.5D, state)).setBlockPos(pos));
+                        double d0 = ((double)j + 0.5D) / 4.0D;
+                        double d1 = ((double)k + 0.5D) / 4.0D;
+                        double d2 = ((double)l + 0.5D) / 4.0D;
+                        this.addEffect((new ParticleDigging(this.worldObj, (double)pos.getX() + d0, (double)pos.getY() + d1, (double)pos.getZ() + d2, d0 - 0.5D, d1 - 0.5D, d2 - 0.5D, state)).setBlockPos(pos));
                     }
                 }
             }

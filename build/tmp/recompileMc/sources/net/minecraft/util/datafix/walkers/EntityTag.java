@@ -23,7 +23,7 @@ public class EntityTag implements IDataWalker
 
             if ("minecraft:armor_stand".equals(s))
             {
-                s1 = "ArmorStand";
+                s1 = versionIn < 515 ? "ArmorStand" : "minecraft:armor_stand";
             }
             else
             {

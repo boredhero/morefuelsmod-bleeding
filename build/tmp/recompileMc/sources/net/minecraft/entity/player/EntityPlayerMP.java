@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IMerchant;
-import net.minecraft.entity.passive.EntityHorse;
+import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -86,8 +86,13 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.JsonSerializableSet;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.datafix.DataFixer;
+import net.minecraft.util.datafix.FixTypes;
+import net.minecraft.util.datafix.IDataFixer;
+import net.minecraft.util.datafix.IDataWalker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -156,7 +161,6 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
      */
     public boolean playerConqueredTheEnd;
 
-    @SuppressWarnings("unused")
     public EntityPlayerMP(MinecraftServer server, WorldServer worldIn, GameProfile profile, PlayerInteractionManager interactionManagerIn)
     {
         super(worldIn, profile);
@@ -164,7 +168,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         this.interactionManager = interactionManagerIn;
         BlockPos blockpos = worldIn.provider.getRandomizedSpawnPoint();
 
-        if (false && !worldIn.provider.getHasNoSky() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE)
+        if (false && worldIn.provider.func_191066_m() && worldIn.getWorldInfo().getGameType() != GameType.ADVENTURE)
         {
             int i = Math.max(0, server.getSpawnRadius(worldIn));
             int j = MathHelper.floor_double(worldIn.getWorldBorder().getClosestDistance((double)blockpos.getX(), (double)blockpos.getZ()));
@@ -213,6 +217,27 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         }
     }
 
+    public static void func_191522_a(DataFixer p_191522_0_)
+    {
+        p_191522_0_.registerWalker(FixTypes.PLAYER, new IDataWalker()
+        {
+            public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
+            {
+                if (compound.hasKey("RootVehicle", 10))
+                {
+                    NBTTagCompound nbttagcompound = compound.getCompoundTag("RootVehicle");
+
+                    if (nbttagcompound.hasKey("Entity", 10))
+                    {
+                        nbttagcompound.setTag("Entity", fixer.process(FixTypes.ENTITY, nbttagcompound.getCompoundTag("Entity"), versionIn));
+                    }
+                }
+
+                return compound;
+            }
+        });
+    }
+
     /**
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
@@ -221,13 +246,14 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         super.writeEntityToNBT(compound);
         compound.setInteger("playerGameType", this.interactionManager.getGameType().getID());
         Entity entity = this.getLowestRidingEntity();
+        Entity entity1 = this.getRidingEntity();
 
-        if (this.getRidingEntity() != null && entity != this & entity.getRecursivePassengersByType(EntityPlayerMP.class).size() == 1)
+        if (entity1 != null && entity != this & entity.getRecursivePassengersByType(EntityPlayerMP.class).size() == 1)
         {
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
             entity.writeToNBTOptional(nbttagcompound1);
-            nbttagcompound.setUniqueId("Attach", this.getRidingEntity().getUniqueID());
+            nbttagcompound.setUniqueId("Attach", entity1.getUniqueID());
             nbttagcompound.setTag("Entity", nbttagcompound1);
             compound.setTag("RootVehicle", nbttagcompound);
         }
@@ -344,7 +370,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
             {
                 ItemStack itemstack = this.inventory.getStackInSlot(i);
 
-                if (itemstack != null && itemstack.getItem().isMap())
+                if (!itemstack.func_190926_b() && itemstack.getItem().isMap())
                 {
                     Packet<?> packet = ((ItemMapBase)itemstack.getItem()).createMapDataPacket(itemstack, this.worldObj, this);
 
@@ -405,7 +431,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
                 this.connection.sendPacket(new SPacketSetExperience(this.experience, this.experienceTotal, this.experienceLevel));
             }
 
-            if (this.ticksExisted % 20 * 5 == 0 && !this.getStatFile().hasAchievementUnlocked(AchievementList.EXPLORE_ALL_BIOMES))
+            if (this.ticksExisted % 100 == 0 && !this.getStatFile().hasAchievementUnlocked(AchievementList.EXPLORE_ALL_BIOMES))
             {
                 this.updateBiomesExplored();
             }
@@ -433,7 +459,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
      */
     protected void updateBiomesExplored()
     {
-        Biome biome = this.worldObj.getBiomeGenForCoords(new BlockPos(MathHelper.floor_double(this.posX), 0, MathHelper.floor_double(this.posZ)));
+        Biome biome = this.worldObj.getBiome(new BlockPos(MathHelper.floor_double(this.posX), 0, MathHelper.floor_double(this.posZ)));
         String s = biome.getBiomeName();
         JsonSerializableSet jsonserializableset = (JsonSerializableSet)this.getStatFile().getProgress(AchievementList.EXPLORE_ALL_BIOMES);
 
@@ -509,7 +535,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         {
             captureDrops = true;
             capturedDrops.clear();
-
+            this.func_190776_cN();
             this.inventory.dropAllItems();
 
             captureDrops = false;
@@ -533,7 +559,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 
         if (entitylivingbase != null)
         {
-            EntityList.EntityEggInfo entitylist$entityegginfo = (EntityList.EntityEggInfo)EntityList.ENTITY_EGGS.get(EntityList.getEntityString(entitylivingbase));
+            EntityList.EntityEggInfo entitylist$entityegginfo = (EntityList.EntityEggInfo)EntityList.ENTITY_EGGS.get(EntityList.func_191301_a(entitylivingbase));
 
             if (entitylist$entityegginfo != null)
             {
@@ -545,6 +571,8 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
 
         this.addStat(StatList.DEATHS);
         this.takeStat(StatList.TIME_SINCE_DEATH);
+        this.extinguish();
+        this.setFlag(0, false);
         this.getCombatTracker().reset();
     }
 
@@ -812,7 +840,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     {
         if (guiOwner instanceof ILootContainer && ((ILootContainer)guiOwner).getLootTable() != null && this.isSpectator())
         {
-            this.addChatMessage((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).setStyle((new Style()).setColor(TextFormatting.RED)));
+            this.addChatComponentMessage((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).setStyle((new Style()).setColor(TextFormatting.RED)), true);
         }
         else
         {
@@ -832,7 +860,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     {
         if (chestInventory instanceof ILootContainer && ((ILootContainer)chestInventory).getLootTable() != null && this.isSpectator())
         {
-            this.addChatMessage((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).setStyle((new Style()).setColor(TextFormatting.RED)));
+            this.addChatComponentMessage((new TextComponentTranslation("container.spectatorCantOpen", new Object[0])).setStyle((new Style()).setColor(TextFormatting.RED)), true);
         }
         else
         {
@@ -893,7 +921,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         }
     }
 
-    public void openGuiHorseInventory(EntityHorse horse, IInventory inventoryIn)
+    public void openGuiHorseInventory(AbstractHorse horse, IInventory inventoryIn)
     {
         if (this.openContainer != this.inventoryContainer)
         {
@@ -919,10 +947,10 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         }
     }
 
-    public void displayGuiCommandBlock(TileEntityCommandBlock p_184824_1_)
+    public void displayGuiCommandBlock(TileEntityCommandBlock commandBlock)
     {
-        p_184824_1_.setSendToClient(true);
-        this.sendTileEntityUpdate(p_184824_1_);
+        commandBlock.setSendToClient(true);
+        this.sendTileEntityUpdate(commandBlock);
     }
 
     /**
@@ -948,7 +976,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     /**
      * update the crafting window inventory with the items in the list
      */
-    public void updateCraftingInventory(Container containerToSend, List<ItemStack> itemsList)
+    public void updateCraftingInventory(Container containerToSend, NonNullList<ItemStack> itemsList)
     {
         this.connection.sendPacket(new SPacketWindowItems(containerToSend.windowId, itemsList));
         this.connection.sendPacket(new SPacketSetSlot(-1, -1, this.inventory.getItemStack()));
@@ -1085,9 +1113,9 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         this.lastHealth = -1.0E8F;
     }
 
-    public void addChatComponentMessage(ITextComponent chatComponent)
+    public void addChatComponentMessage(ITextComponent chatComponent, boolean p_146105_2_)
     {
-        this.connection.sendPacket(new SPacketChat(chatComponent));
+        this.connection.sendPacket(new SPacketChat(chatComponent, (byte)(p_146105_2_ ? 2 : 0)));
     }
 
     /**
@@ -1095,7 +1123,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
      */
     protected void onItemUseFinish()
     {
-        if (this.activeItemStack != null && this.isHandActive())
+        if (!this.activeItemStack.func_190926_b() && this.isHandActive())
         {
             this.connection.sendPacket(new SPacketEntityStatus(this, (byte)9));
             super.onItemUseFinish();

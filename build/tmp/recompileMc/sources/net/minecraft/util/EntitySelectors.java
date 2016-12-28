@@ -7,7 +7,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -48,13 +47,6 @@ public final class EntitySelectors
         public boolean apply(@Nullable Entity p_apply_1_)
         {
             return !(p_apply_1_ instanceof EntityPlayer) || !((EntityPlayer)p_apply_1_).isSpectator();
-        }
-    };
-    public static final Predicate<Entity> IS_SHULKER = new Predicate<Entity>()
-    {
-        public boolean apply(@Nullable Entity p_apply_1_)
-        {
-            return p_apply_1_ instanceof EntityShulker && p_apply_1_.isEntityAlive();
         }
     };
 
@@ -106,6 +98,32 @@ public final class EntitySelectors
         return (Predicate<T>)ret;
     }
 
+    public static Predicate<Entity> func_191324_b(final Entity p_191324_0_)
+    {
+        return new Predicate<Entity>()
+        {
+            public boolean apply(@Nullable Entity p_apply_1_)
+            {
+                while (true)
+                {
+                    if (p_apply_1_.isRiding())
+                    {
+                        p_apply_1_ = p_apply_1_.getRidingEntity();
+
+                        if (p_apply_1_ != p_191324_0_)
+                        {
+                            continue;
+                        }
+
+                        return false;
+                    }
+
+                    return true;
+                }
+            }
+        };
+    }
+
     public static class ArmoredMob implements Predicate<Entity>
         {
             private final ItemStack armor;
@@ -128,7 +146,7 @@ public final class EntitySelectors
                 else
                 {
                     EntityLivingBase entitylivingbase = (EntityLivingBase)p_apply_1_;
-                    return entitylivingbase.getItemStackFromSlot(EntityLiving.getSlotForItemStack(this.armor)) != null ? false : (entitylivingbase instanceof EntityLiving ? ((EntityLiving)entitylivingbase).canPickUpLoot() : (entitylivingbase instanceof EntityArmorStand ? true : entitylivingbase instanceof EntityPlayer));
+                    return !entitylivingbase.getItemStackFromSlot(EntityLiving.getSlotForItemStack(this.armor)).func_190926_b() ? false : (entitylivingbase instanceof EntityLiving ? ((EntityLiving)entitylivingbase).canPickUpLoot() : (entitylivingbase instanceof EntityArmorStand ? true : entitylivingbase instanceof EntityPlayer));
                 }
             }
         }

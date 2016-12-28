@@ -77,7 +77,7 @@ public class BlockStem extends BlockBush implements IGrowable
         {
             float f = BlockCrops.getGrowthChance(this, worldIn, pos);
 
-            if (rand.nextInt((int)(25.0F / f) + 1) == 0)
+            if(net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn, pos, state, rand.nextInt((int)(25.0F / f) + 1) == 0))
             {
                 int i = ((Integer)state.getValue(AGE)).intValue();
 
@@ -105,6 +105,7 @@ public class BlockStem extends BlockBush implements IGrowable
                         worldIn.setBlockState(pos, this.crop.getDefaultState());
                     }
                 }
+                net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn, pos, state, worldIn.getBlockState(pos));
             }
         }
     }
@@ -155,17 +156,15 @@ public class BlockStem extends BlockBush implements IGrowable
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return null;
+        return Items.field_190931_a;
     }
 
-    @Nullable
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState state)
     {
         Item item = this.getSeedItem();
-        return item == null ? null : new ItemStack(item);
+        return item == null ? ItemStack.field_190927_a : new ItemStack(item);
     }
 
     /**

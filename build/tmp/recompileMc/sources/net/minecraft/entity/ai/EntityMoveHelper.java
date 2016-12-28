@@ -18,7 +18,7 @@ public class EntityMoveHelper
     protected double speed;
     protected float moveForward;
     protected float moveStrafe;
-    protected EntityMoveHelper.Action action = EntityMoveHelper.Action.WAIT;
+    public EntityMoveHelper.Action action = EntityMoveHelper.Action.WAIT;
 
     public EntityMoveHelper(EntityLiving entitylivingIn)
     {
@@ -128,6 +128,16 @@ public class EntityMoveHelper
             if (d2 > (double)this.entity.stepHeight && d0 * d0 + d1 * d1 < (double)Math.max(1.0F, this.entity.width))
             {
                 this.entity.getJumpHelper().setJumping();
+                this.action = EntityMoveHelper.Action.JUMPING;
+            }
+        }
+        else if (this.action == EntityMoveHelper.Action.JUMPING)
+        {
+            this.entity.setAIMoveSpeed((float)(this.speed * this.entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue()));
+
+            if (this.entity.onGround)
+            {
+                this.action = EntityMoveHelper.Action.WAIT;
             }
         }
         else
@@ -186,6 +196,7 @@ public class EntityMoveHelper
     {
         WAIT,
         MOVE_TO,
-        STRAFE;
+        STRAFE,
+        JUMPING;
     }
 }

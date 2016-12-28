@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer.entity;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.VertexBuffer;
@@ -145,6 +146,7 @@ public class RenderLightningBolt extends Render<EntityLightningBolt>
     /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
+    @Nullable
     protected ResourceLocation getEntityTexture(EntityLightningBolt entity)
     {
         return null;

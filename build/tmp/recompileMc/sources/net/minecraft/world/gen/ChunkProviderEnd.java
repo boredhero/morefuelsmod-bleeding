@@ -9,6 +9,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityEndGateway;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -17,6 +19,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.chunk.IChunkGenerator;
+import net.minecraft.world.gen.feature.WorldGenEndGateway;
 import net.minecraft.world.gen.feature.WorldGenEndIsland;
 import net.minecraft.world.gen.structure.MapGenEndCity;
 
@@ -37,6 +40,7 @@ public class ChunkProviderEnd implements IChunkGenerator
     private final World worldObj;
     /** are map structures going to be generated (e.g. strongholds) */
     private final boolean mapFeaturesEnabled;
+    private final BlockPos field_191061_n;
     private final MapGenEndCity endCityGen = new MapGenEndCity(this);
     private NoiseGeneratorSimplex islandNoise;
     private double[] buffer;
@@ -50,11 +54,12 @@ public class ChunkProviderEnd implements IChunkGenerator
     private int chunkX = 0;
     private int chunkZ = 0;
 
-    public ChunkProviderEnd(World worldObjIn, boolean mapFeaturesEnabledIn, long seed)
+    public ChunkProviderEnd(World p_i47241_1_, boolean p_i47241_2_, long p_i47241_3_, BlockPos p_i47241_5_)
     {
-        this.worldObj = worldObjIn;
-        this.mapFeaturesEnabled = mapFeaturesEnabledIn;
-        this.rand = new Random(seed);
+        this.worldObj = p_i47241_1_;
+        this.mapFeaturesEnabled = p_i47241_2_;
+        this.field_191061_n = p_i47241_5_;
+        this.rand = new Random(p_i47241_3_);
         this.lperlinNoise1 = new NoiseGeneratorOctaves(this.rand, 16);
         this.lperlinNoise2 = new NoiseGeneratorOctaves(this.rand, 16);
         this.perlinNoise1 = new NoiseGeneratorOctaves(this.rand, 8);
@@ -64,7 +69,7 @@ public class ChunkProviderEnd implements IChunkGenerator
 
         net.minecraftforge.event.terraingen.InitNoiseGensEvent.ContextEnd ctx =
                 new net.minecraftforge.event.terraingen.InitNoiseGensEvent.ContextEnd(lperlinNoise1, lperlinNoise2, perlinNoise1, noiseGen5, noiseGen6, islandNoise);
-        ctx = net.minecraftforge.event.terraingen.TerrainGen.getModdedNoiseGenerators(worldObjIn, this.rand, ctx);
+        ctx = net.minecraftforge.event.terraingen.TerrainGen.getModdedNoiseGenerators(p_i47241_1_, this.rand, ctx);
         this.lperlinNoise1 = ctx.getLPerlin1();
         this.lperlinNoise2 = ctx.getLPerlin2();
         this.perlinNoise1 = ctx.getPerlin();
@@ -195,7 +200,7 @@ public class ChunkProviderEnd implements IChunkGenerator
         this.chunkX = x; this.chunkZ = z;
         this.rand.setSeed((long)x * 341873128712L + (long)z * 132897987541L);
         ChunkPrimer chunkprimer = new ChunkPrimer();
-        this.biomesForGeneration = this.worldObj.getBiomeProvider().loadBlockGeneratorData(this.biomesForGeneration, x * 16, z * 16, 16, 16);
+        this.biomesForGeneration = this.worldObj.getBiomeProvider().getBiomes(this.biomesForGeneration, x * 16, z * 16, 16, 16);
         this.setBlocksInChunk(x, z, chunkprimer);
         this.buildSurfaces(chunkprimer);
 
@@ -358,7 +363,7 @@ public class ChunkProviderEnd implements IChunkGenerator
             this.endCityGen.generateStructure(this.worldObj, this.rand, new ChunkPos(x, z));
         }
 
-        this.worldObj.getBiomeGenForCoords(blockpos.add(16, 0, 16)).decorate(this.worldObj, this.worldObj.rand, blockpos);
+        this.worldObj.getBiome(blockpos.add(16, 0, 16)).decorate(this.worldObj, this.worldObj.rand, blockpos);
         long i = (long)x * (long)x + (long)z * (long)z;
 
         if (i > 4096L)
@@ -395,6 +400,27 @@ public class ChunkProviderEnd implements IChunkGenerator
                         }
                     }
                 }
+
+                if (this.rand.nextInt(700) == 0)
+                {
+                    int l1 = this.rand.nextInt(16) + 8;
+                    int i2 = this.rand.nextInt(16) + 8;
+                    int j2 = this.worldObj.getHeight(blockpos.add(l1, 0, i2)).getY();
+
+                    if (j2 > 0)
+                    {
+                        int k2 = j2 + 3 + this.rand.nextInt(7);
+                        BlockPos blockpos1 = blockpos.add(l1, k2, i2);
+                        (new WorldGenEndGateway()).generate(this.worldObj, this.rand, blockpos1);
+                        TileEntity tileentity = this.worldObj.getTileEntity(blockpos1);
+
+                        if (tileentity instanceof TileEntityEndGateway)
+                        {
+                            TileEntityEndGateway tileentityendgateway = (TileEntityEndGateway)tileentity;
+                            tileentityendgateway.func_190603_b(this.field_191061_n);
+                        }
+                    }
+                }
             }
         }
 
@@ -409,13 +435,13 @@ public class ChunkProviderEnd implements IChunkGenerator
 
     public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos)
     {
-        return this.worldObj.getBiomeGenForCoords(pos).getSpawnableList(creatureType);
+        return this.worldObj.getBiome(pos).getSpawnableList(creatureType);
     }
 
     @Nullable
-    public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position)
+    public BlockPos getStrongholdGen(World worldIn, String structureName, BlockPos position, boolean p_180513_4_)
     {
-        return null;
+        return "EndCity".equals(structureName) && this.endCityGen != null ? this.endCityGen.getClosestStrongholdPos(worldIn, position, p_180513_4_) : null;
     }
 
     public void recreateStructures(Chunk chunkIn, int x, int z)

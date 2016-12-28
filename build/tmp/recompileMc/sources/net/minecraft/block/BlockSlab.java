@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -25,7 +26,12 @@ public abstract class BlockSlab extends Block
 
     public BlockSlab(Material materialIn)
     {
-        super(materialIn);
+        this(materialIn, materialIn.getMaterialMapColor());
+    }
+
+    public BlockSlab(Material p_i47249_1_, MapColor p_i47249_2_)
+    {
+        super(p_i47249_1_, p_i47249_2_);
         this.fullBlock = this.isDouble();
         this.setLightOpacity(255);
     }

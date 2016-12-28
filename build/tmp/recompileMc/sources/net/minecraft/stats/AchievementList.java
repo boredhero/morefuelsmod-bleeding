@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.JsonSerializableSet;
 
 public class AchievementList
@@ -45,7 +47,7 @@ public class AchievementList
     /** Is the 'Return to Sender' achievement */
     public static final Achievement GHAST = (new Achievement("achievement.ghast", "ghast", -4, 8, Items.GHAST_TEAR, PORTAL)).setSpecial().registerStat();
     public static final Achievement BLAZE_ROD = (new Achievement("achievement.blazeRod", "blazeRod", 0, 9, Items.BLAZE_ROD, PORTAL)).registerStat();
-    public static final Achievement POTION = (new Achievement("achievement.potion", "potion", 2, 8, Items.POTIONITEM, BLAZE_ROD)).registerStat();
+    public static final Achievement POTION = (new Achievement("achievement.potion", "potion", 2, 8, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.REGENERATION), BLAZE_ROD)).registerStat();
     /** Is the 'The End?' achievement */
     public static final Achievement THE_END = (new Achievement("achievement.theEnd", "theEnd", 3, 10, Items.ENDER_EYE, BLAZE_ROD)).setSpecial().registerStat();
     public static final Achievement THE_END2 = (new Achievement("achievement.theEnd2", "theEnd2", 4, 13, Blocks.DRAGON_EGG, THE_END)).setSpecial().registerStat();

@@ -3,6 +3,7 @@ package net.minecraft.client.multiplayer;
 import com.google.common.base.Objects;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -55,13 +56,13 @@ public class ChunkProviderClient implements IChunkProvider
             chunk.onChunkUnload();
         }
 
-        this.chunkMapping.remove(ChunkPos.chunkXZ2Int(x, z));
+        this.chunkMapping.remove(ChunkPos.asLong(x, z));
     }
 
     @Nullable
     public Chunk getLoadedChunk(int x, int z)
     {
-        return (Chunk)this.chunkMapping.get(ChunkPos.chunkXZ2Int(x, z));
+        return (Chunk)this.chunkMapping.get(ChunkPos.asLong(x, z));
     }
 
     /**
@@ -70,7 +71,7 @@ public class ChunkProviderClient implements IChunkProvider
     public Chunk loadChunk(int chunkX, int chunkZ)
     {
         Chunk chunk = new Chunk(this.worldObj, chunkX, chunkZ);
-        this.chunkMapping.put(ChunkPos.chunkXZ2Int(chunkX, chunkZ), chunk);
+        this.chunkMapping.put(ChunkPos.asLong(chunkX, chunkZ), chunk);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkEvent.Load(chunk));
         chunk.setChunkLoaded(true);
         return chunk;
@@ -87,9 +88,11 @@ public class ChunkProviderClient implements IChunkProvider
     public boolean unloadQueuedChunks()
     {
         long i = System.currentTimeMillis();
+        ObjectIterator objectiterator = this.chunkMapping.values().iterator();
 
-        for (Chunk chunk : this.chunkMapping.values())
+        while (objectiterator.hasNext())
         {
+            Chunk chunk = (Chunk)objectiterator.next();
             chunk.onTick(System.currentTimeMillis() - i > 5L);
         }
 
@@ -107,5 +110,10 @@ public class ChunkProviderClient implements IChunkProvider
     public String makeString()
     {
         return "MultiplayerChunkCache: " + this.chunkMapping.size() + ", " + this.chunkMapping.size();
+    }
+
+    public boolean func_191062_e(int p_191062_1_, int p_191062_2_)
+    {
+        return this.chunkMapping.containsKey(ChunkPos.asLong(p_191062_1_, p_191062_2_));
     }
 }

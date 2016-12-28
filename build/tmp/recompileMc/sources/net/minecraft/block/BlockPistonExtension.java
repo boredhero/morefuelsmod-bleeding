@@ -40,6 +40,12 @@ public class BlockPistonExtension extends BlockDirectional
     protected static final AxisAlignedBB NORTH_ARM_AABB = new AxisAlignedBB(0.375D, 0.375D, 0.25D, 0.625D, 0.625D, 1.25D);
     protected static final AxisAlignedBB EAST_ARM_AABB = new AxisAlignedBB(-0.25D, 0.375D, 0.375D, 0.75D, 0.625D, 0.625D);
     protected static final AxisAlignedBB WEST_ARM_AABB = new AxisAlignedBB(0.25D, 0.375D, 0.375D, 1.25D, 0.625D, 0.625D);
+    protected static final AxisAlignedBB field_190964_J = new AxisAlignedBB(0.375D, 0.0D, 0.375D, 0.625D, 0.75D, 0.625D);
+    protected static final AxisAlignedBB field_190965_K = new AxisAlignedBB(0.375D, 0.25D, 0.375D, 0.625D, 1.0D, 0.625D);
+    protected static final AxisAlignedBB field_190966_L = new AxisAlignedBB(0.375D, 0.375D, 0.0D, 0.625D, 0.625D, 0.75D);
+    protected static final AxisAlignedBB field_190967_M = new AxisAlignedBB(0.375D, 0.375D, 0.25D, 0.625D, 0.625D, 1.0D);
+    protected static final AxisAlignedBB field_190968_N = new AxisAlignedBB(0.0D, 0.375D, 0.375D, 0.75D, 0.625D, 0.625D);
+    protected static final AxisAlignedBB field_190969_O = new AxisAlignedBB(0.25D, 0.375D, 0.375D, 1.0D, 0.625D, 0.625D);
 
     public BlockPistonExtension()
     {
@@ -69,7 +75,7 @@ public class BlockPistonExtension extends BlockDirectional
         }
     }
 
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn)
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_)
     {
         addCollisionBoxToList(pos, entityBox, collidingBoxes, state.getBoundingBox(worldIn, pos));
         addCollisionBoxToList(pos, entityBox, collidingBoxes, this.getArmShape(state));
@@ -77,21 +83,23 @@ public class BlockPistonExtension extends BlockDirectional
 
     private AxisAlignedBB getArmShape(IBlockState state)
     {
+        boolean flag = ((Boolean)state.getValue(SHORT)).booleanValue();
+
         switch ((EnumFacing)state.getValue(FACING))
         {
             case DOWN:
             default:
-                return DOWN_ARM_AABB;
+                return flag ? field_190965_K : DOWN_ARM_AABB;
             case UP:
-                return UP_ARM_AABB;
+                return flag ? field_190964_J : UP_ARM_AABB;
             case NORTH:
-                return NORTH_ARM_AABB;
+                return flag ? field_190967_M : NORTH_ARM_AABB;
             case SOUTH:
-                return SOUTH_ARM_AABB;
+                return flag ? field_190966_L : SOUTH_ARM_AABB;
             case WEST:
-                return WEST_ARM_AABB;
+                return flag ? field_190969_O : WEST_ARM_AABB;
             case EAST:
-                return EAST_ARM_AABB;
+                return flag ? field_190968_N : EAST_ARM_AABB;
         }
     }
 
@@ -119,6 +127,9 @@ public class BlockPistonExtension extends BlockDirectional
         super.onBlockHarvested(worldIn, pos, state, player);
     }
 
+    /**
+     * Called serverside after this block is replaced with another in Chunk, but before the Tile Entity is updated
+     */
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
     {
         super.breakBlock(worldIn, pos, state);
@@ -172,7 +183,7 @@ public class BlockPistonExtension extends BlockDirectional
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
         BlockPos blockpos = pos.offset(enumfacing.getOpposite());
@@ -184,7 +195,7 @@ public class BlockPistonExtension extends BlockDirectional
         }
         else
         {
-            iblockstate.neighborChanged(worldIn, blockpos, blockIn);
+            iblockstate.neighborChanged(worldIn, blockpos, blockIn, p_189540_5_);
         }
     }
 

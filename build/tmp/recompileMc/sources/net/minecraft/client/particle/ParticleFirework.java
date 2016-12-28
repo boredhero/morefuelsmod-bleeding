@@ -1,5 +1,6 @@
 package net.minecraft.client.particle;
 
+import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,7 @@ public class ParticleFirework
     @SideOnly(Side.CLIENT)
     public static class Factory implements IParticleFactory
         {
-            public Particle getEntityFX(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, int... p_178902_15_)
+            public Particle createParticle(int particleID, World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, int... p_178902_15_)
             {
                 ParticleFirework.Spark particlefirework$spark = new ParticleFirework.Spark(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn, Minecraft.getMinecraft().effectRenderer);
                 particlefirework$spark.setAlphaF(0.99F);
@@ -142,7 +143,7 @@ public class ParticleFirework
             private NBTTagList fireworkExplosions;
             boolean twinkle;
 
-            public Starter(World p_i46464_1_, double p_i46464_2_, double p_i46464_4_, double p_i46464_6_, double p_i46464_8_, double p_i46464_10_, double p_i46464_12_, ParticleManager p_i46464_14_, NBTTagCompound p_i46464_15_)
+            public Starter(World p_i46464_1_, double p_i46464_2_, double p_i46464_4_, double p_i46464_6_, double p_i46464_8_, double p_i46464_10_, double p_i46464_12_, ParticleManager p_i46464_14_, @Nullable NBTTagCompound p_i46464_15_)
             {
                 super(p_i46464_1_, p_i46464_2_, p_i46464_4_, p_i46464_6_, 0.0D, 0.0D, 0.0D);
                 this.motionX = p_i46464_8_;
@@ -398,6 +399,10 @@ public class ParticleFirework
                 }
             }
 
+            /**
+             * Retrieve what effect layer (what texture) the particle should be rendered with. 0 for the particle sprite
+             * sheet, 1 for the main Texture atlas, and 3 for a custom texture
+             */
             public int getFXLayer()
             {
                 return 0;

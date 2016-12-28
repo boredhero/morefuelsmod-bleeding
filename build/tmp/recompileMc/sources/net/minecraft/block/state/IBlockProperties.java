@@ -26,7 +26,7 @@ public interface IBlockProperties
 
     boolean isFullBlock();
 
-    boolean func_189884_a(Entity p_189884_1_);
+    boolean canEntitySpawn(Entity entityIn);
 
     @Deprecated //Forge location aware version below
     int getLightOpacity();
@@ -54,6 +54,9 @@ public interface IBlockProperties
     IBlockState withMirror(Mirror mirrorIn);
 
     boolean isFullCube();
+
+    @SideOnly(Side.CLIENT)
+    boolean func_191057_i();
 
     EnumBlockRenderType getRenderType();
 
@@ -94,9 +97,9 @@ public interface IBlockProperties
     boolean isOpaqueCube();
 
     @Nullable
-    AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos);
+    AxisAlignedBB getCollisionBoundingBox(IBlockAccess worldIn, BlockPos pos);
 
-    void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_);
+    void addCollisionBoxToList(World worldIn, BlockPos pos, AxisAlignedBB p_185908_3_, List<AxisAlignedBB> p_185908_4_, @Nullable Entity p_185908_5_, boolean p_185908_6_);
 
     AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos);
 
@@ -108,4 +111,8 @@ public interface IBlockProperties
     //Forge added functions
     boolean doesSideBlockRendering(IBlockAccess world, BlockPos pos, EnumFacing side);
     boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side);
+
+    Vec3d func_191059_e(IBlockAccess p_191059_1_, BlockPos p_191059_2_);
+
+    boolean func_191058_s();
 }

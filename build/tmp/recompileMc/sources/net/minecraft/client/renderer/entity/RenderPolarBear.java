@@ -1,6 +1,6 @@
 package net.minecraft.client.renderer.entity;
 
-import net.minecraft.client.model.ModelBase;
+import net.minecraft.client.model.ModelPolarBear;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.monster.EntityPolarBear;
 import net.minecraft.util.ResourceLocation;
@@ -10,11 +10,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class RenderPolarBear extends RenderLiving<EntityPolarBear>
 {
-    private static final ResourceLocation field_190090_a = new ResourceLocation("textures/entity/bear/polarbear.png");
+    private static final ResourceLocation POLAR_BEAR_TEXTURE = new ResourceLocation("textures/entity/bear/polarbear.png");
 
-    public RenderPolarBear(RenderManager p_i47132_1_, ModelBase p_i47132_2_, float p_i47132_3_)
+    public RenderPolarBear(RenderManager p_i47197_1_)
     {
-        super(p_i47132_1_, p_i47132_2_, p_i47132_3_);
+        super(p_i47197_1_, new ModelPolarBear(), 0.7F);
     }
 
     /**
@@ -22,7 +22,7 @@ public class RenderPolarBear extends RenderLiving<EntityPolarBear>
      */
     protected ResourceLocation getEntityTexture(EntityPolarBear entity)
     {
-        return field_190090_a;
+        return POLAR_BEAR_TEXTURE;
     }
 
     /**

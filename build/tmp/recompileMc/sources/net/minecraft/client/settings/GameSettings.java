@@ -61,7 +61,7 @@ public class GameSettings
             return null;
         }
     };
-    public static final Splitter field_189990_a = Splitter.on(':');
+    public static final Splitter COLON_SPLITTER = Splitter.on(':');
     /** GUI scale values */
     private static final String[] GUISCALES = new String[] {"options.guiScale.auto", "options.guiScale.small", "options.guiScale.normal", "options.guiScale.large"};
     private static final String[] PARTICLES = new String[] {"options.particles.all", "options.particles.decreased", "options.particles.minimal"};
@@ -116,7 +116,7 @@ public class GameSettings
     public boolean enableWeakAttacks;
     public boolean showSubtitles;
     public boolean realmsNotifications = true;
-    public boolean field_189989_R = true;
+    public boolean autoJump = true;
     public KeyBinding keyBindForward = new KeyBinding("key.forward", 17, "key.categories.movement");
     public KeyBinding keyBindLeft = new KeyBinding("key.left", 30, "key.categories.movement");
     public KeyBinding keyBindBack = new KeyBinding("key.back", 31, "key.categories.movement");
@@ -172,7 +172,7 @@ public class GameSettings
         this.difficulty = EnumDifficulty.NORMAL;
         this.lastServer = "";
         this.fovSetting = 70.0F;
-        this.language = "en_US";
+        this.language = "en_us";
         this.mc = mcIn;
         this.optionsFile = new File(optionsFileIn, "options.txt");
 
@@ -196,7 +196,7 @@ public class GameSettings
         this.difficulty = EnumDifficulty.NORMAL;
         this.lastServer = "";
         this.fovSetting = 70.0F;
-        this.language = "en_US";
+        this.language = "en_us";
     }
 
     /**
@@ -290,7 +290,7 @@ public class GameSettings
                 this.mc.getTextureMapBlocks().setMipmapLevels(this.mipmapLevels);
                 this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                 this.mc.getTextureMapBlocks().setBlurMipmapDirect(false, this.mipmapLevels > 0);
-                this.mc.scheduleResourcesRefresh();
+                this.needsResourceRefresh = true; // FORGE: fix for MC-64581 very laggy mipmap slider
             }
         }
 
@@ -449,7 +449,7 @@ public class GameSettings
 
         if (settingsOption == GameSettings.Options.AUTO_JUMP)
         {
-            this.field_189989_R = !this.field_189989_R;
+            this.autoJump = !this.autoJump;
         }
 
         this.saveOptions();
@@ -501,7 +501,7 @@ public class GameSettings
             case ENABLE_WEAK_ATTACKS:
                 return this.enableWeakAttacks;
             case AUTO_JUMP:
-                return this.field_189989_R;
+                return this.autoJump;
             default:
                 return false;
         }
@@ -532,7 +532,7 @@ public class GameSettings
         {
             float f1 = this.getOptionFloatValue(settingOption);
             float f = settingOption.normalizeValue(f1);
-            return settingOption == GameSettings.Options.SENSITIVITY ? (f == 0.0F ? s + I18n.format("options.sensitivity.min", new Object[0]) : (f == 1.0F ? s + I18n.format("options.sensitivity.max", new Object[0]) : s + (int)(f * 200.0F) + "%")) : (settingOption == GameSettings.Options.FOV ? (f1 == 70.0F ? s + I18n.format("options.fov.min", new Object[0]) : (f1 == 110.0F ? s + I18n.format("options.fov.max", new Object[0]) : s + (int)f1)) : (settingOption == GameSettings.Options.FRAMERATE_LIMIT ? (f1 == settingOption.valueMax ? s + I18n.format("options.framerateLimit.max", new Object[0]) : s + (int)f1 + " fps") : (settingOption == GameSettings.Options.RENDER_CLOUDS ? (f1 == settingOption.valueMin ? s + I18n.format("options.cloudHeight.min", new Object[0]) : s + ((int)f1 + 128)) : (settingOption == GameSettings.Options.GAMMA ? (f == 0.0F ? s + I18n.format("options.gamma.min", new Object[0]) : (f == 1.0F ? s + I18n.format("options.gamma.max", new Object[0]) : s + "+" + (int)(f * 100.0F) + "%")) : (settingOption == GameSettings.Options.SATURATION ? s + (int)(f * 400.0F) + "%" : (settingOption == GameSettings.Options.CHAT_OPACITY ? s + (int)(f * 90.0F + 10.0F) + "%" : (settingOption == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED ? s + GuiNewChat.calculateChatboxHeight(f) + "px" : (settingOption == GameSettings.Options.CHAT_HEIGHT_FOCUSED ? s + GuiNewChat.calculateChatboxHeight(f) + "px" : (settingOption == GameSettings.Options.CHAT_WIDTH ? s + GuiNewChat.calculateChatboxWidth(f) + "px" : (settingOption == GameSettings.Options.RENDER_DISTANCE ? s + (int)f1 + " chunks" : (settingOption == GameSettings.Options.MIPMAP_LEVELS ? (f1 == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int)f1) : (f == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int)(f * 100.0F) + "%"))))))))))));
+            return settingOption == GameSettings.Options.SENSITIVITY ? (f == 0.0F ? s + I18n.format("options.sensitivity.min", new Object[0]) : (f == 1.0F ? s + I18n.format("options.sensitivity.max", new Object[0]) : s + (int)(f * 200.0F) + "%")) : (settingOption == GameSettings.Options.FOV ? (f1 == 70.0F ? s + I18n.format("options.fov.min", new Object[0]) : (f1 == 110.0F ? s + I18n.format("options.fov.max", new Object[0]) : s + (int)f1)) : (settingOption == GameSettings.Options.FRAMERATE_LIMIT ? (f1 == settingOption.valueMax ? s + I18n.format("options.framerateLimit.max", new Object[0]) : s + I18n.format("options.framerate", new Object[] {Integer.valueOf((int)f1)})): (settingOption == GameSettings.Options.RENDER_CLOUDS ? (f1 == settingOption.valueMin ? s + I18n.format("options.cloudHeight.min", new Object[0]) : s + ((int)f1 + 128)) : (settingOption == GameSettings.Options.GAMMA ? (f == 0.0F ? s + I18n.format("options.gamma.min", new Object[0]) : (f == 1.0F ? s + I18n.format("options.gamma.max", new Object[0]) : s + "+" + (int)(f * 100.0F) + "%")) : (settingOption == GameSettings.Options.SATURATION ? s + (int)(f * 400.0F) + "%" : (settingOption == GameSettings.Options.CHAT_OPACITY ? s + (int)(f * 90.0F + 10.0F) + "%" : (settingOption == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED ? s + GuiNewChat.calculateChatboxHeight(f) + "px" : (settingOption == GameSettings.Options.CHAT_HEIGHT_FOCUSED ? s + GuiNewChat.calculateChatboxHeight(f) + "px" : (settingOption == GameSettings.Options.CHAT_WIDTH ? s + GuiNewChat.calculateChatboxWidth(f) + "px" : (settingOption == GameSettings.Options.RENDER_DISTANCE ? s + I18n.format("options.chunks", new Object[] {Integer.valueOf((int)f1)}): (settingOption == GameSettings.Options.MIPMAP_LEVELS ? (f1 == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int)f1) : (f == 0.0F ? s + I18n.format("options.off", new Object[0]) : s + (int)(f * 100.0F) + "%"))))))))))));
         }
         else if (settingOption.getEnumBoolean())
         {
@@ -601,7 +601,7 @@ public class GameSettings
             {
                 try
                 {
-                    Iterator<String> iterator = field_189990_a.omitEmptyStrings().limit(2).split(s).iterator();
+                    Iterator<String> iterator = COLON_SPLITTER.omitEmptyStrings().limit(2).split(s).iterator();
                     nbttagcompound.setString((String)iterator.next(), (String)iterator.next());
                 }
                 catch (Exception var10)
@@ -610,7 +610,7 @@ public class GameSettings
                 }
             }
 
-            nbttagcompound = this.func_189988_a(nbttagcompound);
+            nbttagcompound = this.dataFix(nbttagcompound);
 
             for (String s1 : nbttagcompound.getKeySet())
             {
@@ -918,7 +918,7 @@ public class GameSettings
 
                     if ("autoJump".equals(s1))
                     {
-                        this.field_189989_R = "true".equals(s2);
+                        this.autoJump = "true".equals(s2);
                     }
 
                     for (KeyBinding keybinding : this.keyBindings)
@@ -964,7 +964,7 @@ public class GameSettings
         }
     }
 
-    private NBTTagCompound func_189988_a(NBTTagCompound p_189988_1_)
+    private NBTTagCompound dataFix(NBTTagCompound p_189988_1_)
     {
         int i = 0;
 
@@ -999,7 +999,7 @@ public class GameSettings
         try
         {
             printwriter = new PrintWriter(new FileWriter(this.optionsFile));
-            printwriter.println("version:512");
+            printwriter.println("version:922");
             printwriter.println("invertYMouse:" + this.invertMouse);
             printwriter.println("mouseSensitivity:" + this.mouseSensitivity);
             printwriter.println("fov:" + (this.fovSetting - 70.0F) / 40.0F);
@@ -1063,7 +1063,7 @@ public class GameSettings
             printwriter.println("showSubtitles:" + this.showSubtitles);
             printwriter.println("realmsNotifications:" + this.realmsNotifications);
             printwriter.println("enableWeakAttacks:" + this.enableWeakAttacks);
-            printwriter.println("autoJump:" + this.field_189989_R);
+            printwriter.println("autoJump:" + this.autoJump);
 
             for (KeyBinding keybinding : this.keyBindings)
             {
@@ -1328,6 +1328,17 @@ public class GameSettings
         keyBindTogglePerspective.setKeyConflictContext(inGame);
         keyBindSmoothCamera.setKeyConflictContext(inGame);
         keyBindSwapHands.setKeyConflictContext(inGame);
+    }
+
+    // FORGE: fix for MC-64581 very laggy mipmap slider
+    private boolean needsResourceRefresh = false;
+    public void onGuiClosed()
+    {
+        if (needsResourceRefresh)
+        {
+            this.mc.scheduleResourcesRefresh();
+            this.needsResourceRefresh = false;
+        }
     }
     /******* Forge End ***********/
 }

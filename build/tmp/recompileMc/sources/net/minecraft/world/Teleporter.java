@@ -76,7 +76,7 @@ public class Teleporter
         int k = MathHelper.floor_double(entityIn.posZ);
         boolean flag = true;
         BlockPos blockpos = BlockPos.ORIGIN;
-        long l = ChunkPos.chunkXZ2Int(j, k);
+        long l = ChunkPos.asLong(j, k);
 
         if (this.destinationCoordinateCache.containsKey(l))
         {
@@ -392,7 +392,7 @@ public class Teleporter
                     int i12 = k2 + i10;
                     int l12 = k6 + (i9 - 1) * i3;
                     BlockPos blockpos = new BlockPos(i11, i12, l12);
-                    this.worldServerInstance.notifyNeighborsOfStateChange(blockpos, this.worldServerInstance.getBlockState(blockpos).getBlock());
+                    this.worldServerInstance.notifyNeighborsOfStateChange(blockpos, this.worldServerInstance.getBlockState(blockpos).getBlock(), false);
                 }
             }
         }

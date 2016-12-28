@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class GuiGameOver extends GuiScreen implements GuiYesNoCallback
+public class GuiGameOver extends GuiScreen
 {
     /** The integer value containing the number of ticks that have passed since the player's death */
     private int enableButtonsTimer;

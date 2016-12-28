@@ -1,11 +1,10 @@
 package net.minecraft.entity;
 
+import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockFence;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -31,6 +30,7 @@ public class EntityLeashKnot extends EntityHanging
         float f1 = 0.1875F;
         float f2 = 0.25F;
         this.setEntityBoundingBox(new AxisAlignedBB(this.posX - 0.1875D, this.posY - 0.25D + 0.125D, this.posZ - 0.1875D, this.posX + 0.1875D, this.posY + 0.25D + 0.125D, this.posZ + 0.1875D));
+        this.forceSpawn = true;
     }
 
     /**
@@ -114,7 +114,7 @@ public class EntityLeashKnot extends EntityHanging
     {
     }
 
-    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand stack)
     {
         if (this.worldObj.isRemote)
         {
@@ -123,18 +123,15 @@ public class EntityLeashKnot extends EntityHanging
         else
         {
             boolean flag = false;
+            double d0 = 7.0D;
+            List<EntityLiving> list = this.worldObj.<EntityLiving>getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - 7.0D, this.posY - 7.0D, this.posZ - 7.0D, this.posX + 7.0D, this.posY + 7.0D, this.posZ + 7.0D));
 
-            if (stack != null && stack.getItem() == Items.LEAD)
+            for (EntityLiving entityliving : list)
             {
-                double d0 = 7.0D;
-
-                for (EntityLiving entityliving : this.worldObj.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - 7.0D, this.posY - 7.0D, this.posZ - 7.0D, this.posX + 7.0D, this.posY + 7.0D, this.posZ + 7.0D)))
+                if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player)
                 {
-                    if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player)
-                    {
-                        entityliving.setLeashedToEntity(this, true);
-                        flag = true;
-                    }
+                    entityliving.setLeashedToEntity(this, true);
+                    flag = true;
                 }
             }
 
@@ -144,9 +141,7 @@ public class EntityLeashKnot extends EntityHanging
 
                 if (player.capabilities.isCreativeMode)
                 {
-                    double d1 = 7.0D;
-
-                    for (EntityLiving entityliving1 : this.worldObj.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.posX - 7.0D, this.posY - 7.0D, this.posZ - 7.0D, this.posX + 7.0D, this.posY + 7.0D, this.posZ + 7.0D)))
+                    for (EntityLiving entityliving1 : list)
                     {
                         if (entityliving1.getLeashed() && entityliving1.getLeashedToEntity() == this)
                         {
@@ -171,12 +166,12 @@ public class EntityLeashKnot extends EntityHanging
     public static EntityLeashKnot createKnot(World worldIn, BlockPos fence)
     {
         EntityLeashKnot entityleashknot = new EntityLeashKnot(worldIn, fence);
-        entityleashknot.forceSpawn = true;
         worldIn.spawnEntityInWorld(entityleashknot);
         entityleashknot.playPlaceSound();
         return entityleashknot;
     }
 
+    @Nullable
     public static EntityLeashKnot getKnotForPosition(World worldIn, BlockPos pos)
     {
         int i = pos.getX();

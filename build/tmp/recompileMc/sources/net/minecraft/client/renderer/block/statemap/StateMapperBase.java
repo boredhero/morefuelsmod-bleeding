@@ -1,6 +1,7 @@
 package net.minecraft.client.renderer.block.statemap;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.UnmodifiableIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.minecraft.block.Block;
@@ -47,8 +48,11 @@ public abstract class StateMapperBase implements IStateMapper
 
     public Map<IBlockState, ModelResourceLocation> putStateModelLocations(Block blockIn)
     {
-        for (IBlockState iblockstate : blockIn.getBlockState().getValidStates())
+        UnmodifiableIterator unmodifiableiterator = blockIn.getBlockState().getValidStates().iterator();
+
+        while (unmodifiableiterator.hasNext())
         {
+            IBlockState iblockstate = (IBlockState)unmodifiableiterator.next();
             this.mapStateModelLocations.put(iblockstate, this.getModelResourceLocation(iblockstate));
         }
 

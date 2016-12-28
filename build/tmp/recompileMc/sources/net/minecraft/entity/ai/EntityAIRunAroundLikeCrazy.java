@@ -1,19 +1,19 @@
 package net.minecraft.entity.ai;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.EntityHorse;
+import net.minecraft.entity.passive.AbstractHorse;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityAIRunAroundLikeCrazy extends EntityAIBase
 {
-    private final EntityHorse horseHost;
+    private final AbstractHorse horseHost;
     private final double speed;
     private double targetX;
     private double targetY;
     private double targetZ;
 
-    public EntityAIRunAroundLikeCrazy(EntityHorse horse, double speedIn)
+    public EntityAIRunAroundLikeCrazy(AbstractHorse horse, double speedIn)
     {
         this.horseHost = horse;
         this.speed = speedIn;
@@ -80,12 +80,11 @@ public class EntityAIRunAroundLikeCrazy extends EntityAIBase
             if (entity instanceof EntityPlayer)
             {
                 int i = this.horseHost.getTemper();
-                int j = this.horseHost.getMaxTemper();
+                int j = this.horseHost.func_190676_dC();
 
                 if (j > 0 && this.horseHost.getRNG().nextInt(j) < i)
                 {
                     this.horseHost.setTamedBy((EntityPlayer)entity);
-                    this.horseHost.worldObj.setEntityState(this.horseHost, (byte)7);
                     return;
                 }
 
@@ -93,7 +92,7 @@ public class EntityAIRunAroundLikeCrazy extends EntityAIBase
             }
 
             this.horseHost.removePassengers();
-            this.horseHost.makeHorseRearWithSound();
+            this.horseHost.func_190687_dF();
             this.horseHost.worldObj.setEntityState(this.horseHost, (byte)6);
         }
     }

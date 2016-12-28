@@ -12,7 +12,6 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityFlowerPot;
 import net.minecraft.util.ObjectIntIdentityMap;
@@ -38,7 +37,7 @@ public class BlockColors
             public int colorMultiplier(IBlockState state, @Nullable IBlockAccess worldIn, @Nullable BlockPos pos, int tintIndex)
             {
                 BlockDoublePlant.EnumPlantType blockdoubleplant$enumplanttype = (BlockDoublePlant.EnumPlantType)state.getValue(BlockDoublePlant.VARIANT);
-                return worldIn == null || pos == null || blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.GRASS && blockdoubleplant$enumplanttype != BlockDoublePlant.EnumPlantType.FERN ? -1 : BiomeColorHelper.getGrassColorAtPos(worldIn, pos);
+                return worldIn != null && pos != null && (blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.GRASS || blockdoubleplant$enumplanttype == BlockDoublePlant.EnumPlantType.FERN) ? BiomeColorHelper.getGrassColorAtPos(worldIn, state.getValue(BlockDoublePlant.HALF) == BlockDoublePlant.EnumBlockHalf.UPPER ? pos.down() : pos) : -1;
             }
         }, new Block[] {Blocks.DOUBLE_PLANT});
         blockcolors.registerBlockColorHandler(new IBlockColor()
@@ -52,15 +51,13 @@ public class BlockColors
                     if (tileentity instanceof TileEntityFlowerPot)
                     {
                         Item item = ((TileEntityFlowerPot)tileentity).getFlowerPotItem();
-
-                        if (item instanceof ItemBlock)
-                        {
-                            IBlockState iblockstate = Block.getBlockFromItem(item).getDefaultState();
-                            return blockcolors.colorMultiplier(iblockstate, worldIn, pos, tintIndex);
-                        }
+                        IBlockState iblockstate = Block.getBlockFromItem(item).getDefaultState();
+                        return blockcolors.colorMultiplier(iblockstate, worldIn, pos, tintIndex);
                     }
-
-                    return -1;
+                    else
+                    {
+                        return -1;
+                    }
                 }
                 else
                 {
@@ -146,7 +143,7 @@ public class BlockColors
         return blockcolors;
     }
 
-    public int func_189991_a(IBlockState p_189991_1_)
+    public int getColor(IBlockState p_189991_1_)
     {
         IBlockColor iblockcolor = (IBlockColor)this.blockColorMap.get(p_189991_1_.getBlock().delegate);
 

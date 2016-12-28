@@ -1,6 +1,7 @@
 package net.minecraft.network.play.client;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
@@ -93,6 +94,7 @@ public class CPacketUseEntity implements Packet<INetHandlerPlayServer>
         handler.processUseEntity(this);
     }
 
+    @Nullable
     public Entity getEntityFromWorld(World worldIn)
     {
         return worldIn.getEntityByID(this.entityId);

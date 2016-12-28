@@ -90,13 +90,13 @@ public class SharedMonsterAttributes
             NBTTagCompound nbttagcompound = list.getCompoundTagAt(i);
             IAttributeInstance iattributeinstance = map.getAttributeInstanceByName(nbttagcompound.getString("Name"));
 
-            if (iattributeinstance != null)
+            if (iattributeinstance == null)
             {
-                applyModifiersToAttributeInstance(iattributeinstance, nbttagcompound);
+                LOGGER.warn("Ignoring unknown attribute \'{}\'", new Object[] {nbttagcompound.getString("Name")});
             }
             else
             {
-                LOGGER.warn("Ignoring unknown attribute \'{}\'", new Object[] {nbttagcompound.getString("Name")});
+                applyModifiersToAttributeInstance(iattributeinstance, nbttagcompound);
             }
         }
     }

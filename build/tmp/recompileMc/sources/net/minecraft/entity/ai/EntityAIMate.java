@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 public class EntityAIMate extends EntityAIBase
 {
     private final EntityAnimal theAnimal;
+    private final Class <? extends EntityAnimal > field_190857_e;
     World theWorld;
     private EntityAnimal targetMate;
     /** Delay preventing a baby from spawning immediately when two mate-able animals find each other. */
@@ -24,9 +25,15 @@ public class EntityAIMate extends EntityAIBase
 
     public EntityAIMate(EntityAnimal animal, double speedIn)
     {
-        this.theAnimal = animal;
-        this.theWorld = animal.worldObj;
-        this.moveSpeed = speedIn;
+        this(animal, speedIn, animal.getClass());
+    }
+
+    public EntityAIMate(EntityAnimal p_i47306_1_, double p_i47306_2_, Class <? extends EntityAnimal > p_i47306_4_)
+    {
+        this.theAnimal = p_i47306_1_;
+        this.theWorld = p_i47306_1_.worldObj;
+        this.field_190857_e = p_i47306_4_;
+        this.moveSpeed = p_i47306_2_;
         this.setMutexBits(3);
     }
 
@@ -84,7 +91,7 @@ public class EntityAIMate extends EntityAIBase
      */
     private EntityAnimal getNearbyMate()
     {
-        List<EntityAnimal> list = this.theWorld.<EntityAnimal>getEntitiesWithinAABB(this.theAnimal.getClass(), this.theAnimal.getEntityBoundingBox().expandXyz(8.0D));
+        List<EntityAnimal> list = this.theWorld.<EntityAnimal>getEntitiesWithinAABB(this.field_190857_e, this.theAnimal.getEntityBoundingBox().expandXyz(8.0D));
         double d0 = Double.MAX_VALUE;
         EntityAnimal entityanimal = null;
 

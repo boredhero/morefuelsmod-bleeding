@@ -10,7 +10,7 @@ import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -39,7 +39,7 @@ public class EntityEndermite extends EntityMob
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityAIAttackMelee(this, 1.0D, false));
-        this.tasks.addTask(3, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(3, new EntityAIWanderAvoidWater(this, 1.0D));
         this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[0]));
@@ -94,9 +94,9 @@ public class EntityEndermite extends EntityMob
         return LootTableList.ENTITIES_ENDERMITE;
     }
 
-    public static void func_189764_b(DataFixer p_189764_0_)
+    public static void registerFixesEndermite(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189764_0_, "Endermite");
+        EntityLiving.registerFixesMob(fixer, EntityEndermite.class);
     }
 
     /**
@@ -129,11 +129,20 @@ public class EntityEndermite extends EntityMob
     }
 
     /**
+     * Set the render yaw offset
+     */
+    public void setRenderYawOffset(float offset)
+    {
+        this.rotationYaw = offset;
+        super.setRenderYawOffset(offset);
+    }
+
+    /**
      * Returns the Y Offset of this entity.
      */
     public double getYOffset()
     {
-        return 0.3D;
+        return 0.1D;
     }
 
     public boolean isSpawnedByPlayer()

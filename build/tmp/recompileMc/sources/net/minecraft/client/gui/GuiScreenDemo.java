@@ -58,14 +58,6 @@ public class GuiScreenDemo extends GuiScreen
     }
 
     /**
-     * Called from the main game loop to update the screen.
-     */
-    public void updateScreen()
-    {
-        super.updateScreen();
-    }
-
-    /**
      * Draws either a gradient over the background screen (when it exists) or a flat gradient over background.png
      */
     public void drawDefaultBackground()

@@ -1,6 +1,7 @@
 package net.minecraft.world.gen.structure;
 
 import com.google.common.collect.Lists;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -70,7 +71,7 @@ public class MapGenStronghold extends MapGenStructure
         return "Stronghold";
     }
 
-    public BlockPos getClosestStrongholdPos(World worldIn, BlockPos pos)
+    public BlockPos getClosestStrongholdPos(World worldIn, BlockPos pos, boolean p_180706_3_)
     {
         if (!this.ranBiomeCheck)
         {
@@ -125,9 +126,12 @@ public class MapGenStronghold extends MapGenStructure
     {
         this.initializeStructureData(this.worldObj);
         int i = 0;
+        ObjectIterator lvt_2_1_ = this.structureMap.values().iterator();
 
-        for (StructureStart structurestart : this.structureMap.values())
+        while (lvt_2_1_.hasNext())
         {
+            StructureStart structurestart = (StructureStart)lvt_2_1_.next();
+
             if (i < this.structureCoords.length)
             {
                 this.structureCoords[i++] = new ChunkPos(structurestart.getChunkPosX(), structurestart.getChunkPosZ());
@@ -174,21 +178,6 @@ public class MapGenStronghold extends MapGenStructure
                 }
             }
         }
-    }
-
-    protected List<BlockPos> getCoordList()
-    {
-        List<BlockPos> list = Lists.<BlockPos>newArrayList();
-
-        for (ChunkPos chunkpos : this.structureCoords)
-        {
-            if (chunkpos != null)
-            {
-                list.add(chunkpos.getCenterBlock(64));
-            }
-        }
-
-        return list;
     }
 
     protected StructureStart getStructureStart(int chunkX, int chunkZ)

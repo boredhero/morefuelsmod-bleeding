@@ -96,11 +96,6 @@ public class ActiveRenderInfo
         return iblockstate;
     }
 
-    public static Vec3d getPosition()
-    {
-        return position;
-    }
-
     public static float getRotationX()
     {
         /** The X component of the entity's yaw rotation */

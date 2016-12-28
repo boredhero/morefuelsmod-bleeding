@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.client.renderer.texture.TextureUtil;
@@ -57,9 +58,20 @@ public class DefaultResourcePack implements IResourcePack
         return file1 != null && file1.isFile() ? new FileInputStream(file1) : null;
     }
 
+    @Nullable
     private InputStream getResourceStream(ResourceLocation location)
     {
-        return DefaultResourcePack.class.getResourceAsStream("/assets/" + location.getResourceDomain() + "/" + location.getResourcePath());
+        String s = "/assets/" + location.getResourceDomain() + "/" + location.getResourcePath();
+
+        try
+        {
+            URL url = DefaultResourcePack.class.getResource(s);
+            return url != null && FolderResourcePack.func_191384_a(new File(url.getFile()), s) ? DefaultResourcePack.class.getResourceAsStream(s) : null;
+        }
+        catch (IOException var4)
+        {
+            return DefaultResourcePack.class.getResourceAsStream(s);
+        }
     }
 
     public boolean resourceExists(ResourceLocation location)
@@ -72,6 +84,7 @@ public class DefaultResourcePack implements IResourcePack
         return DEFAULT_RESOURCE_DOMAINS;
     }
 
+    @Nullable
     public <T extends IMetadataSection> T getPackMetadata(MetadataSerializer metadataSerializer, String metadataSectionName) throws IOException
     {
         try

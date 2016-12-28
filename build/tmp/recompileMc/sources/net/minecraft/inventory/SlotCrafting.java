@@ -1,6 +1,5 @@
 package net.minecraft.inventory;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -11,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.stats.AchievementList;
+import net.minecraft.util.NonNullList;
 
 public class SlotCrafting extends Slot
 {
@@ -29,9 +29,9 @@ public class SlotCrafting extends Slot
     }
 
     /**
-     * Check if the stack is a valid item for this slot. Always true beside for the armor slots.
+     * Check if the stack is allowed to be placed in this slot, used for armor slots as well as furnace fuel.
      */
-    public boolean isItemValid(@Nullable ItemStack stack)
+    public boolean isItemValid(ItemStack stack)
     {
         return false;
     }
@@ -44,7 +44,7 @@ public class SlotCrafting extends Slot
     {
         if (this.getHasStack())
         {
-            this.amountCrafted += Math.min(amount, this.getStack().stackSize);
+            this.amountCrafted += Math.min(amount, this.getStack().func_190916_E());
         }
 
         return super.decrStackSize(amount);
@@ -60,6 +60,11 @@ public class SlotCrafting extends Slot
         this.onCrafting(stack);
     }
 
+    protected void func_190900_b(int p_190900_1_)
+    {
+        this.amountCrafted += p_190900_1_;
+    }
+
     /**
      * the itemStack passed in is the output - ie, iron ingots, and pickaxes, not ore and wood.
      */
@@ -68,6 +73,7 @@ public class SlotCrafting extends Slot
         if (this.amountCrafted > 0)
         {
             stack.onCrafting(this.thePlayer.worldObj, this.thePlayer, this.amountCrafted);
+            net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(this.thePlayer, stack, craftMatrix);
         }
 
         this.amountCrafted = 0;
@@ -123,34 +129,33 @@ public class SlotCrafting extends Slot
         }
     }
 
-    public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack)
+    public ItemStack func_190901_a(EntityPlayer p_190901_1_, ItemStack p_190901_2_)
     {
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerCraftingEvent(playerIn, stack, craftMatrix);
-        this.onCrafting(stack);
-        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(playerIn);
-        ItemStack[] aitemstack = CraftingManager.getInstance().getRemainingItems(this.craftMatrix, playerIn.worldObj);
+        this.onCrafting(p_190901_2_);
+        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(p_190901_1_);
+        NonNullList<ItemStack> nonnulllist = CraftingManager.getInstance().getRemainingItems(this.craftMatrix, p_190901_1_.worldObj);
         net.minecraftforge.common.ForgeHooks.setCraftingPlayer(null);
 
-        for (int i = 0; i < aitemstack.length; ++i)
+        for (int i = 0; i < nonnulllist.size(); ++i)
         {
             ItemStack itemstack = this.craftMatrix.getStackInSlot(i);
-            ItemStack itemstack1 = aitemstack[i];
+            ItemStack itemstack1 = (ItemStack)nonnulllist.get(i);
 
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 this.craftMatrix.decrStackSize(i, 1);
                 itemstack = this.craftMatrix.getStackInSlot(i);
             }
 
-            if (itemstack1 != null)
+            if (!itemstack1.func_190926_b())
             {
-                if (itemstack == null)
+                if (itemstack.func_190926_b())
                 {
                     this.craftMatrix.setInventorySlotContents(i, itemstack1);
                 }
                 else if (ItemStack.areItemsEqual(itemstack, itemstack1) && ItemStack.areItemStackTagsEqual(itemstack, itemstack1))
                 {
-                    itemstack1.stackSize += itemstack.stackSize;
+                    itemstack1.func_190917_f(itemstack.func_190916_E());
                     this.craftMatrix.setInventorySlotContents(i, itemstack1);
                 }
                 else if (!this.thePlayer.inventory.addItemStackToInventory(itemstack1))
@@ -159,5 +164,7 @@ public class SlotCrafting extends Slot
                 }
             }
         }
+
+        return p_190901_2_;
     }
 }

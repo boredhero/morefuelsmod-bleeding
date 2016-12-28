@@ -1,6 +1,5 @@
 package net.minecraft.server.management;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockCommandBlock;
@@ -191,7 +190,7 @@ public class PlayerInteractionManager
                 {
                     ItemStack itemstack = this.thisPlayerMP.getHeldItemMainhand();
 
-                    if (itemstack == null)
+                    if (itemstack.func_190926_b())
                     {
                         return;
                     }
@@ -321,7 +320,7 @@ public class PlayerInteractionManager
             TileEntity tileentity = this.theWorld.getTileEntity(pos);
             Block block = iblockstate.getBlock();
 
-            if ((block instanceof BlockCommandBlock || block instanceof BlockStructure) && !this.thisPlayerMP.func_189808_dh())
+            if ((block instanceof BlockCommandBlock || block instanceof BlockStructure) && !this.thisPlayerMP.canUseCommandBlock())
             {
                 this.theWorld.notifyBlockUpdate(pos, iblockstate, iblockstate, 3);
                 return false;
@@ -329,7 +328,7 @@ public class PlayerInteractionManager
             else
             {
                 ItemStack stack = thisPlayerMP.getHeldItemMainhand();
-                if (stack != null && stack.getItem().onBlockStartBreak(stack, pos, thisPlayerMP)) return false;
+                if (!stack.func_190926_b() && stack.getItem().onBlockStartBreak(stack, pos, thisPlayerMP)) return false;
 
                 this.theWorld.playEvent(this.thisPlayerMP, 2001, pos, Block.getStateId(iblockstate));
                 boolean flag1 = false;
@@ -342,18 +341,12 @@ public class PlayerInteractionManager
                 else
                 {
                     ItemStack itemstack1 = this.thisPlayerMP.getHeldItemMainhand();
-                    ItemStack itemstack2 = itemstack1 == null ? null : itemstack1.copy();
+                    ItemStack itemstack2 = itemstack1.func_190926_b() ? ItemStack.field_190927_a : itemstack1.copy();
                     boolean flag = iblockstate.getBlock().canHarvestBlock(theWorld, pos, thisPlayerMP);
 
-                    if (itemstack1 != null)
+                    if (!itemstack1.func_190926_b())
                     {
                         itemstack1.onBlockDestroyed(this.theWorld, iblockstate, pos, this.thisPlayerMP);
-
-                        if (itemstack1.stackSize <= 0)
-                        {
-                            net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(this.thisPlayerMP, itemstack1, EnumHand.MAIN_HAND);
-                            this.thisPlayerMP.setHeldItem(EnumHand.MAIN_HAND, (ItemStack)null);
-                        }
                     }
 
                     flag1 = this.removeBlock(pos, flag);
@@ -385,13 +378,18 @@ public class PlayerInteractionManager
         }
         else
         {
-            if (net.minecraftforge.common.ForgeHooks.onItemRightClick(player, hand, stack)) return net.minecraft.util.EnumActionResult.PASS;
-            int i = stack.stackSize;
+            if (net.minecraftforge.common.ForgeHooks.onItemRightClick(player, hand)) return net.minecraft.util.EnumActionResult.PASS;
+            int i = stack.func_190916_E();
             int j = stack.getMetadata();
+            ItemStack copyBeforeUse = stack.copy();
             ActionResult<ItemStack> actionresult = stack.useItemRightClick(worldIn, player, hand);
             ItemStack itemstack = (ItemStack)actionresult.getResult();
 
-            if (itemstack == stack && itemstack.stackSize == i && itemstack.getMaxItemUseDuration() <= 0 && itemstack.getMetadata() == j)
+            if (itemstack == stack && itemstack.func_190916_E() == i && itemstack.getMaxItemUseDuration() <= 0 && itemstack.getMetadata() == j)
+            {
+                return actionresult.getType();
+            }
+            else if (actionresult.getType() == EnumActionResult.FAIL && itemstack.getMaxItemUseDuration() > 0 && !player.isHandActive())
             {
                 return actionresult.getType();
             }
@@ -401,7 +399,7 @@ public class PlayerInteractionManager
 
                 if (this.isCreative())
                 {
-                    itemstack.stackSize = i;
+                    itemstack.func_190920_e(i);
 
                     if (itemstack.isItemStackDamageable())
                     {
@@ -409,10 +407,10 @@ public class PlayerInteractionManager
                     }
                 }
 
-                if (itemstack.stackSize == 0)
+                if (itemstack.func_190926_b())
                 {
-                    player.setHeldItem(hand, (ItemStack)null);
-                    net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, itemstack, hand);
+                    player.setHeldItem(hand, ItemStack.field_190927_a);
+                    net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, copyBeforeUse, hand);
                 }
 
                 if (!player.isHandActive())
@@ -425,7 +423,7 @@ public class PlayerInteractionManager
         }
     }
 
-    public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, @Nullable ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult processRightClickBlock(EntityPlayer player, World worldIn, ItemStack stack, EnumHand hand, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
         if (this.gameType == GameType.SPECTATOR)
         {
@@ -458,29 +456,28 @@ public class PlayerInteractionManager
         else
         {
             net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event = net.minecraftforge.common.ForgeHooks
-                    .onRightClickBlock(player, hand, stack, pos, facing, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(thisPlayerMP, getBlockReachDistance() + 1));
+                    .onRightClickBlock(player, hand, pos, facing, net.minecraftforge.common.ForgeHooks.rayTraceEyeHitVec(player, getBlockReachDistance() + 1));
             if (event.isCanceled()) return EnumActionResult.PASS;
 
-            net.minecraft.item.Item item = stack == null ? null : stack.getItem();
-            EnumActionResult ret = item == null ? EnumActionResult.PASS : item.onItemUseFirst(stack, player, worldIn, pos, facing, hitX, hitY, hitZ, hand);
+            EnumActionResult ret = stack.onItemUseFirst(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
             if (ret != EnumActionResult.PASS) return ret;
 
             boolean bypass = true;
             for (ItemStack s : new ItemStack[]{player.getHeldItemMainhand(), player.getHeldItemOffhand()}) //TODO: Expand to more hands? player.inv.getHands()?
-                bypass = bypass && (s == null || s.getItem().doesSneakBypassUse(s, worldIn, pos, player));
+                bypass = bypass && (s.func_190926_b() || s.getItem().doesSneakBypassUse(s, worldIn, pos, player));
             EnumActionResult result = EnumActionResult.PASS;
 
             if (!player.isSneaking() || bypass || event.getUseBlock() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW)
             {
                 IBlockState iblockstate = worldIn.getBlockState(pos);
                 if(event.getUseBlock() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY)
-                if (iblockstate.getBlock().onBlockActivated(worldIn, pos, iblockstate, player, hand, stack, facing, hitX, hitY, hitZ))
+                if (iblockstate.getBlock().onBlockActivated(worldIn, pos, iblockstate, player, hand, facing, hitX, hitY, hitZ))
                 {
                     result = EnumActionResult.SUCCESS;
                 }
             }
 
-            if (stack == null)
+            if (stack.func_190926_b())
             {
                 return EnumActionResult.PASS;
             }
@@ -490,7 +487,7 @@ public class PlayerInteractionManager
             }
             else
             {
-                if (stack.getItem() instanceof ItemBlock && !player.func_189808_dh())
+                if (stack.getItem() instanceof ItemBlock && !player.canUseCommandBlock())
                 {
                     Block block = ((ItemBlock)stack.getItem()).getBlock();
 
@@ -503,12 +500,12 @@ public class PlayerInteractionManager
                 if (this.isCreative())
                 {
                     int j = stack.getMetadata();
-                    int i = stack.stackSize;
+                    int i = stack.func_190916_E();
                     if (result != EnumActionResult.SUCCESS && event.getUseItem() != net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
                             || result == EnumActionResult.SUCCESS && event.getUseItem() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW) {
                     EnumActionResult enumactionresult = stack.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
                     stack.setItemDamage(j);
-                    stack.stackSize = i;
+                    stack.func_190920_e(i);
                     return enumactionresult;
                     } else return result;
                 }

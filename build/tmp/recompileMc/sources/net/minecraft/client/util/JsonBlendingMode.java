@@ -1,6 +1,7 @@
 package net.minecraft.client.util;
 
 import com.google.gson.JsonObject;
+import java.util.Locale;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.JsonUtils;
 import net.minecraftforge.fml.relauncher.Side;
@@ -184,13 +185,13 @@ public class JsonBlendingMode
 
     private static int stringToBlendFunction(String p_148108_0_)
     {
-        String s = p_148108_0_.trim().toLowerCase();
+        String s = p_148108_0_.trim().toLowerCase(Locale.ROOT);
         return "add".equals(s) ? 32774 : ("subtract".equals(s) ? 32778 : ("reversesubtract".equals(s) ? 32779 : ("reverse_subtract".equals(s) ? 32779 : ("min".equals(s) ? 32775 : ("max".equals(s) ? 32776 : 32774)))));
     }
 
     private static int stringToBlendFactor(String p_148107_0_)
     {
-        String s = p_148107_0_.trim().toLowerCase();
+        String s = p_148107_0_.trim().toLowerCase(Locale.ROOT);
         s = s.replaceAll("_", "");
         s = s.replaceAll("one", "1");
         s = s.replaceAll("zero", "0");

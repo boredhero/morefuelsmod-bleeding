@@ -12,11 +12,12 @@ import net.minecraft.util.text.translation.I18n;
 
 public class EntityDamageSource extends DamageSource
 {
+    @Nullable
     protected Entity damageSourceEntity;
     /** Whether this EntityDamageSource is from an entity wearing Thorns-enchanted armor. */
     private boolean isThornsDamage;
 
-    public EntityDamageSource(String damageTypeIn, Entity damageSourceEntityIn)
+    public EntityDamageSource(String damageTypeIn, @Nullable Entity damageSourceEntityIn)
     {
         super(damageTypeIn);
         this.damageSourceEntity = damageSourceEntityIn;
@@ -47,10 +48,10 @@ public class EntityDamageSource extends DamageSource
      */
     public ITextComponent getDeathMessage(EntityLivingBase entityLivingBaseIn)
     {
-        ItemStack itemstack = this.damageSourceEntity instanceof EntityLivingBase ? ((EntityLivingBase)this.damageSourceEntity).getHeldItemMainhand() : null;
+        ItemStack itemstack = this.damageSourceEntity instanceof EntityLivingBase ? ((EntityLivingBase)this.damageSourceEntity).getHeldItemMainhand() : ItemStack.field_190927_a;
         String s = "death.attack." + this.damageType;
         String s1 = s + ".item";
-        return itemstack != null && itemstack.hasDisplayName() && I18n.canTranslate(s1) ? new TextComponentTranslation(s1, new Object[] {entityLivingBaseIn.getDisplayName(), this.damageSourceEntity.getDisplayName(), itemstack.getTextComponent()}): new TextComponentTranslation(s, new Object[] {entityLivingBaseIn.getDisplayName(), this.damageSourceEntity.getDisplayName()});
+        return !itemstack.func_190926_b() && itemstack.hasDisplayName() && I18n.canTranslate(s1) ? new TextComponentTranslation(s1, new Object[] {entityLivingBaseIn.getDisplayName(), this.damageSourceEntity.getDisplayName(), itemstack.getTextComponent()}): new TextComponentTranslation(s, new Object[] {entityLivingBaseIn.getDisplayName(), this.damageSourceEntity.getDisplayName()});
     }
 
     /**

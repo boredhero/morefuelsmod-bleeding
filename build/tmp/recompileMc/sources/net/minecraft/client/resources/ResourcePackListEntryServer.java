@@ -40,7 +40,7 @@ public class ResourcePackListEntryServer extends ResourcePackListEntry
 
     protected int getResourcePackFormat()
     {
-        return 2;
+        return 3;
     }
 
     protected String getResourcePackDescription()

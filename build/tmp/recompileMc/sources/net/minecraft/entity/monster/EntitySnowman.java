@@ -9,7 +9,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntitySnowball;
@@ -17,6 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -40,15 +41,15 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
         this.setSize(0.7F, 1.9F);
     }
 
-    public static void func_189783_b(DataFixer p_189783_0_)
+    public static void registerFixesSnowman(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189783_0_, "SnowMan");
+        EntityLiving.registerFixesMob(fixer, EntitySnowman.class);
     }
 
     protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAIAttackRanged(this, 1.25D, 20, 10.0F));
-        this.tasks.addTask(2, new EntityAIWander(this, 1.0D));
+        this.tasks.addTask(2, new EntityAIWanderAvoidWater(this, 1.0D, 1.0000001E-5F));
         this.tasks.addTask(3, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.tasks.addTask(4, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAINearestAttackableTarget(this, EntityLiving.class, 10, true, false, IMob.MOB_SELECTOR));
@@ -64,7 +65,29 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
     protected void entityInit()
     {
         super.entityInit();
-        this.dataManager.register(PUMPKIN_EQUIPPED, Byte.valueOf((byte)0));
+        this.dataManager.register(PUMPKIN_EQUIPPED, Byte.valueOf((byte)16));
+    }
+
+    /**
+     * (abstract) Protected helper method to write subclass entity data to NBT.
+     */
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
+        super.writeEntityToNBT(compound);
+        compound.setBoolean("Pumpkin", this.isPumpkinEquipped());
+    }
+
+    /**
+     * (abstract) Protected helper method to read subclass entity data from NBT.
+     */
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
+        super.readEntityFromNBT(compound);
+
+        if (compound.hasKey("Pumpkin"))
+        {
+            this.setPumpkinEquipped(compound.getBoolean("Pumpkin"));
+        }
     }
 
     /**
@@ -86,7 +109,7 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
                 this.attackEntityFrom(DamageSource.drown, 1.0F);
             }
 
-            if (this.worldObj.getBiomeGenForCoords(new BlockPos(i, 0, k)).getFloatTemperature(new BlockPos(i, j, k)) > 1.0F)
+            if (this.worldObj.getBiome(new BlockPos(i, 0, k)).getFloatTemperature(new BlockPos(i, j, k)) > 1.0F)
             {
                 this.attackEntityFrom(DamageSource.onFire, 1.0F);
             }
@@ -103,7 +126,7 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
                 k = MathHelper.floor_double(this.posZ + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
                 BlockPos blockpos = new BlockPos(i, j, k);
 
-                if (this.worldObj.getBlockState(blockpos).getMaterial() == Material.AIR && this.worldObj.getBiomeGenForCoords(new BlockPos(i, 0, k)).getFloatTemperature(blockpos) < 0.8F && Blocks.SNOW_LAYER.canPlaceBlockAt(this.worldObj, blockpos))
+                if (this.worldObj.getBlockState(blockpos).getMaterial() == Material.AIR && this.worldObj.getBiome(blockpos).getFloatTemperature(blockpos) < 0.8F && Blocks.SNOW_LAYER.canPlaceBlockAt(this.worldObj, blockpos))
                 {
                     this.worldObj.setBlockState(blockpos, Blocks.SNOW_LAYER.getDefaultState());
                 }
@@ -119,8 +142,10 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
 
     /**
      * Attack the specified entity using a ranged attack.
+     *  
+     * @param distanceFactor How far the target is, normalized and clamped between 0.1 and 1.0
      */
-    public void attackEntityWithRangedAttack(EntityLivingBase target, float p_82196_2_)
+    public void attackEntityWithRangedAttack(EntityLivingBase target, float distanceFactor)
     {
         EntitySnowball entitysnowball = new EntitySnowball(this.worldObj, this);
         double d0 = target.posY + (double)target.getEyeHeight() - 1.100000023841858D;
@@ -138,15 +163,17 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
         return 1.7F;
     }
 
-    protected boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    protected boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        if (stack != null && stack.getItem() == Items.SHEARS && !this.isPumpkinEquipped() && !this.worldObj.isRemote)
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (itemstack.getItem() == Items.SHEARS && this.isPumpkinEquipped() && !this.worldObj.isRemote)
         {
-            this.setPumpkinEquipped(true);
-            stack.damageItem(1, player);
+            this.setPumpkinEquipped(false);
+            itemstack.damageItem(1, player);
         }
 
-        return super.processInteract(player, hand, stack);
+        return super.processInteract(player, hand);
     }
 
     public boolean isPumpkinEquipped()

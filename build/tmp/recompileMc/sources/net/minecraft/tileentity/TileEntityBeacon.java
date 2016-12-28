@@ -54,7 +54,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     @Nullable
     private Potion secondaryEffect;
     /** Item given to this beacon as payment. */
-    private ItemStack payment;
+    private ItemStack payment = ItemStack.field_190927_a;
     private String customName;
 
     /**
@@ -312,63 +312,64 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
         return 1;
     }
 
+    public boolean func_191420_l()
+    {
+        return this.payment.func_190926_b();
+    }
+
     /**
      * Returns the stack in the given slot.
      */
-    @Nullable
     public ItemStack getStackInSlot(int index)
     {
-        return index == 0 ? this.payment : null;
+        return index == 0 ? this.payment : ItemStack.field_190927_a;
     }
 
     /**
      * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
-    @Nullable
     public ItemStack decrStackSize(int index, int count)
     {
-        if (index == 0 && this.payment != null)
+        if (index == 0 && !this.payment.func_190926_b())
         {
-            if (count >= this.payment.stackSize)
+            if (count >= this.payment.func_190916_E())
             {
                 ItemStack itemstack = this.payment;
-                this.payment = null;
+                this.payment = ItemStack.field_190927_a;
                 return itemstack;
             }
             else
             {
-                this.payment.stackSize -= count;
-                return new ItemStack(this.payment.getItem(), count, this.payment.getMetadata());
+                return this.payment.splitStack(count);
             }
         }
         else
         {
-            return null;
+            return ItemStack.field_190927_a;
         }
     }
 
     /**
      * Removes a stack from the given slot and returns it.
      */
-    @Nullable
     public ItemStack removeStackFromSlot(int index)
     {
         if (index == 0)
         {
             ItemStack itemstack = this.payment;
-            this.payment = null;
+            this.payment = ItemStack.field_190927_a;
             return itemstack;
         }
         else
         {
-            return null;
+            return ItemStack.field_190927_a;
         }
     }
 
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
      */
-    public void setInventorySlotContents(int index, @Nullable ItemStack stack)
+    public void setInventorySlotContents(int index, ItemStack stack)
     {
         if (index == 0)
         {
@@ -406,7 +407,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     }
 
     /**
-     * Do not make give this method the name canInteractWith because it clashes with Container
+     * Don't rename this method to canInteractWith due to conflicts with Container
      */
     public boolean isUseableByPlayer(EntityPlayer player)
     {
@@ -422,7 +423,8 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
     }
 
     /**
-     * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot.
+     * Returns true if automation is allowed to insert the given stack (ignoring stack size) into the given slot. For
+     * guis use Slot.isItemValid
      */
     public boolean isItemValidForSlot(int index, ItemStack stack)
     {
@@ -476,7 +478,7 @@ public class TileEntityBeacon extends TileEntityLockable implements ITickable, I
 
     public void clear()
     {
-        this.payment = null;
+        this.payment = ItemStack.field_190927_a;
     }
 
     public boolean receiveClientEvent(int id, int type)

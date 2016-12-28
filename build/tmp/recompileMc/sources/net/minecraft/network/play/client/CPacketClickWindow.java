@@ -20,7 +20,7 @@ public class CPacketClickWindow implements Packet<INetHandlerPlayServer>
     /** A unique number for the action, used for transaction handling */
     private short actionNumber;
     /** The item stack present in the slot */
-    private ItemStack clickedItem;
+    private ItemStack clickedItem = ItemStack.field_190927_a;
     /** Inventory operation mode */
     private ClickType mode;
 
@@ -34,7 +34,7 @@ public class CPacketClickWindow implements Packet<INetHandlerPlayServer>
         this.windowId = windowIdIn;
         this.slotId = slotIdIn;
         this.usedButton = usedButtonIn;
-        this.clickedItem = clickedItemIn != null ? clickedItemIn.copy() : null;
+        this.clickedItem = clickedItemIn.func_190926_b() ? ItemStack.field_190927_a : clickedItemIn.copy();
         this.actionNumber = actionNumberIn;
         this.mode = modeIn;
     }

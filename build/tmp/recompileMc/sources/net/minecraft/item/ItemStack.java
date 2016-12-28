@@ -20,6 +20,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -48,14 +49,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public final class ItemStack implements net.minecraftforge.common.capabilities.ICapabilitySerializable<NBTTagCompound>
 {
+    public static final ItemStack field_190927_a = new ItemStack((Item)null);
     public static final DecimalFormat DECIMALFORMAT = new DecimalFormat("#.##");
     /** Size of the stack. */
-    public int stackSize;
+    private int stackSize;
     /** Number of animation frames to go when receiving an item (by walking into it, for example). */
-    public int animationsToGo;
-    private Item item;
+    private int animationsToGo;
+    private final Item item;
     /** A NBTTagMap containing data about an ItemStack. Can only be used for non stackable items */
     private NBTTagCompound stackTagCompound;
+    private boolean field_190928_g;
     int itemDamage;
     /** Item frame this stack is on, or null if not on an item frame. */
     private EntityItemFrame itemFrame;
@@ -94,34 +97,57 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     }
 
     public ItemStack(Item itemIn, int amount, int meta){ this(itemIn, amount, meta, null); }
-    public ItemStack(Item itemIn, int amount, int meta, NBTTagCompound capNBT)
+    public ItemStack(Item itemIn, int amount, int meta, @Nullable NBTTagCompound capNBT)
     {
         this.capNBT = capNBT;
-        this.setItem(itemIn);
-        this.stackSize = amount;
+        this.item = itemIn;
         this.itemDamage = meta;
+        this.stackSize = amount;
 
         if (this.itemDamage < 0)
         {
             this.itemDamage = 0;
         }
+
+        this.func_190923_F();
+        this.forgeInit();
     }
 
-    public static ItemStack loadItemStackFromNBT(NBTTagCompound nbt)
+    private void func_190923_F()
     {
-        ItemStack itemstack = new ItemStack();
-        itemstack.readFromNBT(nbt);
-        return itemstack.getItem() != null ? itemstack : null;
+        this.field_190928_g = this.func_190926_b();
     }
 
-    private ItemStack()
+    public ItemStack(NBTTagCompound p_i47263_1_)
     {
+        this.capNBT = p_i47263_1_.hasKey("ForgeCaps") ? p_i47263_1_.getCompoundTag("ForgeCaps") : null;
+        this.item = Item.getByNameOrId(p_i47263_1_.getString("id"));
+        this.stackSize = p_i47263_1_.getByte("Count");
+        this.itemDamage = Math.max(0, p_i47263_1_.getShort("Damage"));
+
+        if (p_i47263_1_.hasKey("tag", 10))
+        {
+            this.stackTagCompound = p_i47263_1_.getCompoundTag("tag");
+
+            if (this.item != null)
+            {
+                this.item.updateItemStackNBT(p_i47263_1_);
+            }
+        }
+
+        this.func_190923_F();
+        this.forgeInit();
     }
 
-    public static void func_189868_a(DataFixer p_189868_0_)
+    public boolean func_190926_b()
     {
-        p_189868_0_.registerWalker(FixTypes.ITEM_INSTANCE, new BlockEntityTag());
-        p_189868_0_.registerWalker(FixTypes.ITEM_INSTANCE, new EntityTag());
+        return this == field_190927_a ? true : (getItemRaw() != null && getItemRaw() != Item.getItemFromBlock(Blocks.AIR) ? (this.stackSize <= 0 ? true : this.itemDamage < -32768 || this.itemDamage > 65535) : true);
+    }
+
+    public static void registerFixes(DataFixer fixer)
+    {
+        fixer.registerWalker(FixTypes.ITEM_INSTANCE, new BlockEntityTag());
+        fixer.registerWalker(FixTypes.ITEM_INSTANCE, new EntityTag());
     }
 
     /**
@@ -129,15 +155,10 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public ItemStack splitStack(int amount)
     {
-        amount = Math.min(amount, this.stackSize);
-        ItemStack itemstack = new ItemStack(this.item, amount, this.itemDamage, this.capabilities != null ? this.capabilities.serializeNBT() : null);
-
-        if (this.stackTagCompound != null)
-        {
-            itemstack.stackTagCompound = this.stackTagCompound.copy();
-        }
-
-        this.stackSize -= amount;
+        int i = Math.min(amount, this.stackSize);
+        ItemStack itemstack = this.copy();
+        itemstack.func_190920_e(i);
+        this.func_190918_g(i);
         return itemstack;
     }
 
@@ -146,7 +167,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public Item getItem()
     {
-        return this.delegate != null ? this.delegate.get() : null;
+        return this.field_190928_g || this.delegate == null ? Item.getItemFromBlock(Blocks.AIR) : this.delegate.get();
     }
 
     /**
@@ -156,7 +177,20 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     public EnumActionResult onItemUse(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (!worldIn.isRemote) return net.minecraftforge.common.ForgeHooks.onPlaceItemIntoWorld(this, playerIn, worldIn, pos, side, hitX, hitY, hitZ, hand);
-        EnumActionResult enumactionresult = this.getItem().onItemUse(this, playerIn, worldIn, pos, hand, side, hitX, hitY, hitZ);
+        EnumActionResult enumactionresult = this.getItem().onItemUse(playerIn, worldIn, pos, hand, side, hitX, hitY, hitZ);
+
+        if (enumactionresult == EnumActionResult.SUCCESS)
+        {
+            playerIn.addStat(StatList.getObjectUseStats(this.item));
+        }
+
+        return enumactionresult;
+    }
+
+    public EnumActionResult onItemUseFirst(EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ)
+    {
+        // copy of onitemuse but for onitemusefirst
+        EnumActionResult enumactionresult = this.getItem().onItemUseFirst(playerIn, worldIn, pos, side, hitX, hitY, hitZ, hand);
 
         if (enumactionresult == EnumActionResult.SUCCESS)
         {
@@ -173,13 +207,12 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
     public ActionResult<ItemStack> useItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand hand)
     {
-        return this.getItem().onItemRightClick(this, worldIn, playerIn, hand);
+        return this.getItem().onItemRightClick(worldIn, playerIn, hand);
     }
 
     /**
      * Called when the item in use count reach 0, e.g. item food eaten. Return the new ItemStack. Args : world, entity
      */
-    @Nullable
     public ItemStack onItemUseFinish(World worldIn, EntityLivingBase entityLiving)
     {
         return this.getItem().onItemUseFinish(this, worldIn, entityLiving);
@@ -210,34 +243,6 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     }
 
     /**
-     * Read the stack fields from a NBT object.
-     */
-    public void readFromNBT(NBTTagCompound nbt)
-    {
-        this.capNBT = nbt.hasKey("ForgeCaps") ? nbt.getCompoundTag("ForgeCaps") : null;
-        this.setItem(Item.getByNameOrId(nbt.getString("id")));
-        this.capNBT = null;
-        this.stackSize = nbt.getByte("Count");
-        this.itemDamage = nbt.getShort("Damage");
-
-        if (this.itemDamage < 0)
-        {
-            this.itemDamage = 0;
-        }
-
-        if (nbt.hasKey("tag", 10))
-        {
-            this.stackTagCompound = nbt.getCompoundTag("tag");
-
-            if (this.item != null)
-            {
-                this.item.updateItemStackNBT(this.stackTagCompound);
-            }
-        }
-        else this.stackTagCompound = null;
-    }
-
-    /**
      * Returns maximum size of the stack.
      */
     public int getMaxStackSize()
@@ -258,12 +263,12 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean isItemStackDamageable()
     {
-        return this.item == null ? false : (this.item.getMaxDamage(this) <= 0 ? false : !this.hasTagCompound() || !this.getTagCompound().getBoolean("Unbreakable"));
+        return this.field_190928_g ? false : (this.item.getMaxDamage(this) <= 0 ? false : !this.hasTagCompound() || !this.getTagCompound().getBoolean("Unbreakable"));
     }
 
     public boolean getHasSubtypes()
     {
-        return this.item.getHasSubtypes();
+        return this.getItem().getHasSubtypes();
     }
 
     /**
@@ -300,7 +305,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public int getMaxDamage()
     {
-        return this.item == null ? 0 : this.item.getMaxDamage(this);
+        return this.getItem().getMaxDamage(this);
     }
 
     /**
@@ -355,17 +360,12 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 if (this.attemptDamageItem(amount, entityIn.getRNG()))
                 {
                     entityIn.renderBrokenItemStack(this);
-                    --this.stackSize;
+                    this.func_190918_g(1);
 
                     if (entityIn instanceof EntityPlayer)
                     {
                         EntityPlayer entityplayer = (EntityPlayer)entityIn;
                         entityplayer.addStat(StatList.getObjectBreakStats(this.item));
-                    }
-
-                    if (this.stackSize < 0)
-                    {
-                        this.stackSize = 0;
                     }
 
                     this.itemDamage = 0;
@@ -393,7 +393,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public void onBlockDestroyed(World worldIn, IBlockState blockIn, BlockPos pos, EntityPlayer playerIn)
     {
-        boolean flag = this.item.onBlockDestroyed(this, worldIn, blockIn, pos, playerIn);
+        boolean flag = this.getItem().onBlockDestroyed(this, worldIn, blockIn, pos, playerIn);
 
         if (flag)
         {
@@ -406,15 +406,12 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean canHarvestBlock(IBlockState blockIn)
     {
-        /**
-         * Returns the object corresponding to the stack.
-         */
-        return getItem().canHarvestBlock(blockIn, this);
+        return this.getItem().canHarvestBlock(blockIn, this);
     }
 
     public boolean interactWithEntity(EntityPlayer playerIn, EntityLivingBase entityIn, EnumHand hand)
     {
-        return this.item.itemInteractionForEntity(this, playerIn, entityIn, hand);
+        return this.getItem().itemInteractionForEntity(this, playerIn, entityIn, hand);
     }
 
     /**
@@ -432,29 +429,17 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return itemstack;
     }
 
-    public static boolean areItemStackTagsEqual(@Nullable ItemStack stackA, @Nullable ItemStack stackB)
+    public static boolean areItemStackTagsEqual(ItemStack stackA, ItemStack stackB)
     {
-        if (stackA == null && stackB == null) return true;
-        if (stackA == null && stackB != null) return false;
-        if (stackA != null && stackB == null) return false;
-        if (stackA.stackTagCompound == null && stackB.stackTagCompound != null) return false;
-        if (stackA.stackTagCompound != null && stackB.stackTagCompound == null) return false;
-        if (stackA.stackTagCompound != null && !stackA.stackTagCompound.equals(stackB.stackTagCompound)) return false;
-        if (stackA.capabilities != null || stackB.capabilities != null)
-        {
-            boolean ret = stackA.capabilities != null ? stackA.capabilities.areCompatible(stackB.capabilities) : stackB.capabilities.areCompatible(null);
-            if (!ret) return false;
-        }
-
-        return true;
+        return stackA.func_190926_b() && stackB.func_190926_b() ? true : (!stackA.func_190926_b() && !stackB.func_190926_b() ? (stackA.stackTagCompound == null && stackB.stackTagCompound != null ? false : (stackA.stackTagCompound == null || stackA.stackTagCompound.equals(stackB.stackTagCompound)) && stackA.areCapsCompatible(stackB)) : false);
     }
 
     /**
      * compares ItemStack argument1 with ItemStack argument2; returns true if both ItemStacks are equal
      */
-    public static boolean areItemStacksEqual(@Nullable ItemStack stackA, @Nullable ItemStack stackB)
+    public static boolean areItemStacksEqual(ItemStack stackA, ItemStack stackB)
     {
-        return stackA == null && stackB == null ? true : (stackA != null && stackB != null ? stackA.isItemStackEqual(stackB) : false);
+        return stackA.func_190926_b() && stackB.func_190926_b() ? true : (!stackA.func_190926_b() && !stackB.func_190926_b() ? stackA.isItemStackEqual(stackB) : false);
     }
 
     /**
@@ -462,56 +447,44 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     private boolean isItemStackEqual(ItemStack other)
     {
-        if (this.stackSize != other.stackSize) return false;
-        if (this.item != other.item) return false;
-        if (this.itemDamage != other.itemDamage) return false;
-        if (!ItemStack.areItemStackTagsEqual(this, other)) return false;
-        return true;
+        return this.stackSize != other.stackSize ? false : (this.getItem() != other.getItem() ? false : (this.itemDamage != other.itemDamage ? false : (this.stackTagCompound == null && other.stackTagCompound != null ? false : this.stackTagCompound == null || this.stackTagCompound.equals(other.stackTagCompound))));
     }
 
     /**
      * Compares Item and damage value of the two stacks
      */
-    public static boolean areItemsEqual(@Nullable ItemStack stackA, @Nullable ItemStack stackB)
+    public static boolean areItemsEqual(ItemStack stackA, ItemStack stackB)
     {
-        return stackA == stackB ? true : (stackA != null && stackB != null ? stackA.isItemEqual(stackB) : false);
+        return stackA == stackB ? true : (!stackA.func_190926_b() && !stackB.func_190926_b() ? stackA.isItemEqual(stackB) : false);
     }
 
-    public static boolean areItemsEqualIgnoreDurability(@Nullable ItemStack stackA, @Nullable ItemStack stackB)
+    public static boolean areItemsEqualIgnoreDurability(ItemStack stackA, ItemStack stackB)
     {
-        return stackA == stackB ? true : (stackA != null && stackB != null ? stackA.isItemEqualIgnoreDurability(stackB) : false);
+        return stackA == stackB ? true : (!stackA.func_190926_b() && !stackB.func_190926_b() ? stackA.isItemEqualIgnoreDurability(stackB) : false);
     }
 
     /**
      * compares ItemStack argument to the instance ItemStack; returns true if the Items contained in both ItemStacks are
      * equal
      */
-    public boolean isItemEqual(@Nullable ItemStack other)
+    public boolean isItemEqual(ItemStack other)
     {
-        return other != null && this.item == other.item && this.itemDamage == other.itemDamage;
+        return !other.func_190926_b() && this.item == other.item && this.itemDamage == other.itemDamage;
     }
 
-    public boolean isItemEqualIgnoreDurability(@Nullable ItemStack stack)
+    public boolean isItemEqualIgnoreDurability(ItemStack stack)
     {
-        return !this.isItemStackDamageable() ? this.isItemEqual(stack) : stack != null && this.item == stack.item;
+        return !this.isItemStackDamageable() ? this.isItemEqual(stack) : !stack.func_190926_b() && this.item == stack.item;
     }
 
     public String getUnlocalizedName()
     {
-        return this.item.getUnlocalizedName(this);
-    }
-
-    /**
-     * Creates a copy of a ItemStack, a null parameters will return a null.
-     */
-    public static ItemStack copyItemStack(ItemStack stack)
-    {
-        return stack == null ? null : stack.copy();
+        return this.getItem().getUnlocalizedName(this);
     }
 
     public String toString()
     {
-        return this.stackSize + "x" + this.item.getUnlocalizedName() + "@" + this.itemDamage;
+        return this.stackSize + "x" + this.getItem().getUnlocalizedName() + "@" + this.itemDamage;
     }
 
     /**
@@ -534,7 +507,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     public void onCrafting(World worldIn, EntityPlayer playerIn, int amount)
     {
         playerIn.addStat(StatList.getCraftStats(this.item), amount);
-        this.item.onCreated(this, worldIn, playerIn);
+        this.getItem().onCreated(this, worldIn, playerIn);
     }
 
     public int getMaxItemUseDuration()
@@ -560,7 +533,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean hasTagCompound()
     {
-        return this.stackTagCompound != null;
+        return !this.field_190928_g && this.stackTagCompound != null;
     }
 
     /**
@@ -572,27 +545,38 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return this.stackTagCompound;
     }
 
-    /**
-     * Get an NBTTagCompound from this stack's NBT data.
-     */
-    public NBTTagCompound getSubCompound(String key, boolean create)
+    public NBTTagCompound func_190925_c(String p_190925_1_)
     {
-        if (this.stackTagCompound != null && this.stackTagCompound.hasKey(key, 10))
+        if (this.stackTagCompound != null && this.stackTagCompound.hasKey(p_190925_1_, 10))
         {
-            return this.stackTagCompound.getCompoundTag(key);
-        }
-        else if (create)
-        {
-            NBTTagCompound nbttagcompound = new NBTTagCompound();
-            this.setTagInfo(key, nbttagcompound);
-            return nbttagcompound;
+            return this.stackTagCompound.getCompoundTag(p_190925_1_);
         }
         else
         {
-            return null;
+            NBTTagCompound nbttagcompound = new NBTTagCompound();
+            this.setTagInfo(p_190925_1_, nbttagcompound);
+            return nbttagcompound;
         }
     }
 
+    /**
+     * Get an NBTTagCompound from this stack's NBT data.
+     */
+    @Nullable
+    public NBTTagCompound getSubCompound(String key)
+    {
+        return this.stackTagCompound != null && this.stackTagCompound.hasKey(key, 10) ? this.stackTagCompound.getCompoundTag(key) : null;
+    }
+
+    public void func_190919_e(String p_190919_1_)
+    {
+        if (this.stackTagCompound != null && this.stackTagCompound.hasKey(p_190919_1_, 10))
+        {
+            this.stackTagCompound.removeTag(p_190919_1_);
+        }
+    }
+
+    @Nullable
     public NBTTagList getEnchantmentTagList()
     {
         return this.stackTagCompound == null ? null : this.stackTagCompound.getTagList("ench", 10);
@@ -601,7 +585,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     /**
      * Assigns a NBTTagCompound to the ItemStack, minecraft validates that only non-stackable items can have it.
      */
-    public void setTagCompound(NBTTagCompound nbt)
+    public void setTagCompound(@Nullable NBTTagCompound nbt)
     {
         this.stackTagCompound = nbt;
     }
@@ -611,34 +595,33 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public String getDisplayName()
     {
-        String s = this.getItem().getItemStackDisplayName(this);
+        NBTTagCompound nbttagcompound = this.getSubCompound("display");
 
-        if (this.stackTagCompound != null && this.stackTagCompound.hasKey("display", 10))
+        if (nbttagcompound != null)
         {
-            NBTTagCompound nbttagcompound = this.stackTagCompound.getCompoundTag("display");
-
             if (nbttagcompound.hasKey("Name", 8))
             {
-                s = nbttagcompound.getString("Name");
+                return nbttagcompound.getString("Name");
+            }
+
+            if (nbttagcompound.hasKey("LocName", 8))
+            {
+                return I18n.translateToLocal(nbttagcompound.getString("LocName"));
             }
         }
 
-        return s;
+        return this.getItem().getItemStackDisplayName(this);
+    }
+
+    public ItemStack func_190924_f(String p_190924_1_)
+    {
+        this.func_190925_c("display").setString("LocName", p_190924_1_);
+        return this;
     }
 
     public ItemStack setStackDisplayName(String displayName)
     {
-        if (this.stackTagCompound == null)
-        {
-            this.stackTagCompound = new NBTTagCompound();
-        }
-
-        if (!this.stackTagCompound.hasKey("display", 10))
-        {
-            this.stackTagCompound.setTag("display", new NBTTagCompound());
-        }
-
-        this.stackTagCompound.getCompoundTag("display").setString("Name", displayName);
+        this.func_190925_c("display").setString("Name", displayName);
         return this;
     }
 
@@ -647,23 +630,21 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public void clearCustomName()
     {
-        if (this.stackTagCompound != null)
+        NBTTagCompound nbttagcompound = this.getSubCompound("display");
+
+        if (nbttagcompound != null)
         {
-            if (this.stackTagCompound.hasKey("display", 10))
+            nbttagcompound.removeTag("Name");
+
+            if (nbttagcompound.hasNoTags())
             {
-                NBTTagCompound nbttagcompound = this.stackTagCompound.getCompoundTag("display");
-                nbttagcompound.removeTag("Name");
-
-                if (nbttagcompound.hasNoTags())
-                {
-                    this.stackTagCompound.removeTag("display");
-
-                    if (this.stackTagCompound.hasNoTags())
-                    {
-                        this.setTagCompound((NBTTagCompound)null);
-                    }
-                }
+                this.func_190919_e("display");
             }
+        }
+
+        if (this.stackTagCompound != null && this.stackTagCompound.hasNoTags())
+        {
+            this.stackTagCompound = null;
         }
     }
 
@@ -672,7 +653,8 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean hasDisplayName()
     {
-        return this.stackTagCompound == null ? false : (!this.stackTagCompound.hasKey("display", 10) ? false : this.stackTagCompound.getCompoundTag("display").hasKey("Name", 8));
+        NBTTagCompound nbttagcompound = this.getSubCompound("display");
+        return nbttagcompound != null && nbttagcompound.hasKey("Name", 8);
     }
 
     @SideOnly(Side.CLIENT)
@@ -724,7 +706,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         if ((i1 & 32) == 0)
         {
-            this.item.addInformation(this, playerIn, list, advanced);
+            this.getItem().addInformation(this, playerIn, list, advanced);
         }
 
         if (this.hasTagCompound())
@@ -733,7 +715,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
             {
                 NBTTagList nbttaglist = this.getEnchantmentTagList();
 
-                if (nbttaglist != null)
+                if (nbttaglist != null && !nbttaglist.hasNoTags())
                 {
                     for (int j = 0; j < nbttaglist.tagCount(); ++j)
                     {
@@ -756,7 +738,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
                 {
                     if (advanced)
                     {
-                        list.add("Color: #" + String.format("%06X", new Object[] {Integer.valueOf(nbttagcompound.getInteger("color"))}));
+                        list.add(I18n.translateToLocalFormatted("item.color", new Object[] {String.format("#%06X", new Object[]{Integer.valueOf(nbttagcompound.getInteger("color"))})}));
                     }
                     else
                     {
@@ -893,14 +875,14 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         {
             if (this.isItemDamaged())
             {
-                list.add("Durability: " + (this.getMaxDamage() - this.getItemDamage()) + " / " + this.getMaxDamage());
+                list.add(I18n.translateToLocalFormatted("item.durability", new Object[] {Integer.valueOf(this.getMaxDamage() - this.getItemDamage()), Integer.valueOf(this.getMaxDamage())}));
             }
 
             list.add(TextFormatting.DARK_GRAY + ((ResourceLocation)Item.REGISTRY.getNameForObject(this.item)).toString());
 
             if (this.hasTagCompound())
             {
-                list.add(TextFormatting.DARK_GRAY + "NBT: " + this.getTagCompound().getKeySet().size() + " tag(s)");
+                list.add(TextFormatting.DARK_GRAY + I18n.translateToLocalFormatted("item.nbt_tags", new Object[] {Integer.valueOf(this.getTagCompound().getKeySet().size())}));
             }
         }
 
@@ -954,7 +936,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public boolean isItemEnchanted()
     {
-        return this.stackTagCompound != null && this.stackTagCompound.hasKey("ench", 9);
+        return this.stackTagCompound != null && this.stackTagCompound.hasKey("ench", 9) ? !this.stackTagCompound.getTagList("ench", 10).hasNoTags() : false;
     }
 
     public void setTagInfo(String key, NBTBase value)
@@ -994,7 +976,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     @Nullable
     public EntityItemFrame getItemFrame()
     {
-        return this.itemFrame;
+        return this.field_190928_g ? null : this.itemFrame;
     }
 
     /**
@@ -1046,7 +1028,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         return multimap;
     }
 
-    public void addAttributeModifier(String attributeName, AttributeModifier modifier, EntityEquipmentSlot equipmentSlot)
+    public void addAttributeModifier(String attributeName, AttributeModifier modifier, @Nullable EntityEquipmentSlot equipmentSlot)
     {
         if (this.stackTagCompound == null)
         {
@@ -1070,24 +1052,6 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         nbttaglist.appendTag(nbttagcompound);
     }
 
-    @Deprecated
-    public void setItem(Item newItem)
-    {
-        if (newItem == this.item && item != null && this.capabilities != null) //Item Didn't change but refreshed
-        {
-            net.minecraftforge.common.capabilities.ICapabilityProvider parent = item.initCapabilities(this, this.capabilities.serializeNBT());
-            this.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(item, this, parent);
-        }
-        else if (newItem != this.item && newItem != null) // Item Changed
-        {
-            net.minecraftforge.common.capabilities.ICapabilityProvider parent = newItem.initCapabilities(this, this.capNBT);
-            this.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(newItem, this, parent);
-        }
-        if (this.capNBT != null && this.capabilities != null) this.capabilities.deserializeNBT(this.capNBT);
-        this.delegate = newItem != null ? newItem.delegate : null;
-        this.item = newItem;
-    }
-
     /**
      * Get a ChatComponent for this Item's display name that shows this Item on hover
      */
@@ -1102,7 +1066,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
 
         ITextComponent itextcomponent = (new TextComponentString("[")).appendSibling(textcomponentstring).appendText("]");
 
-        if (this.item != null)
+        if (!this.field_190928_g)
         {
             NBTTagCompound nbttagcompound = this.writeToNBT(new NBTTagCompound());
             itextcomponent.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new TextComponentString(nbttagcompound.toString())));
@@ -1174,19 +1138,25 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         }
     }
 
-    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, net.minecraft.util.EnumFacing facing)
+    @Override
+    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
     {
-        return this.capabilities == null ? false : this.capabilities.hasCapability(capability, facing);
+        return this.field_190928_g  || this.capabilities == null ? false : this.capabilities.hasCapability(capability, facing);
     }
 
-    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, net.minecraft.util.EnumFacing facing)
+    @Override
+    @Nullable
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
     {
-        return this.capabilities == null ? null : this.capabilities.getCapability(capability, facing);
+        return this.field_190928_g  || this.capabilities == null ? null : this.capabilities.getCapability(capability, facing);
     }
 
     public void deserializeNBT(NBTTagCompound nbt)
     {
-        this.readFromNBT(nbt);
+        // TODO do this better while respecting new rules
+        final ItemStack itemStack = new ItemStack(nbt);
+        this.stackTagCompound = itemStack.stackTagCompound;
+        this.capNBT = itemStack.capNBT;
     }
 
     public NBTTagCompound serializeNBT()
@@ -1213,5 +1183,61 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         {
             return this.capabilities.areCompatible(other.capabilities);
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    public int func_190921_D()
+    {
+        return this.animationsToGo;
+    }
+
+    public void func_190915_d(int p_190915_1_)
+    {
+        this.animationsToGo = p_190915_1_;
+    }
+
+    public int func_190916_E()
+    {
+        return this.field_190928_g ? 0 : this.stackSize;
+    }
+
+    public void func_190920_e(int p_190920_1_)
+    {
+        this.stackSize = p_190920_1_;
+        this.func_190923_F();
+    }
+
+    public void func_190917_f(int p_190917_1_)
+    {
+        this.func_190920_e(this.stackSize + p_190917_1_);
+    }
+
+    public void func_190918_g(int p_190918_1_)
+    {
+        this.func_190917_f(-p_190918_1_);
+    }
+
+    /**
+     * Set up forge's ItemStack additions.
+     */
+    private void forgeInit()
+    {
+        Item item = getItemRaw();
+        if (item != null)
+        {
+            this.delegate = item.delegate;
+            net.minecraftforge.common.capabilities.ICapabilityProvider provider = item.initCapabilities(this, this.capNBT);
+            this.capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(item, this, provider);
+            if (this.capNBT != null && this.capabilities != null) this.capabilities.deserializeNBT(this.capNBT);
+        }
+    }
+
+    /**
+     * Internal call to get the actual item, not the delegate.
+     * In all other methods, FML replaces calls to this.item with the item delegate.
+     */
+    private Item getItemRaw()
+    {
+        return this.item;
     }
 }

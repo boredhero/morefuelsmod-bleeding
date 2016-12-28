@@ -27,6 +27,9 @@ public class BlockFalling extends Block
         super(materialIn);
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
@@ -37,7 +40,7 @@ public class BlockFalling extends Block
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
     }
@@ -107,6 +110,10 @@ public class BlockFalling extends Block
     {
     }
 
+    public void func_190974_b(World p_190974_1_, BlockPos p_190974_2_)
+    {
+    }
+
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
@@ -125,7 +132,7 @@ public class BlockFalling extends Block
     }
 
     @SideOnly(Side.CLIENT)
-    public int func_189876_x(IBlockState p_189876_1_)
+    public int getDustColor(IBlockState p_189876_1_)
     {
         return -16777216;
     }

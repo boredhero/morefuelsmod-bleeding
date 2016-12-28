@@ -2,7 +2,6 @@ package net.minecraft.entity.ai;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
 
 public class EntityAITradePlayer extends EntityAIBase
 {
@@ -38,7 +37,7 @@ public class EntityAITradePlayer extends EntityAIBase
         else
         {
             EntityPlayer entityplayer = this.villager.getCustomer();
-            return entityplayer == null ? false : (this.villager.getDistanceSqToEntity(entityplayer) > 16.0D ? false : entityplayer.openContainer instanceof Container);
+            return entityplayer == null ? false : (this.villager.getDistanceSqToEntity(entityplayer) > 16.0D ? false : entityplayer.openContainer != null);
         }
     }
 

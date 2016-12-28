@@ -32,6 +32,7 @@ public abstract class WorldProvider
     protected boolean isHellWorld;
     /** A boolean that tells if a world does not have a sky. Used in calculating weather and skylight */
     protected boolean hasNoSky;
+    protected boolean field_191067_f;
     /** Light to brightness conversion table */
     protected final float[] lightBrightnessTable = new float[16];
     /** Array for sunrise/sunset colors (RGBA) */
@@ -68,6 +69,7 @@ public abstract class WorldProvider
      */
     protected void createBiomeProvider()
     {
+        this.field_191067_f = true;
         this.biomeProvider = terrainType.getBiomeProvider(worldObj);
     }
 
@@ -82,7 +84,7 @@ public abstract class WorldProvider
     public boolean canCoordinateBeSpawn(int x, int z)
     {
         BlockPos blockpos = new BlockPos(x, 0, z);
-        return this.worldObj.getBiomeGenForCoords(blockpos).ignorePlayerSpawnSuitability() ? true : this.worldObj.getGroundAboveSeaLevel(blockpos).getBlock() == Blocks.GRASS;
+        return this.worldObj.getBiome(blockpos).ignorePlayerSpawnSuitability() ? true : this.worldObj.getGroundAboveSeaLevel(blockpos).getBlock() == Blocks.GRASS;
     }
 
     /**
@@ -189,6 +191,7 @@ public abstract class WorldProvider
         return true;
     }
 
+    @Nullable
     public BlockPos getSpawnCoordinate()
     {
         return null;
@@ -227,6 +230,11 @@ public abstract class WorldProvider
     public boolean doesWaterVaporize()
     {
         return this.isHellWorld;
+    }
+
+    public boolean func_191066_m()
+    {
+        return this.field_191067_f;
     }
 
     public boolean getHasNoSky()
@@ -409,7 +417,7 @@ public abstract class WorldProvider
     /**
      * Called from {@link World#initCapabilities()}, to gather capabilities for this world.
      * It's safe to access world here since this is called after world is registered.
-     * 
+     *
      * On server, called directly after mapStorage and world data such as Scoreboard and VillageCollection are initialized.
      * On client, called when world is constructed, just before world load event is called.
      * Note that this method is always called before the world load event.
@@ -541,7 +549,7 @@ public abstract class WorldProvider
 
     public boolean isBlockHighHumidity(BlockPos pos)
     {
-        return worldObj.getBiomeGenForCoords(pos).isHighHumidity();
+        return worldObj.getBiome(pos).isHighHumidity();
     }
 
     public int getHeight()

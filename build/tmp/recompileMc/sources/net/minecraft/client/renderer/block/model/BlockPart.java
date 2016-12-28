@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
@@ -124,7 +125,7 @@ public class BlockPart
             private EnumFacing.Axis parseAxis(JsonObject object)
             {
                 String s = JsonUtils.getString(object, "axis");
-                EnumFacing.Axis enumfacing$axis = EnumFacing.Axis.byName(s.toLowerCase());
+                EnumFacing.Axis enumfacing$axis = EnumFacing.Axis.byName(s.toLowerCase(Locale.ROOT));
 
                 if (enumfacing$axis == null)
                 {

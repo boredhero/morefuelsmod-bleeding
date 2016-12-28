@@ -19,6 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -44,7 +45,7 @@ public class TeleportToTeam implements ISpectatorMenuView, ISpectatorMenuObject
 
     public ITextComponent getPrompt()
     {
-        return new TextComponentString("Select a team to teleport to");
+        return new TextComponentTranslation("spectatorMenu.team_teleport.prompt", new Object[0]);
     }
 
     public void selectItem(SpectatorMenu menu)
@@ -54,7 +55,7 @@ public class TeleportToTeam implements ISpectatorMenuView, ISpectatorMenuObject
 
     public ITextComponent getSpectatorName()
     {
-        return new TextComponentString("Teleport to team member");
+        return new TextComponentTranslation("spectatorMenu.team_teleport", new Object[0]);
     }
 
     public void renderIcon(float p_178663_1_, int alpha)

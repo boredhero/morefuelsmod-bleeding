@@ -432,17 +432,13 @@ public class SoundManager
                                 net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.sound.PlaySoundSourceEvent(this, p_sound, s));
                             }
 
-                            LOGGER.debug(LOG_MARKER, "Playing sound {} for event {} as channel {}", new Object[] {sound.getSoundLocation(), resourcelocation1, s});
+                            LOGGER.debug(LOG_MARKER, "Playing sound {} for event {} as channel {}", new Object[] {sound.getSoundLocation(), resourcelocation, s});
                             this.sndSystem.setPitch(s, f2);
                             this.sndSystem.setVolume(s, f1);
                             this.sndSystem.play(s);
                             this.playingSoundsStopTime.put(s, Integer.valueOf(this.playTime + 20));
                             this.playingSounds.put(s, p_sound);
-
-                            if (soundcategory != SoundCategory.MASTER)
-                            {
-                                this.categorySounds.put(soundcategory, s);
-                            }
+                            this.categorySounds.put(soundcategory, s);
 
                             if (p_sound instanceof ITickableSound)
                             {
@@ -571,20 +567,21 @@ public class SoundManager
             {
                 ISound isound = (ISound)this.playingSounds.get(s);
 
-                if (!p_189567_1_.isEmpty())
+                if (p_189567_1_.isEmpty())
                 {
-                    if (isound.getSoundLocation().equals(new ResourceLocation(p_189567_1_)))
-                    {
-                        this.stopSound(isound);
-                    }
+                    this.stopSound(isound);
                 }
-                else
+                else if (isound.getSoundLocation().equals(new ResourceLocation(p_189567_1_)))
                 {
                     this.stopSound(isound);
                 }
             }
         }
-        else if (!p_189567_1_.isEmpty())
+        else if (p_189567_1_.isEmpty())
+        {
+            this.stopAllSounds();
+        }
+        else
         {
             for (ISound isound1 : this.playingSounds.values())
             {
@@ -593,10 +590,6 @@ public class SoundManager
                     this.stopSound(isound1);
                 }
             }
-        }
-        else
-        {
-            this.stopAllSounds();
         }
     }
 

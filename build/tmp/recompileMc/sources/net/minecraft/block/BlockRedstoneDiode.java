@@ -102,7 +102,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
      * change. Cases may include when redstone power is updated, cactus blocks popping off due to a neighboring solid
      * block, etc.
      */
-    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn)
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos p_189540_5_)
     {
         if (this.canBlockStay(worldIn, pos))
         {
@@ -115,7 +115,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
 
             for (EnumFacing enumfacing : EnumFacing.values())
             {
-                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
+                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this, false);
             }
         }
     }
@@ -126,7 +126,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         {
             boolean flag = this.shouldBePowered(worldIn, pos, state);
 
-            if ((this.isRepeaterPowered && !flag || !this.isRepeaterPowered && flag) && !worldIn.isBlockTickPending(pos, this))
+            if (this.isRepeaterPowered != flag && !worldIn.isBlockTickPending(pos, this))
             {
                 int i = -1;
 
@@ -214,6 +214,9 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         }
     }
 
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
         this.notifyNeighbors(worldIn, pos, state);
@@ -223,9 +226,9 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
     {
         EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
         BlockPos blockpos = pos.offset(enumfacing.getOpposite());
-        if(net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldIn, pos, worldIn.getBlockState(pos), java.util.EnumSet.of(enumfacing.getOpposite())).isCanceled())
+        if(net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(worldIn, pos, worldIn.getBlockState(pos), java.util.EnumSet.of(enumfacing.getOpposite()), false).isCanceled())
             return;
-        worldIn.notifyBlockOfStateChange(blockpos, this);
+        worldIn.func_190524_a(blockpos, this, pos);
         worldIn.notifyNeighborsOfStateExcept(blockpos, this, enumfacing);
     }
 
@@ -238,7 +241,7 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
         {
             for (EnumFacing enumfacing : EnumFacing.values())
             {
-                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this);
+                worldIn.notifyNeighborsOfStateChange(pos.offset(enumfacing), this, false);
             }
         }
 

@@ -1,5 +1,6 @@
 package net.minecraft.pathfinding;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.Vec3d;
@@ -44,6 +45,7 @@ public class Path
     /**
      * returns the last PathPoint of the Array
      */
+    @Nullable
     public PathPoint getFinalPathPoint()
     {
         return this.pathLength > 0 ? this.points[this.pathLength - 1] : null;
@@ -135,19 +137,19 @@ public class Path
     }
 
     @SideOnly(Side.CLIENT)
-    public PathPoint[] func_189966_g()
+    public PathPoint[] getOpenSet()
     {
         return this.openSet;
     }
 
     @SideOnly(Side.CLIENT)
-    public PathPoint[] func_189965_h()
+    public PathPoint[] getClosedSet()
     {
         return this.closedSet;
     }
 
     @SideOnly(Side.CLIENT)
-    public PathPoint func_189964_i()
+    public PathPoint getTarget()
     {
         return this.target;
     }

@@ -3,7 +3,6 @@ package net.minecraft.potion;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import java.util.List;
-import javax.annotation.Nullable;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
@@ -18,7 +17,7 @@ public class PotionHelper
     private static final List<PotionHelper.ItemPredicateInstance> POTION_ITEMS = Lists.<PotionHelper.ItemPredicateInstance>newArrayList();
     private static final Predicate<ItemStack> IS_POTION_ITEM = new Predicate<ItemStack>()
     {
-        public boolean apply(@Nullable ItemStack p_apply_1_)
+        public boolean apply(ItemStack p_apply_1_)
         {
             for (PotionHelper.ItemPredicateInstance potionhelper$itempredicateinstance : PotionHelper.POTION_ITEMS)
             {
@@ -108,10 +107,9 @@ public class PotionHelper
         return false;
     }
 
-    @Nullable
-    public static ItemStack doReaction(ItemStack reagent, @Nullable ItemStack potionIn)
+    public static ItemStack doReaction(ItemStack reagent, ItemStack potionIn)
     {
-        if (potionIn != null)
+        if (!potionIn.func_190926_b())
         {
             PotionType potiontype = PotionUtils.getPotionFromItem(potionIn);
             Item item = potionIn.getItem();
@@ -255,9 +253,9 @@ public class PotionHelper
                 this.meta = metaIn;
             }
 
-            public boolean apply(@Nullable ItemStack p_apply_1_)
+            public boolean apply(ItemStack p_apply_1_)
             {
-                return p_apply_1_ != null && p_apply_1_.getItem() == this.item && (this.meta == -1 || this.meta == p_apply_1_.getMetadata());
+                return p_apply_1_.getItem() == this.item && (this.meta == -1 || this.meta == p_apply_1_.getMetadata());
             }
         }
 

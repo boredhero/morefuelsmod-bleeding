@@ -25,23 +25,24 @@ public class ItemHangingEntity extends Item
     /**
      * Called when a Block is right-clicked with this Item
      */
-    public EnumActionResult onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+    public EnumActionResult onItemUse(EntityPlayer stack, World playerIn, BlockPos worldIn, EnumHand pos, EnumFacing hand, float facing, float hitX, float hitY)
     {
-        BlockPos blockpos = pos.offset(facing);
+        ItemStack itemstack = stack.getHeldItem(pos);
+        BlockPos blockpos = worldIn.offset(hand);
 
-        if (facing != EnumFacing.DOWN && facing != EnumFacing.UP && playerIn.canPlayerEdit(blockpos, facing, stack))
+        if (hand != EnumFacing.DOWN && hand != EnumFacing.UP && stack.canPlayerEdit(blockpos, hand, itemstack))
         {
-            EntityHanging entityhanging = this.createEntity(worldIn, blockpos, facing);
+            EntityHanging entityhanging = this.createEntity(playerIn, blockpos, hand);
 
             if (entityhanging != null && entityhanging.onValidSurface())
             {
-                if (!worldIn.isRemote)
+                if (!playerIn.isRemote)
                 {
                     entityhanging.playPlaceSound();
-                    worldIn.spawnEntityInWorld(entityhanging);
+                    playerIn.spawnEntityInWorld(entityhanging);
                 }
 
-                --stack.stackSize;
+                itemstack.func_190918_g(1);
             }
 
             return EnumActionResult.SUCCESS;

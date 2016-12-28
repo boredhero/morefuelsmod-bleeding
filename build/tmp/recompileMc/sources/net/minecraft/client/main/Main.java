@@ -118,6 +118,9 @@ public class Main
         (new Minecraft(gameconfiguration)).run();
     }
 
+    /**
+     * Returns whether a string is either null or empty.
+     */
     private static boolean isNullOrEmpty(String str)
     {
         return str != null && !str.isEmpty();

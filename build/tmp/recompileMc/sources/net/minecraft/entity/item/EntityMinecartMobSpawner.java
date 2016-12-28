@@ -1,9 +1,13 @@
 package net.minecraft.entity.item;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityMobSpawner;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.IDataFixer;
@@ -42,18 +46,20 @@ public class EntityMinecartMobSpawner extends EntityMinecart
         super(worldIn, x, y, z);
     }
 
-    public static void func_189672_a(DataFixer p_189672_0_)
+    public static void registerFixesMinecartMobSpawner(DataFixer fixer)
     {
-        func_189669_a(p_189672_0_, "MinecartSpawner");
-        p_189672_0_.registerWalker(FixTypes.ENTITY, new IDataWalker()
+        registerFixesMinecart(fixer, EntityMinecartMobSpawner.class);
+        fixer.registerWalker(FixTypes.ENTITY, new IDataWalker()
         {
             public NBTTagCompound process(IDataFixer fixer, NBTTagCompound compound, int versionIn)
             {
-                if ("MinecartSpawner".equals(compound.getString("id")))
+                String s = compound.getString("id");
+
+                if (EntityList.func_191306_a(EntityMinecartMobSpawner.class).equals(new ResourceLocation(s)))
                 {
-                    compound.setString("id", "MobSpawner");
+                    compound.setString("id", TileEntity.func_190559_a(TileEntityMobSpawner.class).toString());
                     fixer.process(FixTypes.BLOCK_ENTITY, compound, versionIn);
-                    compound.setString("id", "MinecartSpawner");
+                    compound.setString("id", s);
                 }
 
                 return compound;

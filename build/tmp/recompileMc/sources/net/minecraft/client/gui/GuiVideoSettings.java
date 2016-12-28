@@ -67,6 +67,20 @@ public class GuiVideoSettings extends GuiScreen
     }
 
     /**
+     * Fired when a key is typed (except F11 which toggles full screen). This is the equivalent of
+     * KeyListener.keyTyped(KeyEvent e). Args : character (character on the key), keyCode (lwjgl Keyboard key code)
+     */
+    protected void keyTyped(char typedChar, int keyCode) throws IOException
+    {
+        if (keyCode == 1)
+        {
+            this.mc.gameSettings.saveOptions();
+        }
+
+        super.keyTyped(typedChar, keyCode);
+    }
+
+    /**
      * Called by the controls from the buttonList when activated. (Mouse pressed for buttons)
      */
     protected void actionPerformed(GuiButton button) throws IOException
@@ -126,5 +140,16 @@ public class GuiVideoSettings extends GuiScreen
         this.optionsRowList.drawScreen(mouseX, mouseY, partialTicks);
         this.drawCenteredString(this.fontRendererObj, this.screenTitle, this.width / 2, 5, 16777215);
         super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    // FORGE: fix for MC-64581 very laggy mipmap slider
+    /**
+     * Called when the screen is unloaded. Used to disable keyboard repeat events
+     */
+    @Override
+    public void onGuiClosed()
+    {
+        super.onGuiClosed();
+        this.mc.gameSettings.onGuiClosed();
     }
 }

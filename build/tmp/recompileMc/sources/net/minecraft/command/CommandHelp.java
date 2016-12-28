@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.CommandBlockBaseLogic;
 import net.minecraft.util.math.BlockPos;
@@ -81,12 +80,12 @@ public class CommandHelp extends CommandBase
                     throw new WrongUsageException(icommand.getCommandUsage(sender), new Object[0]);
                 }
 
-                if (MathHelper.parseIntWithDefault(args[0], -1) != -1)
+                if (MathHelper.parseIntWithDefault(args[0], -1) == -1 && MathHelper.parseIntWithDefault(args[0], -2) == -2)
                 {
-                    throw numberinvalidexception;
+                    throw new CommandNotFoundException();
                 }
 
-                throw new CommandNotFoundException();
+                throw numberinvalidexception;
             }
 
             int l = Math.min((k + 1) * 7, list.size());
@@ -102,7 +101,7 @@ public class CommandHelp extends CommandBase
                 sender.addChatMessage(textcomponenttranslation);
             }
 
-            if (k == 0 && sender instanceof EntityPlayer)
+            if (k == 0)
             {
                 TextComponentTranslation textcomponenttranslation2 = new TextComponentTranslation("commands.help.footer", new Object[0]);
                 textcomponenttranslation2.getStyle().setColor(TextFormatting.GREEN);

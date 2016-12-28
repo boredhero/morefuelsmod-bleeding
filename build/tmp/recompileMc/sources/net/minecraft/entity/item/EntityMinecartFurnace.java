@@ -1,6 +1,5 @@
 package net.minecraft.entity.item;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,9 +36,9 @@ public class EntityMinecartFurnace extends EntityMinecart
         super(worldIn, x, y, z);
     }
 
-    public static void func_189671_a(DataFixer p_189671_0_)
+    public static void registerFixesMinecartFurnace(DataFixer fixer)
     {
-        EntityMinecart.func_189669_a(p_189671_0_, "MinecartFurnace");
+        EntityMinecart.registerFixesMinecart(fixer, EntityMinecartFurnace.class);
     }
 
     public EntityMinecart.Type getType()
@@ -97,9 +96,9 @@ public class EntityMinecartFurnace extends EntityMinecart
         }
     }
 
-    protected void moveAlongTrack(BlockPos p_180460_1_, IBlockState p_180460_2_)
+    protected void moveAlongTrack(BlockPos pos, IBlockState state)
     {
-        super.moveAlongTrack(p_180460_1_, p_180460_2_);
+        super.moveAlongTrack(pos, state);
         double d0 = this.pushX * this.pushX + this.pushZ * this.pushZ;
 
         if (d0 > 1.0E-4D && this.motionX * this.motionX + this.motionZ * this.motionZ > 0.001D)
@@ -148,15 +147,17 @@ public class EntityMinecartFurnace extends EntityMinecart
         super.applyDrag();
     }
 
-    public boolean processInitialInteract(EntityPlayer player, @Nullable ItemStack stack, EnumHand hand)
+    public boolean processInitialInteract(EntityPlayer player, EnumHand stack)
     {
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack, hand))) return true;
+        ItemStack itemstack = player.getHeldItem(stack);
 
-        if (stack != null && stack.getItem() == Items.COAL && this.fuel + 3600 <= 32000)
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, stack))) return true;
+
+        if (itemstack.getItem() == Items.COAL && this.fuel + 3600 <= 32000)
         {
             if (!player.capabilities.isCreativeMode)
             {
-                --stack.stackSize;
+                itemstack.func_190918_g(1);
             }
 
             this.fuel += 3600;

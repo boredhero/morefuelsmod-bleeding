@@ -7,8 +7,11 @@ import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.enchantment.EnumEnchantmentType;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -18,102 +21,97 @@ public abstract class CreativeTabs
     public static final CreativeTabs BUILDING_BLOCKS = new CreativeTabs(0, "buildingBlocks")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Item.getItemFromBlock(Blocks.BRICK_BLOCK);
+            return new ItemStack(Item.getItemFromBlock(Blocks.BRICK_BLOCK));
         }
     };
     public static final CreativeTabs DECORATIONS = new CreativeTabs(1, "decorations")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Item.getItemFromBlock(Blocks.DOUBLE_PLANT);
-        }
-        @SideOnly(Side.CLIENT)
-        public int getIconItemDamage()
-        {
-            return BlockDoublePlant.EnumPlantType.PAEONIA.getMeta();
+            return new ItemStack(Item.getItemFromBlock(Blocks.DOUBLE_PLANT), 1, BlockDoublePlant.EnumPlantType.PAEONIA.getMeta());
         }
     };
     public static final CreativeTabs REDSTONE = new CreativeTabs(2, "redstone")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Items.REDSTONE;
+            return new ItemStack(Items.REDSTONE);
         }
     };
     public static final CreativeTabs TRANSPORTATION = new CreativeTabs(3, "transportation")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Item.getItemFromBlock(Blocks.GOLDEN_RAIL);
+            return new ItemStack(Item.getItemFromBlock(Blocks.GOLDEN_RAIL));
         }
     };
-    public static final CreativeTabs MISC = (new CreativeTabs(4, "misc")
+    public static final CreativeTabs MISC = new CreativeTabs(4, "misc")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Items.LAVA_BUCKET;
+            return new ItemStack(Items.LAVA_BUCKET);
         }
-    }).setRelevantEnchantmentTypes(new EnumEnchantmentType[] {EnumEnchantmentType.ALL});
+    };
     public static final CreativeTabs SEARCH = (new CreativeTabs(5, "search")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Items.COMPASS;
+            return new ItemStack(Items.COMPASS);
         }
     }).setBackgroundImageName("item_search.png");
     public static final CreativeTabs FOOD = new CreativeTabs(6, "food")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Items.APPLE;
+            return new ItemStack(Items.APPLE);
         }
     };
     public static final CreativeTabs TOOLS = (new CreativeTabs(7, "tools")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Items.IRON_AXE;
+            return new ItemStack(Items.IRON_AXE);
         }
-    }).setRelevantEnchantmentTypes(new EnumEnchantmentType[] {EnumEnchantmentType.DIGGER, EnumEnchantmentType.FISHING_ROD, EnumEnchantmentType.BREAKABLE});
+    }).setRelevantEnchantmentTypes(new EnumEnchantmentType[] {EnumEnchantmentType.ALL, EnumEnchantmentType.DIGGER, EnumEnchantmentType.FISHING_ROD, EnumEnchantmentType.BREAKABLE});
     public static final CreativeTabs COMBAT = (new CreativeTabs(8, "combat")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Items.GOLDEN_SWORD;
+            return new ItemStack(Items.GOLDEN_SWORD);
         }
-    }).setRelevantEnchantmentTypes(new EnumEnchantmentType[] {EnumEnchantmentType.ARMOR, EnumEnchantmentType.ARMOR_FEET, EnumEnchantmentType.ARMOR_HEAD, EnumEnchantmentType.ARMOR_LEGS, EnumEnchantmentType.ARMOR_CHEST, EnumEnchantmentType.BOW, EnumEnchantmentType.WEAPON});
+    }).setRelevantEnchantmentTypes(new EnumEnchantmentType[] {EnumEnchantmentType.ALL, EnumEnchantmentType.ARMOR, EnumEnchantmentType.ARMOR_FEET, EnumEnchantmentType.ARMOR_HEAD, EnumEnchantmentType.ARMOR_LEGS, EnumEnchantmentType.ARMOR_CHEST, EnumEnchantmentType.BOW, EnumEnchantmentType.WEAPON, EnumEnchantmentType.WEARABLE, EnumEnchantmentType.BREAKABLE});
     public static final CreativeTabs BREWING = new CreativeTabs(9, "brewing")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Items.POTIONITEM;
+            return PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionTypes.WATER);
         }
     };
     public static final CreativeTabs MATERIALS = new CreativeTabs(10, "materials")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Items.STICK;
+            return new ItemStack(Items.STICK);
         }
     };
     public static final CreativeTabs INVENTORY = (new CreativeTabs(11, "inventory")
     {
         @SideOnly(Side.CLIENT)
-        public Item getTabIconItem()
+        public ItemStack getTabIconItem()
         {
-            return Item.getItemFromBlock(Blocks.CHEST);
+            return new ItemStack(Item.getItemFromBlock(Blocks.CHEST));
         }
     }).setBackgroundImageName("inventory.png").setNoScrollbar().setNoTitle();
     private final int tabIndex;
@@ -124,7 +122,6 @@ public abstract class CreativeTabs
     /** Whether to draw the title in the foreground of the creative GUI */
     private boolean drawTitle = true;
     private EnumEnchantmentType[] enchantmentTypes;
-    @SideOnly(Side.CLIENT)
     private ItemStack iconItemStack;
 
     public CreativeTabs(String label)
@@ -145,6 +142,7 @@ public abstract class CreativeTabs
         }
         this.tabIndex = index;
         this.tabLabel = label;
+        this.iconItemStack = ItemStack.field_190927_a;
         CREATIVE_TAB_ARRAY[index] = this;
     }
 
@@ -178,22 +176,16 @@ public abstract class CreativeTabs
     @SideOnly(Side.CLIENT)
     public ItemStack getIconItemStack()
     {
-        if (this.iconItemStack == null)
+        if (this.iconItemStack.func_190926_b())
         {
-            this.iconItemStack = new ItemStack(this.getTabIconItem(), 1, this.getIconItemDamage());
+            this.iconItemStack = this.getTabIconItem();
         }
 
         return this.iconItemStack;
     }
 
     @SideOnly(Side.CLIENT)
-    public abstract Item getTabIconItem();
-
-    @SideOnly(Side.CLIENT)
-    public int getIconItemDamage()
-    {
-        return 0;
-    }
+    public abstract ItemStack getTabIconItem();
 
     @SideOnly(Side.CLIENT)
     public String getBackgroundImageName()
@@ -294,7 +286,7 @@ public abstract class CreativeTabs
      * only shows items which have tabToDisplayOn == this
      */
     @SideOnly(Side.CLIENT)
-    public void displayAllRelevantItems(List<ItemStack> p_78018_1_)
+    public void displayAllRelevantItems(NonNullList<ItemStack> p_78018_1_)
     {
         for (Item item : Item.REGISTRY)
         {

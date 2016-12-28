@@ -72,6 +72,7 @@ public class SaveFormatOld implements ISaveFormat
     /**
      * Returns the world's WorldInfo object
      */
+    @Nullable
     public WorldInfo getWorldInfo(String saveName)
     {
         File file1 = new File(this.savesDirectory, saveName);

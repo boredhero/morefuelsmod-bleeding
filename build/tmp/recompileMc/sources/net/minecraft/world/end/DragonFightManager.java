@@ -450,6 +450,11 @@ public class DragonFightManager
         {
             this.bossInfo.setPercent(dragonIn.getHealth() / dragonIn.getMaxHealth());
             this.ticksSinceDragonSeen = 0;
+
+            if (dragonIn.hasCustomName())
+            {
+                this.bossInfo.setName(dragonIn.getDisplayName());
+            }
         }
     }
 

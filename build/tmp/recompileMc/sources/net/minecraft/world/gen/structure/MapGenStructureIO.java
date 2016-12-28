@@ -110,6 +110,7 @@ public class MapGenStructureIO
         registerStructure(MapGenScatteredFeature.Start.class, "Temple");
         registerStructure(StructureOceanMonument.StartMonument.class, "Monument");
         registerStructure(MapGenEndCity.Start.class, "EndCity");
+        registerStructure(WoodlandMansion.Start.class, "Mansion");
         StructureMineshaftPieces.registerStructurePieces();
         StructureVillagePieces.registerVillagePieces();
         StructureNetherBridgePieces.registerNetherFortressPieces();
@@ -117,5 +118,6 @@ public class MapGenStructureIO
         ComponentScatteredFeaturePieces.registerScatteredFeaturePieces();
         StructureOceanMonumentPieces.registerOceanMonumentPieces();
         StructureEndCityPieces.registerPieces();
+        WoodlandMansionPieces.func_191153_a();
     }
 }

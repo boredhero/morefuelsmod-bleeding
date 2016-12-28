@@ -93,7 +93,7 @@ public class CommandDebug extends CommandBase
                 int l = j - this.profileStartTick;
                 this.saveProfilerResults(k, l, server);
                 server.theProfiler.profilingEnabled = false;
-                notifyCommandListener(sender, this, "commands.debug.stop", new Object[] {Float.valueOf((float)k / 1000.0F), Integer.valueOf(l)});
+                notifyCommandListener(sender, this, "commands.debug.stop", new Object[] {String.format("%.2f", new Object[]{Float.valueOf((float)k / 1000.0F)}), Integer.valueOf(l)});
             }
         }
     }
@@ -111,9 +111,12 @@ public class CommandDebug extends CommandBase
         }
         catch (Throwable throwable)
         {
-            IOUtils.closeQuietly((Writer)filewriter);
             LOGGER.error("Could not save profiler results to {}", new Object[] {file1, throwable});
-        } finally { IOUtils.closeQuietly(filewriter); } // FORGE: Fix MC-103399
+        }
+        finally
+        {
+            IOUtils.closeQuietly((Writer)filewriter);
+        }
     }
 
     private String getProfilerResults(long timeSpan, int tickSpan, MinecraftServer server)

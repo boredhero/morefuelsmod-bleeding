@@ -25,17 +25,20 @@ public class EntityMooshroom extends EntityCow implements net.minecraftforge.com
         this.spawnableBlock = Blocks.MYCELIUM;
     }
 
-    public static void func_189791_c(DataFixer p_189791_0_)
+    public static void registerFixesMooshroom(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189791_0_, "MushroomCow");
+        EntityLiving.registerFixesMob(fixer, EntityMooshroom.class);
     }
 
-    @SuppressWarnings("unused")
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        if (stack != null && stack.getItem() == Items.BOWL && this.getGrowingAge() >= 0 && !player.capabilities.isCreativeMode)
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (itemstack.getItem() == Items.BOWL && this.getGrowingAge() >= 0 && !player.capabilities.isCreativeMode)
         {
-            if (--stack.stackSize == 0)
+            itemstack.func_190918_g(1);
+
+            if (itemstack.func_190926_b())
             {
                 player.setHeldItem(hand, new ItemStack(Items.MUSHROOM_STEW));
             }
@@ -46,7 +49,7 @@ public class EntityMooshroom extends EntityCow implements net.minecraftforge.com
 
             return true;
         }
-        else if (false && stack != null && stack.getItem() == Items.SHEARS && this.getGrowingAge() >= 0) //Forge Disable, Moved to onSheared
+        else if (false && itemstack.getItem() == Items.SHEARS && this.getGrowingAge() >= 0) //Forge Disable, Moved to onSheared
         {
             this.setDead();
             this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX, this.posY + (double)(this.height / 2.0F), this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
@@ -70,7 +73,7 @@ public class EntityMooshroom extends EntityCow implements net.minecraftforge.com
                     this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, this.posX, this.posY + (double)this.height, this.posZ, new ItemStack(Blocks.RED_MUSHROOM)));
                 }
 
-                stack.damageItem(1, player);
+                itemstack.damageItem(1, player);
                 this.playSound(SoundEvents.ENTITY_MOOSHROOM_SHEAR, 1.0F, 1.0F);
             }
 
@@ -78,7 +81,7 @@ public class EntityMooshroom extends EntityCow implements net.minecraftforge.com
         }
         else
         {
-            return super.processInteract(player, hand, stack);
+            return super.processInteract(player, hand);
         }
     }
 

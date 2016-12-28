@@ -1,13 +1,10 @@
 package net.minecraft.inventory;
 
-import javax.annotation.Nullable;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerMerchant extends Container
 {
@@ -45,19 +42,6 @@ public class ContainerMerchant extends Container
         return this.merchantInventory;
     }
 
-    public void addListener(IContainerListener listener)
-    {
-        super.addListener(listener);
-    }
-
-    /**
-     * Looks for changes made in the container, sends them to every listener.
-     */
-    public void detectAndSendChanges()
-    {
-        super.detectAndSendChanges();
-    }
-
     /**
      * Callback for when the crafting matrix is changed.
      */
@@ -72,11 +56,9 @@ public class ContainerMerchant extends Container
         this.merchantInventory.setCurrentRecipeIndex(currentRecipeIndex);
     }
 
-    @SideOnly(Side.CLIENT)
-    public void updateProgressBar(int id, int data)
-    {
-    }
-
+    /**
+     * Determines whether supplied player can use this container
+     */
     public boolean canInteractWith(EntityPlayer playerIn)
     {
         return this.theMerchant.getCustomer() == playerIn;
@@ -85,10 +67,9 @@ public class ContainerMerchant extends Container
     /**
      * Take a stack from the specified inventory slot.
      */
-    @Nullable
     public ItemStack transferStackInSlot(EntityPlayer playerIn, int index)
     {
-        ItemStack itemstack = null;
+        ItemStack itemstack = ItemStack.field_190927_a;
         Slot slot = (Slot)this.inventorySlots.get(index);
 
         if (slot != null && slot.getHasStack())
@@ -100,7 +81,7 @@ public class ContainerMerchant extends Container
             {
                 if (!this.mergeItemStack(itemstack1, 3, 39, true))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
 
                 slot.onSlotChange(itemstack1, itemstack);
@@ -111,34 +92,34 @@ public class ContainerMerchant extends Container
                 {
                     if (!this.mergeItemStack(itemstack1, 30, 39, false))
                     {
-                        return null;
+                        return ItemStack.field_190927_a;
                     }
                 }
                 else if (index >= 30 && index < 39 && !this.mergeItemStack(itemstack1, 3, 30, false))
                 {
-                    return null;
+                    return ItemStack.field_190927_a;
                 }
             }
             else if (!this.mergeItemStack(itemstack1, 3, 39, false))
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.func_190926_b())
             {
-                slot.putStack((ItemStack)null);
+                slot.putStack(ItemStack.field_190927_a);
             }
             else
             {
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.func_190916_E() == itemstack.func_190916_E())
             {
-                return null;
+                return ItemStack.field_190927_a;
             }
 
-            slot.onPickupFromSlot(playerIn, itemstack1);
+            slot.func_190901_a(playerIn, itemstack1);
         }
 
         return itemstack;
@@ -157,14 +138,14 @@ public class ContainerMerchant extends Container
         {
             ItemStack itemstack = this.merchantInventory.removeStackFromSlot(0);
 
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 playerIn.dropItem(itemstack, false);
             }
 
             itemstack = this.merchantInventory.removeStackFromSlot(1);
 
-            if (itemstack != null)
+            if (!itemstack.func_190926_b())
             {
                 playerIn.dropItem(itemstack, false);
             }

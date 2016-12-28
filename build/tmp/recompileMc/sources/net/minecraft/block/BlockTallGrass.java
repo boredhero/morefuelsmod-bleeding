@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.material.Material;
@@ -17,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -56,7 +56,6 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
     /**
      * Get the Item that this Block should drop when harvested.
      */
-    @Nullable
     public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
         return null;
@@ -70,9 +69,9 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
         return 1 + random.nextInt(fortune * 2 + 1);
     }
 
-    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, @Nullable ItemStack stack)
+    public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
     {
-        if (false && !worldIn.isRemote && stack != null && stack.getItem() == Items.SHEARS) // Forge: Noop Taken care of by IShearable
+        if (false && !worldIn.isRemote && stack.getItem() == Items.SHEARS) // Forge: Noop Taken care of by IShearable
         {
             player.addStat(StatList.getBlockStats(this));
             spawnAsEntity(worldIn, pos, new ItemStack(Blocks.TALLGRASS, 1, ((BlockTallGrass.EnumType)state.getValue(TYPE)).getMeta()));
@@ -92,7 +91,7 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
      * returns a list of blocks with the same ID, but different meta (eg: wood returns 4 blocks)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list)
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> list)
     {
         for (int i = 1; i < 3; ++i)
         {
@@ -152,7 +151,6 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
     /**
      * Get the OffsetType for this Block. Determines if the model is rendered slightly offset.
      */
-    @SideOnly(Side.CLIENT)
     public Block.EnumOffsetType getOffsetType()
     {
         return Block.EnumOffsetType.XYZ;
@@ -210,19 +208,18 @@ public class BlockTallGrass extends BlockBush implements IGrowable, net.minecraf
 
     @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){ return true; }
     @Override
-    public List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune)
+    public NonNullList<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune)
     {
-        List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
-        ret.add(new ItemStack(Blocks.TALLGRASS, 1, ((BlockTallGrass.EnumType)world.getBlockState(pos).getValue(TYPE)).getMeta()));
-        return ret;
+        return NonNullList.func_191197_a(1, new ItemStack(Blocks.TALLGRASS, 1, ((BlockTallGrass.EnumType)world.getBlockState(pos).getValue(TYPE)).getMeta()));
     }
     @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
+    public NonNullList<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
-        List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
-        if (RANDOM.nextInt(8) != 0) return ret;
+        if (RANDOM.nextInt(8) != 0) return NonNullList.func_191196_a();
         ItemStack seed = net.minecraftforge.common.ForgeHooks.getGrassSeed(RANDOM, fortune);
-        if (seed != null) ret.add(seed);
-        return ret;
+        if (!seed.func_190926_b())
+            return NonNullList.func_191197_a(1, seed);
+        else
+            return NonNullList.func_191196_a();
     }
 }

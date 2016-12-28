@@ -26,23 +26,25 @@ public class ItemExpBottle extends Item
         return true;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        if (!playerIn.capabilities.isCreativeMode)
+        ItemStack itemstack = worldIn.getHeldItem(playerIn);
+
+        if (!worldIn.capabilities.isCreativeMode)
         {
-            --itemStackIn.stackSize;
+            itemstack.func_190918_g(1);
         }
 
-        worldIn.playSound((EntityPlayer)null, playerIn.posX, playerIn.posY, playerIn.posZ, SoundEvents.ENTITY_EXPERIENCE_BOTTLE_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
+        itemStackIn.playSound((EntityPlayer)null, worldIn.posX, worldIn.posY, worldIn.posZ, SoundEvents.ENTITY_EXPERIENCE_BOTTLE_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (itemRand.nextFloat() * 0.4F + 0.8F));
 
-        if (!worldIn.isRemote)
+        if (!itemStackIn.isRemote)
         {
-            EntityExpBottle entityexpbottle = new EntityExpBottle(worldIn, playerIn);
-            entityexpbottle.setHeadingFromThrower(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, -20.0F, 0.7F, 1.0F);
-            worldIn.spawnEntityInWorld(entityexpbottle);
+            EntityExpBottle entityexpbottle = new EntityExpBottle(itemStackIn, worldIn);
+            entityexpbottle.setHeadingFromThrower(worldIn, worldIn.rotationPitch, worldIn.rotationYaw, -20.0F, 0.7F, 1.0F);
+            itemStackIn.spawnEntityInWorld(entityexpbottle);
         }
 
-        playerIn.addStat(StatList.getObjectUseStats(this));
-        return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
+        worldIn.addStat(StatList.getObjectUseStats(this));
+        return new ActionResult(EnumActionResult.SUCCESS, itemstack);
     }
 }

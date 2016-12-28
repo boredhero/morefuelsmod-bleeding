@@ -72,7 +72,6 @@ public class SPacketChat implements Packet<INetHandlerPlayClient>
      * Returns the id of the area to display the text, 2 for above the action bar, anything else currently for the chat
      * window
      */
-    @SideOnly(Side.CLIENT)
     public byte getType()
     {
         return this.type;

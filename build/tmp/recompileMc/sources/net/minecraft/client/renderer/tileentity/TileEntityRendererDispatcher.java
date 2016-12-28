@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.model.ModelShulker;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -21,6 +22,7 @@ import net.minecraft.tileentity.TileEntityEndPortal;
 import net.minecraft.tileentity.TileEntityEnderChest;
 import net.minecraft.tileentity.TileEntityMobSpawner;
 import net.minecraft.tileentity.TileEntityPiston;
+import net.minecraft.tileentity.TileEntityShulkerBox;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.tileentity.TileEntityStructure;
@@ -48,7 +50,7 @@ public class TileEntityRendererDispatcher
     public Entity entity;
     public float entityYaw;
     public float entityPitch;
-    public RayTraceResult field_190057_j;
+    public RayTraceResult cameraHitResult;
     public double entityX;
     public double entityY;
     public double entityZ;
@@ -67,6 +69,7 @@ public class TileEntityRendererDispatcher
         this.mapSpecialRenderers.put(TileEntitySkull.class, new TileEntitySkullRenderer());
         this.mapSpecialRenderers.put(TileEntityBanner.class, new TileEntityBannerRenderer());
         this.mapSpecialRenderers.put(TileEntityStructure.class, new TileEntityStructureRenderer());
+        this.mapSpecialRenderers.put(TileEntityShulkerBox.class, new TileEntityShulkerBoxRenderer(new ModelShulker()));
 
         for (TileEntitySpecialRenderer<?> tileentityspecialrenderer : this.mapSpecialRenderers.values())
         {
@@ -93,7 +96,7 @@ public class TileEntityRendererDispatcher
         return (TileEntitySpecialRenderer<T>)(tileEntityIn == null ? null : this.getSpecialRendererByClass(tileEntityIn.getClass()));
     }
 
-    public void func_190056_a(World p_190056_1_, TextureManager p_190056_2_, FontRenderer p_190056_3_, Entity p_190056_4_, RayTraceResult p_190056_5_, float p_190056_6_)
+    public void prepare(World p_190056_1_, TextureManager p_190056_2_, FontRenderer p_190056_3_, Entity p_190056_4_, RayTraceResult p_190056_5_, float p_190056_6_)
     {
         if (this.worldObj != p_190056_1_)
         {
@@ -103,7 +106,7 @@ public class TileEntityRendererDispatcher
         this.renderEngine = p_190056_2_;
         this.entity = p_190056_4_;
         this.fontRenderer = p_190056_3_;
-        this.field_190057_j = p_190056_5_;
+        this.cameraHitResult = p_190056_5_;
         this.entityYaw = p_190056_4_.prevRotationYaw + (p_190056_4_.rotationYaw - p_190056_4_.prevRotationYaw) * p_190056_6_;
         this.entityPitch = p_190056_4_.prevRotationPitch + (p_190056_4_.rotationPitch - p_190056_4_.prevRotationPitch) * p_190056_6_;
         this.entityX = p_190056_4_.lastTickPosX + (p_190056_4_.posX - p_190056_4_.lastTickPosX) * (double)p_190056_6_;

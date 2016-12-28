@@ -40,28 +40,37 @@ public class ItemCarrotOnAStick extends Item
         return true;
     }
 
-    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand)
+    public ActionResult<ItemStack> onItemRightClick(World itemStackIn, EntityPlayer worldIn, EnumHand playerIn)
     {
-        if (playerIn.isRiding() && playerIn.getRidingEntity() instanceof EntityPig)
+        ItemStack itemstack = worldIn.getHeldItem(playerIn);
+
+        if (itemStackIn.isRemote)
         {
-            EntityPig entitypig = (EntityPig)playerIn.getRidingEntity();
-
-            if (itemStackIn.getMaxDamage() - itemStackIn.getMetadata() >= 7 && entitypig.boost())
+            return new ActionResult(EnumActionResult.PASS, itemstack);
+        }
+        else
+        {
+            if (worldIn.isRiding() && worldIn.getRidingEntity() instanceof EntityPig)
             {
-                itemStackIn.damageItem(7, playerIn);
+                EntityPig entitypig = (EntityPig)worldIn.getRidingEntity();
 
-                if (itemStackIn.stackSize == 0)
+                if (itemstack.getMaxDamage() - itemstack.getMetadata() >= 7 && entitypig.boost())
                 {
-                    ItemStack itemstack = new ItemStack(Items.FISHING_ROD);
-                    itemstack.setTagCompound(itemStackIn.getTagCompound());
+                    itemstack.damageItem(7, worldIn);
+
+                    if (itemstack.func_190926_b())
+                    {
+                        ItemStack itemstack1 = new ItemStack(Items.FISHING_ROD);
+                        itemstack1.setTagCompound(itemstack.getTagCompound());
+                        return new ActionResult(EnumActionResult.SUCCESS, itemstack1);
+                    }
+
                     return new ActionResult(EnumActionResult.SUCCESS, itemstack);
                 }
-
-                return new ActionResult(EnumActionResult.SUCCESS, itemStackIn);
             }
-        }
 
-        playerIn.addStat(StatList.getObjectUseStats(this));
-        return new ActionResult(EnumActionResult.PASS, itemStackIn);
+            worldIn.addStat(StatList.getObjectUseStats(this));
+            return new ActionResult(EnumActionResult.PASS, itemstack);
+        }
     }
 }

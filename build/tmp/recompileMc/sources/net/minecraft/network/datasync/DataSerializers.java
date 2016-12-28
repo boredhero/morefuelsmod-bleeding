@@ -1,6 +1,7 @@
 package net.minecraft.network.datasync;
 
 import com.google.common.base.Optional;
+import java.io.IOException;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
@@ -22,7 +23,7 @@ public class DataSerializers
         {
             buf.writeByte(value.byteValue());
         }
-        public Byte read(PacketBuffer buf)
+        public Byte read(PacketBuffer buf) throws IOException
         {
             return Byte.valueOf(buf.readByte());
         }
@@ -37,7 +38,7 @@ public class DataSerializers
         {
             buf.writeVarIntToBuffer(value.intValue());
         }
-        public Integer read(PacketBuffer buf)
+        public Integer read(PacketBuffer buf) throws IOException
         {
             return Integer.valueOf(buf.readVarIntFromBuffer());
         }
@@ -52,7 +53,7 @@ public class DataSerializers
         {
             buf.writeFloat(value.floatValue());
         }
-        public Float read(PacketBuffer buf)
+        public Float read(PacketBuffer buf) throws IOException
         {
             return Float.valueOf(buf.readFloat());
         }
@@ -67,7 +68,7 @@ public class DataSerializers
         {
             buf.writeString(value);
         }
-        public String read(PacketBuffer buf)
+        public String read(PacketBuffer buf) throws IOException
         {
             return buf.readStringFromBuffer(32767);
         }
@@ -82,7 +83,7 @@ public class DataSerializers
         {
             buf.writeTextComponent(value);
         }
-        public ITextComponent read(PacketBuffer buf) throws java.io.IOException
+        public ITextComponent read(PacketBuffer buf) throws IOException
         {
             return buf.readTextComponent();
         }
@@ -91,17 +92,17 @@ public class DataSerializers
             return new DataParameter(id, this);
         }
     };
-    public static final DataSerializer<Optional<ItemStack>> OPTIONAL_ITEM_STACK = new DataSerializer<Optional<ItemStack>>()
+    public static final DataSerializer<ItemStack> OPTIONAL_ITEM_STACK = new DataSerializer<ItemStack>()
     {
-        public void write(PacketBuffer buf, Optional<ItemStack> value)
+        public void write(PacketBuffer buf, ItemStack value)
         {
-            buf.writeItemStackToBuffer((ItemStack)value.orNull());
+            buf.writeItemStackToBuffer(value);
         }
-        public Optional<ItemStack> read(PacketBuffer buf) throws java.io.IOException
+        public ItemStack read(PacketBuffer buf) throws IOException
         {
-            return Optional.<ItemStack>fromNullable(buf.readItemStackFromBuffer());
+            return buf.readItemStackFromBuffer();
         }
-        public DataParameter<Optional<ItemStack>> createKey(int id)
+        public DataParameter<ItemStack> createKey(int id)
         {
             return new DataParameter(id, this);
         }
@@ -119,7 +120,7 @@ public class DataSerializers
                 buf.writeVarIntToBuffer(0);
             }
         }
-        public Optional<IBlockState> read(PacketBuffer buf)
+        public Optional<IBlockState> read(PacketBuffer buf) throws IOException
         {
             int i = buf.readVarIntFromBuffer();
             return i == 0 ? Optional.<IBlockState>absent() : Optional.of(Block.getStateById(i));
@@ -135,7 +136,7 @@ public class DataSerializers
         {
             buf.writeBoolean(value.booleanValue());
         }
-        public Boolean read(PacketBuffer buf)
+        public Boolean read(PacketBuffer buf) throws IOException
         {
             return Boolean.valueOf(buf.readBoolean());
         }
@@ -152,7 +153,7 @@ public class DataSerializers
             buf.writeFloat(value.getY());
             buf.writeFloat(value.getZ());
         }
-        public Rotations read(PacketBuffer buf)
+        public Rotations read(PacketBuffer buf) throws IOException
         {
             return new Rotations(buf.readFloat(), buf.readFloat(), buf.readFloat());
         }
@@ -167,7 +168,7 @@ public class DataSerializers
         {
             buf.writeBlockPos(value);
         }
-        public BlockPos read(PacketBuffer buf)
+        public BlockPos read(PacketBuffer buf) throws IOException
         {
             return buf.readBlockPos();
         }
@@ -187,7 +188,7 @@ public class DataSerializers
                 buf.writeBlockPos((BlockPos)value.get());
             }
         }
-        public Optional<BlockPos> read(PacketBuffer buf)
+        public Optional<BlockPos> read(PacketBuffer buf) throws IOException
         {
             return !buf.readBoolean() ? Optional.<BlockPos>absent() : Optional.of(buf.readBlockPos());
         }
@@ -202,7 +203,7 @@ public class DataSerializers
         {
             buf.writeEnumValue(value);
         }
-        public EnumFacing read(PacketBuffer buf)
+        public EnumFacing read(PacketBuffer buf) throws IOException
         {
             return (EnumFacing)buf.readEnumValue(EnumFacing.class);
         }
@@ -222,7 +223,7 @@ public class DataSerializers
                 buf.writeUuid((UUID)value.get());
             }
         }
-        public Optional<UUID> read(PacketBuffer buf)
+        public Optional<UUID> read(PacketBuffer buf) throws IOException
         {
             return !buf.readBoolean() ? Optional.<UUID>absent() : Optional.of(buf.readUuid());
         }

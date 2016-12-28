@@ -25,12 +25,7 @@ public class PhaseTakeoff extends PhaseBase
      */
     public void doLocalUpdate()
     {
-        if (this.firstTick)
-        {
-            this.firstTick = false;
-            this.findNewTarget();
-        }
-        else
+        if (!this.firstTick && this.currentPath != null)
         {
             BlockPos blockpos = this.dragon.worldObj.getTopSolidOrLiquidBlock(WorldGenEndPodium.END_PODIUM_LOCATION);
             double d0 = this.dragon.getDistanceSqToCenter(blockpos);
@@ -39,6 +34,11 @@ public class PhaseTakeoff extends PhaseBase
             {
                 this.dragon.getPhaseManager().setPhase(PhaseList.HOLDING_PATTERN);
             }
+        }
+        else
+        {
+            this.firstTick = false;
+            this.findNewTarget();
         }
     }
 
@@ -58,7 +58,7 @@ public class PhaseTakeoff extends PhaseBase
         Vec3d vec3d = this.dragon.getHeadLookVec(1.0F);
         int j = this.dragon.getNearestPpIdx(-vec3d.xCoord * 40.0D, 105.0D, -vec3d.zCoord * 40.0D);
 
-        if (this.dragon.getFightManager() != null && this.dragon.getFightManager().getNumAliveCrystals() >= 0)
+        if (this.dragon.getFightManager() != null && this.dragon.getFightManager().getNumAliveCrystals() > 0)
         {
             j = j % 12;
 

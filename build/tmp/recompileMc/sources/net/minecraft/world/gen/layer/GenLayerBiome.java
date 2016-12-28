@@ -11,7 +11,7 @@ public class GenLayerBiome extends GenLayer
     private java.util.List<net.minecraftforge.common.BiomeManager.BiomeEntry>[] biomes = new java.util.ArrayList[net.minecraftforge.common.BiomeManager.BiomeType.values().length];
     private final ChunkProviderSettings settings;
 
-    public GenLayerBiome(long p_i45560_1_, GenLayer p_i45560_3_, WorldType p_i45560_4_, String p_i45560_5_)
+    public GenLayerBiome(long p_i45560_1_, GenLayer p_i45560_3_, WorldType p_i45560_4_, ChunkProviderSettings p_i45560_5_)
     {
         super(p_i45560_1_);
         this.parent = p_i45560_3_;
@@ -42,13 +42,9 @@ public class GenLayerBiome extends GenLayer
             biomes[desertIdx].add(new net.minecraftforge.common.BiomeManager.BiomeEntry(Biomes.TAIGA, 10));
             this.settings = null;
         }
-        else if (p_i45560_4_ == WorldType.CUSTOMIZED)
-        {
-            this.settings = ChunkProviderSettings.Factory.jsonToFactory(p_i45560_5_).build();
-        }
         else
         {
-            this.settings = null;
+            this.settings = p_i45560_5_;
         }
     }
 

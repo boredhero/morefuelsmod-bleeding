@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.player.EntityPlayer;
@@ -83,7 +82,7 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
 
     public float getBlockPathWeight(BlockPos pos)
     {
-        return this.worldObj.getBlockState(pos.down()).getBlock() == Blocks.GRASS ? 10.0F : this.worldObj.getLightBrightness(pos) - 0.5F;
+        return this.worldObj.getBlockState(pos.down()).getBlock() == this.spawnableBlock ? 10.0F : this.worldObj.getLightBrightness(pos) - 0.5F;
     }
 
     /**
@@ -100,7 +99,7 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
      */
     public double getYOffset()
     {
-        return 0.29D;
+        return 0.14D;
     }
 
     /**
@@ -152,31 +151,33 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(@Nullable ItemStack stack)
+    public boolean isBreedingItem(ItemStack stack)
     {
-        return stack == null ? false : stack.getItem() == Items.WHEAT;
+        return stack.getItem() == Items.WHEAT;
     }
 
-    public boolean processInteract(EntityPlayer player, EnumHand hand, @Nullable ItemStack stack)
+    public boolean processInteract(EntityPlayer player, EnumHand hand)
     {
-        if (stack != null)
+        ItemStack itemstack = player.getHeldItem(hand);
+
+        if (!itemstack.func_190926_b())
         {
-            if (this.isBreedingItem(stack) && this.getGrowingAge() == 0 && this.inLove <= 0)
+            if (this.isBreedingItem(itemstack) && this.getGrowingAge() == 0 && this.inLove <= 0)
             {
-                this.consumeItemFromStack(player, stack);
+                this.consumeItemFromStack(player, itemstack);
                 this.setInLove(player);
                 return true;
             }
 
-            if (this.isChild() && this.isBreedingItem(stack))
+            if (this.isChild() && this.isBreedingItem(itemstack))
             {
-                this.consumeItemFromStack(player, stack);
+                this.consumeItemFromStack(player, itemstack);
                 this.ageUp((int)((float)(-this.getGrowingAge() / 20) * 0.1F), true);
                 return true;
             }
         }
 
-        return super.processInteract(player, hand, stack);
+        return super.processInteract(player, hand);
     }
 
     /**
@@ -186,7 +187,7 @@ public abstract class EntityAnimal extends EntityAgeable implements IAnimals
     {
         if (!player.capabilities.isCreativeMode)
         {
-            --stack.stackSize;
+            stack.func_190918_g(1);
         }
     }
 

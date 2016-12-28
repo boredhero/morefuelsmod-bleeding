@@ -6,8 +6,10 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -15,6 +17,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemTippedArrow extends ItemArrow
 {
+    @SideOnly(Side.CLIENT)
+    public ItemStack func_190903_i()
+    {
+        return PotionUtils.addPotionToItemStack(super.func_190903_i(), PotionTypes.POISON);
+    }
+
     public EntityArrow createArrow(World worldIn, ItemStack stack, EntityLivingBase shooter)
     {
         EntityTippedArrow entitytippedarrow = new EntityTippedArrow(worldIn, shooter);
@@ -26,11 +34,14 @@ public class ItemTippedArrow extends ItemArrow
      * returns a list of items with the same ID, but different meta (eg: dye returns 16 items)
      */
     @SideOnly(Side.CLIENT)
-    public void getSubItems(Item itemIn, CreativeTabs tab, List<ItemStack> subItems)
+    public void getSubItems(Item itemIn, CreativeTabs tab, NonNullList<ItemStack> subItems)
     {
         for (PotionType potiontype : PotionType.REGISTRY)
         {
-            subItems.add(PotionUtils.addPotionToItemStack(new ItemStack(itemIn), potiontype));
+            if (!potiontype.getEffects().isEmpty())
+            {
+                subItems.add(PotionUtils.addPotionToItemStack(new ItemStack(itemIn), potiontype));
+            }
         }
     }
 

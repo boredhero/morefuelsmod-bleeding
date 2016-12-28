@@ -3,7 +3,6 @@ package net.minecraft.item.crafting;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStoneBrick;
 import net.minecraft.init.Blocks;
@@ -63,6 +62,30 @@ public class FurnaceRecipes
         this.addSmeltingRecipeForBlock(Blocks.REDSTONE_ORE, new ItemStack(Items.REDSTONE), 0.7F);
         this.addSmeltingRecipeForBlock(Blocks.LAPIS_ORE, new ItemStack(Items.DYE, 1, EnumDyeColor.BLUE.getDyeDamage()), 0.2F);
         this.addSmeltingRecipeForBlock(Blocks.QUARTZ_ORE, new ItemStack(Items.QUARTZ), 0.2F);
+        this.addSmelting(Items.CHAINMAIL_HELMET, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.CHAINMAIL_CHESTPLATE, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.CHAINMAIL_LEGGINGS, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.CHAINMAIL_BOOTS, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_PICKAXE, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_SHOVEL, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_AXE, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_HOE, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_SWORD, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_HELMET, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_CHESTPLATE, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_LEGGINGS, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_BOOTS, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.IRON_HORSE_ARMOR, new ItemStack(Items.field_191525_da), 0.1F);
+        this.addSmelting(Items.GOLDEN_PICKAXE, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_SHOVEL, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_AXE, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_HOE, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_SWORD, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_HELMET, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_CHESTPLATE, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_LEGGINGS, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_BOOTS, new ItemStack(Items.GOLD_NUGGET), 0.1F);
+        this.addSmelting(Items.GOLDEN_HORSE_ARMOR, new ItemStack(Items.GOLD_NUGGET), 0.1F);
     }
 
     /**
@@ -86,7 +109,7 @@ public class FurnaceRecipes
      */
     public void addSmeltingRecipe(ItemStack input, ItemStack stack, float experience)
     {
-        if (getSmeltingResult(input) != null) { net.minecraftforge.fml.common.FMLLog.info("Ignored smelting recipe with conflicting input: " + input + " = " + stack); return; }
+        if (getSmeltingResult(input) != ItemStack.field_190927_a) { net.minecraftforge.fml.common.FMLLog.info("Ignored smelting recipe with conflicting input: " + input + " = " + stack); return; }
         this.smeltingList.put(input, stack);
         this.experienceList.put(stack, Float.valueOf(experience));
     }
@@ -94,7 +117,6 @@ public class FurnaceRecipes
     /**
      * Returns the smelting result of an item.
      */
-    @Nullable
     public ItemStack getSmeltingResult(ItemStack stack)
     {
         for (Entry<ItemStack, ItemStack> entry : this.smeltingList.entrySet())
@@ -105,7 +127,7 @@ public class FurnaceRecipes
             }
         }
 
-        return null;
+        return ItemStack.field_190927_a;
     }
 
     /**

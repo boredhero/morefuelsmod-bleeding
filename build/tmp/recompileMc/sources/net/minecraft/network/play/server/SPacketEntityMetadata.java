@@ -25,6 +25,7 @@ public class SPacketEntityMetadata implements Packet<INetHandlerPlayClient>
         if (sendAll)
         {
             this.dataManagerEntries = dataManagerIn.getAll();
+            dataManagerIn.setClean();
         }
         else
         {

@@ -19,7 +19,7 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
-import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.EntityJumpHelper;
 import net.minecraft.entity.ai.EntityMoveHelper;
@@ -83,7 +83,7 @@ public class EntityRabbit extends EntityAnimal
         this.tasks.addTask(4, new EntityRabbit.AIAvoidEntity(this, EntityWolf.class, 10.0F, 2.2D, 2.2D));
         this.tasks.addTask(4, new EntityRabbit.AIAvoidEntity(this, EntityMob.class, 4.0F, 2.2D, 2.2D));
         this.tasks.addTask(5, new EntityRabbit.AIRaidFarm(this));
-        this.tasks.addTask(6, new EntityAIWander(this, 0.6D));
+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 0.6D));
         this.tasks.addTask(11, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
     }
 
@@ -97,7 +97,7 @@ public class EntityRabbit extends EntityAnimal
             {
                 Vec3d vec3d = path.getPosition(this);
 
-                if (vec3d.yCoord > this.posY)
+                if (vec3d.yCoord > this.posY + 0.5D)
                 {
                     return 0.5F;
                 }
@@ -302,9 +302,9 @@ public class EntityRabbit extends EntityAnimal
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.30000001192092896D);
     }
 
-    public static void func_189801_b(DataFixer p_189801_0_)
+    public static void registerFixesRabbit(DataFixer fixer)
     {
-        EntityLiving.func_189752_a(p_189801_0_, "Rabbit");
+        EntityLiving.registerFixesMob(fixer, EntityRabbit.class);
     }
 
     /**
@@ -409,9 +409,9 @@ public class EntityRabbit extends EntityAnimal
      * Checks if the parameter is an item which this animal can be fed to breed it (wheat, carrots or seeds depending on
      * the animal type)
      */
-    public boolean isBreedingItem(@Nullable ItemStack stack)
+    public boolean isBreedingItem(ItemStack stack)
     {
-        return stack != null && this.isRabbitBreedingItem(stack.getItem());
+        return this.isRabbitBreedingItem(stack.getItem());
     }
 
     public int getRabbitType()
@@ -471,7 +471,7 @@ public class EntityRabbit extends EntityAnimal
 
     private int getRandomRabbitType()
     {
-        Biome biome = this.worldObj.getBiomeGenForCoords(new BlockPos(this));
+        Biome biome = this.worldObj.getBiome(new BlockPos(this));
         int i = this.rand.nextInt(100);
         return biome.isSnowyBiome() ? (i < 80 ? 1 : 3) : (biome instanceof BiomeDesert ? 4 : (i < 50 ? 0 : (i < 90 ? 5 : 2)));
     }
@@ -505,11 +505,6 @@ public class EntityRabbit extends EntityAnimal
         {
             super.handleStatusUpdate(id);
         }
-    }
-
-    public void notifyDataManagerChange(DataParameter<?> key)
-    {
-        super.notifyDataManagerChange(key);
     }
 
     static class AIAvoidEntity<T extends Entity> extends EntityAIAvoidEntity<T>
@@ -602,22 +597,6 @@ public class EntityRabbit extends EntityAnimal
             public boolean continueExecuting()
             {
                 return this.canRaid && super.continueExecuting();
-            }
-
-            /**
-             * Execute a one shot task or start executing a continuous task
-             */
-            public void startExecuting()
-            {
-                super.startExecuting();
-            }
-
-            /**
-             * Resets the task
-             */
-            public void resetTask()
-            {
-                super.resetTask();
             }
 
             /**

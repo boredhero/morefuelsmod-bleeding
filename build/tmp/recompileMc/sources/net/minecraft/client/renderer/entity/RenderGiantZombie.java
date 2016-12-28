@@ -1,6 +1,5 @@
 package net.minecraft.client.renderer.entity;
 
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelZombie;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
@@ -17,10 +16,10 @@ public class RenderGiantZombie extends RenderLiving<EntityGiantZombie>
     /** Scale of the model to use */
     private final float scale;
 
-    public RenderGiantZombie(RenderManager renderManagerIn, ModelBase modelBaseIn, float shadowSizeIn, float scaleIn)
+    public RenderGiantZombie(RenderManager p_i47206_1_, float p_i47206_2_)
     {
-        super(renderManagerIn, modelBaseIn, shadowSizeIn * scaleIn);
-        this.scale = scaleIn;
+        super(p_i47206_1_, new ModelZombie(), 0.5F * p_i47206_2_);
+        this.scale = p_i47206_2_;
         this.addLayer(new LayerHeldItem(this));
         this.addLayer(new LayerBipedArmor(this)
         {

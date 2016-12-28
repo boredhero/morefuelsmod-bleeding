@@ -64,8 +64,8 @@ public class FoodStats
 
             if (this.foodTimer >= 10)
             {
-                float f = Math.min(this.foodSaturationLevel, 4.0F);
-                player.heal(f / 4.0F);
+                float f = Math.min(this.foodSaturationLevel, 6.0F);
+                player.heal(f / 6.0F);
                 this.addExhaustion(f);
                 this.foodTimer = 0;
             }
@@ -77,7 +77,7 @@ public class FoodStats
             if (this.foodTimer >= 80)
             {
                 player.heal(1.0F);
-                this.addExhaustion(4.0F);
+                this.addExhaustion(6.0F);
                 this.foodTimer = 0;
             }
         }

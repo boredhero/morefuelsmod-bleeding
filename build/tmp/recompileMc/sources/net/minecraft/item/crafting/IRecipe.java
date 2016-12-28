@@ -1,8 +1,8 @@
 package net.minecraft.item.crafting;
 
-import javax.annotation.Nullable;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
 public interface IRecipe
@@ -15,7 +15,6 @@ public interface IRecipe
     /**
      * Returns an Item that is the result of this recipe
      */
-    @Nullable
     ItemStack getCraftingResult(InventoryCrafting inv);
 
     /**
@@ -23,8 +22,7 @@ public interface IRecipe
      */
     int getRecipeSize();
 
-    @Nullable
     ItemStack getRecipeOutput();
 
-    ItemStack[] getRemainingItems(InventoryCrafting inv);
+    NonNullList<ItemStack> getRemainingItems(InventoryCrafting inv);
 }

@@ -107,7 +107,7 @@ public class Potion extends net.minecraftforge.fml.common.registry.IForgeRegistr
         }
         else if (this == MobEffects.HUNGER && entityLivingBaseIn instanceof EntityPlayer)
         {
-            ((EntityPlayer)entityLivingBaseIn).addExhaustion(0.025F * (float)(p_76394_2_ + 1));
+            ((EntityPlayer)entityLivingBaseIn).addExhaustion(0.005F * (float)(p_76394_2_ + 1));
         }
         else if (this == MobEffects.SATURATION && entityLivingBaseIn instanceof EntityPlayer)
         {

@@ -61,13 +61,6 @@ public abstract class EntityAIMoveToBlock extends EntityAIBase
     }
 
     /**
-     * Resets the task
-     */
-    public void resetTask()
-    {
-    }
-
-    /**
      * Updates the task
      */
     public void updateTask()

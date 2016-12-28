@@ -19,14 +19,11 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class RenderGuardian extends RenderLiving<EntityGuardian>
 {
     private static final ResourceLocation GUARDIAN_TEXTURE = new ResourceLocation("textures/entity/guardian.png");
-    private static final ResourceLocation GUARDIAN_ELDER_TEXTURE = new ResourceLocation("textures/entity/guardian_elder.png");
     private static final ResourceLocation GUARDIAN_BEAM_TEXTURE = new ResourceLocation("textures/entity/guardian_beam.png");
-    int lastModelVersion;
 
     public RenderGuardian(RenderManager renderManagerIn)
     {
         super(renderManagerIn, new ModelGuardian(), 0.5F);
-        this.lastModelVersion = ((ModelGuardian)this.mainModel).getModelVersion();
     }
 
     public boolean shouldRender(EntityGuardian livingEntity, ICamera camera, double camX, double camY, double camZ)
@@ -70,12 +67,6 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
      */
     public void doRender(EntityGuardian entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        if (this.lastModelVersion != ((ModelGuardian)this.mainModel).getModelVersion())
-        {
-            this.mainModel = new ModelGuardian();
-            this.lastModelVersion = ((ModelGuardian)this.mainModel).getModelVersion();
-        }
-
         super.doRender(entity, x, y, z, entityYaw, partialTicks);
         EntityLivingBase entitylivingbase = entity.getTargetedEntity();
 
@@ -162,21 +153,10 @@ public class RenderGuardian extends RenderLiving<EntityGuardian>
     }
 
     /**
-     * Allows the render to do state modifications necessary before the model is rendered.
-     */
-    protected void preRenderCallback(EntityGuardian entitylivingbaseIn, float partialTickTime)
-    {
-        if (entitylivingbaseIn.isElder())
-        {
-            GlStateManager.scale(2.35F, 2.35F, 2.35F);
-        }
-    }
-
-    /**
      * Returns the location of an entity's texture. Doesn't seem to be called unless you call Render.bindEntityTexture.
      */
     protected ResourceLocation getEntityTexture(EntityGuardian entity)
     {
-        return entity.isElder() ? GUARDIAN_ELDER_TEXTURE : GUARDIAN_TEXTURE;
+        return GUARDIAN_TEXTURE;
     }
 }

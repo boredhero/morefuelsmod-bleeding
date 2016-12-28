@@ -57,14 +57,6 @@ public class PathNavigateSwimmer extends PathNavigate
     }
 
     /**
-     * Trims path data from the end to the first sun covered block
-     */
-    protected void removeSunnyPath()
-    {
-        super.removeSunnyPath();
-    }
-
-    /**
      * Checks if the specified entity can safely walk to the specified location.
      */
     protected boolean isDirectPathBetweenPoints(Vec3d posVec31, Vec3d posVec32, int sizeX, int sizeY, int sizeZ)

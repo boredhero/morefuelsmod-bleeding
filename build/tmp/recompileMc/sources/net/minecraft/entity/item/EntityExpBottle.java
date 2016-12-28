@@ -2,6 +2,8 @@ package net.minecraft.entity.item;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityThrowable;
+import net.minecraft.init.PotionTypes;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -24,9 +26,9 @@ public class EntityExpBottle extends EntityThrowable
         super(worldIn, x, y, z);
     }
 
-    public static void func_189666_a(DataFixer p_189666_0_)
+    public static void registerFixesExpBottle(DataFixer fixer)
     {
-        EntityThrowable.func_189661_a(p_189666_0_, "ThrowableExpBottle");
+        EntityThrowable.registerFixesThrowable(fixer, "ThrowableExpBottle");
     }
 
     /**
@@ -44,7 +46,7 @@ public class EntityExpBottle extends EntityThrowable
     {
         if (!this.worldObj.isRemote)
         {
-            this.worldObj.playEvent(2002, new BlockPos(this), 0);
+            this.worldObj.playEvent(2002, new BlockPos(this), PotionUtils.getPotionColor(PotionTypes.WATER));
             int i = 3 + this.worldObj.rand.nextInt(5) + this.worldObj.rand.nextInt(5);
 
             while (i > 0)

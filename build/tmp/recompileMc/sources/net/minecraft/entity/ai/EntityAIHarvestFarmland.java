@@ -55,22 +55,6 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
     }
 
     /**
-     * Execute a one shot task or start executing a continuous task
-     */
-    public void startExecuting()
-    {
-        super.startExecuting();
-    }
-
-    /**
-     * Resets the task
-     */
-    public void resetTask()
-    {
-        super.resetTask();
-    }
-
-    /**
      * Updates the task
      */
     public void updateTask()
@@ -98,7 +82,7 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
                     ItemStack itemstack = inventorybasic.getStackInSlot(i);
                     boolean flag = false;
 
-                    if (itemstack != null)
+                    if (!itemstack.func_190926_b())
                     {
                         if (itemstack.getItem() == Items.WHEAT_SEEDS)
                         {
@@ -124,11 +108,11 @@ public class EntityAIHarvestFarmland extends EntityAIMoveToBlock
 
                     if (flag)
                     {
-                        --itemstack.stackSize;
+                        itemstack.func_190918_g(1);
 
-                        if (itemstack.stackSize <= 0)
+                        if (itemstack.func_190926_b())
                         {
-                            inventorybasic.setInventorySlotContents(i, (ItemStack)null);
+                            inventorybasic.setInventorySlotContents(i, ItemStack.field_190927_a);
                         }
 
                         break;

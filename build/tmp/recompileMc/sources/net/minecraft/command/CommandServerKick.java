@@ -46,7 +46,7 @@ public class CommandServerKick extends CommandBase
 
             if (entityplayermp == null)
             {
-                throw new PlayerNotFoundException();
+                throw new PlayerNotFoundException("commands.generic.player.notFound", new Object[] {args[0]});
             }
             else
             {

@@ -83,7 +83,7 @@ public class Chunk
     private long inhabitedTime;
     /** Contains the current round-robin relight check index, and is implied as the relight check location as well. */
     private int queuedLightChecks;
-    private ConcurrentLinkedQueue<BlockPos> tileEntityPosQueue;
+    private final ConcurrentLinkedQueue<BlockPos> tileEntityPosQueue;
     public boolean unloaded;
 
     public Chunk(World worldIn, int x, int z)
@@ -114,7 +114,7 @@ public class Chunk
     {
         this(worldIn, x, z);
         int i = 256;
-        boolean flag = !worldIn.provider.getHasNoSky();
+        boolean flag = worldIn.provider.func_191066_m();
 
         for (int j = 0; j < 16; ++j)
         {
@@ -211,7 +211,7 @@ public class Chunk
                 {
                     IBlockState iblockstate = this.getBlockState(j, l - 1, k);
 
-                    if (iblockstate.getLightOpacity(this.worldObj, new BlockPos(j, l - 1, k)) != 0)
+                    if (this.getBlockLightOpacity(j, l - 1, k) != 0)
                     {
                         this.heightMap[k << 4 | j] = l;
 
@@ -258,7 +258,7 @@ public class Chunk
                     }
                 }
 
-                if (!this.worldObj.provider.getHasNoSky())
+                if (this.worldObj.provider.func_191066_m())
                 {
                     int k1 = 15;
                     int i1 = i + 16 - 1;
@@ -408,7 +408,7 @@ public class Chunk
             int k = this.xPosition * 16 + x;
             int l = this.zPosition * 16 + z;
 
-            if (!this.worldObj.provider.getHasNoSky())
+            if (this.worldObj.provider.func_191066_m())
             {
                 if (j < i)
                 {
@@ -480,7 +480,7 @@ public class Chunk
                 this.heightMapMinimum = l1;
             }
 
-            if (!this.worldObj.provider.getHasNoSky())
+            if (this.worldObj.provider.func_191066_m())
             {
                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
                 {
@@ -502,7 +502,7 @@ public class Chunk
     private int getBlockLightOpacity(int x, int y, int z)
     {
         IBlockState state = this.getBlockState(x, y, z); //Forge: Can sometimes be called before we are added to the global world list. So use the less accurate one during that. It'll be recalculated later
-        return this.unloaded ? state.getLightOpacity() : state.getLightOpacity(this.worldObj, new BlockPos(x, y, z));
+        return !isChunkLoaded ? state.getLightOpacity() : state.getLightOpacity(worldObj, new BlockPos(xPosition << 4 | x & 15, y, zPosition << 4 | z & 15));
     }
 
     public IBlockState getBlockState(BlockPos pos)
@@ -595,7 +595,7 @@ public class Chunk
                     return null;
                 }
 
-                extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, !this.worldObj.provider.getHasNoSky());
+                extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, this.worldObj.provider.func_191066_m());
                 this.storageArrays[j >> 4] = extendedblockstorage;
                 flag = j >= i1;
             }
@@ -685,7 +685,7 @@ public class Chunk
         int j = pos.getY();
         int k = pos.getZ() & 15;
         ExtendedBlockStorage extendedblockstorage = this.storageArrays[j >> 4];
-        return extendedblockstorage == NULL_BLOCK_STORAGE ? (this.canSeeSky(pos) ? p_177413_1_.defaultLightValue : 0) : (p_177413_1_ == EnumSkyBlock.SKY ? (this.worldObj.provider.getHasNoSky() ? 0 : extendedblockstorage.getExtSkylightValue(i, j & 15, k)) : (p_177413_1_ == EnumSkyBlock.BLOCK ? extendedblockstorage.getExtBlocklightValue(i, j & 15, k) : p_177413_1_.defaultLightValue));
+        return extendedblockstorage == NULL_BLOCK_STORAGE ? (this.canSeeSky(pos) ? p_177413_1_.defaultLightValue : 0) : (p_177413_1_ == EnumSkyBlock.SKY ? (!this.worldObj.provider.func_191066_m() ? 0 : extendedblockstorage.getExtSkylightValue(i, j & 15, k)) : (p_177413_1_ == EnumSkyBlock.BLOCK ? extendedblockstorage.getExtBlocklightValue(i, j & 15, k) : p_177413_1_.defaultLightValue));
     }
 
     public void setLightFor(EnumSkyBlock p_177431_1_, BlockPos pos, int value)
@@ -697,7 +697,7 @@ public class Chunk
 
         if (extendedblockstorage == NULL_BLOCK_STORAGE)
         {
-            extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, !this.worldObj.provider.getHasNoSky());
+            extendedblockstorage = new ExtendedBlockStorage(j >> 4 << 4, this.worldObj.provider.func_191066_m());
             this.storageArrays[j >> 4] = extendedblockstorage;
             this.generateSkylightMap();
         }
@@ -706,7 +706,7 @@ public class Chunk
 
         if (p_177431_1_ == EnumSkyBlock.SKY)
         {
-            if (!this.worldObj.provider.getHasNoSky())
+            if (this.worldObj.provider.func_191066_m())
             {
                 extendedblockstorage.setExtSkylightValue(i, j & 15, k, value);
             }
@@ -726,11 +726,11 @@ public class Chunk
 
         if (extendedblockstorage == NULL_BLOCK_STORAGE)
         {
-            return !this.worldObj.provider.getHasNoSky() && amount < EnumSkyBlock.SKY.defaultLightValue ? EnumSkyBlock.SKY.defaultLightValue - amount : 0;
+            return this.worldObj.provider.func_191066_m() && amount < EnumSkyBlock.SKY.defaultLightValue ? EnumSkyBlock.SKY.defaultLightValue - amount : 0;
         }
         else
         {
-            int l = this.worldObj.provider.getHasNoSky() ? 0 : extendedblockstorage.getExtSkylightValue(i, j & 15, k);
+            int l = !this.worldObj.provider.func_191066_m() ? 0 : extendedblockstorage.getExtSkylightValue(i, j & 15, k);
             l = l - amount;
             int i1 = extendedblockstorage.getExtBlocklightValue(i, j & 15, k);
 
@@ -754,7 +754,7 @@ public class Chunk
 
         if (i != this.xPosition || j != this.zPosition)
         {
-            LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", new Object[] {Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(this.xPosition), Integer.valueOf(this.zPosition), entityIn, entityIn});
+            LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", new Object[] {Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(this.xPosition), Integer.valueOf(this.zPosition), entityIn});
             entityIn.setDead();
         }
 
@@ -972,7 +972,7 @@ public class Chunk
         }
     }
 
-    public <T extends Entity> void getEntitiesOfTypeWithinAAAB(Class <? extends T > entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate <? super T > p_177430_4_)
+    public <T extends Entity> void getEntitiesOfTypeWithinAAAB(Class <? extends T > entityClass, AxisAlignedBB aabb, List<T> listToFill, Predicate <? super T > filter)
     {
         int i = MathHelper.floor_double((aabb.minY - World.MAX_ENTITY_RADIUS) / 16.0D);
         int j = MathHelper.floor_double((aabb.maxY + World.MAX_ENTITY_RADIUS) / 16.0D);
@@ -983,7 +983,7 @@ public class Chunk
         {
             for (T t : this.entityLists[k].getByClass(entityClass))
             {
-                if (t.getEntityBoundingBox().intersectsWith(aabb) && (p_177430_4_ == null || p_177430_4_.apply(t)))
+                if (t.getEntityBoundingBox().intersectsWith(aabb) && (filter == null || filter.apply(t)))
                 {
                     listToFill.add(t);
                 }
@@ -1108,7 +1108,7 @@ public class Chunk
 
     public void onTick(boolean p_150804_1_)
     {
-        if (this.isGapLightingUpdated && !this.worldObj.provider.getHasNoSky() && !p_150804_1_)
+        if (this.isGapLightingUpdated && this.worldObj.provider.func_191066_m() && !p_150804_1_)
         {
             this.recheckGaps(this.worldObj.isRemote);
         }
@@ -1202,7 +1202,7 @@ public class Chunk
             tileEntity.getBlockType();
         }
 
-        boolean flag = !this.worldObj.provider.getHasNoSky();
+        boolean flag = this.worldObj.provider.func_191066_m();
 
         for (int i = 0; i < this.storageArrays.length; ++i)
         {
@@ -1270,7 +1270,7 @@ public class Chunk
 
         if (k == 255)
         {
-            Biome biome = provider.getBiomeGenerator(pos, Biomes.PLAINS);
+            Biome biome = provider.getBiome(pos, Biomes.PLAINS);
             k = Biome.getIdForBiome(biome);
             this.blockBiomeArray[j << 4 | i] = (byte)(k & 255);
         }
@@ -1364,7 +1364,7 @@ public class Chunk
         this.isLightPopulated = true;
         BlockPos blockpos = new BlockPos(this.xPosition << 4, 0, this.zPosition << 4);
 
-        if (!this.worldObj.provider.getHasNoSky())
+        if (this.worldObj.provider.func_191066_m())
         {
             if (this.worldObj.isAreaLoaded(blockpos.add(-1, 0, -1), blockpos.add(16, this.worldObj.getSeaLevel(), 16)))
             {

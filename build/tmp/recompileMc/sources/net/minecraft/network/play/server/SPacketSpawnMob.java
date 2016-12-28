@@ -38,7 +38,7 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
     {
         this.entityId = entityIn.getEntityId();
         this.uniqueId = entityIn.getUniqueID();
-        this.type = (byte)EntityList.getEntityID(entityIn);
+        this.type = EntityList.getID(entityIn.getClass());
         this.x = entityIn.posX;
         this.y = entityIn.posY;
         this.z = entityIn.posZ;
@@ -93,7 +93,7 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
     {
         this.entityId = buf.readVarIntFromBuffer();
         this.uniqueId = buf.readUuid();
-        this.type = buf.readByte() & 255;
+        this.type = buf.readVarIntFromBuffer();
         this.x = buf.readDouble();
         this.y = buf.readDouble();
         this.z = buf.readDouble();
@@ -113,7 +113,7 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
     {
         buf.writeVarIntToBuffer(this.entityId);
         buf.writeUuid(this.uniqueId);
-        buf.writeByte(this.type & 255);
+        buf.writeVarIntToBuffer(this.type);
         buf.writeDouble(this.x);
         buf.writeDouble(this.y);
         buf.writeDouble(this.z);
@@ -138,11 +138,6 @@ public class SPacketSpawnMob implements Packet<INetHandlerPlayClient>
     @SideOnly(Side.CLIENT)
     public List < EntityDataManager.DataEntry<? >> getDataManagerEntries()
     {
-        if (this.dataManagerEntries == null)
-        {
-            this.dataManagerEntries = this.dataManager.getAll();
-        }
-
         return this.dataManagerEntries;
     }
 
