@@ -4,7 +4,7 @@ startProcessing "com\bored\morefuelsmod\Fuels.java" md5: fa94c01e838fbaa46501dfb
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\Fuels.java"
 
-startProcessing "com\bored\morefuelsmod\Main.java" md5: f45f22cc7f5d5a83e21e6f44d8d2d51b
+startProcessing "com\bored\morefuelsmod\Main.java" md5: 886afa8d36eaf5cd6ee84d6ae74ebe7f
 endProcessing "com\bored\morefuelsmod\Main.java"
 
 startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: 24168db80506fcc77ef62175f4a4f35c

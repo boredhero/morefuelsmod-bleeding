@@ -35,7 +35,6 @@ public class Main {
 		boolean enableCustomFuels = config.get(Configuration.CATEGORY_GENERAL, "enableCustomFuels", true).getBoolean(true);
 		if(enableCustomFuels)
 			GameRegistry.registerFuelHandler(new Fuels());
-		config.addCustomCategoryComment(Configuration.CATEGORY_GENERAL, "TEST SECTION PLEASE IGNORE");
 		boolean enableCustomOreSpawn = config.get(Configuration.CATEGORY_GENERAL, "enableCustomOreSpawn", true).getBoolean(true);
 		if(enableCustomOreSpawn)
 			GameRegistry.registerWorldGenerator(new ModWorldGen(), 1);
