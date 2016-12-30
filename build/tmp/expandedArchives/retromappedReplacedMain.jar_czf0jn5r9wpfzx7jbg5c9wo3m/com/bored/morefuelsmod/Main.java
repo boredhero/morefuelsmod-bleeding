@@ -118,6 +118,12 @@ public class Main {
 		boolean enableBituminousCoalOrespawn = config.get(Configuration.CATEGORY_GENERAL, "enableBituminouscoalOrespawn", true).getBoolean(true);
 		if(enableBituminousCoalOrespawn)
 			GameRegistry.registerWorldGenerator(new ModWorldGen(), 1);
+		boolean enableModCraftingRecipes = config.get(Configuration.CATEGORY_GENERAL, "enableModCraftingRecipes", true).getBoolean(true);
+		if(enableModCraftingRecipes)
+			ModCrafting.init();
+		boolean enableBituminousCoalOreSmeltingIntoCoke = config.get(Configuration.CATEGORY_GENERAL, "enableBituminousCoalOreSmeltingIntoCoke", true).getBoolean(true);
+		if(enableBituminousCoalOreSmeltingIntoCoke)
+			ModSmelting.init();
 		//Fuels start here
 		boolean enableDeadbush = config.get(Configuration.CATEGORY_GENERAL, "fuelenableDeadbush", true).getBoolean(true);
 		if(enableDeadbush)
@@ -355,8 +361,6 @@ public class Main {
 		if(enableConcentratedPelletBlock)
 			GameRegistry.registerFuelHandler(new ConcentratedPelletBlock());
 		config.save();
-		ModCrafting.init();
-		ModSmelting.init();
 	}
 
 	@Mod.EventHandler
