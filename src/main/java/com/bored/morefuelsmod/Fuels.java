@@ -24,9 +24,6 @@ public class Fuels implements IFuelHandler{
 		        //As of v1.4.0, no timings may exist under 100 for compatibility with the fuel pellet systems.
 		        //All numbers will be rounded to the nearest 100 as well for compatibility with said system.
 		        //Numbers 40 or above will be rounded up to the nearest 100.
-				if(fuel.getItem() == Item.getItemFromBlock(Blocks.DEADBUSH)){
-					return 200;
-				}
 				if(fuel.getItem() == Item.getItemFromBlock(Blocks.CACTUS)){
 					return 300;
 				}

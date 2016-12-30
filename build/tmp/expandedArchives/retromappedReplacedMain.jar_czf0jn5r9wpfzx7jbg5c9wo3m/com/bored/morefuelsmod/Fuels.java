@@ -24,9 +24,6 @@ public class Fuels implements IFuelHandler{
 		        //As of v1.4.0, no timings may exist under 100 for compatibility with the fuel pellet systems.
 		        //All numbers will be rounded to the nearest 100 as well for compatibility with said system.
 		        //Numbers 40 or above will be rounded up to the nearest 100.
-				if(fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150330_I)){
-					return 200;
-				}
 				if(fuel.func_77973_b() == Item.func_150898_a(Blocks.field_150434_aF)){
 					return 300;
 				}

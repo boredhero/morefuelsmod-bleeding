@@ -2,6 +2,7 @@ package com.bored.morefuelsmod;
 
 import com.bored.morefuelsmod.block.ModBlocks;
 import com.bored.morefuelsmod.client.MoreFuelsTab;
+import com.bored.morefuelsmod.fuels.Deadbush;
 import com.bored.morefuelsmod.item.ModItems;
 import com.bored.morefuelsmod.proxy.CommonProxy;
 
@@ -36,7 +37,9 @@ public class Main {
 		boolean enableCustomFuels = config.get(Configuration.CATEGORY_GENERAL, "enableCustomFuels", true).getBoolean(true);
 		if(enableCustomFuels)
 			GameRegistry.registerFuelHandler(new Fuels());
-		
+		boolean enableDeadbush = config.get(Configuration.CATEGORY_GENERAL, "enableDeadbush", true).getBoolean(true);
+		if(enableDeadbush)
+			GameRegistry.registerFuelHandler(new Deadbush());
 		config.save();
 		ModItems.init();
 		ModBlocks.init();

@@ -22,4 +22,5 @@
 <fullyQualifiedTypeName name="java.util.Random"/>
 <fullyQualifiedTypeName name="net.minecraft.item.Item"/>
 <fullyQualifiedTypeName name="net.minecraft.block.state.IBlockState"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.Deadbush"/>
 </qualifiedTypeNameHistroy>

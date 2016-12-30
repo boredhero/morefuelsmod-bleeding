@@ -1,10 +1,9 @@
 Symbol range map extraction starting
-Processing 14 files
-startProcessing "com\bored\morefuelsmod\Fuels.java" md5: fa94c01e838fbaa46501dfbed4373891
-Cache Hit!
+Processing 15 files
+startProcessing "com\bored\morefuelsmod\Fuels.java" md5: 3f45fcb4de525445ea6dbcc5274095f6
 endProcessing "com\bored\morefuelsmod\Fuels.java"
 
-startProcessing "com\bored\morefuelsmod\Main.java" md5: 25a664605ab4a625ffb99634b9b806cf
+startProcessing "com\bored\morefuelsmod\Main.java" md5: 2e6dd2900e4a8bda5941d2708eaacd56
 endProcessing "com\bored\morefuelsmod\Main.java"
 
 startProcessing "com\bored\morefuelsmod\ModCrafting.java" md5: 24168db80506fcc77ef62175f4a4f35c
@@ -38,6 +37,9 @@ endProcessing "com\bored\morefuelsmod\block\ModBlocks.java"
 startProcessing "com\bored\morefuelsmod\client\MoreFuelsTab.java" md5: 34a2ac5649b741e679da5d1f6d7d469b
 Cache Hit!
 endProcessing "com\bored\morefuelsmod\client\MoreFuelsTab.java"
+
+startProcessing "com\bored\morefuelsmod\fuels\Deadbush.java" md5: 61f93c2b6caef6ba88d7841098651341
+endProcessing "com\bored\morefuelsmod\fuels\Deadbush.java"
 
 startProcessing "com\bored\morefuelsmod\item\ItemBase.java" md5: 8c973959372748d849f6d701efa09964
 Cache Hit!
