@@ -115,6 +115,10 @@ public class Main {
 		boolean enableRFtLrecipe = config.get(Configuration.CATEGORY_GENERAL, "enableRFtLrecipe", true).getBoolean(true);
 		if(enableRFtLrecipe)
 			RFtL.init();
+		boolean enableBituminousCoalOrespawn = config.get(Configuration.CATEGORY_GENERAL, "enableBituminouscoalOrespawn", true).getBoolean(true);
+		if(enableBituminousCoalOrespawn)
+			GameRegistry.registerWorldGenerator(new ModWorldGen(), 1);
+		//Fuels start here
 		boolean enableDeadbush = config.get(Configuration.CATEGORY_GENERAL, "fuelenableDeadbush", true).getBoolean(true);
 		if(enableDeadbush)
 			GameRegistry.registerFuelHandler(new Deadbush());
