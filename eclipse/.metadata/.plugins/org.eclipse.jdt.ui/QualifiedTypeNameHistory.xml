@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="net.minecraftforge.fml.common.Mod.Instance"/>
-<fullyQualifiedTypeName name="net.minecraftforge.fml.common.Mod.EventHandler"/>
 <fullyQualifiedTypeName name="net.minecraftforge.fml.common.SidedProxy"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.proxy.CommonProxy"/>
 <fullyQualifiedTypeName name="net.minecraftforge.client.model.ModelLoader"/>
@@ -10,17 +9,23 @@
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.proxy.ClientProxy"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.client.MoreFuelsTab"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.RFtL"/>
-<fullyQualifiedTypeName name="net.minecraftforge.fml.common.registry.GameRegistry"/>
 <fullyQualifiedTypeName name="net.minecraft.item.ItemStack"/>
-<fullyQualifiedTypeName name="net.minecraft.init.Items"/>
 <fullyQualifiedTypeName name="net.minecraft.block.material.Material"/>
-<fullyQualifiedTypeName name="net.minecraft.init.Blocks"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.block.ModBlocks"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.ModWorldGen"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.init.ModWorldGen"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.item.ModItems"/>
 <fullyQualifiedTypeName name="java.util.Random"/>
-<fullyQualifiedTypeName name="net.minecraft.item.Item"/>
 <fullyQualifiedTypeName name="net.minecraft.block.state.IBlockState"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.Deadbush"/>
+<fullyQualifiedTypeName name="net.minecraftforge.fml.common.Mod"/>
+<fullyQualifiedTypeName name="net.minecraftforge.fml.common.event.FMLPreInitializationEvent"/>
+<fullyQualifiedTypeName name="net.minecraftforge.fml.common.Mod.EventHandler"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.PreInit"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.Cactus"/>
+<fullyQualifiedTypeName name="net.minecraft.init.Blocks"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.Sign"/>
+<fullyQualifiedTypeName name="net.minecraftforge.fml.common.registry.GameRegistry"/>
+<fullyQualifiedTypeName name="net.minecraft.item.Item"/>
+<fullyQualifiedTypeName name="net.minecraft.init.Items"/>
 </qualifiedTypeNameHistroy>
