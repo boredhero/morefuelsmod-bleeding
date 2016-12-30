@@ -32,13 +32,11 @@ public class Main {
 		boolean enableRFtLrecipe = config.get(Configuration.CATEGORY_GENERAL, "enableRFtLrecipe", true).getBoolean(true);
 		if(enableRFtLrecipe)
 			RFtL.init();
+		config.addCustomCategoryComment(Configuration.CATEGORY_GENERAL, "TEST");
 		boolean enableCustomFuels = config.get(Configuration.CATEGORY_GENERAL, "enableCustomFuels", true).getBoolean(true);
 		if(enableCustomFuels)
 			GameRegistry.registerFuelHandler(new Fuels());
-		config.addCustomCategoryComment(Configuration.CATEGORY_GENERAL, "TEST SECTION PLEASE IGNORE");
-		boolean enableCustomOreSpawn = config.get(Configuration.CATEGORY_GENERAL, "enableCustomOreSpawn", true).getBoolean(true);
-		if(enableCustomOreSpawn)
-			GameRegistry.registerWorldGenerator(new ModWorldGen(), 1);
+		
 		config.save();
 		ModItems.init();
 		ModBlocks.init();
