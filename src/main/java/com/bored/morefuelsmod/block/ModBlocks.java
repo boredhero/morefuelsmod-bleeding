@@ -13,12 +13,15 @@ public class ModBlocks {
 	public static BlockBase cokeBlock;
 	public static BlockBase bituminousCoalBlock;
 	public static BlockOre bituminousCoalOre;
+	public static BlockBase creativeInfiniteFuel;
 
 	public static void init() {
 		pelletBlock = register(new BlockBase(Material.ROCK, "pelletBlock"));
 		concentratedPelletBlock = register(new BlockBase(Material.ROCK, "concentratedPelletBlock"));
 		cokeBlock = register(new BlockBase(Material.ROCK, "cokeBlock"));
 		bituminousCoalOre = register(new BlockOre("bituminousCoalOre"));
+		creativeInfiniteFuel = register (new BlockBase(Material.ROCK, "creativeInfiniteFuel"));
+		bituminousCoalBlock = register (new BlockBase(Material.ROCK, "bituminousCoalBlock"));
 	}
 
 	private static <T extends Block> T register(T block, ItemBlock itemBlock) {

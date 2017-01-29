@@ -30,6 +30,8 @@ public class ModCrafting {
 		GameRegistry.addShapelessRecipe(new ItemStack(ModItems.canSlimoline),new Object[]{Items.field_151016_H,ModItems.dustCoal,Items.field_151123_aH});
 		//Coal and Stone Block to Coal Dust
 	    GameRegistry.addShapelessRecipe(new ItemStack(ModItems.dustCoal),new Object[]{Items.field_151044_h,Blocks.field_150348_b});
+	    //Bituminous Coal to Bituminous Coal Block
+	    GameRegistry.addRecipe(new ItemStack(ModBlocks.bituminousCoalBlock),"###","###","###",'#',ModItems.bituminousCoal);
 		
 		//Mod Fuels to Fuel Pellets Recipes
 		

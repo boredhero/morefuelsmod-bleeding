@@ -78,8 +78,10 @@ import com.bored.morefuelsmod.fuels.ExperimentalPotions;
 
 import com.bored.morefuelsmod.fuels.modfuels.PelletFuel;
 import com.bored.morefuelsmod.fuels.modfuels.ConcentratedPelletFuel;
+import com.bored.morefuelsmod.fuels.modfuels.InfiniteCreativeFuelBlock;
 import com.bored.morefuelsmod.fuels.modfuels.Coke;
 import com.bored.morefuelsmod.fuels.modfuels.BituminousCoal;
+import com.bored.morefuelsmod.fuels.modfuels.BituminousCoalBlock;
 import com.bored.morefuelsmod.fuels.modfuels.Slimoline;
 import com.bored.morefuelsmod.fuels.modfuels.CokeBlock;
 import com.bored.morefuelsmod.fuels.modfuels.PelletBlock;
@@ -100,7 +102,7 @@ public class Main {
 
 	public static final String modid = "morefuelsmod-bleeding";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.6.UFO";
+	public static final String version = "1.6.build-10";
 
 	@Mod.Instance(modid)
 	public static Main instance;
@@ -360,6 +362,12 @@ public class Main {
 		boolean enableConcentratedPelletBlock = config.get(Configuration.CATEGORY_GENERAL, "modfuelenableConcentratedPelletBlock", true).getBoolean(true);
 		if(enableConcentratedPelletBlock)
 			GameRegistry.registerFuelHandler(new ConcentratedPelletBlock());
+		boolean enableCreativeInfiniteFuelBlock = config.get(Configuration.CATEGORY_GENERAL, "modfuelenableCreativeInfiniteFuelBlock", true).getBoolean(true);
+		if(enableCreativeInfiniteFuelBlock)
+			GameRegistry.registerFuelHandler(new InfiniteCreativeFuelBlock());
+		boolean enableBituminousCoalBlock = config.get(Configuration.CATEGORY_GENERAL, "modfuelsenableBituminousCoalBlock", true).getBoolean(true);
+		if(enableBituminousCoalBlock)
+			GameRegistry.registerFuelHandler(new BituminousCoalBlock());
 		config.save();
 	}
 

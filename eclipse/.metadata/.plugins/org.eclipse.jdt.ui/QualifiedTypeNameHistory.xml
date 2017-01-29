@@ -33,4 +33,6 @@
 <fullyQualifiedTypeName name="net.minecraftforge.common.config.Configuration"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.block.ModBlocks"/>
 <fullyQualifiedTypeName name="net.minecraftforge.common.config.ConfigCategory"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.modfuels.InfiniteCreativeFuelBlock"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.modfuels.BituminousCoalBlock"/>
 </qualifiedTypeNameHistroy>
