@@ -32,7 +32,14 @@ public class ModCrafting {
 	    GameRegistry.addShapelessRecipe(new ItemStack(ModItems.dustCoal),new Object[]{Items.COAL,Blocks.STONE});
 	    //Bituminous Coal to Bituminous Coal Block
 	    GameRegistry.addRecipe(new ItemStack(ModBlocks.bituminousCoalBlock),"###","###","###",'#',ModItems.bituminousCoal);
-		
+	    //Glass Orb Crafting Recipe
+	    GameRegistry.addRecipe(new ItemStack(ModItems.glassOrb), new Object[] {" # ", "# #", " # ", '#', Blocks.GLASS});
+		//Glass Orb Crafting Recipe (For Stained Glass)
+	    GameRegistry.addRecipe(new ItemStack(ModItems.glassOrb), new Object[] {" # ", "# #", " # ", '#', Blocks.STAINED_GLASS});
+	    //Tempered Glass Orb and Lava Crystals to Lava Orb Recipe
+	    GameRegistry.addShapelessRecipe(new ItemStack(ModItems.lavaOrb, 1),new Object[]{ModItems.lavaCrystals, ModItems.temperedGlassOrb});
+	    //Utility Recipe: Lava Bucket to Lava Orb and Bucket Recipe
+	    GameRegistry.addShapelessRecipe(new ItemStack(ModItems.lavaOrb, 1),new Object[]{Items.LAVA_BUCKET, ModItems.temperedGlassOrb});
 		//Mod Fuels to Fuel Pellets Recipes
 		
 		GameRegistry.addRecipe(new ItemStack(ModItems.pelletsFuel, 2),"###","###","###",'#',Item.getItemFromBlock(Blocks.DEADBUSH));

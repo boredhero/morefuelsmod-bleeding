@@ -13,6 +13,7 @@ public class ModBlocks {
 	public static BlockBase cokeBlock;
 	public static BlockBase bituminousCoalBlock;
 	public static BlockOre bituminousCoalOre;
+	public static BlockLavaOre lavaOre;
 	public static BlockBase creativeInfiniteFuel;
 
 	public static void init() {
@@ -20,6 +21,7 @@ public class ModBlocks {
 		concentratedPelletBlock = register(new BlockBase(Material.field_151576_e, "concentratedPelletBlock"));
 		cokeBlock = register(new BlockBase(Material.field_151576_e, "cokeBlock"));
 		bituminousCoalOre = register(new BlockOre("bituminousCoalOre"));
+		lavaOre = register(new BlockLavaOre("lavaOre"));
 		creativeInfiniteFuel = register (new BlockBase(Material.field_151576_e, "creativeInfiniteFuel"));
 		bituminousCoalBlock = register (new BlockBase(Material.field_151576_e, "bituminousCoalBlock"));
 	}
