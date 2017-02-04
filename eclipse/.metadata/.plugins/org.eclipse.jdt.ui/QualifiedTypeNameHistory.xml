@@ -25,14 +25,15 @@
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.Sign"/>
 <fullyQualifiedTypeName name="net.minecraftforge.fml.common.registry.GameRegistry"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.Gunpowder"/>
-<fullyQualifiedTypeName name="net.minecraft.init.Items"/>
 <fullyQualifiedTypeName name="net.minecraft.item.Item"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.ExperimentalPotions"/>
-<fullyQualifiedTypeName name="com.bored.morefuelsmod.item.ModItems"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.modfuels.BituminousCoal"/>
 <fullyQualifiedTypeName name="net.minecraftforge.common.config.Configuration"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.block.ModBlocks"/>
 <fullyQualifiedTypeName name="net.minecraftforge.common.config.ConfigCategory"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.modfuels.InfiniteCreativeFuelBlock"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.modfuels.BituminousCoalBlock"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.item.ModItems"/>
+<fullyQualifiedTypeName name="net.minecraft.init.Items"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.fuels.modfuels.LavaOrb"/>
 </qualifiedTypeNameHistroy>

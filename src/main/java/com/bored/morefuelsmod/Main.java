@@ -4,88 +4,8 @@ import com.bored.morefuelsmod.block.ModBlocks;
 import com.bored.morefuelsmod.client.MoreFuelsTab;
 import com.bored.morefuelsmod.item.ModItems;
 import com.bored.morefuelsmod.proxy.CommonProxy;
-
-import com.bored.morefuelsmod.fuels.Deadbush;
-import com.bored.morefuelsmod.fuels.Cactus;
-import com.bored.morefuelsmod.fuels.Web;
-import com.bored.morefuelsmod.fuels.Lever;
-import com.bored.morefuelsmod.fuels.DoublePlant;
-import com.bored.morefuelsmod.fuels.RedFlower;
-import com.bored.morefuelsmod.fuels.YellowFlower;
-import com.bored.morefuelsmod.fuels.ItemFrame;
-import com.bored.morefuelsmod.fuels.Bed;
-import com.bored.morefuelsmod.fuels.Painting;
-import com.bored.morefuelsmod.fuels.Sign;
-import com.bored.morefuelsmod.fuels.Ladder;
-import com.bored.morefuelsmod.fuels.Rail;
-import com.bored.morefuelsmod.fuels.ActivatorRail;
-import com.bored.morefuelsmod.fuels.DetectorRail;
-import com.bored.morefuelsmod.fuels.PoweredRail;
-import com.bored.morefuelsmod.fuels.Piston;
-import com.bored.morefuelsmod.fuels.StickyPiston;
-import com.bored.morefuelsmod.fuels.Vine;
-import com.bored.morefuelsmod.fuels.WaterLily;
-import com.bored.morefuelsmod.fuels.TripwireHook;
-import com.bored.morefuelsmod.fuels.HayBlock;
-import com.bored.morefuelsmod.fuels.Carpet;
-import com.bored.morefuelsmod.fuels.Wool;
-import com.bored.morefuelsmod.fuels.Arrow;
-import com.bored.morefuelsmod.fuels.Feather;
-import com.bored.morefuelsmod.fuels.Wheat;
-import com.bored.morefuelsmod.fuels.WheatSeeds;
-import com.bored.morefuelsmod.fuels.MelonSeeds;
-import com.bored.morefuelsmod.fuels.PumpkinSeeds;
-import com.bored.morefuelsmod.fuels.BeetSeeds;
-import com.bored.morefuelsmod.fuels.Torch;
-import com.bored.morefuelsmod.fuels.RedstoneTorch;
-import com.bored.morefuelsmod.fuels.Doors;
-import com.bored.morefuelsmod.fuels.WoodenButton;
-import com.bored.morefuelsmod.fuels.Bowl;
-import com.bored.morefuelsmod.fuels.Sugarcane;
-import com.bored.morefuelsmod.fuels.Paper;
-import com.bored.morefuelsmod.fuels.Book;
-import com.bored.morefuelsmod.fuels.WritableBook;
-import com.bored.morefuelsmod.fuels.WrittenBook;
-import com.bored.morefuelsmod.fuels.MinecartWithChest;
-import com.bored.morefuelsmod.fuels.Maps;
-import com.bored.morefuelsmod.fuels.FishingRod;
-import com.bored.morefuelsmod.fuels.CarrotOnAStick;
-import com.bored.morefuelsmod.fuels.MushroomItems;
-import com.bored.morefuelsmod.fuels.ExperimentalMushroomBlocks;
-import com.bored.morefuelsmod.fuels.ArmorStand;
-import com.bored.morefuelsmod.fuels.FireCharge;
-import com.bored.morefuelsmod.fuels.FireworkCharge;
-import com.bored.morefuelsmod.fuels.Fireworks;
-import com.bored.morefuelsmod.fuels.Gunpowder;
-import com.bored.morefuelsmod.fuels.BlazePowder;
-import com.bored.morefuelsmod.fuels.MagmaCream;
-import com.bored.morefuelsmod.fuels.GhastTear;
-import com.bored.morefuelsmod.fuels.SpawnEgg;
-import com.bored.morefuelsmod.fuels.PoisonousPotato;
-import com.bored.morefuelsmod.fuels.RottenFlesh;
-import com.bored.morefuelsmod.fuels.SpiderEye;
-import com.bored.morefuelsmod.fuels.FermentedSpiderEye;
-import com.bored.morefuelsmod.fuels.RabbitFoot;
-import com.bored.morefuelsmod.fuels.Leather;
-import com.bored.morefuelsmod.fuels.LeatherArmor;
-import com.bored.morefuelsmod.fuels.ChorusPlant;
-import com.bored.morefuelsmod.fuels.ChorusFlowers;
-import com.bored.morefuelsmod.fuels.Shield;
-import com.bored.morefuelsmod.fuels.DragonBreath;
-import com.bored.morefuelsmod.fuels.TNT;
-import com.bored.morefuelsmod.fuels.TNTMinecart;
-import com.bored.morefuelsmod.fuels.ExperimentalPotions;
-
-import com.bored.morefuelsmod.fuels.modfuels.PelletFuel;
-import com.bored.morefuelsmod.fuels.modfuels.ConcentratedPelletFuel;
-import com.bored.morefuelsmod.fuels.modfuels.InfiniteCreativeFuelBlock;
-import com.bored.morefuelsmod.fuels.modfuels.Coke;
-import com.bored.morefuelsmod.fuels.modfuels.BituminousCoal;
-import com.bored.morefuelsmod.fuels.modfuels.BituminousCoalBlock;
-import com.bored.morefuelsmod.fuels.modfuels.Slimoline;
-import com.bored.morefuelsmod.fuels.modfuels.CokeBlock;
-import com.bored.morefuelsmod.fuels.modfuels.PelletBlock;
-import com.bored.morefuelsmod.fuels.modfuels.ConcentratedPelletBlock;
+import com.bored.morefuelsmod.fuels.*;
+import com.bored.morefuelsmod.fuels.modfuels.*;
 
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -97,19 +17,19 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
-@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = "[1.10, 1.10.2]")
+@Mod(modid = Main.modid, name = Main.name, version = Main.version, acceptedMinecraftVersions = "[1.10, 1.10.2, 1.11, 1.11.2]")
 public class Main {
 
-	public static final String modid = "morefuelsmod-1.10.x";
+	public static final String modid = "morefuelsmod-bleeding";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.6.build-10";
+	public static final String version = "1.6.0";
 
 	@Mod.Instance(modid)
 	public static Main instance;
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event){
-		System.out.println(name + " is making smelting better for you!");
+		System.out.println(name + " is making smelting oh so much better for you!");
 		ModItems.init();
 		ModBlocks.init();
 		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
@@ -117,8 +37,8 @@ public class Main {
 		boolean enableRFtLrecipe = config.get(Configuration.CATEGORY_GENERAL, "enableRFtLrecipe", true).getBoolean(true);
 		if(enableRFtLrecipe)
 			RFtL.init();
-		boolean enableBituminousCoalOrespawn = config.get(Configuration.CATEGORY_GENERAL, "enableBituminouscoalOrespawn", true).getBoolean(true);
-		if(enableBituminousCoalOrespawn)
+		boolean enableModOrespawn = config.get(Configuration.CATEGORY_GENERAL, "enableModOrespawn", true).getBoolean(true);
+		if(enableModOrespawn)
 			GameRegistry.registerWorldGenerator(new ModWorldGen(), 1);
 		boolean enableModCraftingRecipes = config.get(Configuration.CATEGORY_GENERAL, "enableModCraftingRecipes", true).getBoolean(true);
 		if(enableModCraftingRecipes)
@@ -368,6 +288,9 @@ public class Main {
 		boolean enableBituminousCoalBlock = config.get(Configuration.CATEGORY_GENERAL, "modfuelsenableBituminousCoalBlock", true).getBoolean(true);
 		if(enableBituminousCoalBlock)
 			GameRegistry.registerFuelHandler(new BituminousCoalBlock());
+		boolean enableLavaOrb = config.get(Configuration.CATEGORY_GENERAL, "modfuelsenableLavaOrb", true).getBoolean(true);
+		if(enableLavaOrb)
+			GameRegistry.registerFuelHandler(new LavaOrb());
 		config.save();
 	}
 
