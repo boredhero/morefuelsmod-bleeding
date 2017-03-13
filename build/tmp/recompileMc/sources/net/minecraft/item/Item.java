@@ -967,7 +967,7 @@ public class Item extends net.minecraftforge.fml.common.registry.IForgeRegistryE
      * Queries the percentage of the 'Durability' bar that should be drawn.
      *
      * @param stack The current ItemStack
-     * @return 1.0 for 100% 0 for 0%
+     * @return 0.0 for 100% (no damage / full bar), 1.0 for 0% (fully damaged / empty bar)
      */
     public double getDurabilityForDisplay(ItemStack stack)
     {
@@ -976,14 +976,14 @@ public class Item extends net.minecraftforge.fml.common.registry.IForgeRegistryE
 
     /**
      * Returns the packed int RGB value used to render the durability bar in the GUI.
-     * Defaults to a value based on the hue scaled as the damage decreases, but can be overriden.
+     * Defaults to a value based on the hue scaled based on {@link #getDurabilityForDisplay}, but can be overriden.
      *
      * @param stack Stack to get durability from
      * @return A packed RGB value for the durability colour (0x00RRGGBB)
      */
     public int getRGBDurabilityForDisplay(ItemStack stack)
     {
-        return MathHelper.hsvToRGB(Math.max(0.0F, (float)(stack.getMaxDamage() - stack.getItemDamage()) / stack.getMaxDamage()) / 3.0F, 1.0F, 1.0F);
+        return MathHelper.hsvToRGB(Math.max(0.0F, (float) (1.0F - getDurabilityForDisplay(stack))) / 3.0F, 1.0F, 1.0F);
     }
     /**
      * Return the maxDamage for this ItemStack. Defaults to the maxDamage field in this item,

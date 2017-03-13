@@ -56,7 +56,7 @@ public class EntityWitherSkeleton extends AbstractSkeleton
         return SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
     }
 
-    SoundEvent getStepSound()
+    protected SoundEvent getStepSound()
     {
         return SoundEvents.ENTITY_WITHER_SKELETON_STEP;
     }

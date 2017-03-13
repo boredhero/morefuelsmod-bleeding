@@ -305,4 +305,23 @@ public abstract class BlockRedstoneDiode extends BlockHorizontal
     {
         return BlockRenderLayer.CUTOUT;
     }
+
+    /* ======================================== FORGE START =====================================*/
+    @Override
+    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
+    {
+        if (super.rotateBlock(world, pos, axis))
+        {
+            IBlockState state = world.getBlockState(pos);
+            state = getUnpoweredState(state);
+            world.setBlockState(pos, state);
+
+            if (shouldBePowered(world, pos, state))
+            {
+                world.scheduleUpdate(pos, this, 1);
+            }
+            return true;
+        }
+        return false;
+    }
 }

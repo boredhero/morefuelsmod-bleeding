@@ -29,7 +29,8 @@ public class ItemShears extends Item
         }
 
         Block block = state.getBlock();
-        return state.getMaterial() != Material.LEAVES && block != Blocks.WEB && block != Blocks.TALLGRASS && block != Blocks.VINE && block != Blocks.TRIPWIRE && block != Blocks.WOOL && !(state instanceof net.minecraftforge.common.IShearable) ? super.onBlockDestroyed(stack, worldIn, state, pos, entityLiving) : true;
+        if (block instanceof net.minecraftforge.common.IShearable) return true;
+        return state.getMaterial() != Material.LEAVES && block != Blocks.WEB && block != Blocks.TALLGRASS && block != Blocks.VINE && block != Blocks.TRIPWIRE && block != Blocks.WOOL ? super.onBlockDestroyed(stack, worldIn, state, pos, entityLiving) : true;
     }
 
     /**
@@ -99,7 +100,7 @@ public class ItemShears extends Item
                         net.minecraft.enchantment.EnchantmentHelper.getEnchantmentLevel(net.minecraft.init.Enchantments.FORTUNE, itemstack));
                 java.util.Random rand = new java.util.Random();
 
-                for(ItemStack stack : drops)
+                for (ItemStack stack : drops)
                 {
                     float f = 0.7F;
                     double d  = (double)(rand.nextFloat() * f) + (double)(1.0F - f) * 0.5D;
@@ -112,6 +113,8 @@ public class ItemShears extends Item
 
                 itemstack.damageItem(1, player);
                 player.addStat(net.minecraft.stats.StatList.getBlockStats(block));
+                player.world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11); //TODO: Move to IShearable implementors in 1.12+
+                return true;
             }
         }
         return false;

@@ -375,7 +375,7 @@ public class BlockVine extends Block implements net.minecraftforge.common.IShear
 
     public void harvestBlock(World worldIn, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack stack)
     {
-        if (false && !worldIn.isRemote && stack.getItem() == Items.SHEARS) // Forge: Noop, Covered by IShearable
+        if (!worldIn.isRemote && stack.getItem() == Items.SHEARS)
         {
             player.addStat(StatList.getBlockStats(this));
             spawnAsEntity(worldIn, pos, new ItemStack(Blocks.VINE, 1, 0));

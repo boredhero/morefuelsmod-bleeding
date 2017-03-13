@@ -360,6 +360,19 @@ public class Potion extends net.minecraftforge.fml.common.registry.IForgeRegistr
     @SideOnly(Side.CLIENT)
     public void renderHUDEffect(int x, int y, PotionEffect effect, net.minecraft.client.Minecraft mc, float alpha) { }
 
+    /**
+     * Get a fresh list of items that can cure this Potion.
+     * All new PotionEffects created from this Potion will call this to initialize the default curative items
+     * @see PotionEffect#getCurativeItems
+     * @return A list of items that can cure this Potion
+     */
+    public java.util.List<net.minecraft.item.ItemStack> getCurativeItems()
+    {
+        java.util.ArrayList<net.minecraft.item.ItemStack> ret = new java.util.ArrayList<net.minecraft.item.ItemStack>();
+        ret.add(new net.minecraft.item.ItemStack(net.minecraft.init.Items.MILK_BUCKET));
+        return ret;
+    }
+
     /* ======================================== FORGE END =====================================*/
 
     /**

@@ -1003,6 +1003,7 @@ public abstract class EntityPlayer extends EntityLivingBase
             this.spawnChunkMap.put(spawndim, new BlockPos(spawndata.getInteger("SpawnX"), spawndata.getInteger("SpawnY"), spawndata.getInteger("SpawnZ")));
             this.spawnForcedMap.put(spawndim, spawndata.getBoolean("SpawnForced"));
         }
+        this.spawnDimension = compound.getBoolean("HasSpawnDimensionSet") ? compound.getInteger("SpawnDimension") : null;
 
         this.foodStats.readNBT(compound);
         this.capabilities.readCapabilitiesFromNBT(compound);
@@ -1056,6 +1057,10 @@ public abstract class EntityPlayer extends EntityLivingBase
             spawnlist.appendTag(spawndata);
         }
         compound.setTag("Spawns", spawnlist);
+
+        compound.setBoolean("HasSpawnDimensionSet", this.hasSpawnDimension());
+        if (this.hasSpawnDimension())
+            compound.setInteger("SpawnDimension", this.getSpawnDimension());
 
         this.foodStats.writeNBT(compound);
         this.capabilities.writeCapabilitiesToNBT(compound);
@@ -2870,6 +2875,12 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         return capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
+
+    @Nullable
+    private Integer spawnDimension;
+    public boolean hasSpawnDimension() { return spawnDimension != null; }
+    public int getSpawnDimension() { return spawnDimension != null ? spawnDimension : 0; }
+    public void setSpawnDimension(@Nullable Integer dimension) { this.spawnDimension = dimension; }
 
     /* ======================================== FORGE END  =====================================*/
 

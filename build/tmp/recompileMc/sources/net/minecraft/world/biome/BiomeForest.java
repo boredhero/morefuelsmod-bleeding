@@ -46,6 +46,17 @@ public class BiomeForest extends Biome
         {
             this.theBiomeDecorator.treesPerChunk = -999;
         }
+
+        if (this.type == BiomeForest.Type.FLOWER) //Needs to be done here so we have access to this.type
+        {
+            this.flowers.clear();
+            for (BlockFlower.EnumFlowerType type : BlockFlower.EnumFlowerType.values())
+            {
+                if (type.getBlockType() == BlockFlower.EnumFlowerColor.YELLOW) continue;
+                if (type == BlockFlower.EnumFlowerType.BLUE_ORCHID) type = BlockFlower.EnumFlowerType.POPPY;
+                addFlower(net.minecraft.init.Blocks.RED_FLOWER.getDefaultState().withProperty(net.minecraft.init.Blocks.RED_FLOWER.getTypeProperty(), type), 10);
+            }
+        }
     }
 
     public WorldGenAbstractTree genBigTreeChance(Random rand)
@@ -148,22 +159,6 @@ public class BiomeForest extends Biome
                     break;
                 }
             }
-        }
-    }
-
-    @Override
-    public void addDefaultFlowers()
-    {
-        if (type != BiomeForest.Type.FLOWER)
-        {
-            super.addDefaultFlowers();
-            return;
-        }
-        for (BlockFlower.EnumFlowerType type : BlockFlower.EnumFlowerType.values())
-        {
-            if (type.getBlockType() == BlockFlower.EnumFlowerColor.YELLOW) continue;
-            if (type == BlockFlower.EnumFlowerType.BLUE_ORCHID) type = BlockFlower.EnumFlowerType.POPPY;
-            addFlower(net.minecraft.init.Blocks.RED_FLOWER.getDefaultState().withProperty(net.minecraft.init.Blocks.RED_FLOWER.getTypeProperty(), type), 10);
         }
     }
 

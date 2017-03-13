@@ -174,12 +174,12 @@ public class RenderChunk
 
                         if (tileentityspecialrenderer != null)
                         {
-                            compiledchunk.addTileEntity(tileentity);
 
                             if (tileentityspecialrenderer.isGlobalRenderer(tileentity))
                             {
                                 lvt_10_1_.add(tileentity);
                             }
+                            else compiledchunk.addTileEntity(tileentity); // FORGE: Fix MC-112730
                         }
                     }
                 }

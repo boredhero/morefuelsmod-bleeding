@@ -488,7 +488,7 @@ public class EntityZombie extends EntityMob
 
         if (livingdata == null)
         {
-            livingdata = new EntityZombie.GroupData(this.world.rand.nextFloat() < 0.05F);
+            livingdata = new EntityZombie.GroupData(this.world.rand.nextFloat() < net.minecraftforge.common.ForgeModContainer.zombieBabyChance);
         }
 
         if (livingdata instanceof EntityZombie.GroupData)

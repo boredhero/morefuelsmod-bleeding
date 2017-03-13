@@ -1153,6 +1153,10 @@ public class EntityRenderer implements IResourceManagerReloadListener
                 GlStateManager.loadIdentity();
                 this.setupOverlayRendering();
                 this.renderEndNanoTime = System.nanoTime();
+                // Forge: Fix MC-112292
+                net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.instance.renderEngine = this.mc.getTextureManager();
+                // Forge: also fix rendering text before entering world (not part of MC-112292, but the same reason)
+                net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.instance.fontRenderer = this.mc.fontRendererObj;
             }
 
             if (this.mc.currentScreen != null)

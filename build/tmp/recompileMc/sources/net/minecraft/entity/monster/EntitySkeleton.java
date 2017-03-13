@@ -49,7 +49,7 @@ public class EntitySkeleton extends AbstractSkeleton
         return SoundEvents.ENTITY_SKELETON_DEATH;
     }
 
-    SoundEvent getStepSound()
+    protected SoundEvent getStepSound()
     {
         return SoundEvents.ENTITY_SKELETON_STEP;
     }

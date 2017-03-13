@@ -384,7 +384,7 @@ public abstract class WorldProvider
         {
             if (spawnFuzz < 2) spawnFuzz = 2;
             int spawnFuzzHalf = spawnFuzz / 2;
-            ret = world.getTopSolidOrLiquidBlock(ret.add(world.rand.nextInt(spawnFuzzHalf) - spawnFuzz, 0, world.rand.nextInt(spawnFuzzHalf) - spawnFuzz));
+            ret = world.getTopSolidOrLiquidBlock(ret.add(spawnFuzzHalf - world.rand.nextInt(spawnFuzz), 0, spawnFuzzHalf - world.rand.nextInt(spawnFuzz)));
         }
 
         return ret;
@@ -394,11 +394,11 @@ public abstract class WorldProvider
      *
      * @param entity The entity holding the map, playername, or frame-ENTITYID
      * @param x X Position
-     * @param y Y Position
      * @param z Z Position
+     * @param rotation the regular rotation of the marker
      * @return True to 'spin' the cursor
      */
-    public boolean shouldMapSpin(String entity, double x, double y, double z)
+    public boolean shouldMapSpin(String entity, double x, double z, double rotation)
     {
         return dimensionId < 0;
     }
@@ -411,7 +411,7 @@ public abstract class WorldProvider
      */
     public int getRespawnDimension(net.minecraft.entity.player.EntityPlayerMP player)
     {
-        return 0;
+        return player.getSpawnDimension();
     }
 
     /**

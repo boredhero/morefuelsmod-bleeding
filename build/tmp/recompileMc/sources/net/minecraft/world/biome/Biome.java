@@ -444,7 +444,7 @@ public abstract class Biome extends net.minecraftforge.fml.common.registry.IForg
     @SideOnly(Side.CLIENT)
     public final int getWaterColor()
     {
-        return this.waterColor;
+        return getWaterColorMultiplier();
     }
 
     public final boolean isSnowyBiome()
@@ -501,7 +501,7 @@ public abstract class Biome extends net.minecraftforge.fml.common.registry.IForg
     public void addDefaultFlowers()
     {
         addFlower(Blocks.YELLOW_FLOWER.getDefaultState().withProperty(Blocks.YELLOW_FLOWER.getTypeProperty(), BlockFlower.EnumFlowerType.DANDELION), 20);
-        addFlower(Blocks.RED_FLOWER.getDefaultState().withProperty(Blocks.RED_FLOWER.getTypeProperty(), BlockFlower.EnumFlowerType.POPPY), 20);
+        addFlower(Blocks.RED_FLOWER.getDefaultState().withProperty(Blocks.RED_FLOWER.getTypeProperty(), BlockFlower.EnumFlowerType.POPPY), 10);
     }
 
     /** Register a new plant to be planted when bonemeal is used on grass.

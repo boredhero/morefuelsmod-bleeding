@@ -391,19 +391,19 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             {
                 NBTTagCompound nbttagcompound2 = new NBTTagCompound();
 
+                try
+                {
                 if (entity.writeToNBTOptional(nbttagcompound2))
                 {
-                    try
-                    {
                     chunkIn.setHasEntities(true);
                     nbttaglist1.appendTag(nbttagcompound2);
-                    }
-                    catch (Exception e)
-                    {
-                        net.minecraftforge.fml.common.FMLLog.log(org.apache.logging.log4j.Level.ERROR, e,
-                                "An Entity type %s has thrown an exception trying to write state. It will not persist. Report this to the mod author",
-                                entity.getClass().getName());
-                    }
+                }
+                }
+                catch (Exception e)
+                {
+                    net.minecraftforge.fml.common.FMLLog.log(org.apache.logging.log4j.Level.ERROR, e,
+                            "An Entity type %s has thrown an exception trying to write state. It will not persist. Report this to the mod author",
+                            entity.getClass().getName());
                 }
             }
         }

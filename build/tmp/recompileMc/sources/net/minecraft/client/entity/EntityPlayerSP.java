@@ -162,6 +162,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
+        net.minecraftforge.common.ForgeHooks.onLivingAttack(this, source, amount);
         return false;
     }
 

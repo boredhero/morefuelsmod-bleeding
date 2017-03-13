@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockWeb extends Block
+public class BlockWeb extends Block implements net.minecraftforge.common.IShearable
 {
     public BlockWeb()
     {
@@ -85,5 +85,11 @@ public class BlockWeb extends Block
         {
             super.harvestBlock(worldIn, player, pos, state, te, stack);
         }
+    }
+
+    @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos) { return true; }
+    @Override
+    public java.util.List<ItemStack> onSheared(ItemStack item, IBlockAccess world, BlockPos pos, int fortune) {
+        return com.google.common.collect.Lists.newArrayList(new ItemStack(Item.getItemFromBlock(this)));
     }
 }

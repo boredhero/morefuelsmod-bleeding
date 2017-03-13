@@ -55,7 +55,7 @@ public class ItemMinecart extends Item
                 }
 
                 IBlockState iblockstate1 = world.getBlockState(blockpos.down());
-                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate.getBlock()).getRailDirection(world, blockpos, iblockstate, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
+                BlockRailBase.EnumRailDirection blockrailbase$enumraildirection1 = iblockstate1.getBlock() instanceof BlockRailBase ? ((BlockRailBase)iblockstate1.getBlock()).getRailDirection(world, blockpos.down(), iblockstate1, null) : BlockRailBase.EnumRailDirection.NORTH_SOUTH;
 
                 if (enumfacing != EnumFacing.DOWN && blockrailbase$enumraildirection1.isAscending())
                 {

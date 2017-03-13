@@ -1940,8 +1940,8 @@ public class Minecraft implements IThreadListener, ISnooperInfo
             this.myNetworkManager.processReceivedPackets();
         }
 
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostClientTick();
         this.mcProfiler.endSection();
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().onPostClientTick();
         this.systemTime = getSystemTime();
     }
 

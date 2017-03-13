@@ -479,4 +479,11 @@ public class BlockPistonBase extends BlockDirectional
     {
         return new BlockStateContainer(this, new IProperty[] {FACING, EXTENDED});
     }
+
+    /* ======================================== FORGE START =====================================*/
+    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
+    {
+        IBlockState state = world.getBlockState(pos);
+        return !state.getValue(EXTENDED) && super.rotateBlock(world, pos, axis);
+    }
 }

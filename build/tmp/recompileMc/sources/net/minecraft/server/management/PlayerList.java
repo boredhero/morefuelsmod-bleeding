@@ -520,12 +520,13 @@ public abstract class PlayerList
         World world = mcServer.worldServerForDimension(dimension);
         if (world == null)
         {
-            dimension = 0;
+            dimension = playerIn.getSpawnDimension();
         }
         else if (!world.provider.canRespawnHere())
         {
             dimension = world.provider.getRespawnDimension(playerIn);
         }
+        if (mcServer.worldServerForDimension(dimension) == null) dimension = 0;
 
         playerIn.getServerWorld().getEntityTracker().removePlayerFromTrackers(playerIn);
         playerIn.getServerWorld().getEntityTracker().untrack(playerIn);

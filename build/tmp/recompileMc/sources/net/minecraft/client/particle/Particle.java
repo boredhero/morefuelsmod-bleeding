@@ -309,6 +309,8 @@ public class Particle
     public void move(double x, double y, double z)
     {
         double d0 = y;
+        double origX = x;
+        double origZ = z;
 
         if (this.canCollide)
         {
@@ -341,14 +343,14 @@ public class Particle
         }
 
         this.resetPositionToBB();
-        this.onGround = y != y && d0 < 0.0D;
+        this.onGround = d0 != y && d0 < 0.0D;
 
-        if (x != x)
+        if (origX != x)
         {
             this.motionX = 0.0D;
         }
 
-        if (z != z)
+        if (origZ != z)
         {
             this.motionZ = 0.0D;
         }

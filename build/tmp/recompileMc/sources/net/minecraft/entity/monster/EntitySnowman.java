@@ -31,7 +31,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootTableList;
 
-public class EntitySnowman extends EntityGolem implements IRangedAttackMob
+public class EntitySnowman extends EntityGolem implements IRangedAttackMob, net.minecraftforge.common.IShearable
 {
     private static final DataParameter<Byte> PUMPKIN_EQUIPPED = EntityDataManager.<Byte>createKey(EntitySnowman.class, DataSerializers.BYTE);
 
@@ -165,7 +165,7 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
     {
         ItemStack itemstack = player.getHeldItem(hand);
 
-        if (itemstack.getItem() == Items.SHEARS && this.isPumpkinEquipped() && !this.world.isRemote)
+        if (false && itemstack.getItem() == Items.SHEARS && this.isPumpkinEquipped() && !this.world.isRemote) //Forge: Moved to onSheared
         {
             this.setPumpkinEquipped(false);
             itemstack.damageItem(1, player);
@@ -209,5 +209,13 @@ public class EntitySnowman extends EntityGolem implements IRangedAttackMob
     protected SoundEvent getDeathSound()
     {
         return SoundEvents.ENTITY_SNOWMAN_DEATH;
+    }
+
+    @Override public boolean isShearable(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos) { return this.isPumpkinEquipped(); }
+    @Override
+    public java.util.List<ItemStack> onSheared(ItemStack item, net.minecraft.world.IBlockAccess world, BlockPos pos, int fortune)
+    {
+        this.setPumpkinEquipped(false);
+        return com.google.common.collect.Lists.newArrayList();
     }
 }

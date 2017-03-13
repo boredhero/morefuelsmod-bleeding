@@ -66,7 +66,7 @@ public class ChunkCache implements IBlockAccess
     @Nullable
     public TileEntity getTileEntity(BlockPos pos)
     {
-        return this.getTileEntity(pos, Chunk.EnumCreateEntityType.IMMEDIATE);
+        return this.getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK); // Forge: don't modify world from other threads
     }
 
     @Nullable

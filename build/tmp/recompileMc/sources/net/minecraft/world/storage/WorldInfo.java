@@ -872,6 +872,7 @@ public class WorldInfo
 
     public void setDifficulty(EnumDifficulty newDifficulty)
     {
+        net.minecraftforge.common.ForgeHooks.onDifficultyChange(newDifficulty, this.difficulty);
         this.difficulty = newDifficulty;
     }
 

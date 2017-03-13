@@ -19,34 +19,22 @@
 
 package net.minecraftforge.fml.client;
 
-import java.io.File;
-import java.util.Map.Entry;
-
-import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraftforge.fml.common.DuplicateModsFoundException;
 import net.minecraftforge.fml.common.ModContainer;
 
-public class GuiDupesFound extends GuiErrorScreen
+import java.io.File;
+import java.util.Map.Entry;
+
+public class GuiDupesFound extends GuiErrorBase
 {
 
     private DuplicateModsFoundException dupes;
 
     public GuiDupesFound(DuplicateModsFoundException dupes)
     {
-        super(null,null);
         this.dupes = dupes;
     }
 
-    /**
-     * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the
-     * window resizes, the buttonList is cleared beforehand.
-     */
-    @Override
-    public void initGui()
-    {
-        super.initGui();
-        this.buttonList.clear();
-    }
     /**
      * Draws the screen and all the components in it.
      */
@@ -66,5 +54,6 @@ public class GuiDupesFound extends GuiErrorScreen
             offset+=10;
             this.drawCenteredString(this.fontRendererObj, String.format("%s : %s", mc.getKey().getModId(), mc.getValue().getName()), this.width / 2, offset, 0xEEEEEE);
         }
+        super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }

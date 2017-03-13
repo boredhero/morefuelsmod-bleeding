@@ -1644,13 +1644,13 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
      */
     public float getCelestialAngle(float partialTicks)
     {
-        return this.provider.calculateCelestialAngle(this.worldInfo.getWorldTime(), partialTicks);
+        return this.provider.calculateCelestialAngle(this.getWorldTime(), partialTicks);
     }
 
     @SideOnly(Side.CLIENT)
     public int getMoonPhase()
     {
-        return this.provider.getMoonPhase(this.worldInfo.getWorldTime());
+        return this.provider.getMoonPhase(this.getWorldTime());
     }
 
     /**
@@ -1663,7 +1663,7 @@ public abstract class World implements IBlockAccess, net.minecraftforge.common.c
 
     public float getCurrentMoonPhaseFactorBody()
     {
-        return WorldProvider.MOON_PHASE_FACTORS[this.provider.getMoonPhase(this.worldInfo.getWorldTime())];
+        return WorldProvider.MOON_PHASE_FACTORS[this.provider.getMoonPhase(this.getWorldTime())];
     }
 
     /**

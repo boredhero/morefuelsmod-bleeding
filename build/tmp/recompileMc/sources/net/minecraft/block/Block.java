@@ -1996,10 +1996,39 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
         IBlockState state = world.getBlockState(pos);
         for (IProperty<?> prop : state.getProperties().keySet())
         {
-            if (prop.getName().equals("facing") || prop.getName().equals("rotation"))
+            if ((prop.getName().equals("facing") || prop.getName().equals("rotation")) && prop.getValueClass() == EnumFacing.class)
             {
-                world.setBlockState(pos, state.cycleProperty(prop));
-                return true;
+                Block block = state.getBlock();
+                if (!(block instanceof BlockBed) && !(block instanceof BlockPistonExtension))
+                {
+                    IBlockState newState;
+                    //noinspection unchecked
+                    IProperty<EnumFacing> facingProperty = (IProperty<EnumFacing>) prop;
+                    EnumFacing facing = state.getValue(facingProperty);
+                    java.util.Collection<EnumFacing> validFacings = facingProperty.getAllowedValues();
+
+                    // rotate horizontal facings clockwise
+                    if (validFacings.size() == 4 && !validFacings.contains(EnumFacing.UP) && !validFacings.contains(EnumFacing.DOWN))
+                    {
+                        newState = state.withProperty(facingProperty, facing.rotateY());
+                    }
+                    else
+                    {
+                        // rotate other facings about the axis
+                        EnumFacing rotatedFacing = facing.rotateAround(axis.getAxis());
+                        if (validFacings.contains(rotatedFacing))
+                        {
+                            newState = state.withProperty(facingProperty, rotatedFacing);
+                        }
+                        else // abnormal facing property, just cycle it
+                        {
+                            newState = state.cycleProperty(facingProperty);
+                        }
+                    }
+
+                    world.setBlockState(pos, newState);
+                    return true;
+                }
             }
         }
         return false;
@@ -2018,7 +2047,7 @@ public class Block extends net.minecraftforge.fml.common.registry.IForgeRegistry
         IBlockState state = world.getBlockState(pos);
         for (IProperty<?> prop : state.getProperties().keySet())
         {
-            if (prop.getName().equals("facing") && prop.getValueClass() == EnumFacing.class)
+            if ((prop.getName().equals("facing") || prop.getName().equals("rotation")) && prop.getValueClass() == EnumFacing.class)
             {
                 @SuppressWarnings("unchecked")
                 java.util.Collection<EnumFacing> values = ((java.util.Collection<EnumFacing>)prop.getAllowedValues());

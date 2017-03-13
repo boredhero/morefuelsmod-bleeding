@@ -107,7 +107,7 @@ public abstract class AbstractSkeleton extends EntityMob implements IRangedAttac
         this.playSound(this.getStepSound(), 0.15F, 1.0F);
     }
 
-    abstract SoundEvent getStepSound();
+    protected abstract SoundEvent getStepSound();
 
     /**
      * Get this Entity's EnumCreatureAttribute

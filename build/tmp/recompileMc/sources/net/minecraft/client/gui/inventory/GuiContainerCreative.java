@@ -1198,5 +1198,37 @@ public class GuiContainerCreative extends InventoryEffectRenderer
         {
             return this.slot.canTakeStack(playerIn);
         }
+
+        /*========================================= FORGE START =====================================*/
+        public net.minecraft.util.ResourceLocation getBackgroundLocation()
+        {
+            return this.slot.getBackgroundLocation();
+        }
+
+        public void setBackgroundLocation(net.minecraft.util.ResourceLocation texture)
+        {
+            this.slot.setBackgroundLocation(texture);
+        }
+
+        public void setBackgroundName(String name)
+        {
+            this.slot.setBackgroundName(name);
+        }
+
+        public net.minecraft.client.renderer.texture.TextureAtlasSprite getBackgroundSprite()
+        {
+            return this.slot.getBackgroundSprite();
+        }
+
+        public int getSlotIndex()
+        {
+            return this.slot.getSlotIndex();
+        }
+
+        public boolean isSameInventory(Slot other)
+        {
+            return this.slot.isSameInventory(other);
+        }
+        /*========================================= FORGE END =====================================*/
     }
 }

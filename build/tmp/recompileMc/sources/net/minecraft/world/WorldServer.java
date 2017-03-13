@@ -191,8 +191,8 @@ public class WorldServer extends World implements IThreadListener
         {
             if (this.getGameRules().getBoolean("doDaylightCycle"))
             {
-                long i = this.worldInfo.getWorldTime() + 24000L;
-                this.worldInfo.setWorldTime(i - i % 24000L);
+                long i = this.getWorldTime() + 24000L;
+                this.setWorldTime(i - i % 24000L);
             }
 
             this.wakeAllPlayers();
@@ -218,7 +218,7 @@ public class WorldServer extends World implements IThreadListener
 
         if (this.getGameRules().getBoolean("doDaylightCycle"))
         {
-            this.worldInfo.setWorldTime(this.worldInfo.getWorldTime() + 1L);
+            this.setWorldTime(this.getWorldTime() + 1L);
         }
 
         this.theProfiler.endStartSection("tickPending");

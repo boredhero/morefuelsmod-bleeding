@@ -636,4 +636,10 @@ public class BlockChest extends BlockContainer
         BASIC,
         TRAP;
     }
+
+    /* ======================================== FORGE START =====================================*/
+    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis)
+    {
+        return !isDoubleChest(world, pos) && super.rotateBlock(world, pos, axis);
+    }
 }

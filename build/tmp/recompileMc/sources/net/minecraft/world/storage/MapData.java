@@ -228,7 +228,7 @@ public class MapData extends WorldSavedData
 
             if (p_191095_2_.provider.shouldMapSpin(p_191095_3_, p_191095_4_, p_191095_6_, p_191095_8_))
             {
-                int l = (int)(p_191095_2_.getWorldInfo().getWorldTime() / 10L);
+                int l = (int)(p_191095_2_.getWorldTime() / 10L);
                 b2 = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
             }
         }

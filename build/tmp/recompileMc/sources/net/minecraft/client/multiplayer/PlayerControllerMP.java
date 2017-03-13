@@ -432,9 +432,7 @@ public class PlayerControllerMP
                 if (ret != EnumActionResult.PASS) return ret;
 
                 IBlockState iblockstate = worldIn.getBlockState(stack);
-                boolean bypass = true;
-                for (ItemStack s : new ItemStack[]{player.getHeldItemMainhand(), player.getHeldItemOffhand()}) //TODO: Expand to more hands? player.inv.getHands()?
-                    bypass = bypass && (s.isEmpty() || s.getItem().doesSneakBypassUse(s, worldIn, stack, player));
+                boolean bypass = itemstack.isEmpty() || itemstack.getItem().doesSneakBypassUse(itemstack, worldIn, stack, player);
 
                 if ((!player.isSneaking() || bypass || event.getUseBlock() == net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW))
                 {

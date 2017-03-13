@@ -38,7 +38,7 @@ public class TileEntityRendererDispatcher
 {
     public final Map < Class <? extends TileEntity > , TileEntitySpecialRenderer <? extends TileEntity >> mapSpecialRenderers = Maps. < Class <? extends TileEntity > , TileEntitySpecialRenderer <? extends TileEntity >> newHashMap();
     public static TileEntityRendererDispatcher instance = new TileEntityRendererDispatcher();
-    private FontRenderer fontRenderer;
+    public FontRenderer fontRenderer;
     /** The player's current X position (same as playerX) */
     public static double staticPlayerX;
     /** The player's current Y position (same as playerY) */

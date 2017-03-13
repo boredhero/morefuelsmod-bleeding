@@ -58,7 +58,7 @@ public class PotionEffect implements Comparable<PotionEffect>
         this.amplifier = other.amplifier;
         this.isAmbient = other.isAmbient;
         this.showParticles = other.showParticles;
-        this.curativeItems = other.curativeItems;
+        this.curativeItems = other.curativeItems == null ? null : new java.util.ArrayList<net.minecraft.item.ItemStack>(other.curativeItems);
     }
 
     /**
@@ -216,6 +216,7 @@ public class PotionEffect implements Comparable<PotionEffect>
         nbt.setInteger("Duration", this.getDuration());
         nbt.setBoolean("Ambient", this.getIsAmbient());
         nbt.setBoolean("ShowParticles", this.doesShowParticles());
+        writeCurativeItems(nbt);
         return nbt;
     }
 
@@ -243,7 +244,7 @@ public class PotionEffect implements Comparable<PotionEffect>
                 flag1 = nbt.getBoolean("ShowParticles");
             }
 
-            return new PotionEffect(potion, k, j < 0 ? 0 : j, flag, flag1);
+            return readCurativeItems(new PotionEffect(potion, k, j < 0 ? 0 : j, flag, flag1), nbt);
         }
     }
 
@@ -274,22 +275,23 @@ public class PotionEffect implements Comparable<PotionEffect>
     /* ======================================== FORGE START =====================================*/
     /***
      * Returns a list of curative items for the potion effect
+     * By default, this list is initialized using {@link Potion#getCurativeItems}
+     *
      * @return The list (ItemStack) of curative items for the potion effect
      */
     public java.util.List<net.minecraft.item.ItemStack> getCurativeItems()
     {
         if (this.curativeItems == null) //Lazy load this so that we don't create a circular dep on Items.
         {
-            this.curativeItems = new java.util.ArrayList<net.minecraft.item.ItemStack>();
-            this.curativeItems.add(new net.minecraft.item.ItemStack(net.minecraft.init.Items.MILK_BUCKET));
+            this.curativeItems = getPotion().getCurativeItems();
         }
         return this.curativeItems;
     }
 
     /***
      * Checks the given ItemStack to see if it is in the list of curative items for the potion effect
-     * @param stack The ItemStack being checked against the list of curative items for the potion effect
-     * @return true if the given ItemStack is in the list of curative items for the potion effect, false otherwise
+     * @param stack The ItemStack being checked against the list of curative items for this PotionEffect
+     * @return true if the given ItemStack is in the list of curative items for this PotionEffect, false otherwise
      */
     public boolean isCurativeItem(net.minecraft.item.ItemStack stack)
     {
@@ -305,7 +307,7 @@ public class PotionEffect implements Comparable<PotionEffect>
     }
 
     /***
-     * Sets the array of curative items for the potion effect
+     * Sets the list of curative items for this potion effect, overwriting any already present
      * @param curativeItems The list of ItemStacks being set to the potion effect
      */
     public void setCurativeItems(java.util.List<net.minecraft.item.ItemStack> curativeItems)
@@ -314,7 +316,7 @@ public class PotionEffect implements Comparable<PotionEffect>
     }
 
     /***
-     * Adds the given stack to list of curative items for the potion effect
+     * Adds the given stack to the list of curative items for this PotionEffect
      * @param stack The ItemStack being added to the curative item list
      */
     public void addCurativeItem(net.minecraft.item.ItemStack stack)
@@ -323,5 +325,31 @@ public class PotionEffect implements Comparable<PotionEffect>
         {
             this.getCurativeItems().add(stack);
         }
+    }
+
+    private void writeCurativeItems(NBTTagCompound nbt)
+    {
+        net.minecraft.nbt.NBTTagList list = new net.minecraft.nbt.NBTTagList();
+        for (net.minecraft.item.ItemStack stack : getCurativeItems())
+        {
+            list.appendTag(stack.writeToNBT(new NBTTagCompound()));
+        }
+        nbt.setTag("CurativeItems", list);
+    }
+
+    private static PotionEffect readCurativeItems(PotionEffect effect, NBTTagCompound nbt)
+    {
+        if (nbt.hasKey("CurativeItems", net.minecraftforge.common.util.Constants.NBT.TAG_LIST))
+        {
+            java.util.List<net.minecraft.item.ItemStack> items = new java.util.ArrayList<net.minecraft.item.ItemStack>();
+            net.minecraft.nbt.NBTTagList list = nbt.getTagList("CurativeItems", net.minecraftforge.common.util.Constants.NBT.TAG_COMPOUND);
+            for (int i = 0; i < list.tagCount(); i++)
+            {
+                items.add(new net.minecraft.item.ItemStack(list.getCompoundTagAt(i)));
+            }
+            effect.setCurativeItems(items);
+        }
+
+        return effect;
     }
 }
