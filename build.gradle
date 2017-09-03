@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "1.6.1"
 group = "com.bored.morefuelsmod" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "morefuelsmod-bleeding"
+archivesBaseName = "morefuelsmod"
 
 sourceCompatibility = targetCompatibility = "1.6" // Need this here so eclipse task generates correctly.
 compileJava {
