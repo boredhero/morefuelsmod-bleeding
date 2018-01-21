@@ -15,4 +15,6 @@
 <fullyQualifiedTypeName name="net.minecraft.world.gen.feature.WorldGenMinable"/>
 <fullyQualifiedTypeName name="net.minecraft.util.math.BlockPos"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.world.ModWorldGen"/>
+<fullyQualifiedTypeName name="net.minecraftforge.common.config.Configuration"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.util.RFtL"/>
 </qualifiedTypeNameHistroy>

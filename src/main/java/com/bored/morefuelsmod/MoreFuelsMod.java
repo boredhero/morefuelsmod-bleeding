@@ -4,6 +4,7 @@ import com.bored.morefuelsmod.block.ModBlocks;
 import com.bored.morefuelsmod.item.ModItems;
 import com.bored.morefuelsmod.proxy.CommonProxy;
 import com.bored.morefuelsmod.util.MoreFuelsModTab;
+import com.bored.morefuelsmod.util.RFtL;
 import com.bored.morefuelsmod.util.Smelting;
 import com.bored.morefuelsmod.world.ModWorldGen;
 
@@ -12,6 +13,7 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -30,7 +32,7 @@ public class MoreFuelsMod {
 
 	public static final String modId = "morefuelsmod";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.6.2-ALPHA001";
+	public static final String version = "1.6.2-ALPHA002";
 
 	@Mod.Instance(modId)
 	public static MoreFuelsMod instance;
@@ -42,6 +44,11 @@ public class MoreFuelsMod {
 	public void preInit(FMLPreInitializationEvent event) {
 		System.out.println(name + " " + version + " is loading!");
 		GameRegistry.registerWorldGenerator(new ModWorldGen(), 3);
+		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
+		config.load();
+		boolean enableRFtLrecipe = config.get(Configuration.CATEGORY_GENERAL, "enableRFtLrecipe", true).getBoolean(true);
+		if(enableRFtLrecipe)
+			RFtL.init();
 	}
 
 	@Mod.EventHandler

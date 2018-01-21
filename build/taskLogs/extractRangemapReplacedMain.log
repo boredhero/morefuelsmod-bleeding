@@ -1,44 +1,59 @@
 Symbol range map extraction starting
-Processing 14 files
-startProcessing "com\bored\morefuelsmod\MoreFuelsMod.java" md5: d50a347a00185c097d0ad1cfc71e4df7
+Processing 15 files
+startProcessing "com\bored\morefuelsmod\MoreFuelsMod.java" md5: 3f7392c9c77b4fe03149dbb1074da3ca
 endProcessing "com\bored\morefuelsmod\MoreFuelsMod.java"
 
 startProcessing "com\bored\morefuelsmod\block\BlockBase.java" md5: 7adc448cdb7d45bad765f564218f5606
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockBase.java"
 
 startProcessing "com\bored\morefuelsmod\block\BlockLavaOre.java" md5: 4dd10f07322a8312b8d85ff6c4886262
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockLavaOre.java"
 
 startProcessing "com\bored\morefuelsmod\block\BlockOre.java" md5: 3626d17abeae243d173b657d14ff0b52
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockOre.java"
 
 startProcessing "com\bored\morefuelsmod\block\BlockStone.java" md5: c2b8ee57beaa153dfb43cfdf099ff2ac
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockStone.java"
 
 startProcessing "com\bored\morefuelsmod\block\BlockWood.java" md5: 6d2e4eaa535df2053f548decc4ea347a
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockWood.java"
 
-startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: 2fa8324b855e605130ff5de3e364bb52
+startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: e93af6e7775c3eff792b3d11983c1daf
 endProcessing "com\bored\morefuelsmod\block\ModBlocks.java"
 
 startProcessing "com\bored\morefuelsmod\item\ItemBase.java" md5: 12b01f9611ca6374dc964ee9581caa11
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\item\ItemBase.java"
 
 startProcessing "com\bored\morefuelsmod\item\ModItems.java" md5: 405fa4ff409d84804f859f2bb9ec6488
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\item\ModItems.java"
 
 startProcessing "com\bored\morefuelsmod\proxy\ClientProxy.java" md5: 79745b694474a9caa70241f44bfb7481
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\proxy\ClientProxy.java"
 
 startProcessing "com\bored\morefuelsmod\proxy\CommonProxy.java" md5: 7b2562cedb70da5f980ba08a772c2e08
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\proxy\CommonProxy.java"
 
 startProcessing "com\bored\morefuelsmod\util\MoreFuelsModTab.java" md5: a25e4146e5609c02b966b7f34281e125
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\util\MoreFuelsModTab.java"
 
+startProcessing "com\bored\morefuelsmod\util\RFtL.java" md5: b80826a27046fb023f3d8d33a392fb69
+endProcessing "com\bored\morefuelsmod\util\RFtL.java"
+
 startProcessing "com\bored\morefuelsmod\util\Smelting.java" md5: 6284ebc76667847e1aab2ecc93e8a011
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\util\Smelting.java"
 
 startProcessing "com\bored\morefuelsmod\world\ModWorldGen.java" md5: c9492531aa1c00adc2063f6de63e887a
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\world\ModWorldGen.java"
 
