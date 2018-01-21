@@ -2,4 +2,9 @@
 <qualifiedTypeNameHistroy>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.util.MoreFuelsModTab"/>
 <fullyQualifiedTypeName name="com.bored.morefuelsmod.MoreFuelsMod"/>
+<fullyQualifiedTypeName name="net.minecraft.item.Item"/>
+<fullyQualifiedTypeName name="net.minecraft.block.state.IBlockState"/>
+<fullyQualifiedTypeName name="net.minecraft.block.material.Material"/>
+<fullyQualifiedTypeName name="com.bored.morefuelsmod.item.ModItems"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
 </qualifiedTypeNameHistroy>
