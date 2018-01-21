@@ -30,7 +30,7 @@ public class BlockBase extends Block {
 	
 	@Override
 	public BlockBase setCreativeTab(CreativeTabs tab) {
-		super.setCreativeTab(tab);
+		super.setCreativeTab(MoreFuelsMod.creativeTab);
 		return this;
 	}
 }

@@ -3,6 +3,7 @@ package com.bored.morefuelsmod;
 import com.bored.morefuelsmod.block.ModBlocks;
 import com.bored.morefuelsmod.item.ModItems;
 import com.bored.morefuelsmod.proxy.CommonProxy;
+import com.bored.morefuelsmod.util.MoreFuelsModTab;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.SoundEvents;
@@ -49,6 +50,8 @@ public class MoreFuelsMod {
 	public void postInit(FMLPostInitializationEvent event) {
 
 	}
+	
+	public static final MoreFuelsModTab creativeTab = new MoreFuelsModTab();
 	
 	@Mod.EventBusSubscriber
 	public static class RegistrationHandler {

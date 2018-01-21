@@ -1,5 +1,7 @@
 package com.bored.morefuelsmod.block;
 
+import com.bored.morefuelsmod.MoreFuelsMod;
+
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -8,7 +10,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class ModBlocks {
 	
-	public static BlockOre oreBituminousCoal = new BlockOre("ore_bituminous_coal").setCreativeTab(CreativeTabs.MATERIALS);
+	public static BlockOre oreBituminousCoal = new BlockOre("ore_bituminous_coal").setCreativeTab(MoreFuelsMod.creativeTab);
 	
 	public static void register(IForgeRegistry<Block> registry) {
 		registry.registerAll(
