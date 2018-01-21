@@ -9,15 +9,10 @@ public class MoreFuelsModTab extends CreativeTabs{
 	
 	public MoreFuelsModTab() {
 		super(MoreFuelsMod.modId);
-		setBackgroundImageName("item_search.png");
 	}
 	
 	@Override
 	public ItemStack getTabIconItem() {
 		return new ItemStack(ModItems.cokeItem);
-	}
-	@Override
-	public boolean hasSearchBar(){
-		return true;
 	}
 }
