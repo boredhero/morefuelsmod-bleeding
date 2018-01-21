@@ -1,6 +1,6 @@
 Symbol range map extraction starting
 Processing 15 files
-startProcessing "com\bored\morefuelsmod\MoreFuelsMod.java" md5: 3f7392c9c77b4fe03149dbb1074da3ca
+startProcessing "com\bored\morefuelsmod\MoreFuelsMod.java" md5: bc2a1bd52a5fe38f701b8982c0b4b62d
 endProcessing "com\bored\morefuelsmod\MoreFuelsMod.java"
 
 startProcessing "com\bored\morefuelsmod\block\BlockBase.java" md5: 7adc448cdb7d45bad765f564218f5606
@@ -24,6 +24,7 @@ Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\BlockWood.java"
 
 startProcessing "com\bored\morefuelsmod\block\ModBlocks.java" md5: e93af6e7775c3eff792b3d11983c1daf
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\block\ModBlocks.java"
 
 startProcessing "com\bored\morefuelsmod\item\ItemBase.java" md5: 12b01f9611ca6374dc964ee9581caa11
@@ -47,6 +48,7 @@ Cache Hit!
 endProcessing "com\bored\morefuelsmod\util\MoreFuelsModTab.java"
 
 startProcessing "com\bored\morefuelsmod\util\RFtL.java" md5: b80826a27046fb023f3d8d33a392fb69
+Cache Hit!
 endProcessing "com\bored\morefuelsmod\util\RFtL.java"
 
 startProcessing "com\bored\morefuelsmod\util\Smelting.java" md5: 6284ebc76667847e1aab2ecc93e8a011

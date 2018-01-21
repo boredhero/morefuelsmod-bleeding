@@ -32,7 +32,7 @@ public class MoreFuelsMod {
 
 	public static final String modId = "morefuelsmod";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.6.2-ALPHA002";
+	public static final String version = "1.6.2-ALPHA003";
 
 	@Mod.Instance(modId)
 	public static MoreFuelsMod instance;
@@ -49,6 +49,7 @@ public class MoreFuelsMod {
 		boolean enableRFtLrecipe = config.get(Configuration.CATEGORY_GENERAL, "enableRFtLrecipe", true).getBoolean(true);
 		if(enableRFtLrecipe)
 			RFtL.init();
+		config.save();
 	}
 
 	@Mod.EventHandler
