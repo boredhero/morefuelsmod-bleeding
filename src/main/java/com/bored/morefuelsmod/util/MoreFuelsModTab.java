@@ -14,7 +14,7 @@ public class MoreFuelsModTab extends CreativeTabs{
 	
 	@Override
 	public ItemStack getTabIconItem() {
-		return new ItemStack(ModItems.cokeItem);
+		return new ItemStack(ModItems.coke);
 	}
 	@Override
 	public boolean hasSearchBar(){

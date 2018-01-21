@@ -1,0 +1,38 @@
+package com.bored.morefuelsmod.block;
+
+import com.bored.morefuelsmod.MoreFuelsMod;
+
+import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraftforge.registries.IForgeRegistry;
+
+public class ModBlocks {
+	
+	public static BlockOre oreBituminousCoal = new BlockOre("ore_bituminous_coal").setCreativeTab(MoreFuelsMod.creativeTab);
+	public static BlockStone blockCokeBlock = new BlockStone("block_coke_block").setCreativeTab(MoreFuelsMod.creativeTab);
+	public static BlockStone blockBituminousCoal = new BlockStone("block_bituminous_coal").setCreativeTab(MoreFuelsMod.creativeTab);
+	
+	public static void register(IForgeRegistry<Block> registry) {
+		registry.registerAll(
+					oreBituminousCoal,
+					blockCokeBlock,
+					blockBituminousCoal
+				);
+	}
+	
+	public static void registerItemBlocks(IForgeRegistry<Item> registry) {
+		registry.registerAll(
+					oreBituminousCoal.createItemBlock(),
+					blockCokeBlock.createItemBlock(),
+					blockBituminousCoal.createItemBlock()
+				);
+	}
+	
+	public static void registerModels() {
+		oreBituminousCoal.registerItemModel(Item.getItemFromBlock(oreBituminousCoal));
+		blockCokeBlock.registerItemModel(Item.getItemFromBlock(blockCokeBlock));
+		blockBituminousCoal.registerItemModel(Item.getItemFromBlock(blockBituminousCoal));
+	}
+}

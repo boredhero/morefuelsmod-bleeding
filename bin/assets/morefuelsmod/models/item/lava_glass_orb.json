@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "morefuelsmod:items/coke_item"
+        "layer0": "morefuelsmod:items/lava_glass_orb"
     }
 }
