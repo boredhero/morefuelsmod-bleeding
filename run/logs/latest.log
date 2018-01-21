@@ -1,27 +1,30 @@
-[15:01:27] [main/INFO]: Setting user: Player888
-[15:01:30] [main/WARN]: Skipping bad option: lastServer:
-[15:01:30] [main/INFO]: LWJGL Version: 2.9.4
-[15:01:32] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:More Fuels Mod
-[15:01:34] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[15:01:34] [Thread-5/INFO]: Initializing LWJGL OpenAL
-[15:01:34] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[15:01:34] [Thread-5/INFO]: OpenAL initialized.
-[15:01:34] [Sound Library Loader/INFO]: Sound engine started
-[15:01:37] [main/INFO]: Created: 512x512 textures-atlas
-[15:01:38] [main/WARN]: Skipping bad option: lastServer:
-[15:01:38] [main/INFO]: Narrator library for x64 successfully loaded
-[15:01:39] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[15:01:44] [Server thread/INFO]: Starting integrated minecraft server version 1.12.2
-[15:01:44] [Server thread/INFO]: Generating keypair
-[15:01:45] [Server thread/INFO]: Loaded 488 advancements
-[15:01:45] [Server thread/INFO]: Preparing start region for level 0
-[15:01:46] [Server thread/INFO]: Preparing spawn area: 99%
-[15:01:46] [Server thread/INFO]: Changing view distance to 12, from 10
-[15:01:47] [Server thread/INFO]: Player888[local:E:2afe1d99] logged in with entity id 381 at (233.42476223150297, 64.0405538233875, 202.89520149000435)
-[15:01:47] [Server thread/INFO]: Player888 joined the game
-[15:01:48] [Server thread/INFO]: Saving and pausing game...
-[15:01:48] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/overworld
-[15:01:48] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@3ec9f4e4[id=6b45a986-a4aa-3b68-85a3-c5041d0b6192,name=Player888,properties={},legacy=false]
+[15:34:41] [main/INFO]: Setting user: Player690
+[15:34:44] [main/WARN]: Skipping bad option: lastServer:
+[15:34:44] [main/INFO]: LWJGL Version: 2.9.4
+[15:34:47] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:More Fuels Mod
+[15:34:49] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[15:34:49] [Thread-5/INFO]: Initializing LWJGL OpenAL
+[15:34:49] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[15:34:49] [Thread-5/INFO]: OpenAL initialized.
+[15:34:50] [Sound Library Loader/INFO]: Sound engine started
+[15:34:53] [main/INFO]: Created: 512x512 textures-atlas
+[15:34:55] [main/WARN]: Skipping bad option: lastServer:
+[15:34:55] [main/INFO]: Narrator library for x64 successfully loaded
+[15:34:56] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[15:35:12] [Server thread/INFO]: Starting integrated minecraft server version 1.12.2
+[15:35:12] [Server thread/INFO]: Generating keypair
+[15:35:13] [Server thread/INFO]: Loaded 488 advancements
+[15:35:13] [Server thread/INFO]: Preparing start region for level 0
+[15:35:14] [Server thread/INFO]: Preparing spawn area: 63%
+[15:35:15] [Server thread/INFO]: Changing view distance to 12, from 10
+[15:35:16] [Server thread/INFO]: Player690[local:E:97ceb3ac] logged in with entity id 323 at (-260.43561252162164, 65.05194254118017, -67.71904831022971)
+[15:35:16] [Server thread/INFO]: Player690 joined the game
+[15:35:16] [Server thread/INFO]: Saving and pausing game...
+[15:35:16] [Server thread/INFO]: Saving chunks for level 'ore test'/overworld
+[15:35:16] [Server thread/INFO]: Saving chunks for level 'ore test'/the_nether
+[15:35:16] [Server thread/INFO]: Saving chunks for level 'ore test'/the_end
+[15:35:16] [main/INFO]: Loaded 4 advancements
+[15:35:17] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@76734028[id=376eb988-e6dd-3105-bb50-572ead49ce98,name=Player690,properties={},legacy=false]
 com.mojang.authlib.exceptions.AuthenticationException: The client has sent too many requests within a certain amount of time
 	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:79) ~[YggdrasilAuthenticationService.class:?]
 	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:180) [YggdrasilMinecraftSessionService.class:?]
@@ -43,53 +46,19 @@ com.mojang.authlib.exceptions.AuthenticationException: The client has sent too m
 	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) [?:1.8.0_151]
 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) [?:1.8.0_151]
 	at java.lang.Thread.run(Unknown Source) [?:1.8.0_151]
-[15:01:48] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/the_nether
-[15:01:48] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/the_end
-[15:01:48] [main/INFO]: Loaded 3 advancements
-[15:02:02] [main/INFO]: Loaded 5 advancements
-[15:02:04] [Server thread/INFO]: Saving and pausing game...
-[15:02:04] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/overworld
-[15:02:04] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/the_nether
-[15:02:04] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/the_end
-[15:02:23] [Server thread/INFO]: Saving and pausing game...
-[15:02:23] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/overworld
-[15:02:23] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/the_nether
-[15:02:23] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/the_end
-[15:02:24] [Server thread/INFO]: Stopping server
-[15:02:24] [Server thread/INFO]: Saving players
-[15:02:24] [Server thread/INFO]: Player888 lost connection: Disconnected
-[15:02:24] [Server thread/INFO]: Player888 left the game
-[15:02:24] [Server thread/INFO]: Stopping singleplayer server as player logged out
-[15:02:24] [Server thread/INFO]: Saving worlds
-[15:02:24] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/overworld
-[15:02:24] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/the_nether
-[15:02:24] [Server thread/INFO]: Saving chunks for level 'bleeding test world'/the_end
-[15:02:41] [Server thread/INFO]: Starting integrated minecraft server version 1.12.2
-[15:02:41] [Server thread/INFO]: Generating keypair
-[15:02:42] [Server thread/INFO]: Loaded 488 advancements
-[15:02:42] [Server thread/INFO]: Preparing start region for level 0
-[15:02:43] [Server thread/INFO]: Preparing spawn area: 12%
-[15:02:44] [Server thread/INFO]: Preparing spawn area: 27%
-[15:02:45] [Server thread/INFO]: Preparing spawn area: 45%
-[15:02:46] [Server thread/INFO]: Preparing spawn area: 63%
-[15:02:47] [Server thread/INFO]: Preparing spawn area: 81%
-[15:02:48] [Server thread/INFO]: Changing view distance to 12, from 10
-[15:02:48] [Server thread/INFO]: Player888[local:E:a7feb86f] logged in with entity id 1307 at (-247.5, 63.0, -47.5)
-[15:02:48] [Server thread/INFO]: Player888 joined the game
-[15:03:18] [main/INFO]: Loaded 7 advancements
-[15:03:38] [Server thread/INFO]: Saving and pausing game...
-[15:03:38] [Server thread/INFO]: Saving chunks for level 'ore test'/overworld
-[15:03:39] [Server thread/INFO]: Saving chunks for level 'ore test'/the_nether
-[15:03:39] [Server thread/INFO]: Saving chunks for level 'ore test'/the_end
-[15:03:39] [Server thread/INFO]: Stopping server
-[15:03:39] [Server thread/INFO]: Saving players
-[15:03:39] [Server thread/INFO]: Player888 lost connection: Disconnected
-[15:03:39] [Server thread/INFO]: Player888 left the game
-[15:03:39] [Server thread/INFO]: Stopping singleplayer server as player logged out
-[15:03:39] [Server thread/INFO]: Saving worlds
-[15:03:39] [Server thread/INFO]: Saving chunks for level 'ore test'/overworld
-[15:03:39] [Server thread/INFO]: Saving chunks for level 'ore test'/the_nether
-[15:03:39] [Server thread/INFO]: Saving chunks for level 'ore test'/the_end
-[15:03:40] [main/INFO]: Stopping!
-[15:03:40] [main/INFO]: SoundSystem shutting down...
-[15:03:41] [main/WARN]: Author: Paul Lamb, www.paulscode.com
+[15:35:28] [Server thread/INFO]: Saving and pausing game...
+[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/overworld
+[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/the_nether
+[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/the_end
+[15:35:28] [Server thread/INFO]: Stopping server
+[15:35:28] [Server thread/INFO]: Saving players
+[15:35:28] [Server thread/INFO]: Player690 lost connection: Disconnected
+[15:35:28] [Server thread/INFO]: Player690 left the game
+[15:35:28] [Server thread/INFO]: Stopping singleplayer server as player logged out
+[15:35:28] [Server thread/INFO]: Saving worlds
+[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/overworld
+[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/the_nether
+[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/the_end
+[15:35:30] [main/INFO]: Stopping!
+[15:35:30] [main/INFO]: SoundSystem shutting down...
+[15:35:30] [main/WARN]: Author: Paul Lamb, www.paulscode.com

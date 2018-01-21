@@ -19,7 +19,7 @@ public class ModBlocks {
 	public static BlockStone blockCreativeInfiniteFuel = new BlockStone("block_creative_infinite_fuel").setCreativeTab(MoreFuelsMod.creativeTab);
 	public static BlockLavaOre oreLava = new BlockLavaOre("ore_lava").setCreativeTab(MoreFuelsMod.creativeTab);
 	public static BlockWood blockPelletFuel = new BlockWood("block_pellet_fuel").setCreativeTab(MoreFuelsMod.creativeTab);
-	public static BlockWood blockCompressedPelletFuel = new BlockWood("block_compressed_pellet_fuel");
+	public static BlockWood blockCompressedPelletFuel = new BlockWood("block_compressed_pellet_fuel").setCreativeTab(MoreFuelsMod.creativeTab);
 	
 	public static void register(IForgeRegistry<Block> registry) {
 		registry.registerAll(

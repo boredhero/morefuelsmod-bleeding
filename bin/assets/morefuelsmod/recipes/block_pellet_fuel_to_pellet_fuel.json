@@ -6,6 +6,6 @@
 		}
 	],
 	"result": {
-		"item": "morefuelsmod:pellet_fuel"
+		"item": "morefuelsmod:pellet_fuel", "count":9
 	}
 }
