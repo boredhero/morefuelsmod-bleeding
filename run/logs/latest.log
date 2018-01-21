@@ -1,64 +1,16 @@
-[15:34:41] [main/INFO]: Setting user: Player690
-[15:34:44] [main/WARN]: Skipping bad option: lastServer:
-[15:34:44] [main/INFO]: LWJGL Version: 2.9.4
-[15:34:47] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:More Fuels Mod
-[15:34:49] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[15:34:49] [Thread-5/INFO]: Initializing LWJGL OpenAL
-[15:34:49] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[15:34:49] [Thread-5/INFO]: OpenAL initialized.
-[15:34:50] [Sound Library Loader/INFO]: Sound engine started
-[15:34:53] [main/INFO]: Created: 512x512 textures-atlas
-[15:34:55] [main/WARN]: Skipping bad option: lastServer:
-[15:34:55] [main/INFO]: Narrator library for x64 successfully loaded
-[15:34:56] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[15:35:12] [Server thread/INFO]: Starting integrated minecraft server version 1.12.2
-[15:35:12] [Server thread/INFO]: Generating keypair
-[15:35:13] [Server thread/INFO]: Loaded 488 advancements
-[15:35:13] [Server thread/INFO]: Preparing start region for level 0
-[15:35:14] [Server thread/INFO]: Preparing spawn area: 63%
-[15:35:15] [Server thread/INFO]: Changing view distance to 12, from 10
-[15:35:16] [Server thread/INFO]: Player690[local:E:97ceb3ac] logged in with entity id 323 at (-260.43561252162164, 65.05194254118017, -67.71904831022971)
-[15:35:16] [Server thread/INFO]: Player690 joined the game
-[15:35:16] [Server thread/INFO]: Saving and pausing game...
-[15:35:16] [Server thread/INFO]: Saving chunks for level 'ore test'/overworld
-[15:35:16] [Server thread/INFO]: Saving chunks for level 'ore test'/the_nether
-[15:35:16] [Server thread/INFO]: Saving chunks for level 'ore test'/the_end
-[15:35:16] [main/INFO]: Loaded 4 advancements
-[15:35:17] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@76734028[id=376eb988-e6dd-3105-bb50-572ead49ce98,name=Player690,properties={},legacy=false]
-com.mojang.authlib.exceptions.AuthenticationException: The client has sent too many requests within a certain amount of time
-	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:79) ~[YggdrasilAuthenticationService.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:180) [YggdrasilMinecraftSessionService.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:60) [YggdrasilMinecraftSessionService$1.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:57) [YggdrasilMinecraftSessionService$1.class:?]
-	at com.google.common.cache.LocalCache$LoadingValueReference.loadFuture(LocalCache.java:3716) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.loadSync(LocalCache.java:2424) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.lockedGetOrLoad(LocalCache.java:2298) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.get(LocalCache.java:2211) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache.get(LocalCache.java:4154) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache.getOrLoad(LocalCache.java:4158) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$LocalLoadingCache.get(LocalCache.java:5147) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$LocalLoadingCache.getUnchecked(LocalCache.java:5153) [guava-21.0.jar:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillProfileProperties(YggdrasilMinecraftSessionService.java:170) [YggdrasilMinecraftSessionService.class:?]
-	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:3188) [Minecraft.class:?]
-	at net.minecraft.client.resources.SkinManager$3.run(SkinManager.java:138) [SkinManager$3.class:?]
-	at java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source) [?:1.8.0_151]
-	at java.util.concurrent.FutureTask.run(Unknown Source) [?:1.8.0_151]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) [?:1.8.0_151]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) [?:1.8.0_151]
-	at java.lang.Thread.run(Unknown Source) [?:1.8.0_151]
-[15:35:28] [Server thread/INFO]: Saving and pausing game...
-[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/overworld
-[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/the_nether
-[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/the_end
-[15:35:28] [Server thread/INFO]: Stopping server
-[15:35:28] [Server thread/INFO]: Saving players
-[15:35:28] [Server thread/INFO]: Player690 lost connection: Disconnected
-[15:35:28] [Server thread/INFO]: Player690 left the game
-[15:35:28] [Server thread/INFO]: Stopping singleplayer server as player logged out
-[15:35:28] [Server thread/INFO]: Saving worlds
-[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/overworld
-[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/the_nether
-[15:35:28] [Server thread/INFO]: Saving chunks for level 'ore test'/the_end
-[15:35:30] [main/INFO]: Stopping!
-[15:35:30] [main/INFO]: SoundSystem shutting down...
-[15:35:30] [main/WARN]: Author: Paul Lamb, www.paulscode.com
+[17:05:35] [main/INFO]: Setting user: Player93
+[17:05:38] [main/WARN]: Skipping bad option: lastServer:
+[17:05:38] [main/INFO]: LWJGL Version: 2.9.4
+[17:05:40] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
+[17:05:42] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[17:05:42] [Thread-5/INFO]: Initializing LWJGL OpenAL
+[17:05:42] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[17:05:42] [Thread-5/INFO]: OpenAL initialized.
+[17:05:43] [Sound Library Loader/INFO]: Sound engine started
+[17:05:46] [main/INFO]: Created: 512x512 textures-atlas
+[17:05:47] [main/WARN]: Skipping bad option: lastServer:
+[17:05:47] [main/INFO]: Narrator library for x64 successfully loaded
+[17:05:48] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[17:07:08] [main/INFO]: Stopping!
+[17:07:08] [main/INFO]: SoundSystem shutting down...
+[17:07:09] [main/WARN]: Author: Paul Lamb, www.paulscode.com

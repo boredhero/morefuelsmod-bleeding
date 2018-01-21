@@ -1,0 +1,14 @@
+[
+{
+  "modid": "morefuelsmod",
+  "name": "More Fuels Mod",
+  "description": "The premiere and updated fuel tweak and utility mod for Minecraft!",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "credits": "boredherobrine13",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

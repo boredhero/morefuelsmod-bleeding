@@ -1,14 +1,15 @@
 [
 {
   "modid": "morefuelsmod",
-  "name": "More Fuels Mod",
-  "description": "The premiere and updated fuel tweak and utility mod for Minecraft!",
+  "name": "§4More Fuels Mod",
+  "description": "§4§oThe premiere mod that makes more items usable as fuel as well as adds some fuel storage items and blocks.",
+  "version": "",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "http://tinyurl.com/MoreFuelsMod",
   "updateUrl": "",
-  "credits": "boredherobrine13",
-  "logoFile": "",
-  "screenshots": [],
-  "dependencies": []
+  "authorList": ["§6B§4o§6r§4e§6d"],
+  "logoFile": "mf-logo.png",
+  "screenshots": [mfmsc1.png],
+  "dependencies": ["mod_Forge"]
 }
 ]
