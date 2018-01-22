@@ -1,0 +1,40 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"ABC",
+		"DEF",
+		"GHI"
+	],
+	"key": {
+		"A": {
+			"item": "minecraft:double_plant"
+		},
+		"B": {
+			"item": "minecraft:double_plant"
+		},
+		"C": {
+			"item": "minecraft:double_plant"
+		},
+		"D": {
+			"item": "minecraft:double_plant"
+		},
+		"E": {
+			"item": "minecraft:double_plant"
+		},
+		"F": {
+			"item": "minecraft:double_plant"
+		},
+		"G": {
+			"item": "minecraft:double_plant"
+		},
+		"H": {
+			"item": "minecraft:double_plant"
+		},
+		"I": {
+			"item": "minecraft:double_plant"
+		}
+	},
+	"result": {
+		"item": "morefuelsmod:pellet_fuel", "count":2
+	}
+}

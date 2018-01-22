@@ -104,7 +104,7 @@ public class MoreFuelsMod {
 
 	public static final String modId = "morefuelsmod";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.6.2-ALPHA004";
+	public static final String version = "1.6.2-ALPHA005";
 
 	@Mod.Instance(modId)
 	public static MoreFuelsMod instance;

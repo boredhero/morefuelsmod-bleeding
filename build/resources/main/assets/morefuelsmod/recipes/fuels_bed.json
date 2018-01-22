@@ -1,0 +1,40 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"ABC",
+		"DEF",
+		"GHI"
+	],
+	"key": {
+		"A": {
+			"item": "minecraft:bed"
+		},
+		"B": {
+			"item": "minecraft:bed"
+		},
+		"C": {
+			"item": "minecraft:bed"
+		},
+		"D": {
+			"item": "minecraft:bed"
+		},
+		"E": {
+			"item": "minecraft:bed"
+		},
+		"F": {
+			"item": "minecraft:bed"
+		},
+		"G": {
+			"item": "minecraft:bed"
+		},
+		"H": {
+			"item": "minecraft:bed"
+		},
+		"I": {
+			"item": "minecraft:bed"
+		}
+	},
+	"result": {
+		"item": "morefuelsmod:pellet_fuel", "count":15
+	}
+}
