@@ -7,31 +7,40 @@
 	],
 	"key": {
 		"A": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		},
 		"B": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		},
 		"C": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		},
 		"D": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		},
 		"E": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		},
 		"F": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		},
 		"G": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		},
 		"H": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		},
 		"I": {
-			"item": "minecraft:double_plant"
+			"item": "minecraft:double_plant",
+			"data": 0
 		}
 	},
 	"result": {

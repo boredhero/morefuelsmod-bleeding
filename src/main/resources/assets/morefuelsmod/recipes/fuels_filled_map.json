@@ -7,31 +7,40 @@
 	],
 	"key": {
 		"A": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		},
 		"B": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		},
 		"C": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		},
 		"D": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		},
 		"E": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		},
 		"F": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		},
 		"G": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		},
 		"H": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		},
 		"I": {
-			"item": "minecraft:filled_map"
+			"item": "minecraft:filled_map",
+			"data": 0
 		}
 	},
 	"result": {

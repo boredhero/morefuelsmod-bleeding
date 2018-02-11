@@ -81,9 +81,12 @@ import com.bored.morefuelsmod.util.Smelting;
 import com.bored.morefuelsmod.world.ModWorldGen;
 
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.util.EnumHelper;
@@ -98,13 +101,14 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.oredict.OreDictionary;
 
-@Mod(modid = MoreFuelsMod.modId, name = MoreFuelsMod.name, version = MoreFuelsMod.version)
+@Mod(modid = MoreFuelsMod.modId, name = MoreFuelsMod.name, version = MoreFuelsMod.version, acceptedMinecraftVersions = "[1.12, 1.12.2]")
 public class MoreFuelsMod {
 
 	public static final String modId = "morefuelsmod";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.6.2-ALPHA005";
+	public static final String version = "1.7.0.0";
 
 	@Mod.Instance(modId)
 	public static MoreFuelsMod instance;
@@ -115,6 +119,24 @@ public class MoreFuelsMod {
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		System.out.println(name + " " + version + " is loading!");
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 0));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 1));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 2));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 3));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 4));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 5));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 6));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 7));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 8));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 9));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 10));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 11));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 12));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 13));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 14));
+		OreDictionary.registerOre("bedAny", new ItemStack(Items.BED, 1, 15));
+		//Tried to add double plants to their own oreDict entry for crafting, but they do not have an item.
+		//Tried to add flowers to their own oreDict entry for crafting, but they do not have an item.
 		GameRegistry.registerWorldGenerator(new ModWorldGen(), 3);
 		Configuration config = new Configuration(event.getSuggestedConfigurationFile());
 		config.load();

@@ -1,5 +1,5 @@
 {
-	"type": "minecraft:crafting_shaped",
+	"type": "forge:ore_shaped",
 	"pattern": [
 		"ABC",
 		"DEF",
@@ -7,31 +7,40 @@
 	],
 	"key": {
 		"A": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		},
 		"B": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		},
 		"C": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		},
 		"D": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		},
 		"E": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		},
 		"F": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		},
 		"G": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		},
 		"H": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		},
 		"I": {
-			"item": "minecraft:leaves"
+			"ore": "treeLeaves",
+			"type": "forge:ore_dict"
 		}
 	},
 	"result": {
