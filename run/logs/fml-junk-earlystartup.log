@@ -1,11 +1,11 @@
-[17:55:10] [main/INFO] [GradleStart]: Extra: []
-[17:55:10] [main/INFO] [GradleStart]: Running with arguments: [--userProperties, {}, --assetsDir, C:/Users/Noah/.gradle/caches/minecraft/assets, --assetIndex, 1.12, --accessToken{REDACTED}, --version, 1.12, --tweakClass, net.minecraftforge.fml.common.launcher.FMLTweaker, --tweakClass, net.minecraftforge.gradle.tweakers.CoremodTweaker]
-[17:55:10] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLTweaker
-[17:55:10] [main/INFO] [LaunchWrapper]: Using primary tweak class name net.minecraftforge.fml.common.launcher.FMLTweaker
-[17:55:10] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.gradle.tweakers.CoremodTweaker
-[17:55:10] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLTweaker
-[17:55:19] [Forge Version Check/INFO] [ForgeVersionCheck]: [forge] Starting version check at http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json
-[17:55:19] [Forge Version Check/DEBUG] [ForgeVersionCheck]: [forge] Received version check data:
+[18:57:53] [main/INFO] [GradleStart]: Extra: []
+[18:57:53] [main/INFO] [GradleStart]: Running with arguments: [--userProperties, {}, --assetsDir, C:/Users/Noah/.gradle/caches/minecraft/assets, --assetIndex, 1.12, --accessToken{REDACTED}, --version, 1.12, --tweakClass, net.minecraftforge.fml.common.launcher.FMLTweaker, --tweakClass, net.minecraftforge.gradle.tweakers.CoremodTweaker]
+[18:57:53] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLTweaker
+[18:57:53] [main/INFO] [LaunchWrapper]: Using primary tweak class name net.minecraftforge.fml.common.launcher.FMLTweaker
+[18:57:53] [main/INFO] [LaunchWrapper]: Loading tweak class name net.minecraftforge.gradle.tweakers.CoremodTweaker
+[18:57:53] [main/INFO] [LaunchWrapper]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLTweaker
+[18:58:02] [Forge Version Check/INFO] [ForgeVersionCheck]: [forge] Starting version check at http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json
+[18:58:02] [Forge Version Check/DEBUG] [ForgeVersionCheck]: [forge] Received version check data:
 {
   "homepage": "http://files.minecraftforge.net/maven/net/minecraftforge/forge/",
   "promos": {
@@ -49,5 +49,5 @@
     "recommended": "14.23.4.2705"
   }
 }
-[17:55:19] [Forge Version Check/INFO] [ForgeVersionCheck]: [forge] Found status: AHEAD Target: null
-[17:55:19] [Thread-3/INFO] [FML]: Using sync timing. 200 frames of Display.update took 169116600 nanos
+[18:58:02] [Thread-3/INFO] [FML]: Using sync timing. 200 frames of Display.update took 157670800 nanos
+[18:58:02] [Forge Version Check/INFO] [ForgeVersionCheck]: [forge] Found status: AHEAD Target: null
