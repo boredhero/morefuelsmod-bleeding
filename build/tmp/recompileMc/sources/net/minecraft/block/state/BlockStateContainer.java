@@ -513,13 +513,12 @@ public class BlockStateContainer
                 return this.block.causesSuffocation(this);
             }
 
-            public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, BlockPos pos, EnumFacing facing)
+            public BlockFaceShape getBlockFaceShape(IBlockAccess p_193401_1_, BlockPos p_193401_2_, EnumFacing p_193401_3_)
             {
-                return this.block.getBlockFaceShape(worldIn, this, pos, facing);
+                return this.block.getBlockFaceShape(p_193401_1_, this, p_193401_2_, p_193401_3_);
             }
 
             //Forge Start
-            @Override
             public ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> getPropertyValueTable()
             {
                 return propertyValueTable;
@@ -537,16 +536,9 @@ public class BlockStateContainer
                 return this.block.getLightValue(this, world, pos);
             }
 
-            @Override
             public boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side)
             {
                 return this.block.isSideSolid(this, world, pos, side);
-            }
-
-            @Override
-            public boolean doesSideBlockChestOpening(IBlockAccess world, BlockPos pos, EnumFacing side)
-            {
-                return this.block.doesSideBlockChestOpening(this, world, pos, side);
             }
 
             @Override

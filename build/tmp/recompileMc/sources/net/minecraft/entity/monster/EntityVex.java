@@ -165,23 +165,23 @@ public class EntityVex extends EntityMob
         this.boundOrigin = boundOriginIn;
     }
 
-    private boolean getVexFlag(int mask)
+    private boolean getVexFlag(int p_190656_1_)
     {
         int i = ((Byte)this.dataManager.get(VEX_FLAGS)).byteValue();
-        return (i & mask) != 0;
+        return (i & p_190656_1_) != 0;
     }
 
-    private void setVexFlag(int mask, boolean value)
+    private void setVexFlag(int p_190660_1_, boolean p_190660_2_)
     {
         int i = ((Byte)this.dataManager.get(VEX_FLAGS)).byteValue();
 
-        if (value)
+        if (p_190660_2_)
         {
-            i = i | mask;
+            i = i | p_190660_1_;
         }
         else
         {
-            i = i & ~mask;
+            i = i & ~p_190660_1_;
         }
 
         this.dataManager.set(VEX_FLAGS, Byte.valueOf((byte)(i & 255)));
@@ -192,9 +192,9 @@ public class EntityVex extends EntityMob
         return this.getVexFlag(1);
     }
 
-    public void setCharging(boolean charging)
+    public void setIsCharging(boolean p_190648_1_)
     {
-        this.setVexFlag(1, charging);
+        this.setVexFlag(1, p_190648_1_);
     }
 
     public void setOwner(EntityLiving ownerIn)
@@ -218,7 +218,7 @@ public class EntityVex extends EntityMob
         return SoundEvents.ENTITY_VEX_DEATH;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_VEX_HURT;
     }
@@ -278,7 +278,7 @@ public class EntityVex extends EntityMob
         {
             if (EntityVex.this.getAttackTarget() != null && !EntityVex.this.getMoveHelper().isUpdating() && EntityVex.this.rand.nextInt(7) == 0)
             {
-                return EntityVex.this.getDistanceSq(EntityVex.this.getAttackTarget()) > 4.0D;
+                return EntityVex.this.getDistanceSqToEntity(EntityVex.this.getAttackTarget()) > 4.0D;
             }
             else
             {
@@ -302,7 +302,7 @@ public class EntityVex extends EntityMob
             EntityLivingBase entitylivingbase = EntityVex.this.getAttackTarget();
             Vec3d vec3d = entitylivingbase.getPositionEyes(1.0F);
             EntityVex.this.moveHelper.setMoveTo(vec3d.x, vec3d.y, vec3d.z, 1.0D);
-            EntityVex.this.setCharging(true);
+            EntityVex.this.setIsCharging(true);
             EntityVex.this.playSound(SoundEvents.ENTITY_VEX_CHARGE, 1.0F, 1.0F);
         }
 
@@ -311,7 +311,7 @@ public class EntityVex extends EntityMob
          */
         public void resetTask()
         {
-            EntityVex.this.setCharging(false);
+            EntityVex.this.setIsCharging(false);
         }
 
         /**
@@ -324,11 +324,11 @@ public class EntityVex extends EntityMob
             if (EntityVex.this.getEntityBoundingBox().intersects(entitylivingbase.getEntityBoundingBox()))
             {
                 EntityVex.this.attackEntityAsMob(entitylivingbase);
-                EntityVex.this.setCharging(false);
+                EntityVex.this.setIsCharging(false);
             }
             else
             {
-                double d0 = EntityVex.this.getDistanceSq(entitylivingbase);
+                double d0 = EntityVex.this.getDistanceSqToEntity(entitylivingbase);
 
                 if (d0 < 9.0D)
                 {

@@ -23,6 +23,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecraftforge.common.IShearable
 {
@@ -57,9 +59,6 @@ public class BlockDoublePlant extends BlockBush implements IGrowable, net.minecr
         }
     }
 
-    /**
-     * Checks if this block can be placed exactly at the given position.
-     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         return super.canPlaceBlockAt(worldIn, pos) && worldIn.isAirBlock(pos.up());

@@ -110,7 +110,7 @@ public class RecipeRepairItem extends net.minecraftforge.registries.IForgeRegist
         return nonnulllist;
     }
 
-    public boolean isDynamic()
+    public boolean isHidden()
     {
         return true;
     }

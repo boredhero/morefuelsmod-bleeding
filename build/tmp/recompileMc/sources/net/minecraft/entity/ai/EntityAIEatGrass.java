@@ -59,7 +59,7 @@ public class EntityAIEatGrass extends EntityAIBase
     {
         this.eatingGrassTimer = 40;
         this.entityWorld.setEntityState(this.grassEaterEntity, (byte)10);
-        this.grassEaterEntity.getNavigator().clearPath();
+        this.grassEaterEntity.getNavigator().clearPathEntity();
     }
 
     /**
@@ -99,7 +99,7 @@ public class EntityAIEatGrass extends EntityAIBase
 
             if (IS_TALL_GRASS.apply(this.entityWorld.getBlockState(blockpos)))
             {
-                if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity))
+                if (this.entityWorld.getGameRules().getBoolean("mobGriefing"))
                 {
                     this.entityWorld.destroyBlock(blockpos, false);
                 }
@@ -112,7 +112,7 @@ public class EntityAIEatGrass extends EntityAIBase
 
                 if (this.entityWorld.getBlockState(blockpos1).getBlock() == Blocks.GRASS)
                 {
-                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entityWorld, this.grassEaterEntity))
+                    if (this.entityWorld.getGameRules().getBoolean("mobGriefing"))
                     {
                         this.entityWorld.playEvent(2001, blockpos1, Block.getIdFromBlock(Blocks.GRASS));
                         this.entityWorld.setBlockState(blockpos1, Blocks.DIRT.getDefaultState(), 2);

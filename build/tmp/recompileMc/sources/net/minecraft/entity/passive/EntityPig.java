@@ -149,7 +149,7 @@ public class EntityPig extends EntityAnimal
         return SoundEvents.ENTITY_PIG_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_PIG_HURT;
     }
@@ -268,7 +268,7 @@ public class EntityPig extends EntityAnimal
         }
     }
 
-    public void travel(float strafe, float vertical, float forward)
+    public void travel(float p_191986_1_, float p_191986_2_, float p_191986_3_)
     {
         Entity entity = this.getPassengers().isEmpty() ? null : (Entity)this.getPassengers().get(0);
 
@@ -324,7 +324,7 @@ public class EntityPig extends EntityAnimal
         {
             this.stepHeight = 0.5F;
             this.jumpMovementFactor = 0.02F;
-            super.travel(strafe, vertical, forward);
+            super.travel(p_191986_1_, p_191986_2_, p_191986_3_);
         }
     }
 

@@ -9,10 +9,10 @@ public class VertexBufferUploader extends WorldVertexBufferUploader
 {
     private VertexBuffer vertexBuffer;
 
-    public void draw(BufferBuilder bufferBuilderIn)
+    public void draw(BufferBuilder vertexBufferIn)
     {
-        bufferBuilderIn.reset();
-        this.vertexBuffer.bufferData(bufferBuilderIn.getByteBuffer());
+        vertexBufferIn.reset();
+        this.vertexBuffer.bufferData(vertexBufferIn.getByteBuffer());
     }
 
     public void setVertexBuffer(VertexBuffer vertexBufferIn)

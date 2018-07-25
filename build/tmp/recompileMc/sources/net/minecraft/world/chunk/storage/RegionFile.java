@@ -96,10 +96,37 @@ public class RegionFile
         }
     }
 
-    @Deprecated // TODO: remove (1.13)
+    // This is a copy (sort of) of the method below it, make sure they stay in sync
     public synchronized boolean chunkExists(int x, int z)
     {
-        return isChunkSaved(x, z);
+        if (this.outOfBounds(x, z)) return false;
+
+        try
+        {
+            int offset = this.getOffset(x, z);
+
+            if (offset == 0) return false;
+
+            int sectorNumber = offset >> 8;
+            int numSectors = offset & 255;
+
+            if (sectorNumber + numSectors > this.sectorFree.size()) return false;
+
+            this.dataFile.seek((long)(sectorNumber * 4096));
+            int length = this.dataFile.readInt();
+
+            if (length > 4096 * numSectors || length <= 0) return false;
+
+            byte version = this.dataFile.readByte();
+
+            if (version == 1 || version == 2) return true;
+        }
+        catch (IOException ioexception)
+        {
+            return false;
+        }
+
+        return false;
     }
 
     @Nullable

@@ -226,12 +226,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ResourceLocation LOCATION_MOJANG_PNG = new ResourceLocation("textures/gui/title/mojang.png");
     public static final boolean IS_RUNNING_ON_MAC = Util.getOSType() == Util.EnumOS.OSX;
-    /**
-     * A 10MiB preallocation to ensure the heap is reasonably sized. {@linkplain #freeMemory() Freed} when the game runs
-     * out of memory.
-     *  
-     * @see #freeMemory()
-     */
+    /** A 10MiB preallocation to ensure the heap is reasonably sized. */
     public static byte[] memoryReserve = new byte[10485760];
     private static final List<DisplayMode> MAC_DISPLAY_MODES = Lists.newArrayList(new DisplayMode(2560, 1600), new DisplayMode(2880, 1800));
     private final File fileResourcepacks;
@@ -667,7 +662,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private void createDisplay() throws LWJGLException
     {
         Display.setResizable(true);
-        Display.setTitle("Minecraft 1.12.2");
+        Display.setTitle("Minecraft 1.12");
 
         try
         {
@@ -1034,16 +1029,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
     /**
      * Sets the argument GuiScreen as the main (topmost visible) screen.
-     *  
-     * <p><strong>WARNING</strong>: This method is not thread-safe. Opening GUIs from a thread other than the main
-     * thread may cause many different issues, including the GUI being rendered before it has initialized (leading to
-     * unusual crashes). If on a thread other than the main thread, use {@link #addScheduledTask}:
-     *  
-     * <pre>
-     * minecraft.addScheduledTask(() -> minecraft.displayGuiScreen(gui));
-     * </pre>
-     *  
-     * @param guiScreenIn The {@link GuiScreen} to display. If it is {@code null}, any open GUI will be closed.
      */
     public void displayGuiScreen(@Nullable GuiScreen guiScreenIn)
     {
@@ -1190,7 +1175,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         long i1 = System.nanoTime() - l;
         this.checkGLError("Pre render");
         this.mcProfiler.endStartSection("sound");
-        this.mcSoundHandler.setListener(this.getRenderViewEntity(), this.timer.renderPartialTicks); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
+        this.mcSoundHandler.setListener(this.player, this.timer.renderPartialTicks);
         this.mcProfiler.endSection();
         this.mcProfiler.startSection("render");
         GlStateManager.pushMatrix();
@@ -1331,9 +1316,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return (float)this.getLimitFramerate() < GameSettings.Options.FRAMERATE_LIMIT.getValueMax();
     }
 
-    /**
-     * Attempts to free as much memory as possible, including leaving the world and running the garbage collector.
-     */
     public void freeMemory()
     {
         try
@@ -2509,7 +2491,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         this.loadingScreen.displaySavingString(I18n.format("menu.loadingLevel"));
 
-        while (!this.integratedServer.serverIsInRunLoop() && !this.integratedServer.isServerStopped())
+        while (!this.integratedServer.serverIsInRunLoop())
         {
             if (!net.minecraftforge.fml.common.StartupQuery.check())
             {
@@ -2542,7 +2524,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
         NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
         networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, (GuiScreen)null));
-        networkmanager.sendPacket(new C00Handshake(socketaddress.toString(), 0, EnumConnectionState.LOGIN, true));
+        networkmanager.sendPacket(new C00Handshake(335, socketaddress.toString(), 0, EnumConnectionState.LOGIN, true));
         com.mojang.authlib.GameProfile gameProfile = this.getSession().getProfile();
         if (!this.getSession().hasCachedProperties())
         {
@@ -2632,7 +2614,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
 
         TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
-        net.minecraftforge.client.MinecraftForgeClient.clearRenderCache();
 
         if (worldClientIn != null)
         {
@@ -2687,7 +2668,17 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         EntityPlayerSP entityplayersp = this.player;
         this.player = this.playerController.createPlayer(this.world, this.player == null ? new StatisticsManager() : this.player.getStatFileWriter(), this.player == null ? new RecipeBook() : this.player.getRecipeBook());
         this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
-        this.player.updateSyncFields(entityplayersp); // Forge: fix MC-10657
+        // Forge - Fix MC-88179 attributes not being copied to new player
+        for (net.minecraft.entity.ai.attributes.IAttributeInstance oldInst : entityplayersp.getAttributeMap().getAllAttributes())
+        {
+            net.minecraft.entity.ai.attributes.IAttribute attrib = oldInst.getAttribute();
+            net.minecraft.entity.ai.attributes.IAttributeInstance newInst = player.getAttributeMap().getAttributeInstance(attrib);
+            newInst.setBaseValue(oldInst.getBaseValue());
+            for (net.minecraft.entity.ai.attributes.AttributeModifier modifier : oldInst.getModifiers())
+            {
+                newInst.applyModifier(modifier);
+            }
+        }
         this.player.dimension = dimension;
         this.renderViewEntity = this.player;
         this.player.preparePlayerToSpawn();
@@ -3236,9 +3227,6 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
         else if (this.player != null)
         {
-            MusicTicker.MusicType type = this.world.provider.getMusicType();
-            if (type != null) return type;
-
             if (this.player.world.provider instanceof WorldProviderHell)
             {
                 return MusicTicker.MusicType.NETHER;

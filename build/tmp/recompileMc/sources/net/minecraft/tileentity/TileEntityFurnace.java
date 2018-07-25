@@ -595,7 +595,6 @@ public class TileEntityFurnace extends TileEntityLockable implements ITickable, 
 
     @SuppressWarnings("unchecked")
     @Override
-    @javax.annotation.Nullable
     public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @javax.annotation.Nullable net.minecraft.util.EnumFacing facing)
     {
         if (facing != null && capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)

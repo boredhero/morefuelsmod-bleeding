@@ -356,11 +356,12 @@ public class WorldInfo
     private void updateTagCompound(NBTTagCompound nbt, NBTTagCompound playerNbt)
     {
         NBTTagCompound nbttagcompound = new NBTTagCompound();
-        nbttagcompound.setString("Name", "1.12.2");
-        nbttagcompound.setInteger("Id", 1343);
+        nbttagcompound.setString("Name", "1.12");
+        nbttagcompound.setInteger("Id", 1139);
         nbttagcompound.setBoolean("Snapshot", false);
         nbt.setTag("Version", nbttagcompound);
-        nbt.setInteger("DataVersion", 1343);
+        nbt.setInteger("DataVersion", 1139);
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
         nbt.setLong("RandomSeed", this.randomSeed);
         nbt.setString("generatorName", this.terrainType.getName());
         nbt.setInteger("generatorVersion", this.terrainType.getVersion());
@@ -393,7 +394,6 @@ public class WorldInfo
         nbt.setDouble("BorderSizeLerpTarget", this.borderSizeLerpTarget);
         nbt.setDouble("BorderWarningBlocks", (double)this.borderWarningDistance);
         nbt.setDouble("BorderWarningTime", (double)this.borderWarningTime);
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
 
         if (this.difficulty != null)
         {
@@ -406,7 +406,7 @@ public class WorldInfo
 
         for (Entry<Integer, NBTTagCompound> entry : this.dimensionData.entrySet())
         {
-            if (entry.getValue() == null || entry.getValue().hasNoTags()) continue;
+            if (entry.getValue() != null || entry.getValue().hasNoTags()) continue;
             nbttagcompound1.setTag(String.valueOf(entry.getKey()), entry.getValue());
         }
 

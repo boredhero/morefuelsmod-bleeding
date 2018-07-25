@@ -10,13 +10,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public class WorldVertexBufferUploader
 {
-    public void draw(BufferBuilder bufferBuilderIn)
+    public void draw(BufferBuilder vertexBufferIn)
     {
-        if (bufferBuilderIn.getVertexCount() > 0)
+        if (vertexBufferIn.getVertexCount() > 0)
         {
-            VertexFormat vertexformat = bufferBuilderIn.getVertexFormat();
+            VertexFormat vertexformat = vertexBufferIn.getVertexFormat();
             int i = vertexformat.getNextOffset();
-            ByteBuffer bytebuffer = bufferBuilderIn.getByteBuffer();
+            ByteBuffer bytebuffer = vertexBufferIn.getByteBuffer();
             List<VertexFormatElement> list = vertexformat.getElements();
 
             for (int j = 0; j < list.size(); ++j)
@@ -31,7 +31,7 @@ public class WorldVertexBufferUploader
                 vertexformatelement.getUsage().preDraw(vertexformat, j, i, bytebuffer);
             }
 
-            GlStateManager.glDrawArrays(bufferBuilderIn.getDrawMode(), 0, bufferBuilderIn.getVertexCount());
+            GlStateManager.glDrawArrays(vertexBufferIn.getDrawMode(), 0, vertexBufferIn.getVertexCount());
             int i1 = 0;
 
             for (int j1 = list.size(); i1 < j1; ++i1)
@@ -45,6 +45,6 @@ public class WorldVertexBufferUploader
             }
         }
 
-        bufferBuilderIn.reset();
+        vertexBufferIn.reset();
     }
 }

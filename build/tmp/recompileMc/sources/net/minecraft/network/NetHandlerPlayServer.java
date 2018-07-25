@@ -63,13 +63,13 @@ import net.minecraft.network.play.client.CPacketEntityAction;
 import net.minecraft.network.play.client.CPacketHeldItemChange;
 import net.minecraft.network.play.client.CPacketInput;
 import net.minecraft.network.play.client.CPacketKeepAlive;
-import net.minecraft.network.play.client.CPacketPlaceRecipe;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.network.play.client.CPacketPlayerAbilities;
 import net.minecraft.network.play.client.CPacketPlayerDigging;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItem;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.network.play.client.CPacketRecipeInfo;
+import net.minecraft.network.play.client.CPacketRecipePlacement;
 import net.minecraft.network.play.client.CPacketResourcePackStatus;
 import net.minecraft.network.play.client.CPacketSeenAdvancements;
 import net.minecraft.network.play.client.CPacketSpectate;
@@ -105,7 +105,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.ServerRecipeBookHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -128,9 +127,9 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
     private final MinecraftServer serverController;
     public EntityPlayerMP player;
     private int networkTickCount;
-    private long field_194402_f;
-    private boolean field_194403_g;
-    private long field_194404_h;
+    private int keepAliveId;
+    private long lastPingTime;
+    private long lastSentPingPacket;
     /**
      * Incremented by 20 each time a user sends a chat message, decreased by one every tick. Non-ops kicked when over
      * 200
@@ -165,7 +164,6 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
     private int vehicleFloatingTickCount;
     private int movePacketCounter;
     private int lastMovePacketCounter;
-    private ServerRecipeBookHelper field_194309_H = new ServerRecipeBookHelper();
 
     public NetHandlerPlayServer(MinecraftServer server, NetworkManager networkManagerIn, EntityPlayerMP playerIn)
     {
@@ -236,21 +234,13 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         }
 
         this.serverController.profiler.startSection("keepAlive");
-        long i = this.currentTimeMillis();
 
-        if (i - this.field_194402_f >= 15000L)
+        if ((long)this.networkTickCount - this.lastSentPingPacket > 40L)
         {
-            if (this.field_194403_g)
-            {
-                this.disconnect(new TextComponentTranslation("disconnect.timeout", new Object[0]));
-            }
-            else
-            {
-                this.field_194403_g = true;
-                this.field_194402_f = i;
-                this.field_194404_h = i;
-                this.sendPacket(new SPacketKeepAlive(this.field_194404_h));
-            }
+            this.lastSentPingPacket = (long)this.networkTickCount;
+            this.lastPingTime = this.currentTimeMillis();
+            this.keepAliveId = (int)this.lastPingTime;
+            this.sendPacket(new SPacketKeepAlive(this.keepAliveId));
         }
 
         this.serverController.profiler.endSection();
@@ -441,7 +431,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
         if (p_191984_1_.getPurpose() == CPacketRecipeInfo.Purpose.SHOWN)
         {
-            this.player.getRecipeBook().markSeen(p_191984_1_.getRecipe());
+            this.player.getRecipeBook().setRecipeSeen(p_191984_1_.getRecipe());
         }
         else if (p_191984_1_.getPurpose() == CPacketRecipeInfo.Purpose.SETTINGS)
         {
@@ -699,7 +689,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                 double d2 = this.player.posZ - ((double)blockpos.getZ() + 0.5D);
                 double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 
-                double dist = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue() + 1;
+                double dist = player.interactionManager.getBlockReachDistance() + 1;
                 dist *= dist;
 
                 if (d3 > dist)
@@ -760,7 +750,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
 
         if (blockpos.getY() < this.serverController.getBuildLimit() - 1 || enumfacing != EnumFacing.UP && blockpos.getY() < this.serverController.getBuildLimit())
         {
-            double dist = player.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue() + 3;
+            double dist = player.interactionManager.getBlockReachDistance() + 3;
             dist *= dist;
             if (this.targetPos == null && this.player.getDistanceSq((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.5D, (double)blockpos.getZ() + 0.5D) < dist && !this.serverController.isBlockProtected(worldserver, blockpos, this.player) && worldserver.getWorldBorder().contains(blockpos))
             {
@@ -1113,7 +1103,7 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
                 d0 = 9.0D;
             }
 
-            if (this.player.getDistanceSq(entity) < d0)
+            if (this.player.getDistanceSqToEntity(entity) < d0)
             {
                 if (packetIn.getAction() == CPacketUseEntity.Action.INTERACT)
                 {
@@ -1247,14 +1237,95 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
         }
     }
 
-    public void func_194308_a(CPacketPlaceRecipe p_194308_1_)
+    public void handleRecipePlacement(CPacketRecipePlacement p_191985_1_)
     {
-        PacketThreadUtil.checkThreadAndEnqueue(p_194308_1_, this, this.player.getServerWorld());
+        PacketThreadUtil.checkThreadAndEnqueue(p_191985_1_, this, this.player.getServerWorld());
         this.player.markPlayerActive();
 
-        if (!this.player.isSpectator() && this.player.openContainer.windowId == p_194308_1_.func_194318_a() && this.player.openContainer.getCanCraft(this.player))
+        if (this.player.openContainer.windowId == p_191985_1_.getContainerId() && this.player.openContainer.getCanCraft(this.player))
         {
-            this.field_194309_H.func_194327_a(this.player, p_194308_1_.func_194317_b(), p_194308_1_.func_194319_c());
+            this.player.connection.sendPacket(new SPacketConfirmTransaction(p_191985_1_.getContainerId(), p_191985_1_.getUid(), true));
+
+            if (!p_191985_1_.getMoveItemsFromGrid().isEmpty())
+            {
+                for (CPacketRecipePlacement.ItemMove cpacketrecipeplacement$itemmove : p_191985_1_.getMoveItemsFromGrid())
+                {
+                    ItemStack itemstack = this.player.openContainer.getSlot(cpacketrecipeplacement$itemmove.srcSlot).getStack();
+
+                    if (this.checkIfMoveItemMatch(cpacketrecipeplacement$itemmove.stack, itemstack))
+                    {
+                        int i = cpacketrecipeplacement$itemmove.stack.getCount();
+
+                        if (cpacketrecipeplacement$itemmove.destSlot == -1)
+                        {
+                            this.player.dropItem(cpacketrecipeplacement$itemmove.stack, true);
+                        }
+                        else
+                        {
+                            ItemStack itemstack1 = this.player.inventory.getStackInSlot(cpacketrecipeplacement$itemmove.destSlot);
+
+                            if (itemstack1.isEmpty())
+                            {
+                                this.player.inventory.setInventorySlotContents(cpacketrecipeplacement$itemmove.destSlot, cpacketrecipeplacement$itemmove.stack);
+                            }
+                            else
+                            {
+                                itemstack1.grow(i);
+                            }
+                        }
+
+                        if (itemstack.getCount() == i)
+                        {
+                            this.player.openContainer.putStackInSlot(cpacketrecipeplacement$itemmove.srcSlot, ItemStack.EMPTY);
+                        }
+                        else
+                        {
+                            itemstack.shrink(i);
+                        }
+                    }
+                }
+            }
+
+            if (!p_191985_1_.getMoveItemsToGrid().isEmpty())
+            {
+                for (CPacketRecipePlacement.ItemMove cpacketrecipeplacement$itemmove1 : p_191985_1_.getMoveItemsToGrid())
+                {
+                    ItemStack itemstack2 = this.player.inventory.getStackInSlot(cpacketrecipeplacement$itemmove1.destSlot);
+
+                    if (this.checkIfMoveItemMatch(cpacketrecipeplacement$itemmove1.stack, itemstack2))
+                    {
+                        int j = cpacketrecipeplacement$itemmove1.stack.getCount();
+
+                        if (itemstack2.getCount() == j)
+                        {
+                            this.player.inventory.removeStackFromSlot(cpacketrecipeplacement$itemmove1.destSlot);
+                        }
+                        else
+                        {
+                            itemstack2.shrink(j);
+                        }
+
+                        this.player.openContainer.addItem(cpacketrecipeplacement$itemmove1.srcSlot, cpacketrecipeplacement$itemmove1.stack);
+                    }
+                }
+            }
+
+            this.player.openContainer.detectAndSendChanges();
+        }
+    }
+
+    private boolean checkIfMoveItemMatch(ItemStack p_193074_1_, ItemStack p_193074_2_)
+    {
+        ItemStack itemstack = p_193074_2_.copy();
+
+        if (itemstack.getCount() < p_193074_1_.getCount())
+        {
+            return false;
+        }
+        else
+        {
+            itemstack.setCount(p_193074_1_.getCount());
+            return ItemStack.areItemStacksEqual(p_193074_1_, itemstack);
         }
     }
 
@@ -1393,15 +1464,10 @@ public class NetHandlerPlayServer implements INetHandlerPlayServer, ITickable
      */
     public void processKeepAlive(CPacketKeepAlive packetIn)
     {
-        if (this.field_194403_g && packetIn.getKey() == this.field_194404_h)
+        if (packetIn.getKey() == this.keepAliveId)
         {
-            int i = (int)(this.currentTimeMillis() - this.field_194402_f);
+            int i = (int)(this.currentTimeMillis() - this.lastPingTime);
             this.player.ping = (this.player.ping * 3 + i) / 4;
-            this.field_194403_g = false;
-        }
-        else if (!this.player.getName().equals(this.serverController.getServerOwner()))
-        {
-            this.disconnect(new TextComponentTranslation("disconnect.timeout", new Object[0]));
         }
     }
 

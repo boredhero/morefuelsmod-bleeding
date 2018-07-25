@@ -48,9 +48,9 @@ public class EntitySkeletonHorse extends AbstractHorse
         return SoundEvents.ENTITY_SKELETON_HORSE_DEATH;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
-        super.getHurtSound(damageSourceIn);
+        super.getHurtSound(p_184601_1_);
         return SoundEvents.ENTITY_SKELETON_HORSE_HURT;
     }
 

@@ -319,7 +319,7 @@ public class EntityShulkerBullet extends Entity
 
                 RayTraceResult raytraceresult = ProjectileHelper.forwardsRaycast(this, true, false, this.owner);
 
-                if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
+                if (raytraceresult != null)
                 {
                     this.bulletHit(raytraceresult);
                 }

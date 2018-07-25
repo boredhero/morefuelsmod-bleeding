@@ -36,7 +36,7 @@ public class PhaseChargingPlayer extends PhaseBase
         {
             double d0 = this.targetLocation.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
 
-            if (d0 < 100.0D || d0 > 22500.0D || this.dragon.collidedHorizontally || this.dragon.collidedVertically)
+            if (d0 < 100.0D || d0 > 22500.0D || this.dragon.isCollidedHorizontally || this.dragon.isCollidedVertically)
             {
                 ++this.timeSinceCharge;
             }
@@ -74,7 +74,7 @@ public class PhaseChargingPlayer extends PhaseBase
         return this.targetLocation;
     }
 
-    public PhaseList<PhaseChargingPlayer> getType()
+    public PhaseList<PhaseChargingPlayer> getPhaseList()
     {
         return PhaseList.CHARGING_PLAYER;
     }

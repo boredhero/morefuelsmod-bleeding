@@ -143,7 +143,7 @@ public class EntityMagmaCube extends EntitySlime
         return super.getAttackStrength() + 2;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return this.isSmallSlime() ? SoundEvents.ENTITY_SMALL_MAGMACUBE_HURT : SoundEvents.ENTITY_MAGMACUBE_HURT;
     }

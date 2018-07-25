@@ -289,12 +289,12 @@ public class ChunkRenderDispatcher
         }
     }
 
-    private void uploadDisplayList(BufferBuilder bufferBuilderIn, int list, RenderChunk chunkRenderer)
+    private void uploadDisplayList(BufferBuilder vertexBufferIn, int list, RenderChunk chunkRenderer)
     {
         GlStateManager.glNewList(list, 4864);
         GlStateManager.pushMatrix();
         chunkRenderer.multModelviewMatrix();
-        this.worldVertexUploader.draw(bufferBuilderIn);
+        this.worldVertexUploader.draw(vertexBufferIn);
         GlStateManager.popMatrix();
         GlStateManager.glEndList();
     }

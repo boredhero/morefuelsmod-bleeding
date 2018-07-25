@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -214,11 +214,11 @@ public class GuiSelectStringEntries extends GuiListExtended
         }
 
         @Override
-        public void updatePosition(int slotIndex, int x, int y, float partialTicks){}
+        public void updatePosition(int p_192633_1_, int p_192633_2_, int p_192633_3_, float p_192633_4_){}
     }
 
     public static interface IGuiSelectStringListEntry extends GuiListExtended.IGuiListEntry
     {
-        Object getValue();
+        public Object getValue();
     }
 }

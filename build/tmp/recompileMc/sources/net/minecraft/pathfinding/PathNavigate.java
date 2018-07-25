@@ -317,7 +317,7 @@ public abstract class PathNavigate
         {
             if (positionVec3.squareDistanceTo(this.lastPosCheck) < 2.25D)
             {
-                this.clearPath();
+                this.clearPathEntity();
             }
 
             this.ticksAtLastPos = this.totalTicks;
@@ -344,7 +344,7 @@ public abstract class PathNavigate
                 this.timeoutCachedNode = Vec3d.ZERO;
                 this.timeoutTimer = 0L;
                 this.timeoutLimit = 0.0D;
-                this.clearPath();
+                this.clearPathEntity();
             }
 
             this.lastTimeoutCheck = System.currentTimeMillis();
@@ -362,7 +362,7 @@ public abstract class PathNavigate
     /**
      * sets active PathEntity to null
      */
-    public void clearPath()
+    public void clearPathEntity()
     {
         this.currentPath = null;
     }

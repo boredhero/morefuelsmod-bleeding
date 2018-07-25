@@ -32,7 +32,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
     protected boolean inGround;
     public int throwableShake;
     /** The entity that threw this throwable item. */
-    protected EntityLivingBase thrower;
+    private EntityLivingBase thrower;
     private String throwerName;
     private int ticksInGround;
     private int ticksInAir;
@@ -84,12 +84,12 @@ public abstract class EntityThrowable extends Entity implements IProjectile
     /**
      * Sets throwable heading based on an entity that's throwing it
      */
-    public void shoot(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy)
+    public void setHeadingFromThrower(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy)
     {
         float f = -MathHelper.sin(rotationYawIn * 0.017453292F) * MathHelper.cos(rotationPitchIn * 0.017453292F);
         float f1 = -MathHelper.sin((rotationPitchIn + pitchOffset) * 0.017453292F);
         float f2 = MathHelper.cos(rotationYawIn * 0.017453292F) * MathHelper.cos(rotationPitchIn * 0.017453292F);
-        this.shoot((double)f, (double)f1, (double)f2, velocity, inaccuracy);
+        this.setThrowableHeading((double)f, (double)f1, (double)f2, velocity, inaccuracy);
         this.motionX += entityThrower.motionX;
         this.motionZ += entityThrower.motionZ;
 
@@ -102,7 +102,7 @@ public abstract class EntityThrowable extends Entity implements IProjectile
     /**
      * Similar to setArrowHeading, it's point the throwable entity to a x, y, z direction.
      */
-    public void shoot(double x, double y, double z, float velocity, float inaccuracy)
+    public void setThrowableHeading(double x, double y, double z, float velocity, float inaccuracy)
     {
         float f = MathHelper.sqrt(x * x + y * y + z * z);
         x = x / (double)f;
@@ -260,8 +260,9 @@ public abstract class EntityThrowable extends Entity implements IProjectile
             {
                 this.setPortal(raytraceresult.getBlockPos());
             }
-            else if (!net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
+            else
             {
+                if(!net.minecraftforge.common.ForgeHooks.onThrowableImpact(this, raytraceresult))
                 this.onImpact(raytraceresult);
             }
         }

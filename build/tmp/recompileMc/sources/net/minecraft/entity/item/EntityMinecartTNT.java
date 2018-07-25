@@ -65,7 +65,7 @@ public class EntityMinecartTNT extends EntityMinecart
             this.explodeCart(this.motionX * this.motionX + this.motionZ * this.motionZ);
         }
 
-        if (this.collidedHorizontally)
+        if (this.isCollidedHorizontally)
         {
             double d0 = this.motionX * this.motionX + this.motionZ * this.motionZ;
 

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,10 +28,10 @@ public interface ICustomModelLoader extends IResourceManagerReloadListener
      * Checks if given model should be loaded by this loader.
      * Reading file contents is inadvisable, if possible decision should be made based on the location alone.
      */
-    boolean accepts(ResourceLocation modelLocation);
+    public boolean accepts(ResourceLocation modelLocation);
 
     /*
      * loads (or reloads) specified model
      */
-    IModel loadModel(ResourceLocation modelLocation) throws Exception;
+    public IModel loadModel(ResourceLocation modelLocation) throws Exception;
 }

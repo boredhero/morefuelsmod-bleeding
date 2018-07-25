@@ -37,13 +37,8 @@ import org.apache.logging.log4j.Logger;
 public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    /**
-     * A map containing chunks to be written to disk (but not those that are currently in the process of being written).
-     * Key is the chunk position, value is the NBT to write.
-     */
-    private final Map<ChunkPos, NBTTagCompound> chunksToSave = Maps.<ChunkPos, NBTTagCompound>newConcurrentMap();
-    /** A set containing the chunk that is currently in the process of being written to disk. */
-    private final Set<ChunkPos> chunksBeingSaved = Collections.<ChunkPos>newSetFromMap(Maps.newConcurrentMap());
+    private final Map<ChunkPos, NBTTagCompound> chunksToRemove = Maps.<ChunkPos, NBTTagCompound>newConcurrentMap();
+    private final Set<ChunkPos> currentSave = Collections.<ChunkPos>newSetFromMap(Maps.newConcurrentMap());
     /** Save directory for chunks using the Anvil format */
     public final File chunkSaveLocation;
     private final DataFixer fixer;
@@ -55,11 +50,24 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         this.fixer = dataFixerIn;
     }
 
-    @Deprecated // TODO: remove (1.13)
     public boolean chunkExists(World world, int x, int z)
     {
-        return isChunkGeneratedAt(x, z);
+        ChunkPos chunkcoordintpair = new ChunkPos(x, z);
+
+        if (this.currentSave.contains(chunkcoordintpair))
+        {
+            for(ChunkPos pendingChunkCoord : this.chunksToRemove.keySet())
+            {
+                if (pendingChunkCoord.equals(chunkcoordintpair))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return RegionFileCache.createOrLoadRegionFile(this.chunkSaveLocation, x, z).chunkExists(x & 31, z & 31);
     }
+
 
     /**
      * Loads the specified(XZ) chunk into the specified world.
@@ -80,11 +88,10 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         return null;
     }
 
-    @Nullable
     public Object[] loadChunk__Async(World worldIn, int x, int z) throws IOException
     {
         ChunkPos chunkpos = new ChunkPos(x, z);
-        NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
+        NBTTagCompound nbttagcompound = this.chunksToRemove.get(chunkpos);
 
         if (nbttagcompound == null)
         {
@@ -104,7 +111,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
     public boolean isChunkGeneratedAt(int x, int z)
     {
         ChunkPos chunkpos = new ChunkPos(x, z);
-        NBTTagCompound nbttagcompound = this.chunksToSave.get(chunkpos);
+        NBTTagCompound nbttagcompound = this.chunksToRemove.get(chunkpos);
         return nbttagcompound != null ? true : RegionFileCache.chunkExists(this.chunkSaveLocation, x, z);
     }
 
@@ -118,7 +125,6 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         return data != null ? (Chunk)data[0] : null;
     }
 
-    @Nullable
     protected Object[] checkedReadChunkFromNBT__Async(World worldIn, int x, int z, NBTTagCompound compound)
     {
         if (!compound.hasKey("Level", 10))
@@ -180,10 +186,9 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             NBTTagCompound nbttagcompound = new NBTTagCompound();
             NBTTagCompound nbttagcompound1 = new NBTTagCompound();
             nbttagcompound.setTag("Level", nbttagcompound1);
-            nbttagcompound.setInteger("DataVersion", 1343);
+            nbttagcompound.setInteger("DataVersion", 1139);
             net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbttagcompound);
             this.writeChunkToNBT(chunkIn, worldIn, nbttagcompound1);
-            net.minecraftforge.common.ForgeChunkManager.storeChunkNBT(chunkIn, nbttagcompound1);
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.world.ChunkDataEvent.Save(chunkIn, nbttagcompound));
             this.addChunkToPending(chunkIn.getPos(), nbttagcompound);
         }
@@ -195,23 +200,20 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
     protected void addChunkToPending(ChunkPos pos, NBTTagCompound compound)
     {
-        if (!this.chunksBeingSaved.contains(pos))
+        if (!this.currentSave.contains(pos))
         {
-            this.chunksToSave.put(pos, compound);
+            this.chunksToRemove.put(pos, compound);
         }
 
         ThreadedFileIOBase.getThreadedIOInstance().queueIO(this);
     }
 
     /**
-     * Writes one queued IO action.
-     *  
-     * @return true if there are more IO actions to perform afterwards, or false if there are none (and this instance of
-     * IThreadedFileIO should be removed from the queued list)
+     * Returns a boolean stating if the write was unsuccessful.
      */
     public boolean writeNextIO()
     {
-        if (this.chunksToSave.isEmpty())
+        if (this.chunksToRemove.isEmpty())
         {
             if (this.flushing)
             {
@@ -222,13 +224,13 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         }
         else
         {
-            ChunkPos chunkpos = this.chunksToSave.keySet().iterator().next();
+            ChunkPos chunkpos = this.chunksToRemove.keySet().iterator().next();
             boolean lvt_3_1_;
 
             try
             {
-                this.chunksBeingSaved.add(chunkpos);
-                NBTTagCompound nbttagcompound = this.chunksToSave.remove(chunkpos);
+                this.currentSave.add(chunkpos);
+                NBTTagCompound nbttagcompound = this.chunksToRemove.remove(chunkpos);
 
                 if (nbttagcompound != null)
                 {
@@ -246,7 +248,7 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
             }
             finally
             {
-                this.chunksBeingSaved.remove(chunkpos);
+                this.currentSave.remove(chunkpos);
             }
 
             return lvt_3_1_;
@@ -444,18 +446,6 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
             compound.setTag("TileTicks", nbttaglist3);
         }
-
-        if (chunkIn.getCapabilities() != null)
-        {
-            try
-            {
-                compound.setTag("ForgeCaps", chunkIn.getCapabilities().serializeNBT());
-            }
-            catch (Exception exception)
-            {
-                net.minecraftforge.fml.common.FMLLog.log.error("A capability provider has thrown an exception trying to write state. It will not persist. Report this to the mod author", exception);
-            }
-        }
     }
 
     /**
@@ -501,10 +491,6 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
         if (compound.hasKey("Biomes", 7))
         {
             chunk.setBiomeArray(compound.getByteArray("Biomes"));
-        }
-
-        if (chunk.getCapabilities() != null && compound.hasKey("ForgeCaps")) {
-            chunk.getCapabilities().deserializeNBT(compound.getCompoundTag("ForgeCaps"));
         }
 
         // End this method here and split off entity loading to another method
@@ -685,10 +671,5 @@ public class AnvilChunkLoader implements IChunkLoader, IThreadedFileIO
 
             return entity;
         }
-    }
-
-    public int getPendingSaveCount()
-    {
-        return this.chunksToSave.size();
     }
 }

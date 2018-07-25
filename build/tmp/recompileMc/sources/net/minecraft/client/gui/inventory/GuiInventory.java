@@ -69,7 +69,7 @@ public class GuiInventory extends InventoryEffectRenderer implements IRecipeShow
         }
 
         this.widthTooNarrow = this.width < 379;
-        this.recipeBookGui.func_194303_a(this.width, this.height, this.mc, this.widthTooNarrow, ((ContainerPlayer)this.inventorySlots).craftMatrix);
+        this.recipeBookGui.init(this.width, this.height, this.mc, this.widthTooNarrow, this.inventorySlots, ((ContainerPlayer)this.inventorySlots).craftMatrix);
         this.guiLeft = this.recipeBookGui.updateScreenPosition(this.widthTooNarrow, this.width, this.xSize);
         this.recipeButton = new GuiButtonImage(10, this.guiLeft + 104, this.height / 2 - 22, 20, 18, 178, 0, 19, INVENTORY_BACKGROUND);
         this.buttonList.add(this.recipeButton);
@@ -150,7 +150,7 @@ public class GuiInventory extends InventoryEffectRenderer implements IRecipeShow
         RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
         rendermanager.setPlayerViewY(180.0F);
         rendermanager.setRenderShadow(false);
-        rendermanager.renderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
+        rendermanager.doRenderEntity(ent, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, false);
         rendermanager.setRenderShadow(true);
         ent.renderYawOffset = f;
         ent.rotationYaw = f1;
@@ -257,10 +257,5 @@ public class GuiInventory extends InventoryEffectRenderer implements IRecipeShow
     {
         this.recipeBookGui.removed();
         super.onGuiClosed();
-    }
-
-    public GuiRecipeBook func_194310_f()
-    {
-        return this.recipeBookGui;
     }
 }

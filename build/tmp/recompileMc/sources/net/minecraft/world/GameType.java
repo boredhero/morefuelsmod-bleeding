@@ -65,13 +65,13 @@ public enum GameType
             capabilities.isFlying = false;
         }
 
-        capabilities.allowEdit = !this.hasLimitedInteractions();
+        capabilities.allowEdit = !this.isAdventure();
     }
 
     /**
      * Returns true if this is the ADVENTURE game type
      */
-    public boolean hasLimitedInteractions()
+    public boolean isAdventure()
     {
         return this == ADVENTURE || this == SPECTATOR;
     }

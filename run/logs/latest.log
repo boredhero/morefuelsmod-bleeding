@@ -1,16 +1,16 @@
-[12:18:51] [main/INFO]: Setting user: Player650
-[12:18:53] [main/WARN]: Skipping bad option: lastServer:
-[12:18:53] [main/INFO]: LWJGL Version: 2.9.4
-[12:18:56] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:ยง4More Fuels Mod
-[12:18:57] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[12:18:58] [Thread-5/INFO]: Initializing LWJGL OpenAL
-[12:18:58] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[12:18:58] [Thread-5/INFO]: OpenAL initialized.
-[12:18:58] [Sound Library Loader/INFO]: Sound engine started
-[12:19:00] [main/INFO]: Created: 512x512 textures-atlas
-[12:19:02] [main/WARN]: Skipping bad option: lastServer:
-[12:19:02] [main/INFO]: Narrator library for x64 successfully loaded
-[12:19:02] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[12:19:18] [main/INFO]: Stopping!
-[12:19:18] [main/INFO]: SoundSystem shutting down...
-[12:19:18] [main/WARN]: Author: Paul Lamb, www.paulscode.com
+[17:55:12] [main/INFO]: Setting user: Player140
+[17:55:15] [main/WARN]: Skipping bad option: lastServer:
+[17:55:15] [main/INFO]: LWJGL Version: 2.9.4
+[17:55:18] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:ง4More Fuels Mod
+[17:55:21] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[17:55:21] [Thread-5/INFO]: Initializing LWJGL OpenAL
+[17:55:21] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[17:55:21] [Thread-5/INFO]: OpenAL initialized.
+[17:55:21] [Sound Library Loader/INFO]: Sound engine started
+[17:55:24] [main/INFO]: Created: 512x512 textures-atlas
+[17:55:26] [main/WARN]: Skipping bad option: lastServer:
+[17:55:26] [main/INFO]: Narrator library for x64 successfully loaded
+[17:55:26] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[17:55:45] [main/INFO]: Stopping!
+[17:55:45] [main/INFO]: SoundSystem shutting down...
+[17:55:45] [main/WARN]: Author: Paul Lamb, www.paulscode.com

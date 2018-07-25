@@ -201,7 +201,7 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
         return EnumActionResult.PASS;
     }
 
-    public float getDestroySpeed(ItemStack stack, IBlockState state)
+    public float getStrVsBlock(ItemStack stack, IBlockState state)
     {
         return 1.0F;
     }
@@ -510,7 +510,11 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
         float f5 = MathHelper.sin(-f * 0.017453292F);
         float f6 = f3 * f4;
         float f7 = f2 * f4;
-        double d3 = playerIn.getEntityAttribute(EntityPlayer.REACH_DISTANCE).getAttributeValue();
+        double d3 = 5.0D;
+        if (playerIn instanceof net.minecraft.entity.player.EntityPlayerMP)
+        {
+            d3 = ((net.minecraft.entity.player.EntityPlayerMP)playerIn).interactionManager.getBlockReachDistance();
+        }
         Vec3d vec3d1 = vec3d.addVector((double)f6 * d3, (double)f5 * d3, (double)f7 * d3);
         return worldIn.rayTraceBlocks(vec3d, vec3d1, useLiquids, !useLiquids, false);
     }
@@ -562,11 +566,8 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
     }
 
     /**
-     * Returns whether this item is always allowed to edit the world. Forces {@link
-     * net.minecraft.entity.player.EntityPlayer#canPlayerEdit EntityPlayer#canPlayerEdit} to return {@code true}.
-     * 
-     * @return whether this item ignores other restrictions on how a player can modify the world.
-     * @see ItemStack#canEditBlocks
+     * Returns true if players can use this item to affect the world (e.g. placing blocks, placing ender eyes in portal)
+     * when not in creative
      */
     public boolean canItemEditBlocks()
     {
@@ -575,9 +576,6 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
 
     /**
      * Return whether this item is repairable in an anvil.
-     *  
-     * @param toRepair the {@code ItemStack} being repaired
-     * @param repair the {@code ItemStack} being used to perform the repair
      */
     public boolean getIsRepairable(ItemStack toRepair, ItemStack repair)
     {
@@ -682,17 +680,6 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
     public NBTTagCompound getNBTShareTag(ItemStack stack)
     {
         return stack.getTagCompound();
-    }
-
-    /**
-     * Override this method to decide what to do with the NBT data received from getNBTShareTag().
-     * 
-     * @param stack The stack that received NBT
-     * @param nbt Received NBT, can be null
-     */
-    public void readNBTShareTag(ItemStack stack, @Nullable NBTTagCompound nbt)
-    {
-        stack.setTagCompound(nbt);
     }
 
     /**
@@ -860,33 +847,16 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
     public void onArmorTick(World world, EntityPlayer player, ItemStack itemStack){}
 
     /**
-     * Determines if the specific ItemStack can be placed in the specified armor slot, for the entity.
-     *
-     * TODO: Change name to canEquip in 1.13?
+     * Determines if the specific ItemStack can be placed in the specified armor slot.
      *
      * @param stack The ItemStack
-     * @param armorType Armor slot to be verified.
+     * @param armorType Armor slot ID: 0: Helmet, 1: Chest, 2: Legs, 3: Boots
      * @param entity The entity trying to equip the armor
      * @return True if the given ItemStack can be inserted in the slot
      */
     public boolean isValidArmor(ItemStack stack, EntityEquipmentSlot armorType, Entity entity)
     {
         return net.minecraft.entity.EntityLiving.getSlotForItemStack(stack) == armorType;
-    }
-
-    /**
-     * Override this to set a non-default armor slot for an ItemStack, but
-     * <em>do not use this to get the armor slot of said stack; for that, use
-     * {@link net.minecraft.entity.EntityLiving#getSlotForItemStack(ItemStack)}.</em>
-     *
-     * @param stack the ItemStack
-     * @return the armor slot of the ItemStack, or {@code null} to let the default
-     * vanilla logic as per {@code EntityLiving.getSlotForItemStack(stack)} decide
-     */
-    @Nullable
-    public EntityEquipmentSlot getEquipmentSlot(ItemStack stack)
-    {
-        return null;
     }
 
     /**
@@ -1204,26 +1174,6 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
     }
 
     /**
-     * Called to get the Mod ID of the mod that *created* the ItemStack,
-     * instead of the real Mod ID that *registered* it.
-     *
-     * For example the Forge Universal Bucket creates a subitem for each modded fluid,
-     * and it returns the modded fluid's Mod ID here.
-     *
-     * Mods that register subitems for other mods can override this.
-     * Informational mods can call it to show the mod that created the item.
-     *
-     * @param itemStack the ItemStack to check
-     * @return the Mod ID for the ItemStack, or
-     *         null when there is no specially associated mod and {@link #getRegistryName()} would return null.
-     */
-    @Nullable
-    public String getCreatorModId(ItemStack itemStack)
-    {
-        return net.minecraftforge.common.ForgeHooks.getDefaultCreatorModId(itemStack);
-    }
-
-    /**
      * Called from ItemStack.setItem, will hold extra data for the life of this ItemStack.
      * Can be retrieved from stack.getCapabilities()
      * The NBT can be null if this is not called from readNBT or if the item the stack is
@@ -1258,7 +1208,7 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
         }
         return builder.build();
     }
-
+    
     /**
      * Can this Item disable a shield
      * @param stack The ItemStack
@@ -1271,7 +1221,7 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
     {
         return this instanceof ItemAxe;
     }
-
+    
     /**
      * Is this Item a shield
      * @param stack The ItemStack
@@ -1292,49 +1242,6 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
     {
         return -1;
     }
-    
-    /** 
-     * Returns an enum constant of type {@code HorseArmorType}.
-     * The returned enum constant will be used to determine the armor value and texture of this item when equipped.
-     * @param stack the armor stack
-     * @return an enum constant of type {@code HorseArmorType}. Return HorseArmorType.NONE if this is not horse armor
-     */
-    public net.minecraft.entity.passive.HorseArmorType getHorseArmorType(ItemStack stack)
-    {
-        return net.minecraft.entity.passive.HorseArmorType.getByItem(stack.getItem());
-    }
-    
-    public String getHorseArmorTexture(net.minecraft.entity.EntityLiving wearer, ItemStack stack)
-    {
-        return getHorseArmorType(stack).getTextureName();
-    }
-    
-    /**
-     * Called every tick from {@link EntityHorse#onUpdate()} on the item in the armor slot.
-     * @param world the world the horse is in
-     * @param horse the horse wearing this armor
-     * @param armor the armor itemstack
-     */
-    public void onHorseArmorTick(World world, net.minecraft.entity.EntityLiving horse, ItemStack armor) {}
-    
-    @SideOnly(Side.CLIENT)
-    @Nullable
-    private net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer teisr;
-    
-    /**
-     * @return This Item's renderer, or the default instance if it does not have one.
-     */
-    @SideOnly(Side.CLIENT)
-    public final net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer getTileEntityItemStackRenderer()
-    {
-    	return teisr != null ? teisr : net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer.instance;
-    }
-    
-    @SideOnly(Side.CLIENT)
-    public void setTileEntityItemStackRenderer(@Nullable net.minecraft.client.renderer.tileentity.TileEntityItemStackRenderer teisr)
-    {
-    	this.teisr = teisr;
-    }  
 
     /* ======================================== FORGE END   =====================================*/
 
@@ -1903,9 +1810,9 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
         /** The number of uses this material allows. (wood = 59, stone = 131, iron = 250, diamond = 1561, gold = 32) */
         private final int maxUses;
         /** The strength of this tool material against blocks which it is effective against. */
-        private final float efficiency;
+        private final float efficiencyOnProperMaterial;
         /** Damage versus entities. */
-        private final float attackDamage;
+        private final float damageVsEntity;
         /** Defines the natural enchantability factor of the material. */
         private final int enchantability;
         //Added by forge for custom Tool materials.
@@ -1915,8 +1822,8 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
         {
             this.harvestLevel = harvestLevel;
             this.maxUses = maxUses;
-            this.efficiency = efficiency;
-            this.attackDamage = damageVsEntity;
+            this.efficiencyOnProperMaterial = efficiency;
+            this.damageVsEntity = damageVsEntity;
             this.enchantability = enchantability;
         }
 
@@ -1931,17 +1838,17 @@ public class Item extends net.minecraftforge.registries.IForgeRegistryEntry.Impl
         /**
          * The strength of this tool material against blocks which it is effective against.
          */
-        public float getEfficiency()
+        public float getEfficiencyOnProperMaterial()
         {
-            return this.efficiency;
+            return this.efficiencyOnProperMaterial;
         }
 
         /**
          * Returns the damage against a given entity.
          */
-        public float getAttackDamage()
+        public float getDamageVsEntity()
         {
-            return this.attackDamage;
+            return this.damageVsEntity;
         }
 
         /**

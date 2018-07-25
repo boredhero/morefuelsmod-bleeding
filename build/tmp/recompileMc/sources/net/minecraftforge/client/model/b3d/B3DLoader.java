@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -70,7 +70,6 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.common.property.Properties;
 import net.minecraftforge.fml.common.FMLLog;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -127,9 +126,9 @@ public enum B3DLoader implements ICustomModelLoader
         ResourceLocation file = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
         if(!cache.containsKey(file))
         {
-            IResource resource = null;
             try
             {
+                IResource resource;
                 try
                 {
                     resource = manager.getResource(file);
@@ -150,10 +149,6 @@ public enum B3DLoader implements ICustomModelLoader
             {
                 cache.put(file, null);
                 throw e;
-            }
-            finally
-            {
-                IOUtils.closeQuietly(resource);
             }
         }
         B3DModel model = cache.get(file);
@@ -501,9 +496,6 @@ public enum B3DLoader implements ICustomModelLoader
         @Override
         public ModelWrapper process(ImmutableMap<String, String> data)
         {
-            ImmutableSet<String> newMeshes = this.meshes;
-            int newDefaultKey = this.defaultKey;
-            boolean hasChanged = false;
             if(data.containsKey("mesh"))
             {
                 JsonElement e = new JsonParser().parse(data.get("mesh"));
@@ -526,8 +518,7 @@ public enum B3DLoader implements ICustomModelLoader
                             return this;
                         }
                     }
-                    newMeshes = builder.build();
-                    hasChanged = true;
+                    return new ModelWrapper(modelLocation, model, builder.build(), smooth, gui3d, defaultKey, textures);
                 }
                 else
                 {
@@ -540,8 +531,7 @@ public enum B3DLoader implements ICustomModelLoader
                 JsonElement e = new JsonParser().parse(data.get("key"));
                 if(e.isJsonPrimitive() && e.getAsJsonPrimitive().isNumber())
                 {
-                    newDefaultKey = e.getAsNumber().intValue();
-                    hasChanged = true;
+                    return new ModelWrapper(modelLocation, model, meshes, smooth, gui3d, e.getAsNumber().intValue(), textures);
                 }
                 else
                 {
@@ -549,7 +539,7 @@ public enum B3DLoader implements ICustomModelLoader
                     return this;
                 }
             }
-            return hasChanged ? new ModelWrapper(modelLocation, model, newMeshes, smooth, gui3d, newDefaultKey, textures) : this;
+            return this;
         }
 
         @Override

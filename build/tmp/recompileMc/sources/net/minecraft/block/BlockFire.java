@@ -148,7 +148,6 @@ public class BlockFire extends Block
     {
         if (worldIn.getGameRules().getBoolean("doFireTick"))
         {
-            if (!worldIn.isAreaLoaded(pos, 2)) return; // Forge: prevent loading unloaded chunks when spreading fire
             if (!this.canPlaceBlockAt(worldIn, pos))
             {
                 worldIn.setBlockToAir(pos);
@@ -365,9 +364,6 @@ public class BlockFire extends Block
         return canCatchFire(worldIn, pos, EnumFacing.UP);
     }
 
-    /**
-     * Checks if this block can be placed exactly at the given position.
-     */
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
         return worldIn.getBlockState(pos.down()).isTopSolid() || this.canNeighborCatchFire(worldIn, pos);
@@ -531,16 +527,7 @@ public class BlockFire extends Block
     }
     /*================================= Forge Start ======================================*/
 
-    /**
-     * Get the geometry of the queried face at the given position and state. This is used to decide whether things like
-     * buttons are allowed to be placed on the face, or how glass panes connect to the face, among other things.
-     * <p>
-     * Common values are {@code SOLID}, which is the default, and {@code UNDEFINED}, which represents something that
-     * does not fit the other descriptions and will generally cause other things not to connect to the face.
-     * 
-     * @return an approximation of the form of the given face
-     */
-    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
+    public BlockFaceShape getBlockFaceShape(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
     {
         return BlockFaceShape.UNDEFINED;
     }

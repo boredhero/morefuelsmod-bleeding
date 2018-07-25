@@ -81,14 +81,14 @@ public class RecipeCommand extends CommandBase
                             throw new CommandException("commands.recipe.unknownrecipe", new Object[] {args[2]});
                         }
 
-                        if (irecipe.isDynamic())
+                        if (irecipe.isHidden())
                         {
                             throw new CommandException("commands.recipe.unsupported", new Object[] {args[2]});
                         }
 
                         List<IRecipe> list = Lists.newArrayList(irecipe);
 
-                        if (flag == entityplayermp.getRecipeBook().isUnlocked(irecipe))
+                        if (flag == entityplayermp.getRecipeBook().containsRecipe(irecipe))
                         {
                             String s = flag ? "commands.recipe.alreadyHave" : "commands.recipe.dontHave";
                             throw new CommandException(s, new Object[] {entityplayermp.getName(), irecipe.getRecipeOutput().getDisplayName()});

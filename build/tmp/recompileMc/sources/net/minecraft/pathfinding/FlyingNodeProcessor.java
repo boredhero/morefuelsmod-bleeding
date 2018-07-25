@@ -13,9 +13,9 @@ import net.minecraft.world.IBlockAccess;
 
 public class FlyingNodeProcessor extends WalkNodeProcessor
 {
-    public void init(IBlockAccess sourceIn, EntityLiving mob)
+    public void initProcessor(IBlockAccess sourceIn, EntityLiving mob)
     {
-        super.init(sourceIn, mob);
+        super.initProcessor(sourceIn, mob);
         this.avoidsWater = mob.getPathPriority(PathNodeType.WATER);
     }
 

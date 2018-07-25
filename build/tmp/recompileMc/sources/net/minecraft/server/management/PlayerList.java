@@ -73,7 +73,7 @@ public abstract class PlayerList
     public static final File FILE_IPBANS = new File("banned-ips.json");
     public static final File FILE_OPS = new File("ops.json");
     public static final File FILE_WHITELIST = new File("whitelist.json");
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
     /** Reference to the MinecraftServer object. */
     private final MinecraftServer mcServer;
@@ -144,7 +144,7 @@ public abstract class PlayerList
             s1 = netManager.getRemoteAddress().toString();
         }
 
-        LOGGER.info("{}[{}] logged in with entity id {} at ({}, {}, {})", playerIn.getName(), s1, Integer.valueOf(playerIn.getEntityId()), Double.valueOf(playerIn.posX), Double.valueOf(playerIn.posY), Double.valueOf(playerIn.posZ));
+        LOG.info("{}[{}] logged in with entity id {} at ({}, {}, {})", playerIn.getName(), s1, Integer.valueOf(playerIn.getEntityId()), Double.valueOf(playerIn.posX), Double.valueOf(playerIn.posY), Double.valueOf(playerIn.posZ));
         WorldServer worldserver = this.mcServer.getWorld(playerIn.dimension);
         WorldInfo worldinfo = worldserver.getWorldInfo();
         this.setPlayerGameTypeBasedOnOther(playerIn, (EntityPlayerMP)null, worldserver);
@@ -213,7 +213,7 @@ public abstract class PlayerList
 
                 if (!playerIn.isRiding())
                 {
-                    LOGGER.warn("Couldn't reattach entity to player");
+                    LOG.warn("Couldn't reattach entity to player");
                     worldserver.removeEntityDangerously(entity1);
 
                     for (Entity entity2 : entity1.getRecursivePassengers())
@@ -331,7 +331,7 @@ public abstract class PlayerList
         {
             nbttagcompound1 = nbttagcompound;
             playerIn.readFromNBT(nbttagcompound);
-            LOGGER.debug("loading single player");
+            LOG.debug("loading single player");
             net.minecraftforge.event.ForgeEventFactory.firePlayerLoadingEvent(playerIn, this.playerDataManager, playerIn.getUniqueID().toString());
         }
         else
@@ -423,7 +423,7 @@ public abstract class PlayerList
 
             if (entity.getRecursivePassengersByType(EntityPlayerMP.class).size() == 1)
             {
-                LOGGER.debug("Removing player mount");
+                LOG.debug("Removing player mount");
                 playerIn.dismountRidingEntity();
                 worldserver.removeEntityDangerously(entity);
 
@@ -642,13 +642,7 @@ public abstract class PlayerList
         transferPlayerToDimension(player, dimensionIn, mcServer.getWorld(dimensionIn).getDefaultTeleporter());
     }
 
-    // TODO: Remove (1.13)
     public void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn, net.minecraft.world.Teleporter teleporter)
-    {
-        transferPlayerToDimension(player, dimensionIn, (net.minecraftforge.common.util.ITeleporter) teleporter);
-    }
-
-    public void transferPlayerToDimension(EntityPlayerMP player, int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
     {
         int i = player.dimension;
         WorldServer worldserver = this.mcServer.getWorld(player.dimension);
@@ -670,10 +664,6 @@ public abstract class PlayerList
         {
             player.connection.sendPacket(new SPacketEntityEffect(player.getEntityId(), potioneffect));
         }
-        // Fix MC-88179: on non-death SPacketRespawn, also resend attributes
-        net.minecraft.entity.ai.attributes.AttributeMap attributemap = (net.minecraft.entity.ai.attributes.AttributeMap) player.getAttributeMap();
-        java.util.Collection<net.minecraft.entity.ai.attributes.IAttributeInstance> watchedAttribs = attributemap.getWatchedAttributes();
-        if (!watchedAttribs.isEmpty()) player.connection.sendPacket(new net.minecraft.network.play.server.SPacketEntityProperties(player.getEntityId(), watchedAttribs));
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerChangedDimensionEvent(player, i, dimensionIn);
     }
 
@@ -685,17 +675,14 @@ public abstract class PlayerList
         transferEntityToWorld(entityIn, lastDimension, oldWorldIn, toWorldIn, toWorldIn.getDefaultTeleporter());
     }
 
-    // TODO: Remove (1.13)
+    @SuppressWarnings("unused")
     public void transferEntityToWorld(Entity entityIn, int lastDimension, WorldServer oldWorldIn, WorldServer toWorldIn, net.minecraft.world.Teleporter teleporter)
     {
-        transferEntityToWorld(entityIn, lastDimension, oldWorldIn, toWorldIn, (net.minecraftforge.common.util.ITeleporter) teleporter);
-    }
-
-    public void transferEntityToWorld(Entity entityIn, int lastDimension, WorldServer oldWorldIn, WorldServer toWorldIn, net.minecraftforge.common.util.ITeleporter teleporter)
-    {
-        double moveFactor = oldWorldIn.provider.getMovementFactor() / toWorldIn.provider.getMovementFactor();
-        double d0 = MathHelper.clamp(entityIn.posX * moveFactor, toWorldIn.getWorldBorder().minX() + 16.0D, toWorldIn.getWorldBorder().maxX() - 16.0D);
-        double d1 = MathHelper.clamp(entityIn.posZ * moveFactor, toWorldIn.getWorldBorder().minZ() + 16.0D, toWorldIn.getWorldBorder().maxZ() - 16.0D);
+        net.minecraft.world.WorldProvider pOld = oldWorldIn.provider;
+        net.minecraft.world.WorldProvider pNew = toWorldIn.provider;
+        double moveFactor = pOld.getMovementFactor() / pNew.getMovementFactor();
+        double d0 = entityIn.posX * moveFactor;
+        double d1 = entityIn.posZ * moveFactor;
         double d2 = 8.0D;
         float f = entityIn.rotationYaw;
         oldWorldIn.profiler.startSection("moving");
@@ -722,7 +709,8 @@ public abstract class PlayerList
                 oldWorldIn.updateEntityWithOptionalForce(entityIn, false);
             }
         }
-        if (entityIn.dimension == 1 && teleporter.isVanilla())
+
+        if (entityIn.dimension == 1)
         {
             BlockPos blockpos;
 
@@ -748,7 +736,7 @@ public abstract class PlayerList
 
         oldWorldIn.profiler.endSection();
 
-        if (lastDimension != 1 || !teleporter.isVanilla())
+        if (lastDimension != 1)
         {
             oldWorldIn.profiler.startSection("placing");
             d0 = (double)MathHelper.clamp((int)d0, -29999872, 29999872);
@@ -757,8 +745,7 @@ public abstract class PlayerList
             if (entityIn.isEntityAlive())
             {
                 entityIn.setLocationAndAngles(d0, entityIn.posY, d1, entityIn.rotationYaw, entityIn.rotationPitch);
-                oldWorldIn.updateEntityWithOptionalForce(entityIn, false);
-                teleporter.placeEntity(toWorldIn, entityIn, f);
+                teleporter.placeInPortal(entityIn, f);
                 toWorldIn.spawnEntity(entityIn);
                 toWorldIn.updateEntityWithOptionalForce(entityIn, false);
             }

@@ -40,7 +40,7 @@ public class ChunkGeneratorEnd implements IChunkGenerator
     /** are map structures going to be generated (e.g. strongholds) */
     private final boolean mapFeaturesEnabled;
     private final BlockPos spawnPoint;
-    private MapGenEndCity endCityGen = new MapGenEndCity(this);
+    private final MapGenEndCity endCityGen = new MapGenEndCity(this);
     private NoiseGeneratorSimplex islandNoise;
     private double[] buffer;
     /** The biomes that are used to generate the chunk */
@@ -75,7 +75,6 @@ public class ChunkGeneratorEnd implements IChunkGenerator
         this.noiseGen5 = ctx.getDepth();
         this.noiseGen6 = ctx.getScale();
         this.islandNoise = ctx.getIsland();
-        this.endCityGen = (MapGenEndCity) net.minecraftforge.event.terraingen.TerrainGen.getModdedMapGen(this.endCityGen, net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.END_CITY);
     }
 
     /**

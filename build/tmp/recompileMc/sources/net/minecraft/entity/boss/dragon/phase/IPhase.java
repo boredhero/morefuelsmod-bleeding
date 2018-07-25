@@ -40,7 +40,7 @@ public interface IPhase
 
     float getYawFactor();
 
-    PhaseList <? extends IPhase > getType();
+    PhaseList <? extends IPhase > getPhaseList();
 
     /**
      * Returns the location the dragon is flying toward

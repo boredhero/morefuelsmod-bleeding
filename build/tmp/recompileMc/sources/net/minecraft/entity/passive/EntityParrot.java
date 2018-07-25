@@ -378,7 +378,7 @@ public class EntityParrot extends EntityShoulderRiding implements EntityFlying
         }
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_PARROT_HURT;
     }

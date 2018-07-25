@@ -39,7 +39,7 @@ public class EntitySkeleton extends AbstractSkeleton
         return SoundEvents.ENTITY_SKELETON_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_SKELETON_HURT;
     }
@@ -65,7 +65,7 @@ public class EntitySkeleton extends AbstractSkeleton
         {
             EntityCreeper entitycreeper = (EntityCreeper)cause.getTrueSource();
 
-            if (entitycreeper.getPowered() && entitycreeper.ableToCauseSkullDrop())
+            if (entitycreeper.getPowered() && entitycreeper.isAIEnabled())
             {
                 entitycreeper.incrementDroppedSkulls();
                 this.entityDropItem(new ItemStack(Items.SKULL, 1, 0), 0.0F);

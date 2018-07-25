@@ -397,17 +397,6 @@ public class Potion extends net.minecraftforge.registries.IForgeRegistryEntry.Im
         ret.add(new net.minecraft.item.ItemStack(net.minecraft.init.Items.MILK_BUCKET));
         return ret;
     }
-    
-    /**
-     * Used for determining {@code PotionEffect} sort order in GUIs.
-     * Defaults to the {@code PotionEffect}'s liquid color.
-     * @param potionEffect the {@code PotionEffect} instance containing the potion
-     * @return a value used to sort {@code PotionEffect}s in GUIs 
-     */
-    public int getGuiSortColor(PotionEffect potionEffect)
-    {
-        return this.getLiquidColor();
-    }
 
     /* ======================================== FORGE END =====================================*/
 

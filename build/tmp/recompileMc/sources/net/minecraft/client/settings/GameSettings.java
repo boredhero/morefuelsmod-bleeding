@@ -174,7 +174,7 @@ public class GameSettings
     public String language;
     public boolean forceUnicodeFont;
 
-    public GameSettings(Minecraft mcIn, File mcDataDir)
+    public GameSettings(Minecraft mcIn, File optionsFileIn)
     {
         setForgeKeybindProperties();
         this.keyBindings = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.keyBindAttack, this.keyBindUseItem, this.keyBindForward, this.keyBindLeft, this.keyBindBack, this.keyBindRight, this.keyBindJump, this.keyBindSneak, this.keyBindSprint, this.keyBindDrop, this.keyBindInventory, this.keyBindChat, this.keyBindPlayerList, this.keyBindPickBlock, this.keyBindCommand, this.keyBindScreenshot, this.keyBindTogglePerspective, this.keyBindSmoothCamera, this.keyBindFullscreen, this.keyBindSpectatorOutlines, this.keyBindSwapHands, this.keyBindSaveToolbar, this.keyBindLoadToolbar, this.keyBindAdvancements}, this.keyBindsHotbar);
@@ -183,7 +183,7 @@ public class GameSettings
         this.fovSetting = 70.0F;
         this.language = "en_us";
         this.mc = mcIn;
-        this.optionsFile = new File(mcDataDir, "options.txt");
+        this.optionsFile = new File(optionsFileIn, "options.txt");
 
         if (mcIn.isJava64bit() && Runtime.getRuntime().maxMemory() >= 1000000000L)
         {
@@ -621,9 +621,9 @@ public class GameSettings
      */
     public String getKeyBinding(GameSettings.Options settingOption)
     {
-        String s = I18n.format(settingOption.getTranslation()) + ": ";
+        String s = I18n.format(settingOption.getEnumString()) + ": ";
 
-        if (settingOption.isFloat())
+        if (settingOption.getEnumFloat())
         {
             float f1 = this.getOptionFloatValue(settingOption);
             float f = settingOption.normalizeValue(f1);
@@ -702,7 +702,7 @@ public class GameSettings
                 return f == 0.0F ? s + I18n.format("options.off") : s + (int)(f * 100.0F) + "%";
             }
         }
-        else if (settingOption.isBoolean())
+        else if (settingOption.getEnumBoolean())
         {
             boolean flag = this.getOptionOrdinalValue(settingOption);
             return flag ? s + I18n.format("options.on") : s + I18n.format("options.off");
@@ -1187,7 +1187,7 @@ public class GameSettings
         try
         {
             printwriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.optionsFile), StandardCharsets.UTF_8));
-            printwriter.println("version:1343");
+            printwriter.println("version:1139");
             printwriter.println("invertYMouse:" + this.invertMouse);
             printwriter.println("mouseSensitivity:" + this.mouseSensitivity);
             printwriter.println("fov:" + (this.fovSetting - 70.0F) / 40.0F);
@@ -1404,18 +1404,18 @@ public class GameSettings
         AUTO_JUMP("options.autoJump", false, true),
         NARRATOR("options.narrator", false, false);
 
-        private final boolean isFloat;
-        private final boolean isBoolean;
-        private final String translation;
+        private final boolean enumFloat;
+        private final boolean enumBoolean;
+        private final String enumString;
         private final float valueStep;
         private float valueMin;
         private float valueMax;
 
-        public static GameSettings.Options byOrdinal(int ordinal)
+        public static GameSettings.Options getEnumOptions(int ordinal)
         {
             for (GameSettings.Options gamesettings$options : values())
             {
-                if (gamesettings$options.getOrdinal() == ordinal)
+                if (gamesettings$options.returnEnumOrdinal() == ordinal)
                 {
                     return gamesettings$options;
                 }
@@ -1424,42 +1424,39 @@ public class GameSettings
             return null;
         }
 
-        private Options(String translation, boolean isFloat, boolean isBoolean)
+        private Options(String str, boolean isFloat, boolean isBoolean)
         {
-            this(translation, isFloat, isBoolean, 0.0F, 1.0F, 0.0F);
+            this(str, isFloat, isBoolean, 0.0F, 1.0F, 0.0F);
         }
 
-        private Options(String translation, boolean isFloat, boolean isBoolean, float valMin, float valMax, float valStep)
+        private Options(String str, boolean isFloat, boolean isBoolean, float valMin, float valMax, float valStep)
         {
-            this.translation = translation;
-            this.isFloat = isFloat;
-            this.isBoolean = isBoolean;
+            this.enumString = str;
+            this.enumFloat = isFloat;
+            this.enumBoolean = isBoolean;
             this.valueMin = valMin;
             this.valueMax = valMax;
             this.valueStep = valStep;
         }
 
-        public boolean isFloat()
+        public boolean getEnumFloat()
         {
-            return this.isFloat;
+            return this.enumFloat;
         }
 
-        public boolean isBoolean()
+        public boolean getEnumBoolean()
         {
-            return this.isBoolean;
+            return this.enumBoolean;
         }
 
-        public int getOrdinal()
+        public int returnEnumOrdinal()
         {
             return this.ordinal();
         }
 
-        /**
-         * GameSettings$Options.Options
-         */
-        public String getTranslation()
+        public String getEnumString()
         {
-            return this.translation;
+            return this.enumString;
         }
 
         public float getValueMin()

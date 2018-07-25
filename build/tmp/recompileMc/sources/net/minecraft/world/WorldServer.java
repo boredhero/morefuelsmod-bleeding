@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -14,8 +15,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.FunctionManager;
@@ -294,9 +293,12 @@ public class WorldServer extends World implements IThreadListener
     {
         this.allPlayersSleeping = false;
 
-        for (EntityPlayer entityplayer : this.playerEntities.stream().filter(EntityPlayer::isPlayerSleeping).collect(Collectors.toList()))
+        for (EntityPlayer entityplayer : this.playerEntities)
         {
-            entityplayer.wakeUpPlayer(false, false, true);
+            if (entityplayer.isPlayerSleeping())
+            {
+                entityplayer.wakeUpPlayer(false, false, true);
+            }
         }
 
         if (this.getGameRules().getBoolean("doWeatherCycle"))
@@ -456,7 +458,6 @@ public class WorldServer extends World implements IThreadListener
                     BlockPos blockpos1 = this.getPrecipitationHeight(new BlockPos(j + (j2 & 15), 0, k + (j2 >> 8 & 15)));
                     BlockPos blockpos2 = blockpos1.down();
 
-                    if (this.isAreaLoaded(blockpos2, 1)) // Forge: check area to avoid loading neighbors in unloaded chunks
                     if (this.canBlockFreezeNoWater(blockpos2))
                     {
                         this.setBlockState(blockpos2, Blocks.ICE.getDefaultState());
@@ -512,7 +513,7 @@ public class WorldServer extends World implements IThreadListener
     {
         BlockPos blockpos = this.getPrecipitationHeight(pos);
         AxisAlignedBB axisalignedbb = (new AxisAlignedBB(blockpos, new BlockPos(blockpos.getX(), this.getHeight(), blockpos.getZ()))).grow(3.0D);
-        List<EntityLivingBase> list = this.getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb, new com.google.common.base.Predicate<EntityLivingBase>()
+        List<EntityLivingBase> list = this.getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb, new Predicate<EntityLivingBase>()
         {
             public boolean apply(@Nullable EntityLivingBase p_apply_1_)
             {

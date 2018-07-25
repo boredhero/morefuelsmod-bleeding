@@ -73,7 +73,6 @@ public class BlockCrops extends BlockBush implements IGrowable
     {
         super.updateTick(worldIn, pos, state, rand);
 
-        if (!worldIn.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light
         if (worldIn.getLightFromNeighbors(pos.up()) >= 9)
         {
             int i = this.getAge(state);

@@ -93,7 +93,7 @@ public abstract class EntityLiving extends EntityLivingBase
     private ResourceLocation deathLootTable;
     private long deathLootTableSeed;
     private boolean isLeashed;
-    private Entity leashHolder;
+    private Entity leashedToEntity;
     private NBTTagCompound leashNBTTag;
 
     public EntityLiving(World worldIn)
@@ -462,18 +462,18 @@ public abstract class EntityLiving extends EntityLivingBase
         compound.setTag("HandDropChances", nbttaglist3);
         compound.setBoolean("Leashed", this.isLeashed);
 
-        if (this.leashHolder != null)
+        if (this.leashedToEntity != null)
         {
             NBTTagCompound nbttagcompound2 = new NBTTagCompound();
 
-            if (this.leashHolder instanceof EntityLivingBase)
+            if (this.leashedToEntity instanceof EntityLivingBase)
             {
-                UUID uuid = this.leashHolder.getUniqueID();
+                UUID uuid = this.leashedToEntity.getUniqueID();
                 nbttagcompound2.setUniqueId("UUID", uuid);
             }
-            else if (this.leashHolder instanceof EntityHanging)
+            else if (this.leashedToEntity instanceof EntityHanging)
             {
-                BlockPos blockpos = ((EntityHanging)this.leashHolder).getHangingPosition();
+                BlockPos blockpos = ((EntityHanging)this.leashedToEntity).getHangingPosition();
                 nbttagcompound2.setInteger("X", blockpos.getX());
                 nbttagcompound2.setInteger("Y", blockpos.getY());
                 nbttagcompound2.setInteger("Z", blockpos.getZ());
@@ -647,7 +647,7 @@ public abstract class EntityLiving extends EntityLivingBase
         super.onLivingUpdate();
         this.world.profiler.startSection("looting");
 
-        if (!this.world.isRemote && this.canPickUpLoot() && !this.dead && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this))
+        if (!this.world.isRemote && this.canPickUpLoot() && !this.dead && this.world.getGameRules().getBoolean("mobGriefing"))
         {
             for (EntityItem entityitem : this.world.getEntitiesWithinAABB(EntityItem.class, this.getEntityBoundingBox().grow(1.0D, 0.0D, 1.0D)))
             {
@@ -685,13 +685,13 @@ public abstract class EntityLiving extends EntityLivingBase
                     ItemSword itemsword = (ItemSword)itemstack.getItem();
                     ItemSword itemsword1 = (ItemSword)itemstack1.getItem();
 
-                    if (itemsword.getAttackDamage() == itemsword1.getAttackDamage())
+                    if (itemsword.getDamageVsEntity() == itemsword1.getDamageVsEntity())
                     {
                         flag = itemstack.getMetadata() > itemstack1.getMetadata() || itemstack.hasTagCompound() && !itemstack1.hasTagCompound();
                     }
                     else
                     {
-                        flag = itemsword.getAttackDamage() > itemsword1.getAttackDamage();
+                        flag = itemsword.getDamageVsEntity() > itemsword1.getDamageVsEntity();
                     }
                 }
                 else if (itemstack.getItem() instanceof ItemBow && itemstack1.getItem() instanceof ItemBow)
@@ -1114,8 +1114,6 @@ public abstract class EntityLiving extends EntityLivingBase
 
     public static EntityEquipmentSlot getSlotForItemStack(ItemStack stack)
     {
-        final EntityEquipmentSlot slot = stack.getItem().getEquipmentSlot(stack);
-        if (slot != null) return slot; // FORGE: Allow modders to set a non-default equipment slot for a stack; e.g. a non-armor chestplate-slot item
         if (stack.getItem() != Item.getItemFromBlock(Blocks.PUMPKIN) && stack.getItem() != Items.SKULL)
         {
             if (stack.getItem() instanceof ItemArmor)
@@ -1335,7 +1333,7 @@ public abstract class EntityLiving extends EntityLivingBase
 
     public final boolean processInitialInteract(EntityPlayer player, EnumHand hand)
     {
-        if (this.getLeashed() && this.getLeashHolder() == player)
+        if (this.getLeashed() && this.getLeashedToEntity() == player)
         {
             this.clearLeashed(true, !player.capabilities.isCreativeMode);
             return true;
@@ -1346,7 +1344,7 @@ public abstract class EntityLiving extends EntityLivingBase
 
             if (itemstack.getItem() == Items.LEAD && this.canBeLeashedTo(player))
             {
-                this.setLeashHolder(player, true);
+                this.setLeashedToEntity(player, true);
                 itemstack.shrink(1);
                 return true;
             }
@@ -1379,7 +1377,7 @@ public abstract class EntityLiving extends EntityLivingBase
                 this.clearLeashed(true, true);
             }
 
-            if (this.leashHolder == null || this.leashHolder.isDead)
+            if (this.leashedToEntity == null || this.leashedToEntity.isDead)
             {
                 this.clearLeashed(true, true);
             }
@@ -1394,7 +1392,7 @@ public abstract class EntityLiving extends EntityLivingBase
         if (this.isLeashed)
         {
             this.isLeashed = false;
-            this.leashHolder = null;
+            this.leashedToEntity = null;
 
             if (!this.world.isRemote && dropLead)
             {
@@ -1418,22 +1416,22 @@ public abstract class EntityLiving extends EntityLivingBase
         return this.isLeashed;
     }
 
-    public Entity getLeashHolder()
+    public Entity getLeashedToEntity()
     {
-        return this.leashHolder;
+        return this.leashedToEntity;
     }
 
     /**
      * Sets the entity to be leashed to.
      */
-    public void setLeashHolder(Entity entityIn, boolean sendAttachNotification)
+    public void setLeashedToEntity(Entity entityIn, boolean sendAttachNotification)
     {
         this.isLeashed = true;
-        this.leashHolder = entityIn;
+        this.leashedToEntity = entityIn;
 
         if (!this.world.isRemote && sendAttachNotification && this.world instanceof WorldServer)
         {
-            ((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketEntityAttach(this, this.leashHolder));
+            ((WorldServer)this.world).getEntityTracker().sendToTracking(this, new SPacketEntityAttach(this, this.leashedToEntity));
         }
 
         if (this.isRiding())
@@ -1466,7 +1464,7 @@ public abstract class EntityLiving extends EntityLivingBase
                 {
                     if (entitylivingbase.getUniqueID().equals(uuid))
                     {
-                        this.setLeashHolder(entitylivingbase, true);
+                        this.setLeashedToEntity(entitylivingbase, true);
                         break;
                     }
                 }
@@ -1481,7 +1479,7 @@ public abstract class EntityLiving extends EntityLivingBase
                     entityleashknot = EntityLeashKnot.createKnot(this.world, blockpos);
                 }
 
-                this.setLeashHolder(entityleashknot, true);
+                this.setLeashedToEntity(entityleashknot, true);
             }
             else
             {

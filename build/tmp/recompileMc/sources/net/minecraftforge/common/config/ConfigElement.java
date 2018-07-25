@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -396,8 +396,6 @@ public class ConfigElement implements IConfigElement
                 if (catName.isEmpty())
                     continue;
                 ConfigCategory category = config.getCategory(catName);
-                if (category.isChild())
-                    continue;
                 DummyCategoryElement element = new DummyCategoryElement(category.getName(), category.getLanguagekey(), new ConfigElement(category).getChildElements());
                 element.setRequiresMcRestart(category.requiresMcRestart());
                 element.setRequiresWorldRestart(category.requiresWorldRestart());

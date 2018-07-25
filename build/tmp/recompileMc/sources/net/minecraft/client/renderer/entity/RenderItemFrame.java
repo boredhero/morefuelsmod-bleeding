@@ -52,7 +52,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
         ModelManager modelmanager = blockrendererdispatcher.getBlockModelShapes().getModelManager();
         IBakedModel ibakedmodel;
 
-        if (entity.getDisplayedItem().getItem() instanceof net.minecraft.item.ItemMap)
+        if (entity.getDisplayedItem().getItem() == Items.FILLED_MAP)
         {
             ibakedmodel = modelmanager.getModel(this.mapModel);
         }
@@ -116,7 +116,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
                 float f = 0.0078125F;
                 GlStateManager.scale(0.0078125F, 0.0078125F, 0.0078125F);
                 GlStateManager.translate(-64.0F, -64.0F, 0.0F);
-                MapData mapdata = ((net.minecraft.item.ItemMap) itemstack.getItem()).getMapData(itemstack, itemFrame.world);
+                MapData mapdata = Items.FILLED_MAP.getMapData(itemstack, itemFrame.world);
                 GlStateManager.translate(0.0F, 0.0F, -1.0F);
 
                 if (mapdata != null)
@@ -144,7 +144,7 @@ public class RenderItemFrame extends Render<EntityItemFrame>
     {
         if (Minecraft.isGuiEnabled() && !entity.getDisplayedItem().isEmpty() && entity.getDisplayedItem().hasDisplayName() && this.renderManager.pointedEntity == entity)
         {
-            double d0 = entity.getDistanceSq(this.renderManager.renderViewEntity);
+            double d0 = entity.getDistanceSqToEntity(this.renderManager.renderViewEntity);
             float f = entity.isSneaking() ? 32.0F : 64.0F;
 
             if (d0 < (double)(f * f))

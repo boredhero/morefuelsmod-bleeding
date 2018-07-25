@@ -88,7 +88,7 @@ public class PhaseLanding extends PhaseBase
         return this.targetLocation;
     }
 
-    public PhaseList<PhaseLanding> getType()
+    public PhaseList<PhaseLanding> getPhaseList()
     {
         return PhaseList.LANDING;
     }

@@ -76,7 +76,7 @@ public class PhaseSittingScanning extends PhaseSittingBase
         this.scanningTime = 0;
     }
 
-    public PhaseList<PhaseSittingScanning> getType()
+    public PhaseList<PhaseSittingScanning> getPhaseList()
     {
         return PhaseList.SITTING_SCANNING;
     }

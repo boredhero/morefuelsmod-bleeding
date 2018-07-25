@@ -23,7 +23,7 @@ public class PhaseHoldingPattern extends PhaseBase
         super(dragonIn);
     }
 
-    public PhaseList<PhaseHoldingPattern> getType()
+    public PhaseList<PhaseHoldingPattern> getPhaseList()
     {
         return PhaseList.HOLDING_PATTERN;
     }
@@ -36,7 +36,7 @@ public class PhaseHoldingPattern extends PhaseBase
     {
         double d0 = this.targetLocation == null ? 0.0D : this.targetLocation.squareDistanceTo(this.dragon.posX, this.dragon.posY, this.dragon.posZ);
 
-        if (d0 < 100.0D || d0 > 22500.0D || this.dragon.collidedHorizontally || this.dragon.collidedVertically)
+        if (d0 < 100.0D || d0 > 22500.0D || this.dragon.isCollidedHorizontally || this.dragon.isCollidedVertically)
         {
             this.findNewTarget();
         }

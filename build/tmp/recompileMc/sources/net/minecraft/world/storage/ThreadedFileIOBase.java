@@ -76,7 +76,7 @@ public class ThreadedFileIOBase implements Runnable
     }
 
     /**
-     * Queues an IO task. If the given task has already been queued, nothing happens.
+     * threaded io
      */
     public void queueIO(IThreadedFileIO fileIo)
     {
@@ -87,10 +87,6 @@ public class ThreadedFileIOBase implements Runnable
         }
     }
 
-    /**
-     * Causes the current thread to block until all pending IO tasks have been written, and also disables the sleep
-     * between IO tasks until that time.
-     */
     public void waitForFinish() throws InterruptedException
     {
         this.isThreadWaiting = true;

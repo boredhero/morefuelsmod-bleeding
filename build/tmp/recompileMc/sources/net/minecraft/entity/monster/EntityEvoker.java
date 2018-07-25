@@ -155,14 +155,14 @@ public class EntityEvoker extends EntitySpellcasterIllager
         return SoundEvents.EVOCATION_ILLAGER_DEATH;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_EVOCATION_ILLAGER_HURT;
     }
 
-    private void setWololoTarget(@Nullable EntitySheep wololoTargetIn)
+    private void setWololoTarget(@Nullable EntitySheep p_190748_1_)
     {
-        this.wololoTarget = wololoTargetIn;
+        this.wololoTarget = p_190748_1_;
     }
 
     @Nullable
@@ -200,7 +200,7 @@ public class EntityEvoker extends EntitySpellcasterIllager
             double d1 = Math.max(entitylivingbase.posY, EntityEvoker.this.posY) + 1.0D;
             float f = (float)MathHelper.atan2(entitylivingbase.posZ - EntityEvoker.this.posZ, entitylivingbase.posX - EntityEvoker.this.posX);
 
-            if (EntityEvoker.this.getDistanceSq(entitylivingbase) < 9.0D)
+            if (EntityEvoker.this.getDistanceSqToEntity(entitylivingbase) < 9.0D)
             {
                 for (int i = 0; i < 5; ++i)
                 {
@@ -390,7 +390,7 @@ public class EntityEvoker extends EntitySpellcasterIllager
             {
                 return false;
             }
-            else if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(EntityEvoker.this.world, EntityEvoker.this))
+            else if (!EntityEvoker.this.world.getGameRules().getBoolean("mobGriefing"))
             {
                 return false;
             }

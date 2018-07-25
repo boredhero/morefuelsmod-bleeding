@@ -88,7 +88,7 @@ public class EntitySilverfish extends EntityMob
         return SoundEvents.ENTITY_SILVERFISH_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_SILVERFISH_HURT;
     }
@@ -212,7 +212,7 @@ public class EntitySilverfish extends EntityMob
                 {
                     Random random = this.entity.getRNG();
 
-                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.entity.world, this.entity) && random.nextInt(10) == 0)
+                    if (this.entity.world.getGameRules().getBoolean("mobGriefing") && random.nextInt(10) == 0)
                     {
                         this.facing = EnumFacing.random(random);
                         BlockPos blockpos = (new BlockPos(this.entity.posX, this.entity.posY + 0.5D, this.entity.posZ)).offset(this.facing);
@@ -313,7 +313,7 @@ public class EntitySilverfish extends EntityMob
 
                                 if (iblockstate.getBlock() == Blocks.MONSTER_EGG)
                                 {
-                                    if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, this.silverfish))
+                                    if (world.getGameRules().getBoolean("mobGriefing"))
                                     {
                                         world.destroyBlock(blockpos1, true);
                                     }

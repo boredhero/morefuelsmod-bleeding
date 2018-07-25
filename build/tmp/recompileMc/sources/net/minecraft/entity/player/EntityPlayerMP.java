@@ -708,7 +708,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
     }
 
     @Nullable
-    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
+    public Entity changeDimension(int dimensionIn)
     {
         if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, dimensionIn)) return this;
         this.invulnerableDimensionChange = true;
@@ -722,7 +722,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
             this.enteredNetherPosition = null;
         }
 
-        if (this.dimension == 1 && dimensionIn == 1 && teleporter.isVanilla())
+        if (this.dimension == 1 && dimensionIn == 1)
         {
             this.world.removeEntity(this);
 
@@ -742,7 +742,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
                 dimensionIn = 1;
             }
 
-            this.mcServer.getPlayerList().transferPlayerToDimension(this, dimensionIn, teleporter);
+            this.mcServer.getPlayerList().changePlayerDimension(this, dimensionIn);
             this.connection.sendPacket(new SPacketEffect(1032, BlockPos.ORIGIN, 0, false));
             this.lastExperience = -1;
             this.lastHealth = -1.0F;
@@ -1228,9 +1228,9 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         }
     }
 
-    public void copyFrom(EntityPlayerMP that, boolean keepEverything)
+    public void copyFrom(EntityPlayerMP that, boolean p_193104_2_)
     {
-        if (keepEverything)
+        if (p_193104_2_)
         {
             this.inventory.copyInventory(that.inventory);
             this.setHealth(that.getHealth());
@@ -1258,7 +1258,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         this.lastExperience = -1;
         this.lastHealth = -1.0F;
         this.lastFoodLevel = -1;
-        this.recipeBook.copyFrom(that.recipeBook);
+        this.recipeBook.apply(that.recipeBook);
         this.entityRemoveQueue.addAll(that.entityRemoveQueue);
         this.seenCredits = that.seenCredits;
         this.enteredNetherPosition = that.enteredNetherPosition;
@@ -1275,7 +1275,7 @@ public class EntityPlayerMP extends EntityPlayer implements IContainerListener
         {
             getEntityData().setTag(PERSISTED_NBT_TAG, old.getCompoundTag(PERSISTED_NBT_TAG));
         }
-        net.minecraftforge.event.ForgeEventFactory.onPlayerClone(this, that, !keepEverything);
+        net.minecraftforge.event.ForgeEventFactory.onPlayerClone(this, that, !p_193104_2_);
     }
 
     protected void onNewPotionEffect(PotionEffect id)

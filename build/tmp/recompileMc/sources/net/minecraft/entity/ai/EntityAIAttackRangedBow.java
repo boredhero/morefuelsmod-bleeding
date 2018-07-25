@@ -104,7 +104,7 @@ public class EntityAIAttackRangedBow<T extends EntityMob & IRangedAttackMob> ext
 
             if (d0 <= (double)this.maxAttackDistance && this.seeTime >= 20)
             {
-                this.entity.getNavigator().clearPath();
+                this.entity.getNavigator().clearPathEntity();
                 ++this.strafingTime;
             }
             else

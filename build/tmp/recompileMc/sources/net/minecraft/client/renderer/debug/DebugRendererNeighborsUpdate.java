@@ -21,35 +21,31 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class DebugRendererNeighborsUpdate implements DebugRenderer.IDebugRenderer
 {
     private final Minecraft minecraft;
-    /**
-     * A map from world time stamps ({@link World#getTotalWorldTime()}) to a map from block position to number of times
-     * that block was updated.
-     */
     private final Map<Long, Map<BlockPos, Integer>> lastUpdate = Maps.newTreeMap(Ordering.natural().reverse());
 
-    DebugRendererNeighborsUpdate(Minecraft minecraftIn)
+    DebugRendererNeighborsUpdate(Minecraft p_i47365_1_)
     {
-        this.minecraft = minecraftIn;
+        this.minecraft = p_i47365_1_;
     }
 
-    public void addUpdate(long worldTime, BlockPos pos)
+    public void addUpdate(long p_191553_1_, BlockPos p_191553_3_)
     {
-        Map<BlockPos, Integer> map = (Map)this.lastUpdate.get(Long.valueOf(worldTime));
+        Map<BlockPos, Integer> map = (Map)this.lastUpdate.get(Long.valueOf(p_191553_1_));
 
         if (map == null)
         {
             map = Maps.<BlockPos, Integer>newHashMap();
-            this.lastUpdate.put(Long.valueOf(worldTime), map);
+            this.lastUpdate.put(Long.valueOf(p_191553_1_), map);
         }
 
-        Integer integer = map.get(pos);
+        Integer integer = map.get(p_191553_3_);
 
         if (integer == null)
         {
             integer = Integer.valueOf(0);
         }
 
-        map.put(pos, Integer.valueOf(integer.intValue() + 1));
+        map.put(p_191553_3_, Integer.valueOf(integer.intValue() + 1));
     }
 
     public void render(float partialTicks, long finishTimeNano)

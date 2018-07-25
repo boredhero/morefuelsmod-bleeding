@@ -99,11 +99,11 @@ public abstract class EntityCreature extends EntityLiving
     {
         super.updateLeashedState();
 
-        if (this.getLeashed() && this.getLeashHolder() != null && this.getLeashHolder().world == this.world)
+        if (this.getLeashed() && this.getLeashedToEntity() != null && this.getLeashedToEntity().world == this.world)
         {
-            Entity entity = this.getLeashHolder();
+            Entity entity = this.getLeashedToEntity();
             this.setHomePosAndDistance(new BlockPos((int)entity.posX, (int)entity.posY, (int)entity.posZ), 5);
-            float f = this.getDistance(entity);
+            float f = this.getDistanceToEntity(entity);
 
             if (this instanceof EntityTameable && ((EntityTameable)this).isSitting())
             {

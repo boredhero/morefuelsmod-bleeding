@@ -126,7 +126,7 @@ public class RecipeBookCloning extends net.minecraftforge.registries.IForgeRegis
         return nonnulllist;
     }
 
-    public boolean isDynamic()
+    public boolean isHidden()
     {
         return true;
     }

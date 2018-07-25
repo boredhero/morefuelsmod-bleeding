@@ -55,7 +55,7 @@ public class PhaseHover extends PhaseBase
         return this.targetLocation;
     }
 
-    public PhaseList<PhaseHover> getType()
+    public PhaseList<PhaseHover> getPhaseList()
     {
         return PhaseList.HOVER;
     }

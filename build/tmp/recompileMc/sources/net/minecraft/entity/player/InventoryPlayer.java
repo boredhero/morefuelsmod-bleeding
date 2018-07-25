@@ -159,6 +159,7 @@ public class InventoryPlayer implements IInventory
         return -1;
     }
 
+    @SideOnly(Side.CLIENT)
     public int findSlotMatchingUnusedItem(ItemStack p_194014_1_)
     {
         for (int i = 0; i < this.mainInventory.size(); ++i)
@@ -628,13 +629,13 @@ public class InventoryPlayer implements IInventory
         }
     }
 
-    public float getDestroySpeed(IBlockState state)
+    public float getStrVsBlock(IBlockState state)
     {
         float f = 1.0F;
 
         if (!((ItemStack)this.mainInventory.get(this.currentItem)).isEmpty())
         {
-            f *= ((ItemStack)this.mainInventory.get(this.currentItem)).getDestroySpeed(state);
+            f *= ((ItemStack)this.mainInventory.get(this.currentItem)).getStrVsBlock(state);
         }
 
         return f;
@@ -912,7 +913,7 @@ public class InventoryPlayer implements IInventory
         }
         else
         {
-            return player.getDistanceSq(this.player) <= 64.0D;
+            return player.getDistanceSqToEntity(this.player) <= 64.0D;
         }
     }
 
@@ -1000,6 +1001,7 @@ public class InventoryPlayer implements IInventory
         }
     }
 
+    @SideOnly(Side.CLIENT)
     public void fillStackedContents(RecipeItemHelper helper, boolean p_194016_2_)
     {
         for (ItemStack itemstack : this.mainInventory)

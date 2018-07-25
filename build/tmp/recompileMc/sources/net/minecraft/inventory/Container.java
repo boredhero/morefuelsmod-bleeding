@@ -557,6 +557,20 @@ public abstract class Container
         this.getSlot(slotID).putStack(stack);
     }
 
+    public void addItem(int slotIn, ItemStack stack)
+    {
+        ItemStack itemstack = this.getSlot(slotIn).getStack();
+
+        if (itemstack.isEmpty())
+        {
+            this.putStackInSlot(slotIn, stack);
+        }
+        else if (itemstack.getUnlocalizedName().equals(stack.getUnlocalizedName()) && itemstack.getCount() < itemstack.getMaxStackSize())
+        {
+            itemstack.grow(stack.getCount());
+        }
+    }
+
     @SideOnly(Side.CLIENT)
     public void setAll(List<ItemStack> p_190896_1_)
     {
@@ -870,7 +884,7 @@ public abstract class Container
             ItemStack itemstack = ItemStack.EMPTY;
             IRecipe irecipe = CraftingManager.findMatchingRecipe(p_192389_3_, p_192389_1_);
 
-            if (irecipe != null && (irecipe.isDynamic() || !p_192389_1_.getGameRules().getBoolean("doLimitedCrafting") || entityplayermp.getRecipeBook().isUnlocked(irecipe)))
+            if (irecipe != null && (irecipe.isHidden() || !p_192389_1_.getGameRules().getBoolean("doLimitedCrafting") || entityplayermp.getRecipeBook().containsRecipe(irecipe)))
             {
                 p_192389_4_.setRecipeUsed(irecipe);
                 itemstack = irecipe.getCraftingResult(p_192389_3_);

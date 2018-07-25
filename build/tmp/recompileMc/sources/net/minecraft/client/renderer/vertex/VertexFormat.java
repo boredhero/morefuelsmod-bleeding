@@ -18,7 +18,6 @@ public class VertexFormat
     private int colorElementOffset;
     private final List<Integer> uvOffsetsById;
     private int normalElementOffset;
-    private int hashCode;
 
     public VertexFormat(VertexFormat vertexFormatIn)
     {
@@ -49,7 +48,6 @@ public class VertexFormat
         this.uvOffsetsById.clear();
         this.normalElementOffset = -1;
         this.nextOffset = 0;
-        this.hashCode = 0;
     }
 
     @SuppressWarnings("incomplete-switch")
@@ -78,7 +76,6 @@ public class VertexFormat
             }
 
             this.nextOffset += element.getSize();
-            this.hashCode = 0;
             return this;
         }
     }
@@ -208,11 +205,9 @@ public class VertexFormat
 
     public int hashCode()
     {
-        if (this.hashCode != 0) return this.hashCode;
         int i = this.elements.hashCode();
         i = 31 * i + this.offsets.hashCode();
         i = 31 * i + this.nextOffset;
-        this.hashCode = i;
         return i;
     }
 }

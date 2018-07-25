@@ -1294,14 +1294,11 @@ public class GuiIngame extends Gui
         this.setOverlayMessage(component.getUnformattedText(), animateColor);
     }
 
-    /**
-     * Forwards the given chat message to all listeners.
-     */
-    public void addChatMessage(ChatType chatTypeIn, ITextComponent message)
+    public void addChatMessage(ChatType p_191742_1_, ITextComponent p_191742_2_)
     {
-        for (IChatListener ichatlistener : this.chatListeners.get(chatTypeIn))
+        for (IChatListener ichatlistener : this.chatListeners.get(p_191742_1_))
         {
-            ichatlistener.say(chatTypeIn, message);
+            ichatlistener.say(p_191742_1_, p_191742_2_);
         }
     }
 

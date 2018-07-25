@@ -121,7 +121,7 @@ public class RecipesMapCloning extends net.minecraftforge.registries.IForgeRegis
         return nonnulllist;
     }
 
-    public boolean isDynamic()
+    public boolean isHidden()
     {
         return true;
     }

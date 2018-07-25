@@ -17,8 +17,7 @@ public class Language implements Comparable<Language>
         this.region = regionIn;
         this.name = nameIn;
         this.bidirectional = bidirectionalIn;
-        String[] splitLangCode = languageCode.split("_", 2);
-        this.javaLocale = new java.util.Locale(splitLangCode[0], splitLangCode[1]);
+        this.javaLocale = new java.util.Locale(languageCode, region);
     }
 
     public String getLanguageCode()

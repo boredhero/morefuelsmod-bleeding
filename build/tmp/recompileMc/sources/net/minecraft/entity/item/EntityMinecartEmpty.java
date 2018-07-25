@@ -24,7 +24,7 @@ public class EntityMinecartEmpty extends EntityMinecart
 
     public boolean processInitialInteract(EntityPlayer player, EnumHand hand)
     {
-        if (super.processInitialInteract(player, hand)) return true;
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.minecart.MinecartInteractEvent(this, player, hand))) return true;
 
         if (player.isSneaking())
         {
@@ -62,7 +62,7 @@ public class EntityMinecartEmpty extends EntityMinecart
                 this.setRollingDirection(-this.getRollingDirection());
                 this.setRollingAmplitude(10);
                 this.setDamage(50.0F);
-                this.markVelocityChanged();
+                this.setBeenAttacked();
             }
         }
     }

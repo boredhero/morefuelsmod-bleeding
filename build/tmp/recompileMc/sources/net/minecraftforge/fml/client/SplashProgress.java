@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,17 +24,12 @@ import static org.lwjgl.opengl.GL12.*;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.IntBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
@@ -156,7 +151,7 @@ public class SplashProgress
             parent.mkdirs();
 
         config = new Properties();
-        try (Reader r = new InputStreamReader(new FileInputStream(configFile), StandardCharsets.UTF_8))
+        try (FileReader r = new FileReader(configFile))
         {
             config.load(r);
         }
@@ -165,9 +160,10 @@ public class SplashProgress
             FMLLog.log.info("Could not load splash.properties, will create a default one");
         }
 
-        //Some systems do not support this and have weird effects, so we need to detect and disable them by default.
+        //Some system do not support this and have weird effects so we need to detect and disable by default.
         //The user can always force enable it if they want to take the responsibility for bugs.
-        boolean defaultEnabled = true;
+        //For now macs derp so disable them.
+        boolean defaultEnabled = !System.getProperty("os.name").toLowerCase().contains("mac");
 
         // Enable if we have the flag, and there's either no optifine, or optifine has added a key to the blackboard ("optifine.ForgeSplashCompatible")
         // Optifine authors - add this key to the blackboard if you feel your modifications are now compatible with this code.
@@ -191,7 +187,7 @@ public class SplashProgress
 
         File miscPackFile = new File(Minecraft.getMinecraft().mcDataDir, getString("resourcePackPath", "resources"));
 
-        try (Writer w = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8))
+        try (FileWriter w = new FileWriter(configFile))
         {
             config.store(w, "Splash screen properties");
         }
@@ -658,7 +654,6 @@ public class SplashProgress
             checkThreadState();
             done = true;
             thread.join();
-            glFlush();        // process any remaining GL calls before releaseContext (prevents missing textures on mac)
             d.releaseContext();
             Display.getDrawable().makeCurrent();
             fontTexture.delete();
@@ -714,7 +709,7 @@ public class SplashProgress
         enabled = false;
         config.setProperty("enabled", "false");
 
-        try (Writer w = new OutputStreamWriter(new FileOutputStream(configFile), StandardCharsets.UTF_8))
+        try (FileWriter w = new FileWriter(configFile))
         {
             config.store(w, "Splash screen properties");
         }

@@ -112,68 +112,68 @@ public class CommandTP extends CommandBase
     /**
      * Teleports an entity to the specified coordinates
      */
-    private static void teleportEntityToCoordinates(Entity teleportingEntity, CommandBase.CoordinateArg argX, CommandBase.CoordinateArg argY, CommandBase.CoordinateArg argZ, CommandBase.CoordinateArg argYaw, CommandBase.CoordinateArg argPitch)
+    private static void teleportEntityToCoordinates(Entity p_189863_0_, CommandBase.CoordinateArg p_189863_1_, CommandBase.CoordinateArg p_189863_2_, CommandBase.CoordinateArg p_189863_3_, CommandBase.CoordinateArg p_189863_4_, CommandBase.CoordinateArg p_189863_5_)
     {
-        if (teleportingEntity instanceof EntityPlayerMP)
+        if (p_189863_0_ instanceof EntityPlayerMP)
         {
             Set<SPacketPlayerPosLook.EnumFlags> set = EnumSet.<SPacketPlayerPosLook.EnumFlags>noneOf(SPacketPlayerPosLook.EnumFlags.class);
 
-            if (argX.isRelative())
+            if (p_189863_1_.isRelative())
             {
                 set.add(SPacketPlayerPosLook.EnumFlags.X);
             }
 
-            if (argY.isRelative())
+            if (p_189863_2_.isRelative())
             {
                 set.add(SPacketPlayerPosLook.EnumFlags.Y);
             }
 
-            if (argZ.isRelative())
+            if (p_189863_3_.isRelative())
             {
                 set.add(SPacketPlayerPosLook.EnumFlags.Z);
             }
 
-            if (argPitch.isRelative())
+            if (p_189863_5_.isRelative())
             {
                 set.add(SPacketPlayerPosLook.EnumFlags.X_ROT);
             }
 
-            if (argYaw.isRelative())
+            if (p_189863_4_.isRelative())
             {
                 set.add(SPacketPlayerPosLook.EnumFlags.Y_ROT);
             }
 
-            float f = (float)argYaw.getAmount();
+            float f = (float)p_189863_4_.getAmount();
 
-            if (!argYaw.isRelative())
+            if (!p_189863_4_.isRelative())
             {
                 f = MathHelper.wrapDegrees(f);
             }
 
-            float f1 = (float)argPitch.getAmount();
+            float f1 = (float)p_189863_5_.getAmount();
 
-            if (!argPitch.isRelative())
+            if (!p_189863_5_.isRelative())
             {
                 f1 = MathHelper.wrapDegrees(f1);
             }
 
-            teleportingEntity.dismountRidingEntity();
-            ((EntityPlayerMP)teleportingEntity).connection.setPlayerLocation(argX.getAmount(), argY.getAmount(), argZ.getAmount(), f, f1, set);
-            teleportingEntity.setRotationYawHead(f);
+            p_189863_0_.dismountRidingEntity();
+            ((EntityPlayerMP)p_189863_0_).connection.setPlayerLocation(p_189863_1_.getAmount(), p_189863_2_.getAmount(), p_189863_3_.getAmount(), f, f1, set);
+            p_189863_0_.setRotationYawHead(f);
         }
         else
         {
-            float f2 = (float)MathHelper.wrapDegrees(argYaw.getResult());
-            float f3 = (float)MathHelper.wrapDegrees(argPitch.getResult());
+            float f2 = (float)MathHelper.wrapDegrees(p_189863_4_.getResult());
+            float f3 = (float)MathHelper.wrapDegrees(p_189863_5_.getResult());
             f3 = MathHelper.clamp(f3, -90.0F, 90.0F);
-            teleportingEntity.setLocationAndAngles(argX.getResult(), argY.getResult(), argZ.getResult(), f2, f3);
-            teleportingEntity.setRotationYawHead(f2);
+            p_189863_0_.setLocationAndAngles(p_189863_1_.getResult(), p_189863_2_.getResult(), p_189863_3_.getResult(), f2, f3);
+            p_189863_0_.setRotationYawHead(f2);
         }
 
-        if (!(teleportingEntity instanceof EntityLivingBase) || !((EntityLivingBase)teleportingEntity).isElytraFlying())
+        if (!(p_189863_0_ instanceof EntityLivingBase) || !((EntityLivingBase)p_189863_0_).isElytraFlying())
         {
-            teleportingEntity.motionY = 0.0D;
-            teleportingEntity.onGround = true;
+            p_189863_0_.motionY = 0.0D;
+            p_189863_0_.onGround = true;
         }
     }
 

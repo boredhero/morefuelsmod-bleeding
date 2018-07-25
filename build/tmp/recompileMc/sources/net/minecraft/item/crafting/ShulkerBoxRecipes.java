@@ -108,7 +108,7 @@ public class ShulkerBoxRecipes
                 return nonnulllist;
             }
 
-            public boolean isDynamic()
+            public boolean isHidden()
             {
                 return true;
             }

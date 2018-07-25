@@ -32,6 +32,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemMonsterPlacer extends Item
 {
@@ -289,15 +291,10 @@ public class ItemMonsterPlacer extends Item
         stack.setTagCompound(nbttagcompound);
     }
 
-    /**
-     * Gets the entity type ID from the given itemstack.
-     *  
-     * @return The type ID, or {@code null} if there is no valid tag on the item.
-     */
     @Nullable
-    public static ResourceLocation getNamedIdFrom(ItemStack stack)
+    public static ResourceLocation getNamedIdFrom(ItemStack p_190908_0_)
     {
-        NBTTagCompound nbttagcompound = stack.getTagCompound();
+        NBTTagCompound nbttagcompound = p_190908_0_.getTagCompound();
 
         if (nbttagcompound == null)
         {

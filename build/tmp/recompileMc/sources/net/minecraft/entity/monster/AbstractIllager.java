@@ -24,23 +24,23 @@ public abstract class AbstractIllager extends EntityMob
     }
 
     @SideOnly(Side.CLIENT)
-    protected boolean isAggressive(int mask)
+    protected boolean isAggressive(int p_193078_1_)
     {
         int i = ((Byte)this.dataManager.get(AGGRESSIVE)).byteValue();
-        return (i & mask) != 0;
+        return (i & p_193078_1_) != 0;
     }
 
-    protected void setAggressive(int mask, boolean value)
+    protected void setAggressive(int p_193079_1_, boolean p_193079_2_)
     {
         int i = ((Byte)this.dataManager.get(AGGRESSIVE)).byteValue();
 
-        if (value)
+        if (p_193079_2_)
         {
-            i = i | mask;
+            i = i | p_193079_1_;
         }
         else
         {
-            i = i & ~mask;
+            i = i & ~p_193079_1_;
         }
 
         this.dataManager.set(AGGRESSIVE, Byte.valueOf((byte)(i & 255)));

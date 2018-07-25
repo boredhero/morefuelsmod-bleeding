@@ -139,7 +139,7 @@ public class RenderItem implements IResourceManagerReloadListener
             {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.enableRescaleNormal();
-                stack.getItem().getTileEntityItemStackRenderer().renderByItem(stack);
+                TileEntityItemStackRenderer.instance.renderByItem(stack);
             }
             else
             {
@@ -210,7 +210,7 @@ public class RenderItem implements IResourceManagerReloadListener
 
             if (flag && bakedquad.hasTintIndex())
             {
-                k = this.itemColors.colorMultiplier(stack, bakedquad.getTintIndex());
+                k = this.itemColors.getColorFromItemstack(stack, bakedquad.getTintIndex());
 
                 if (EntityRenderer.anaglyphEnable)
                 {

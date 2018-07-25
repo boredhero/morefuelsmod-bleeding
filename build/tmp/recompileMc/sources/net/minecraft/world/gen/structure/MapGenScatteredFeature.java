@@ -17,7 +17,7 @@ public class MapGenScatteredFeature extends MapGenStructure
 {
     private static final List<Biome> BIOMELIST = Arrays.<Biome>asList(Biomes.DESERT, Biomes.DESERT_HILLS, Biomes.JUNGLE, Biomes.JUNGLE_HILLS, Biomes.SWAMPLAND, Biomes.ICE_PLAINS, Biomes.COLD_TAIGA);
     /** contains possible spawns for scattered features */
-    private final List<Biome.SpawnListEntry> monsters;
+    private final List<Biome.SpawnListEntry> scatteredFeatureSpawnList;
     /** the maximum distance between scattered features */
     private int maxDistanceBetweenScatteredFeatures;
     /** the minimum distance between scattered features */
@@ -25,10 +25,10 @@ public class MapGenScatteredFeature extends MapGenStructure
 
     public MapGenScatteredFeature()
     {
-        this.monsters = Lists.<Biome.SpawnListEntry>newArrayList();
+        this.scatteredFeatureSpawnList = Lists.<Biome.SpawnListEntry>newArrayList();
         this.maxDistanceBetweenScatteredFeatures = 32;
         this.minDistanceBetweenScatteredFeatures = 8;
-        this.monsters.add(new Biome.SpawnListEntry(EntityWitch.class, 1, 1, 1));
+        this.scatteredFeatureSpawnList.add(new Biome.SpawnListEntry(EntityWitch.class, 1, 1, 1));
     }
 
     public MapGenScatteredFeature(Map<String, String> p_i2061_1_)
@@ -122,9 +122,9 @@ public class MapGenScatteredFeature extends MapGenStructure
     /**
      * returns possible spawns for scattered features
      */
-    public List<Biome.SpawnListEntry> getMonsters()
+    public List<Biome.SpawnListEntry> getScatteredFeatureSpawnList()
     {
-        return this.monsters;
+        return this.scatteredFeatureSpawnList;
     }
 
     public static class Start extends StructureStart

@@ -384,7 +384,7 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
     }
 
     @Nullable
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         this.openHorseMouth();
 
@@ -705,7 +705,7 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         {
             AbstractHorse abstracthorse = this.getClosestHorse(this, 16.0D);
 
-            if (abstracthorse != null && this.getDistanceSq(abstracthorse) > 4.0D)
+            if (abstracthorse != null && this.getDistanceSqToEntity(abstracthorse) > 4.0D)
             {
                 this.navigator.getPathToEntityLiving(abstracthorse);
             }
@@ -876,7 +876,7 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         return true;
     }
 
-    public void travel(float strafe, float vertical, float forward)
+    public void travel(float p_191986_1_, float p_191986_2_, float p_191986_3_)
     {
         if (this.isBeingRidden() && this.canBeSteered() && this.isHorseSaddled())
         {
@@ -887,19 +887,19 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
             this.setRotation(this.rotationYaw, this.rotationPitch);
             this.renderYawOffset = this.rotationYaw;
             this.rotationYawHead = this.renderYawOffset;
-            strafe = entitylivingbase.moveStrafing * 0.5F;
-            forward = entitylivingbase.moveForward;
+            p_191986_1_ = entitylivingbase.moveStrafing * 0.5F;
+            p_191986_3_ = entitylivingbase.moveForward;
 
-            if (forward <= 0.0F)
+            if (p_191986_3_ <= 0.0F)
             {
-                forward *= 0.25F;
+                p_191986_3_ *= 0.25F;
                 this.gallopTime = 0;
             }
 
             if (this.onGround && this.jumpPower == 0.0F && this.isRearing() && !this.allowStandSliding)
             {
-                strafe = 0.0F;
-                forward = 0.0F;
+                p_191986_1_ = 0.0F;
+                p_191986_3_ = 0.0F;
             }
 
             if (this.jumpPower > 0.0F && !this.isHorseJumping() && this.onGround)
@@ -914,7 +914,7 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
                 this.setHorseJumping(true);
                 this.isAirBorne = true;
 
-                if (forward > 0.0F)
+                if (p_191986_3_ > 0.0F)
                 {
                     float f = MathHelper.sin(this.rotationYaw * 0.017453292F);
                     float f1 = MathHelper.cos(this.rotationYaw * 0.017453292F);
@@ -931,7 +931,7 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
             if (this.canPassengerSteer())
             {
                 this.setAIMoveSpeed((float)this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue());
-                super.travel(strafe, vertical, forward);
+                super.travel(p_191986_1_, p_191986_2_, p_191986_3_);
             }
             else if (entitylivingbase instanceof EntityPlayer)
             {
@@ -962,7 +962,7 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
         else
         {
             this.jumpMovementFactor = 0.02F;
-            super.travel(strafe, vertical, forward);
+            super.travel(p_191986_1_, p_191986_2_, p_191986_3_);
         }
     }
 
@@ -1228,8 +1228,7 @@ public abstract class AbstractHorse extends EntityAnimal implements IInventoryCh
     }
 
     /**
-     * Returns true if this entity should move as if it were on a ladder (either because it's actually on a ladder, or
-     * for AI reasons)
+     * returns true if this entity is by a ladder, false otherwise
      */
     public boolean isOnLadder()
     {

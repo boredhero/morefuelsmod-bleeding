@@ -189,7 +189,6 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
     {
         if (!this.adjacentChestChecked)
         {
-            if (this.world == null || !this.world.isAreaLoaded(this.pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbors
             this.adjacentChestChecked = true;
             this.adjacentChestXNeg = this.getAdjacentChest(EnumFacing.WEST);
             this.adjacentChestXPos = this.getAdjacentChest(EnumFacing.EAST);
@@ -379,7 +378,6 @@ public class TileEntityChest extends TileEntityLockableLoot implements ITickable
 
     @SuppressWarnings("unchecked")
     @Override
-    @Nullable
     public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable net.minecraft.util.EnumFacing facing)
     {
         if (capability == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)

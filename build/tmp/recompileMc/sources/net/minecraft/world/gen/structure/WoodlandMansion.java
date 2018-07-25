@@ -21,9 +21,9 @@ public class WoodlandMansion extends MapGenStructure
     public static final List<Biome> ALLOWED_BIOMES = Arrays.<Biome>asList(Biomes.ROOFED_FOREST, Biomes.MUTATED_ROOFED_FOREST);
     private final ChunkGeneratorOverworld provider;
 
-    public WoodlandMansion(ChunkGeneratorOverworld providerIn)
+    public WoodlandMansion(ChunkGeneratorOverworld p_i47240_1_)
     {
-        this.provider = providerIn;
+        this.provider = p_i47240_1_;
     }
 
     public String getStructureName()

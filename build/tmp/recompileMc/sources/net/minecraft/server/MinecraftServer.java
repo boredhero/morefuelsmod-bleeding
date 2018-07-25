@@ -33,7 +33,6 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.advancements.AdvancementManager;
@@ -90,7 +89,7 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class MinecraftServer implements ICommandSender, Runnable, IThreadListener, ISnooperInfo
 {
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOG = LogManager.getLogger();
     public static final File USER_CACHE_FILE = new File("usercache.json");
     private final ISaveFormat anvilConverterForAnvilFile;
     /** The PlayerUsageSnooper instance. */
@@ -198,7 +197,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     {
         if (this.getActiveAnvilConverter().isOldMapFormat(worldNameIn))
         {
-            LOGGER.info("Converting map!");
+            LOG.info("Converting map!");
             this.setUserMessage("menu.convertingLevel");
             this.getActiveAnvilConverter().convertMapFormat(worldNameIn, new IProgressUpdate()
             {
@@ -217,7 +216,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                     if (System.currentTimeMillis() - this.startTime >= 1000L)
                     {
                         this.startTime = System.currentTimeMillis();
-                        MinecraftServer.LOGGER.info("Converting... {}%", (int)progress);
+                        MinecraftServer.LOG.info("Converting... {}%", (int)progress);
                     }
                 }
                 /**
@@ -362,7 +361,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         int i1 = 0;
         this.setUserMessage("menu.generatingTerrain");
         int j1 = 0;
-        LOGGER.info("Preparing start region for level 0");
+        LOG.info("Preparing start region for level 0");
         WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(j1);
         BlockPos blockpos = worldserver.getSpawnPoint();
         long k1 = getCurrentTimeMillis();
@@ -399,7 +398,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             }
             catch (UnsupportedEncodingException var5)
             {
-                LOGGER.warn("Something went wrong url encoding {}", (Object)worldNameIn);
+                LOG.warn("Something went wrong url encoding {}", (Object)worldNameIn);
             }
         }
     }
@@ -437,7 +436,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     {
         this.currentTask = message;
         this.percentDone = percent;
-        LOGGER.info("{}: {}%", message, Integer.valueOf(percent));
+        LOG.info("{}: {}%", message, Integer.valueOf(percent));
     }
 
     /**
@@ -460,7 +459,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             {
                 if (!isSilent)
                 {
-                    LOGGER.info("Saving chunks for level '{}'/{}", worldserver.getWorldInfo().getWorldName(), worldserver.provider.getDimensionType().getName());
+                    LOG.info("Saving chunks for level '{}'/{}", worldserver.getWorldInfo().getWorldName(), worldserver.provider.getDimensionType().getName());
                 }
 
                 try
@@ -469,7 +468,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 }
                 catch (MinecraftException minecraftexception)
                 {
-                    LOGGER.warn(minecraftexception.getMessage());
+                    LOG.warn(minecraftexception.getMessage());
                 }
             }
         }
@@ -480,7 +479,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public void stopServer()
     {
-        LOGGER.info("Stopping server");
+        LOG.info("Stopping server");
 
         if (this.getNetworkSystem() != null)
         {
@@ -489,14 +488,14 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
         if (this.playerList != null)
         {
-            LOGGER.info("Saving players");
+            LOG.info("Saving players");
             this.playerList.saveAllPlayerData();
             this.playerList.removeAllPlayers();
         }
 
         if (this.worlds != null)
         {
-            LOGGER.info("Saving worlds");
+            LOG.info("Saving worlds");
 
             for (WorldServer worldserver : this.worlds)
             {
@@ -528,8 +527,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         {
             this.usageSnooper.stopSnooper();
         }
-
-        CommandBase.setCommandListener(null); // Forge: fix MC-128561
     }
 
     public boolean isServerRunning()
@@ -555,7 +552,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 this.currentTime = getCurrentTimeMillis();
                 long i = 0L;
                 this.statusResponse.setServerDescription(new TextComponentString(this.motd));
-                this.statusResponse.setVersion(new ServerStatusResponse.Version("1.12.2", 340));
+                this.statusResponse.setVersion(new ServerStatusResponse.Version("1.12", 335));
                 this.applyServerIconToResponse(this.statusResponse);
 
                 while (this.serverRunning)
@@ -565,14 +562,14 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                     if (j > 2000L && this.currentTime - this.timeOfLastWarning >= 15000L)
                     {
-                        LOGGER.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", Long.valueOf(j), Long.valueOf(j / 50L));
+                        LOG.warn("Can't keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", Long.valueOf(j), Long.valueOf(j / 50L));
                         j = 2000L;
                         this.timeOfLastWarning = this.currentTime;
                     }
 
                     if (j < 0L)
                     {
-                        LOGGER.warn("Time ran backwards! Did the system time change?");
+                        LOG.warn("Time ran backwards! Did the system time change?");
                         j = 0L;
                     }
 
@@ -612,7 +609,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         }
         catch (Throwable throwable1)
         {
-            LOGGER.error("Encountered an unexpected exception", throwable1);
+            LOG.error("Encountered an unexpected exception", throwable1);
             CrashReport crashreport = null;
 
             if (throwable1 instanceof ReportedException)
@@ -628,11 +625,11 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
             if (crashreport.saveToFile(file1))
             {
-                LOGGER.error("This crash report has been saved to: {}", (Object)file1.getAbsolutePath());
+                LOG.error("This crash report has been saved to: {}", (Object)file1.getAbsolutePath());
             }
             else
             {
-                LOGGER.error("We were unable to save this crash report to disk.");
+                LOG.error("We were unable to save this crash report to disk.");
             }
 
             net.minecraftforge.fml.common.FMLCommonHandler.instance().expectServerStopped(); // has to come before finalTick to avoid race conditions
@@ -643,10 +640,11 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             try
             {
                 this.stopServer();
+                this.serverStopped = true;
             }
             catch (Throwable throwable)
             {
-                LOGGER.error("Exception stopping the server", throwable);
+                LOG.error("Exception stopping the server", throwable);
             }
             finally
             {
@@ -678,11 +676,10 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 ImageIO.write(bufferedimage, "PNG", new ByteBufOutputStream(bytebuf));
                 ByteBuf bytebuf1 = Base64.encode(bytebuf);
                 response.setFavicon("data:image/png;base64," + bytebuf1.toString(StandardCharsets.UTF_8));
-                bytebuf1.release(); // Forge: fix MC-122085
             }
             catch (Exception exception)
             {
-                LOGGER.error("Couldn't load server icon", (Throwable)exception);
+                LOG.error("Couldn't load server icon", (Throwable)exception);
             }
             finally
             {
@@ -795,7 +792,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         {
             while (!this.futureTaskQueue.isEmpty())
             {
-                Util.runTask(this.futureTaskQueue.poll(), LOGGER);
+                Util.runTask(this.futureTaskQueue.poll(), LOG);
             }
         }
 
@@ -811,10 +808,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             if (id == 0 || this.getAllowNether())
             {
                 WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(id);
-                this.profiler.func_194340_a(() ->
-                {
-                    return worldserver.getWorldInfo().getWorldName();
-                });
+                this.profiler.startSection(worldserver.getWorldInfo().getWorldName());
 
                 if (this.tickCounter % 20 == 0)
                 {
@@ -902,7 +896,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public void logWarning(String msg)
     {
-        LOGGER.warn(msg);
+        LOG.warn(msg);
     }
 
     /**
@@ -910,7 +904,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public WorldServer getWorld(int dimension)
     {
-        WorldServer ret = net.minecraftforge.common.DimensionManager.getWorld(dimension, true);
+        WorldServer ret = net.minecraftforge.common.DimensionManager.getWorld(dimension);
         if (ret == null)
         {
             net.minecraftforge.common.DimensionManager.initDimension(dimension);
@@ -924,7 +918,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public String getMinecraftVersion()
     {
-        return "1.12.2";
+        return "1.12";
     }
 
     /**
@@ -1058,7 +1052,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public void sendMessage(ITextComponent component)
     {
-        LOGGER.info(component.getUnformattedText());
+        LOG.info(component.getUnformattedText());
     }
 
     /**
@@ -1132,24 +1126,24 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public void setDifficultyForAllWorlds(EnumDifficulty difficulty)
     {
-        for (WorldServer worldserver1 : this.worlds)
+        for (WorldServer worldserver : this.worlds)
         {
-            if (worldserver1 != null)
+            if (worldserver != null)
             {
-                if (worldserver1.getWorldInfo().isHardcoreModeEnabled())
+                if (worldserver.getWorldInfo().isHardcoreModeEnabled())
                 {
-                    worldserver1.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
-                    worldserver1.setAllowedSpawnTypes(true, true);
+                    worldserver.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
+                    worldserver.setAllowedSpawnTypes(true, true);
                 }
                 else if (this.isSinglePlayer())
                 {
-                    worldserver1.getWorldInfo().setDifficulty(difficulty);
-                    worldserver1.setAllowedSpawnTypes(worldserver1.getDifficulty() != EnumDifficulty.PEACEFUL, true);
+                    worldserver.getWorldInfo().setDifficulty(difficulty);
+                    worldserver.setAllowedSpawnTypes(worldserver.getDifficulty() != EnumDifficulty.PEACEFUL, true);
                 }
                 else
                 {
-                    worldserver1.getWorldInfo().setDifficulty(difficulty);
-                    worldserver1.setAllowedSpawnTypes(this.allowSpawnMonsters(), this.canSpawnAnimals);
+                    worldserver.getWorldInfo().setDifficulty(difficulty);
+                    worldserver.setAllowedSpawnTypes(this.allowSpawnMonsters(), this.canSpawnAnimals);
                 }
             }
         }
@@ -1218,29 +1212,29 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         playerSnooper.addClientStat("gui_state", this.getGuiEnabled() ? "enabled" : "disabled");
         playerSnooper.addClientStat("run_time", Long.valueOf((getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L));
         playerSnooper.addClientStat("avg_tick_ms", Integer.valueOf((int)(MathHelper.average(this.tickTimeArray) * 1.0E-6D)));
-        int l = 0;
+        int i = 0;
 
         if (this.worlds != null)
         {
-            for (WorldServer worldserver1 : this.worlds)
+            for (WorldServer worldserver : this.worlds)
             {
-                if (worldserver1 != null)
+                if (worldserver != null)
                 {
-                    WorldInfo worldinfo = worldserver1.getWorldInfo();
-                    playerSnooper.addClientStat("world[" + l + "][dimension]", Integer.valueOf(worldserver1.provider.getDimensionType().getId()));
-                    playerSnooper.addClientStat("world[" + l + "][mode]", worldinfo.getGameType());
-                    playerSnooper.addClientStat("world[" + l + "][difficulty]", worldserver1.getDifficulty());
-                    playerSnooper.addClientStat("world[" + l + "][hardcore]", Boolean.valueOf(worldinfo.isHardcoreModeEnabled()));
-                    playerSnooper.addClientStat("world[" + l + "][generator_name]", worldinfo.getTerrainType().getName());
-                    playerSnooper.addClientStat("world[" + l + "][generator_version]", Integer.valueOf(worldinfo.getTerrainType().getVersion()));
-                    playerSnooper.addClientStat("world[" + l + "][height]", Integer.valueOf(this.buildLimit));
-                    playerSnooper.addClientStat("world[" + l + "][chunks_loaded]", Integer.valueOf(worldserver1.getChunkProvider().getLoadedChunkCount()));
-                    ++l;
+                    WorldInfo worldinfo = worldserver.getWorldInfo();
+                    playerSnooper.addClientStat("world[" + i + "][dimension]", Integer.valueOf(worldserver.provider.getDimensionType().getId()));
+                    playerSnooper.addClientStat("world[" + i + "][mode]", worldinfo.getGameType());
+                    playerSnooper.addClientStat("world[" + i + "][difficulty]", worldserver.getDifficulty());
+                    playerSnooper.addClientStat("world[" + i + "][hardcore]", Boolean.valueOf(worldinfo.isHardcoreModeEnabled()));
+                    playerSnooper.addClientStat("world[" + i + "][generator_name]", worldinfo.getTerrainType().getName());
+                    playerSnooper.addClientStat("world[" + i + "][generator_version]", Integer.valueOf(worldinfo.getTerrainType().getVersion()));
+                    playerSnooper.addClientStat("world[" + i + "][height]", Integer.valueOf(this.buildLimit));
+                    playerSnooper.addClientStat("world[" + i + "][chunks_loaded]", Integer.valueOf(worldserver.getChunkProvider().getLoadedChunkCount()));
+                    ++i;
                 }
             }
         }
 
-        playerSnooper.addClientStat("worlds", Integer.valueOf(l));
+        playerSnooper.addClientStat("worlds", Integer.valueOf(i));
     }
 
     public void addServerTypeToSnooper(Snooper playerSnooper)
@@ -1367,9 +1361,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public void setGameType(GameType gameMode)
     {
-        for (WorldServer worldserver1 : this.worlds)
+        for (WorldServer worldserver : this.worlds)
         {
-            worldserver1.getWorldInfo().setGameType(gameMode);
+            worldserver.getWorldInfo().setGameType(gameMode);
         }
     }
 
@@ -1480,11 +1474,11 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @Nullable
     public Entity getEntityFromUuid(UUID uuid)
     {
-        for (WorldServer worldserver1 : this.worlds)
+        for (WorldServer worldserver : this.worlds)
         {
-            if (worldserver1 != null)
+            if (worldserver != null)
             {
-                Entity entity = worldserver1.getEntityFromUuid(uuid);
+                Entity entity = worldserver.getEntityFromUuid(uuid);
 
                 if (entity != null)
                 {
@@ -1618,16 +1612,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @SideOnly(Side.SERVER)
     public static void main(String[] p_main_0_)
     {
-        //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
-        //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028
-        ServerEula eula = new ServerEula(new File("eula.txt"));
-        if (!eula.hasAcceptedEULA())
-        {
-            LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
-            eula.createEULAFile();
-            return;
-        }
-
         Bootstrap.register();
 
         try
@@ -1638,12 +1622,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             String s2 = null;
             boolean flag1 = false;
             boolean flag2 = false;
-            int l = -1;
+            int i = -1;
 
-            for (int i1 = 0; i1 < p_main_0_.length; ++i1)
+            for (int j = 0; j < p_main_0_.length; ++j)
             {
-                String s3 = p_main_0_[i1];
-                String s4 = i1 == p_main_0_.length - 1 ? null : p_main_0_[i1 + 1];
+                String s3 = p_main_0_[j];
+                String s4 = j == p_main_0_.length - 1 ? null : p_main_0_[j + 1];
                 boolean flag3 = false;
 
                 if (!"nogui".equals(s3) && !"--nogui".equals(s3))
@@ -1654,7 +1638,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                         try
                         {
-                            l = Integer.parseInt(s4);
+                            i = Integer.parseInt(s4);
                         }
                         catch (NumberFormatException var13)
                         {
@@ -1692,7 +1676,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                 if (flag3)
                 {
-                    ++i1;
+                    ++j;
                 }
             }
 
@@ -1712,9 +1696,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 dedicatedserver.setFolderName(s2);
             }
 
-            if (l >= 0)
+            if (i >= 0)
             {
-                dedicatedserver.setServerPort(l);
+                dedicatedserver.setServerPort(i);
             }
 
             if (flag1)
@@ -1743,7 +1727,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         }
         catch (Exception exception)
         {
-            LOGGER.fatal("Failed to start the minecraft server", (Throwable)exception);
+            LOG.fatal("Failed to start the minecraft server", (Throwable)exception);
         }
     }
 
@@ -1753,7 +1737,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @SideOnly(Side.SERVER)
     public void logInfo(String msg)
     {
-        LOGGER.info(msg);
+        LOG.info(msg);
     }
 
     /**
@@ -1771,7 +1755,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @SideOnly(Side.SERVER)
     public void logSevere(String msg)
     {
-        LOGGER.error(msg);
+        LOG.error(msg);
     }
 
     /**
@@ -1782,7 +1766,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     {
         if (this.isDebuggingEnabled())
         {
-            LOGGER.info(msg);
+            LOG.info(msg);
         }
     }
 

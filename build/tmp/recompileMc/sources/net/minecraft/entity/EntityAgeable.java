@@ -71,19 +71,16 @@ public abstract class EntityAgeable extends EntityCreature
         }
     }
 
-    /**
-     * Checks if the given item is a spawn egg that spawns the given class of entity.
-     */
-    protected boolean holdingSpawnEggOfClass(ItemStack stack, Class <? extends Entity > entityClass)
+    protected boolean holdingSpawnEggOfClass(ItemStack p_190669_1_, Class <? extends Entity > p_190669_2_)
     {
-        if (stack.getItem() != Items.SPAWN_EGG)
+        if (p_190669_1_.getItem() != Items.SPAWN_EGG)
         {
             return false;
         }
         else
         {
-            Class <? extends Entity > oclass = EntityList.getClass(ItemMonsterPlacer.getNamedIdFrom(stack));
-            return oclass != null && entityClass == oclass;
+            Class <? extends Entity > oclass = EntityList.getClass(ItemMonsterPlacer.getNamedIdFrom(p_190669_1_));
+            return oclass != null && p_190669_2_ == oclass;
         }
     }
 
@@ -110,19 +107,11 @@ public abstract class EntityAgeable extends EntityCreature
         }
     }
 
-    /**
-     * Increases this entity's age, optionally updating {@link #forcedAge}. If the entity is an adult (if the entity's
-     * age is greater than or equal to 0) then the entity's age will be set to {@link #forcedAge}.
-     *  
-     * @param growthSeconds Number of seconds to grow this entity by. The entity's age will be increased by 20 times
-     * this number (i.e. this number converted to ticks).
-     * @param updateForcedAge If true, updates {@link #forcedAge} and {@link #forcedAgeTimer}
-     */
-    public void ageUp(int growthSeconds, boolean updateForcedAge)
+    public void ageUp(int p_175501_1_, boolean p_175501_2_)
     {
         int i = this.getGrowingAge();
         int j = i;
-        i = i + growthSeconds * 20;
+        i = i + p_175501_1_ * 20;
 
         if (i > 0)
         {
@@ -137,7 +126,7 @@ public abstract class EntityAgeable extends EntityCreature
         int k = i - j;
         this.setGrowingAge(i);
 
-        if (updateForcedAge)
+        if (p_175501_2_)
         {
             this.forcedAge += k;
 
@@ -154,8 +143,8 @@ public abstract class EntityAgeable extends EntityCreature
     }
 
     /**
-     * Increases this entity's age. If the entity is an adult (if the entity's age is greater than or equal to 0) then
-     * the entity's age will be set to {@link #forcedAge}. This method does not update {@link #forcedAge}.
+     * "Adds the value of the parameter times 20 to the age of this entity. If the entity is an adult (if the entity's
+     * age is greater than 0), it will have no effect."
      */
     public void addGrowth(int growth)
     {

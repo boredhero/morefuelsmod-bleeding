@@ -17,7 +17,6 @@ import net.minecraft.client.gui.GuiScreenBook;
 import net.minecraft.client.gui.inventory.GuiBeacon;
 import net.minecraft.client.gui.inventory.GuiBrewingStand;
 import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiCrafting;
 import net.minecraft.client.gui.inventory.GuiDispenser;
 import net.minecraft.client.gui.inventory.GuiEditCommandBlockMinecart;
@@ -168,7 +167,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, source, amount);
+        net.minecraftforge.common.ForgeHooks.onLivingAttack(this, source, amount);
         return false;
     }
 
@@ -507,9 +506,9 @@ public class EntityPlayerSP extends AbstractClientPlayer
 
     public void removeRecipeHighlight(IRecipe p_193103_1_)
     {
-        if (this.recipeBook.isNew(p_193103_1_))
+        if (this.recipeBook.isRecipeUnseen(p_193103_1_))
         {
-            this.recipeBook.markSeen(p_193103_1_);
+            this.recipeBook.setRecipeSeen(p_193103_1_);
             this.connection.sendPacket(new CPacketRecipeInfo(p_193103_1_));
         }
     }
@@ -932,11 +931,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
         {
             if (this.mc.currentScreen != null && !this.mc.currentScreen.doesGuiPauseGame())
             {
-                if (this.mc.currentScreen instanceof GuiContainer)
-                {
-                    this.closeScreen();
-                }
-
                 this.mc.displayGuiScreen((GuiScreen)null);
             }
 
@@ -986,7 +980,6 @@ public class EntityPlayerSP extends AbstractClientPlayer
         float f = 0.8F;
         boolean flag2 = this.movementInput.moveForward >= 0.8F;
         this.movementInput.updatePlayerMoveState();
-        net.minecraftforge.client.ForgeHooksClient.onInputUpdate(this, this.movementInput);
         this.mc.getTutorial().handleMovement(this.movementInput);
 
         if (this.isHandActive() && !this.isRiding())
@@ -1006,13 +999,10 @@ public class EntityPlayerSP extends AbstractClientPlayer
         }
 
         AxisAlignedBB axisalignedbb = this.getEntityBoundingBox();
-        net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent event = new net.minecraftforge.client.event.PlayerSPPushOutOfBlocksEvent(this, axisalignedbb);
-        if(!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) { axisalignedbb = event.getEntityBoundingBox();
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ - (double)this.width * 0.35D);
         this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, axisalignedbb.minY + 0.5D, this.posZ + (double)this.width * 0.35D);
-        }
         boolean flag4 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
 
         if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= 0.8F && !this.isSprinting() && flag4 && !this.isHandActive() && !this.isPotionActive(MobEffects.BLINDNESS))
@@ -1032,7 +1022,7 @@ public class EntityPlayerSP extends AbstractClientPlayer
             this.setSprinting(true);
         }
 
-        if (this.isSprinting() && (this.movementInput.moveForward < 0.8F || this.collidedHorizontally || !flag4))
+        if (this.isSprinting() && (this.movementInput.moveForward < 0.8F || this.isCollidedHorizontally || !flag4))
         {
             this.setSprinting(false);
         }
@@ -1337,18 +1327,5 @@ public class EntityPlayerSP extends AbstractClientPlayer
                 }
             }
         }
-    }
-
-    public void updateSyncFields(EntityPlayerSP old)
-    {
-        this.lastReportedPosX = old.lastReportedPosX;
-        this.lastReportedPosY = old.lastReportedPosY;
-        this.lastReportedPosZ = old.lastReportedPosZ;
-        this.lastReportedYaw = old.lastReportedYaw;
-        this.lastReportedPitch = old.lastReportedPitch;
-        this.prevOnGround = old.prevOnGround;
-        this.serverSneakState = old.serverSneakState;
-        this.serverSprintState = old.serverSprintState;
-        this.positionUpdateTicks = old.positionUpdateTicks;
     }
 }

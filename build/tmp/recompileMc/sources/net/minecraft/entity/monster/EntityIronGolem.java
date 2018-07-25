@@ -265,7 +265,7 @@ public class EntityIronGolem extends EntityGolem
         }
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_IRONGOLEM_HURT;
     }

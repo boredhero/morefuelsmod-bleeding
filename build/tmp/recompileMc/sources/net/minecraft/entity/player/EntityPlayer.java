@@ -100,7 +100,6 @@ public abstract class EntityPlayer extends EntityLivingBase
     protected java.util.HashMap<Integer, BlockPos> spawnChunkMap = new java.util.HashMap<Integer, BlockPos>();
     protected java.util.HashMap<Integer, Boolean> spawnForcedMap = new java.util.HashMap<Integer, Boolean>();
     public float eyeHeight = this.getDefaultEyeHeight();
-    public static final net.minecraft.entity.ai.attributes.IAttribute REACH_DISTANCE = new net.minecraft.entity.ai.attributes.RangedAttribute(null, "generic.reachDistance", 5.0D, 0.0D, 1024.0D).setShouldWatch(true);
 
     /** The absorption data parameter */
     private static final DataParameter<Float> ABSORPTION = EntityDataManager.<Float>createKey(EntityPlayer.class, DataSerializers.FLOAT);
@@ -127,35 +126,23 @@ public abstract class EntityPlayer extends EntityLivingBase
     public float cameraYaw;
     /** Used by EntityPlayer to prevent too many xp orbs from getting absorbed at once. */
     public int xpCooldown;
-    /** Previous X position of the player's cape */
     public double prevChasingPosX;
-    /** Previous Y position of the player's cape */
     public double prevChasingPosY;
-    /** Previous Z position of the player's cape */
     public double prevChasingPosZ;
-    /** Current X position of the player's cape */
     public double chasingPosX;
-    /** Current Y position of the player's cape */
     public double chasingPosY;
-    /** Current Z position of the player's cape */
     public double chasingPosZ;
     /** Boolean value indicating weather a player is sleeping or not */
     protected boolean sleeping;
     /** The location of the bed the player is sleeping in, or {@code null} if they are not sleeping */
     public BlockPos bedLocation;
     private int sleepTimer;
-    /** Offset in the X axis used for rendering. This field is {@linkplain #setRenderOffsetForSleep() used by beds}. */
     public float renderOffsetX;
-    /**
-     * Offset in the Y axis used for rendering. This field is not written to in vanilla (other than being set to 0 each
-     * tick by {@link net.minecraft.client.entity.EntityOtherPlayerMP#onUpdate()}).
-     */
     @SideOnly(Side.CLIENT)
     public float renderOffsetY;
-    /** Offset in the Z axis used for rendering. This field is {@linkplain #setRenderOffsetForSleep() used by beds}. */
     public float renderOffsetZ;
     /** holds the spawn chunk of the player */
-    private BlockPos spawnPos;
+    private BlockPos spawnChunk;
     /** Whether this player's spawn point is forced, preventing execution of bed checks. */
     private boolean spawnForced;
     /** The player's capabilities. (See class PlayerCapabilities) */
@@ -206,7 +193,6 @@ public abstract class EntityPlayer extends EntityLivingBase
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.10000000149011612D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_SPEED);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.LUCK);
-        this.getAttributeMap().registerAttribute(REACH_DISTANCE);
     }
 
     protected void entityInit()
@@ -744,15 +730,15 @@ public abstract class EntityPlayer extends EntityLivingBase
         }
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
-        if (damageSourceIn == DamageSource.ON_FIRE)
+        if (p_184601_1_ == DamageSource.ON_FIRE)
         {
             return SoundEvents.ENTITY_PLAYER_HURT_ON_FIRE;
         }
         else
         {
-            return damageSourceIn == DamageSource.DROWN ? SoundEvents.ENTITY_PLAYER_HURT_DROWN : SoundEvents.ENTITY_PLAYER_HURT;
+            return p_184601_1_ == DamageSource.DROWN ? SoundEvents.ENTITY_PLAYER_HURT_DROWN : SoundEvents.ENTITY_PLAYER_HURT;
         }
     }
 
@@ -862,7 +848,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
     public float getDigSpeed(IBlockState state, BlockPos pos)
     {
-        float f = this.inventory.getDestroySpeed(state);
+        float f = this.inventory.getStrVsBlock(state);
 
         if (f > 1.0F)
         {
@@ -978,7 +964,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         if (compound.hasKey("SpawnX", 99) && compound.hasKey("SpawnY", 99) && compound.hasKey("SpawnZ", 99))
         {
-            this.spawnPos = new BlockPos(compound.getInteger("SpawnX"), compound.getInteger("SpawnY"), compound.getInteger("SpawnZ"));
+            this.spawnChunk = new BlockPos(compound.getInteger("SpawnX"), compound.getInteger("SpawnY"), compound.getInteger("SpawnZ"));
             this.spawnForced = compound.getBoolean("SpawnForced");
         }
 
@@ -1019,7 +1005,8 @@ public abstract class EntityPlayer extends EntityLivingBase
     public void writeEntityToNBT(NBTTagCompound compound)
     {
         super.writeEntityToNBT(compound);
-        compound.setInteger("DataVersion", 1343);
+        compound.setInteger("DataVersion", 1139);
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(compound);
         compound.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
         compound.setInteger("SelectedItemSlot", this.inventory.currentItem);
         compound.setBoolean("Sleeping", this.sleeping);
@@ -1029,13 +1016,12 @@ public abstract class EntityPlayer extends EntityLivingBase
         compound.setInteger("XpTotal", this.experienceTotal);
         compound.setInteger("XpSeed", this.xpSeed);
         compound.setInteger("Score", this.getScore());
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(compound); //Moved down so it doesn't keep missing every MC update.
 
-        if (this.spawnPos != null)
+        if (this.spawnChunk != null)
         {
-            compound.setInteger("SpawnX", this.spawnPos.getX());
-            compound.setInteger("SpawnY", this.spawnPos.getY());
-            compound.setInteger("SpawnZ", this.spawnPos.getZ());
+            compound.setInteger("SpawnX", this.spawnChunk.getX());
+            compound.setInteger("SpawnY", this.spawnChunk.getY());
+            compound.setInteger("SpawnZ", this.spawnChunk.getZ());
             compound.setBoolean("SpawnForced", this.spawnForced);
         }
 
@@ -1080,7 +1066,7 @@ public abstract class EntityPlayer extends EntityLivingBase
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        if (!net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, source, amount)) return false;
+        if (!net.minecraftforge.common.ForgeHooks.onLivingAttack(this, source, amount)) return false;
         if (this.isEntityInvulnerable(source))
         {
             return false;
@@ -1222,7 +1208,6 @@ public abstract class EntityPlayer extends EntityLivingBase
             float f = damageAmount;
             damageAmount = Math.max(damageAmount - this.getAbsorptionAmount(), 0.0F);
             this.setAbsorptionAmount(this.getAbsorptionAmount() - (f - damageAmount));
-            damageAmount = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, damageSrc, damageAmount);
 
             if (damageAmount != 0.0F)
             {
@@ -1461,7 +1446,7 @@ public abstract class EntityPlayer extends EntityLivingBase
 
                             for (EntityLivingBase entitylivingbase : this.world.getEntitiesWithinAABB(EntityLivingBase.class, targetEntity.getEntityBoundingBox().grow(1.0D, 0.25D, 1.0D)))
                             {
-                                if (entitylivingbase != this && entitylivingbase != targetEntity && !this.isOnSameTeam(entitylivingbase) && this.getDistanceSq(entitylivingbase) < 9.0D)
+                                if (entitylivingbase != this && entitylivingbase != targetEntity && !this.isOnSameTeam(entitylivingbase) && this.getDistanceSqToEntity(entitylivingbase) < 9.0D)
                                 {
                                     entitylivingbase.knockBack(this, 0.4F, (double)MathHelper.sin(this.rotationYaw * 0.017453292F), (double)(-MathHelper.cos(this.rotationYaw * 0.017453292F)));
                                     entitylivingbase.attackEntityFrom(DamageSource.causePlayerDamage(this), f3);
@@ -1656,9 +1641,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         EntityPlayer.SleepResult ret = net.minecraftforge.event.ForgeEventFactory.onPlayerSleepInBed(this, bedLocation);
         if (ret != null) return ret;
-        final IBlockState state = this.world.isBlockLoaded(bedLocation) ? this.world.getBlockState(bedLocation) : null;
-        final boolean isBed = state != null && state.getBlock().isBed(state, this.world, bedLocation, this);
-        final EnumFacing enumfacing = isBed && state.getBlock() instanceof BlockHorizontal ? (EnumFacing)state.getValue(BlockHorizontal.FACING) : null;
+        EnumFacing enumfacing = (EnumFacing)this.world.getBlockState(bedLocation).getValue(BlockHorizontal.FACING);
 
         if (!this.world.isRemote)
         {
@@ -1700,7 +1683,9 @@ public abstract class EntityPlayer extends EntityLivingBase
         this.spawnShoulderEntities();
         this.setSize(0.2F, 0.2F);
 
-        if (enumfacing != null) {
+        IBlockState state = null;
+        if (this.world.isBlockLoaded(bedLocation)) state = this.world.getBlockState(bedLocation);
+        if (state != null && state.getBlock().isBed(state, this.world, bedLocation, this)) {
             float f1 = 0.5F + (float)enumfacing.getFrontOffsetX() * 0.4F;
             float f = 0.5F + (float)enumfacing.getFrontOffsetZ() * 0.4F;
             this.setRenderOffsetForSleep(enumfacing);
@@ -1732,7 +1717,6 @@ public abstract class EntityPlayer extends EntityLivingBase
         {
             return true;
         }
-        else if (p_190774_2_ == null) return false;
         else
         {
             BlockPos blockpos = p_190774_1_.offset(p_190774_2_.getOpposite());
@@ -1740,10 +1724,10 @@ public abstract class EntityPlayer extends EntityLivingBase
         }
     }
 
-    private void setRenderOffsetForSleep(EnumFacing bedDirection)
+    private void setRenderOffsetForSleep(EnumFacing p_175139_1_)
     {
-        this.renderOffsetX = -1.8F * (float)bedDirection.getFrontOffsetX();
-        this.renderOffsetZ = -1.8F * (float)bedDirection.getFrontOffsetZ();
+        this.renderOffsetX = -1.8F * (float)p_175139_1_.getFrontOffsetX();
+        this.renderOffsetZ = -1.8F * (float)p_175139_1_.getFrontOffsetZ();
     }
 
     /**
@@ -1753,7 +1737,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         net.minecraftforge.event.ForgeEventFactory.onPlayerWakeup(this, immediately, updateWorldFlag, setSpawn);
         this.setSize(0.6F, 1.8F);
-        IBlockState iblockstate = this.bedLocation == null ? null : this.world.getBlockState(this.bedLocation);
+        IBlockState iblockstate = this.world.getBlockState(this.bedLocation);
 
         if (this.bedLocation != null && iblockstate.getBlock().isBed(iblockstate, world, bedLocation, this))
         {
@@ -1895,12 +1879,12 @@ public abstract class EntityPlayer extends EntityLivingBase
 
         if (pos != null)
         {
-            this.spawnPos = pos;
+            this.spawnChunk = pos;
             this.spawnForced = forced;
         }
         else
         {
-            this.spawnPos = null;
+            this.spawnChunk = null;
             this.spawnForced = false;
         }
     }
@@ -1954,7 +1938,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         }
     }
 
-    public void travel(float strafe, float vertical, float forward)
+    public void travel(float p_191986_1_, float p_191986_2_, float p_191986_3_)
     {
         double d0 = this.posX;
         double d1 = this.posY;
@@ -1965,7 +1949,7 @@ public abstract class EntityPlayer extends EntityLivingBase
             double d3 = this.motionY;
             float f = this.jumpMovementFactor;
             this.jumpMovementFactor = this.capabilities.getFlySpeed() * (float)(this.isSprinting() ? 2 : 1);
-            super.travel(strafe, vertical, forward);
+            super.travel(p_191986_1_, p_191986_2_, p_191986_3_);
             this.motionY = d3 * 0.6D;
             this.jumpMovementFactor = f;
             this.fallDistance = 0.0F;
@@ -1973,7 +1957,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         }
         else
         {
-            super.travel(strafe, vertical, forward);
+            super.travel(p_191986_1_, p_191986_2_, p_191986_3_);
         }
 
         this.addMovementStat(this.posX - d0, this.posY - d1, this.posZ - d2);
@@ -2269,21 +2253,6 @@ public abstract class EntityPlayer extends EntityLivingBase
         return this.capabilities.allowEdit;
     }
 
-    /**
-     * Returns whether this player can modify the block at a certain location with the given stack.
-     * <p>
-     * The position being queried is {@code pos.offset(facing.getOpposite()))}.
-     * 
-     * @return Whether this player may modify the queried location in the current world
-     * @see ItemStack#canPlaceOn(Block)
-     * @see ItemStack#canEditBlocks()
-     * @see PlayerCapabilities#allowEdit
-     *  
-     * @param pos a position adjacent to the queried position
-     * @param facing the direction from the queried location to (that is, pointing away from the location queried)
-     * {@code pos}
-     * @param stack the {@code ItemStack} that would be used to edit the world
-     */
     public boolean canPlayerEdit(BlockPos pos, EnumFacing facing, ItemStack stack)
     {
         if (this.capabilities.allowEdit)
@@ -2818,7 +2787,7 @@ public abstract class EntityPlayer extends EntityLivingBase
      */
     public BlockPos getBedLocation(int dimension)
     {
-        return dimension == 0 ? spawnPos : spawnChunkMap.get(dimension);
+        return dimension == 0 ? spawnChunk : spawnChunkMap.get(dimension);
     }
 
     /**
@@ -2848,12 +2817,12 @@ public abstract class EntityPlayer extends EntityLivingBase
         {
             if (pos != null)
             {
-                spawnPos = pos;
+                spawnChunk = pos;
                 spawnForced = forced;
             }
             else
             {
-                spawnPos = null;
+                spawnChunk = null;
                 spawnForced = false;
             }
             return;

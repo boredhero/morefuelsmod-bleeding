@@ -46,7 +46,7 @@ public class EntityHusk extends EntityZombie
         return SoundEvents.ENTITY_HUSK_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_HUSK_HURT;
     }

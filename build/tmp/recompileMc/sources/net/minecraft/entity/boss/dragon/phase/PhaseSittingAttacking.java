@@ -41,7 +41,7 @@ public class PhaseSittingAttacking extends PhaseSittingBase
         this.attackingTicks = 0;
     }
 
-    public PhaseList<PhaseSittingAttacking> getType()
+    public PhaseList<PhaseSittingAttacking> getPhaseList()
     {
         return PhaseList.SITTING_ATTACKING;
     }

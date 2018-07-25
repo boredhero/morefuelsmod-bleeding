@@ -157,7 +157,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
 
                 if (!this.isFull())
                 {
-                    flag = pullItems(this) || flag;
+                    flag = captureDroppedItems(this) || flag;
                 }
 
                 if (flag)
@@ -320,14 +320,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
         return true;
     }
 
-    /**
-     * Pull dropped {@link net.minecraft.entity.item.EntityItem EntityItem}s from the world above the hopper and items
-     * from any inventory attached to this hopper into the hopper's inventory.
-     * 
-     * @param hopper the hopper in question
-     * @return whether any items were successfully added to the hopper
-     */
-    public static boolean pullItems(IHopper hopper)
+    public static boolean captureDroppedItems(IHopper hopper)
     {
         Boolean ret = net.minecraftforge.items.VanillaInventoryCodeHooks.extractHook(hopper);
         if (ret != null) return ret;

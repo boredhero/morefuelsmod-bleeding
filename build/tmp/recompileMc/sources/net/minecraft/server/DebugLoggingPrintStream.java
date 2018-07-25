@@ -5,9 +5,9 @@ import net.minecraft.util.LoggingPrintStream;
 
 public class DebugLoggingPrintStream extends LoggingPrintStream
 {
-    public DebugLoggingPrintStream(String domainIn, OutputStream outStream)
+    public DebugLoggingPrintStream(String p_i47315_1_, OutputStream p_i47315_2_)
     {
-        super(domainIn, outStream);
+        super(p_i47315_1_, p_i47315_2_);
     }
 
     protected void logString(String string)

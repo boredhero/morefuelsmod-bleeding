@@ -62,17 +62,17 @@ public class BlockStaticLiquid extends BlockLiquid
                             return;
                         }
 
-                        IBlockState block = worldIn.getBlockState(blockpos);
+                        Block block = worldIn.getBlockState(blockpos).getBlock();
 
-                        if (block.getBlock().isAir(block, worldIn, blockpos))
+                        if (block.blockMaterial == Material.AIR)
                         {
                             if (this.isSurroundingBlockFlammable(worldIn, blockpos))
                             {
-                                worldIn.setBlockState(blockpos, net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos, pos, Blocks.FIRE.getDefaultState()));
+                                worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
                                 return;
                             }
                         }
-                        else if (block.getMaterial().blocksMovement())
+                        else if (block.blockMaterial.blocksMovement())
                         {
                             return;
                         }
@@ -91,7 +91,7 @@ public class BlockStaticLiquid extends BlockLiquid
 
                         if (worldIn.isAirBlock(blockpos1.up()) && this.getCanBlockBurn(worldIn, blockpos1))
                         {
-                            worldIn.setBlockState(blockpos1.up(), net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(worldIn, blockpos1.up(), pos, Blocks.FIRE.getDefaultState()));
+                            worldIn.setBlockState(blockpos1.up(), Blocks.FIRE.getDefaultState());
                         }
                     }
                 }

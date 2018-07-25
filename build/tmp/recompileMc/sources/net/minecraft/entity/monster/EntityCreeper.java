@@ -190,7 +190,7 @@ public class EntityCreeper extends EntityMob
         super.onUpdate();
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_CREEPER_HURT;
     }
@@ -216,7 +216,7 @@ public class EntityCreeper extends EntityMob
                 int k = i + this.rand.nextInt(j - i + 1);
                 this.dropItem(Item.getItemById(k), 1);
             }
-            else if (cause.getTrueSource() instanceof EntityCreeper && cause.getTrueSource() != this && ((EntityCreeper)cause.getTrueSource()).getPowered() && ((EntityCreeper)cause.getTrueSource()).ableToCauseSkullDrop())
+            else if (cause.getTrueSource() instanceof EntityCreeper && cause.getTrueSource() != this && ((EntityCreeper)cause.getTrueSource()).getPowered() && ((EntityCreeper)cause.getTrueSource()).isAIEnabled())
             {
                 ((EntityCreeper)cause.getTrueSource()).incrementDroppedSkulls();
                 this.entityDropItem(new ItemStack(Items.SKULL, 1, 4), 0.0F);
@@ -304,7 +304,7 @@ public class EntityCreeper extends EntityMob
     {
         if (!this.world.isRemote)
         {
-            boolean flag = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this);
+            boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
             float f = this.getPowered() ? 2.0F : 1.0F;
             this.dead = true;
             this.world.createExplosion(this, this.posX, this.posY, this.posZ, (float)this.explosionRadius * f, flag);
@@ -346,11 +346,9 @@ public class EntityCreeper extends EntityMob
     }
 
     /**
-     * Returns true if an entity is able to drop its skull due to being blown up by this creeper.
-     *  
-     * Does not test if this creeper is charged; the caller must do that. However, does test the doMobLoot gamerule.
+     * Returns true if the newer Entity AI code should be run
      */
-    public boolean ableToCauseSkullDrop()
+    public boolean isAIEnabled()
     {
         return this.droppedSkulls < 1 && this.world.getGameRules().getBoolean("doMobLoot");
     }

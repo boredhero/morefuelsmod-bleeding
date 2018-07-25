@@ -83,7 +83,7 @@ public class EntityLlamaSpit extends Entity implements IProjectile
             raytraceresult = new RayTraceResult(entity);
         }
 
-        if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
+        if (raytraceresult != null)
         {
             this.onHit(raytraceresult);
         }
@@ -196,7 +196,7 @@ public class EntityLlamaSpit extends Entity implements IProjectile
     /**
      * Similar to setArrowHeading, it's point the throwable entity to a x, y, z direction.
      */
-    public void shoot(double x, double y, double z, float velocity, float inaccuracy)
+    public void setThrowableHeading(double x, double y, double z, float velocity, float inaccuracy)
     {
         float f = MathHelper.sqrt(x * x + y * y + z * z);
         x = x / (double)f;

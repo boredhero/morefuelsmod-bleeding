@@ -66,10 +66,10 @@ public abstract class EntitySpellcasterIllager extends AbstractIllager
         }
     }
 
-    public void setSpellType(EntitySpellcasterIllager.SpellType spellType)
+    public void setSpellType(EntitySpellcasterIllager.SpellType p_193081_1_)
     {
-        this.activeSpell = spellType;
-        this.dataManager.set(SPELL, Byte.valueOf((byte)spellType.id));
+        this.activeSpell = p_193081_1_;
+        this.dataManager.set(SPELL, Byte.valueOf((byte)p_193081_1_.id));
     }
 
     protected EntitySpellcasterIllager.SpellType getSpellType()
@@ -136,7 +136,7 @@ public abstract class EntitySpellcasterIllager extends AbstractIllager
         public void startExecuting()
         {
             super.startExecuting();
-            EntitySpellcasterIllager.this.navigator.clearPath();
+            EntitySpellcasterIllager.this.navigator.clearPathEntity();
         }
 
         /**
@@ -251,20 +251,19 @@ public abstract class EntitySpellcasterIllager extends AbstractIllager
         BLINDNESS(5, 0.1D, 0.1D, 0.2D);
 
         private final int id;
-        /** Particle motion speed. An array with 3 values: x, y, and z. */
         private final double[] particleSpeed;
 
-        private SpellType(int idIn, double xParticleSpeed, double yParticleSpeed, double zParticleSpeed)
+        private SpellType(int p_i47561_3_, double p_i47561_4_, double p_i47561_6_, double p_i47561_8_)
         {
-            this.id = idIn;
-            this.particleSpeed = new double[] {xParticleSpeed, yParticleSpeed, zParticleSpeed};
+            this.id = p_i47561_3_;
+            this.particleSpeed = new double[] {p_i47561_4_, p_i47561_6_, p_i47561_8_};
         }
 
-        public static EntitySpellcasterIllager.SpellType getFromId(int idIn)
+        public static EntitySpellcasterIllager.SpellType getFromId(int p_193337_0_)
         {
             for (EntitySpellcasterIllager.SpellType entityspellcasterillager$spelltype : values())
             {
-                if (idIn == entityspellcasterillager$spelltype.id)
+                if (p_193337_0_ == entityspellcasterillager$spelltype.id)
                 {
                     return entityspellcasterillager$spelltype;
                 }

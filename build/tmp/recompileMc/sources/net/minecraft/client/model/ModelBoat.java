@@ -13,12 +13,7 @@ public class ModelBoat extends ModelBase implements IMultipassModel
 {
     public ModelRenderer[] boatSides = new ModelRenderer[5];
     public ModelRenderer[] paddles = new ModelRenderer[2];
-    /**
-     * An invisible layer that is rendered to make it seem like there's no water in the boat.
-     *  
-     * @see https://redd.it/3qufgo
-     * @see https://bugs.mojang.com/browse/MC-47636
-     */
+    /** Part of the model rendered to make it seem like there's no water in the boat */
     public ModelRenderer noWater;
     private final int patchList = GLAllocation.generateDisplayLists(1);
 

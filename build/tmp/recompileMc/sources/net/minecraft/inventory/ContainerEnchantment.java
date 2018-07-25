@@ -421,9 +421,10 @@ public class ContainerEnchantment extends Container
                     return ItemStack.EMPTY;
                 }
 
-                if (itemstack1.hasTagCompound())// Forge: Fix MC-17431
+                if (itemstack1.hasTagCompound() && itemstack1.getCount() == 1)
                 {
-                    ((Slot)this.inventorySlots.get(0)).putStack(itemstack1.splitStack(1));
+                    ((Slot)this.inventorySlots.get(0)).putStack(itemstack1.copy());
+                    itemstack1.setCount(0);
                 }
                 else if (!itemstack1.isEmpty())
                 {

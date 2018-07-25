@@ -128,9 +128,9 @@ public class EntityLeashKnot extends EntityHanging
 
             for (EntityLiving entityliving : list)
             {
-                if (entityliving.getLeashed() && entityliving.getLeashHolder() == player)
+                if (entityliving.getLeashed() && entityliving.getLeashedToEntity() == player)
                 {
-                    entityliving.setLeashHolder(this, true);
+                    entityliving.setLeashedToEntity(this, true);
                     flag = true;
                 }
             }
@@ -143,7 +143,7 @@ public class EntityLeashKnot extends EntityHanging
                 {
                     for (EntityLiving entityliving1 : list)
                     {
-                        if (entityliving1.getLeashed() && entityliving1.getLeashHolder() == this)
+                        if (entityliving1.getLeashed() && entityliving1.getLeashedToEntity() == this)
                         {
                             entityliving1.clearLeashed(true, false);
                         }

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016-2018.
+ * Copyright (c) 2016.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,7 +43,6 @@ public class BiomeDictionary
     {
 
         private static final Map<String, Type> byName = new HashMap<String, Type>();
-        private static Collection<Type> allTypes = Collections.unmodifiableCollection(byName.values());
 
         /*Temperature-based tags. Specifying neither implies a biome is temperate*/
         public static final Type HOT = new Type("HOT");
@@ -151,14 +150,6 @@ public class BiomeDictionary
             }
             return t;
         }
-        
-        /**
-         * @return An unmodifiable collection of all current biome types.
-         */
-        public static Collection<Type> getAll()
-        {
-            return allTypes;
-        }
     }
 
     private static final Map<ResourceLocation, BiomeInfo> biomeInfoMap = new HashMap<ResourceLocation, BiomeInfo>();
@@ -264,7 +255,7 @@ public class BiomeDictionary
     {
         if (biome.decorator.treesPerChunk >= 3)
         {
-            if (biome.isHighHumidity() && biome.getDefaultTemperature() >= 0.9F)
+            if (biome.isHighHumidity() && biome.getTemperature() >= 0.9F)
             {
                 BiomeDictionary.addTypes(biome, JUNGLE);
             }
@@ -272,7 +263,7 @@ public class BiomeDictionary
             {
                 BiomeDictionary.addTypes(biome, FOREST);
 
-                if (biome.getDefaultTemperature() <= 0.2f)
+                if (biome.getTemperature() <= 0.2f)
                 {
                     BiomeDictionary.addTypes(biome, CONIFEROUS);
                 }
@@ -296,12 +287,12 @@ public class BiomeDictionary
             BiomeDictionary.addTypes(biome, DRY);
         }
 
-        if (biome.getDefaultTemperature() > 0.85f)
+        if (biome.getTemperature() > 0.85f)
         {
             BiomeDictionary.addTypes(biome, HOT);
         }
 
-        if (biome.getDefaultTemperature() < 0.15f)
+        if (biome.getTemperature() < 0.15f)
         {
             BiomeDictionary.addTypes(biome, COLD);
         }
@@ -347,20 +338,20 @@ public class BiomeDictionary
             BiomeDictionary.addTypes(biome, SNOWY);
         }
 
-        if (biome.topBlock.getBlock() != Blocks.SAND && biome.getDefaultTemperature() >= 1.0f && biome.getRainfall() < 0.2f)
+        if (biome.topBlock != Blocks.SAND && biome.getTemperature() >= 1.0f && biome.getRainfall() < 0.2f)
         {
             BiomeDictionary.addTypes(biome, SAVANNA);
         }
 
-        if (biome.topBlock.getBlock() == Blocks.SAND)
+        if (biome.topBlock == Blocks.SAND)
         {
             BiomeDictionary.addTypes(biome, SANDY);
         }
-        else if (biome.topBlock.getBlock() == Blocks.MYCELIUM)
+        else if (biome.topBlock == Blocks.MYCELIUM)
         {
             BiomeDictionary.addTypes(biome, MUSHROOM);
         }
-        if (biome.fillerBlock.getBlock() == Blocks.HARDENED_CLAY)
+        if (biome.fillerBlock == Blocks.HARDENED_CLAY)
         {
             BiomeDictionary.addTypes(biome, MESA);
         }

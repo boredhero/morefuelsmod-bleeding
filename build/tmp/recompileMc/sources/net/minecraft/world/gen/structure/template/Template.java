@@ -195,15 +195,6 @@ public class Template
         return transformedBlockPos(pos, placementIn.getMirror(), placementIn.getRotation());
     }
 
-    /**
-     * Add blocks and entities from this structure to the given world, restricting placement to within the chunk
-     * bounding box.
-     *  
-     * @see PlacementSettings#setBoundingBoxFromChunk
-     *  
-     * @param worldIn The world to use
-     * @param pos The origin position for the structure
-     */
     public void addBlocksToWorldChunk(World worldIn, BlockPos pos, PlacementSettings placementIn)
     {
         placementIn.setBoundingBoxFromChunk();
@@ -212,10 +203,6 @@ public class Template
 
     /**
      * This takes the data stored in this instance and puts them into the world.
-     *  
-     * @param worldIn The world to use
-     * @param pos The origin position for the structure
-     * @param placementIn Placement settings to use
      */
     public void addBlocksToWorld(World worldIn, BlockPos pos, PlacementSettings placementIn)
     {
@@ -223,28 +210,14 @@ public class Template
     }
 
     /**
-     * Adds blocks and entities from this structure to the given world.
-     *  
-     * @param worldIn The world to use
-     * @param pos The origin position for the structure
-     * @param placementIn Placement settings to use
-     * @param flags Flags to pass to {@link World#setBlockState(BlockPos, IBlockState, int)}
+     * This takes the data stored in this instance and puts them into the world.
      */
     public void addBlocksToWorld(World worldIn, BlockPos pos, PlacementSettings placementIn, int flags)
     {
         this.addBlocksToWorld(worldIn, pos, new BlockRotationProcessor(pos, placementIn), placementIn, flags);
     }
 
-    /**
-     * Adds blocks and entities from this structure to the given world.
-     *  
-     * @param worldIn The world to use
-     * @param pos The origin position for the structure
-     * @param templateProcessor The template processor to use
-     * @param placementIn Placement settings to use
-     * @param flags Flags to pass to {@link World#setBlockState(BlockPos, IBlockState, int)}
-     */
-    public void addBlocksToWorld(World worldIn, BlockPos pos, @Nullable ITemplateProcessor templateProcessor, PlacementSettings placementIn, int flags)
+    public void addBlocksToWorld(World worldIn, BlockPos p_189960_2_, @Nullable ITemplateProcessor templateProcessor, PlacementSettings placementIn, int flags)
     {
         if ((!this.blocks.isEmpty() || !placementIn.getIgnoreEntities() && !this.entities.isEmpty()) && this.size.getX() >= 1 && this.size.getY() >= 1 && this.size.getZ() >= 1)
         {
@@ -253,9 +226,7 @@ public class Template
 
             for (Template.BlockInfo template$blockinfo : this.blocks)
             {
-                BlockPos blockpos = transformedBlockPos(placementIn, template$blockinfo.pos).add(pos);
-                // Forge: skip processing blocks outside BB to prevent cascading worldgen issues
-                if (structureboundingbox != null && !structureboundingbox.isVecInside(blockpos)) continue;
+                BlockPos blockpos = transformedBlockPos(placementIn, template$blockinfo.pos).add(p_189960_2_);
                 Template.BlockInfo template$blockinfo1 = templateProcessor != null ? templateProcessor.processBlock(worldIn, blockpos, template$blockinfo) : template$blockinfo;
 
                 if (template$blockinfo1 != null)
@@ -304,7 +275,7 @@ public class Template
             {
                 if (block == null || block != template$blockinfo2.blockState.getBlock())
                 {
-                    BlockPos blockpos1 = transformedBlockPos(placementIn, template$blockinfo2.pos).add(pos);
+                    BlockPos blockpos1 = transformedBlockPos(placementIn, template$blockinfo2.pos).add(p_189960_2_);
 
                     if (structureboundingbox == null || structureboundingbox.isVecInside(blockpos1))
                     {
@@ -325,7 +296,7 @@ public class Template
 
             if (!placementIn.getIgnoreEntities())
             {
-                this.addEntitiesToWorld(worldIn, pos, placementIn.getMirror(), placementIn.getRotation(), structureboundingbox);
+                this.addEntitiesToWorld(worldIn, p_189960_2_, placementIn.getMirror(), placementIn.getRotation(), structureboundingbox);
             }
         }
     }
@@ -559,13 +530,13 @@ public class Template
             nbttaglist2.appendTag(NBTUtil.writeBlockState(new NBTTagCompound(), iblockstate));
         }
 
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt); //Moved up for MC updating reasons.
         nbt.setTag("palette", nbttaglist2);
         nbt.setTag("blocks", nbttaglist);
         nbt.setTag("entities", nbttaglist1);
         nbt.setTag("size", this.writeInts(this.size.getX(), this.size.getY(), this.size.getZ()));
         nbt.setString("author", this.author);
-        nbt.setInteger("DataVersion", 1343);
+        nbt.setInteger("DataVersion", 1139);
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
         return nbt;
     }
 

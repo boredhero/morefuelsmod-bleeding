@@ -21,9 +21,9 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
     protected T closestLivingEntity;
     private final float avoidDistance;
     /** The PathEntity of our entity */
-    private Path path;
+    private Path entityPathEntity;
     /** The PathNavigate of our entity */
-    private final PathNavigate navigation;
+    private final PathNavigate entityPathNavigate;
     /** Class of entity this behavior seeks to avoid */
     private final Class<T> classToAvoid;
     private final Predicate <? super T > avoidTargetSelector;
@@ -48,7 +48,7 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
         this.avoidDistance = avoidDistanceIn;
         this.farSpeed = farSpeedIn;
         this.nearSpeed = nearSpeedIn;
-        this.navigation = entityIn.getNavigator();
+        this.entityPathNavigate = entityIn.getNavigator();
         this.setMutexBits(1);
     }
 
@@ -72,14 +72,14 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
             {
                 return false;
             }
-            else if (this.closestLivingEntity.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.closestLivingEntity.getDistanceSq(this.entity))
+            else if (this.closestLivingEntity.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.closestLivingEntity.getDistanceSqToEntity(this.entity))
             {
                 return false;
             }
             else
             {
-                this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
-                return this.path != null;
+                this.entityPathEntity = this.entityPathNavigate.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                return this.entityPathEntity != null;
             }
         }
     }
@@ -89,7 +89,7 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
      */
     public boolean shouldContinueExecuting()
     {
-        return !this.navigation.noPath();
+        return !this.entityPathNavigate.noPath();
     }
 
     /**
@@ -97,7 +97,7 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
      */
     public void startExecuting()
     {
-        this.navigation.setPath(this.path, this.farSpeed);
+        this.entityPathNavigate.setPath(this.entityPathEntity, this.farSpeed);
     }
 
     /**
@@ -113,7 +113,7 @@ public class EntityAIAvoidEntity<T extends Entity> extends EntityAIBase
      */
     public void updateTask()
     {
-        if (this.entity.getDistanceSq(this.closestLivingEntity) < 49.0D)
+        if (this.entity.getDistanceSqToEntity(this.closestLivingEntity) < 49.0D)
         {
             this.entity.getNavigator().setSpeed(this.nearSpeed);
         }

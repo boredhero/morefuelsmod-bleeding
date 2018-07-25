@@ -455,7 +455,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
 
             for (EntityEnderCrystal entityendercrystal1 : list)
             {
-                double d1 = entityendercrystal1.getDistanceSq(this);
+                double d1 = entityendercrystal1.getDistanceSqToEntity(this);
 
                 if (d1 < d0)
                 {
@@ -545,7 +545,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
 
                     if (!block.isAir(iblockstate, this.world, blockpos) && iblockstate.getMaterial() != Material.FIRE)
                     {
-                        if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this))
+                        if (!this.world.getGameRules().getBoolean("mobGriefing"))
                         {
                             flag = true;
                         }
@@ -980,7 +980,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
     public void writeEntityToNBT(NBTTagCompound compound)
     {
         super.writeEntityToNBT(compound);
-        compound.setInteger("DragonPhase", this.phaseManager.getCurrentPhase().getType().getId());
+        compound.setInteger("DragonPhase", this.phaseManager.getCurrentPhase().getPhaseList().getId());
     }
 
     /**
@@ -1034,7 +1034,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
         return SoundEvents.ENTITY_ENDERDRAGON_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected SoundEvent getHurtSound(DamageSource p_184601_1_)
     {
         return SoundEvents.ENTITY_ENDERDRAGON_HURT;
     }
@@ -1057,7 +1057,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
     public float getHeadPartYOffset(int p_184667_1_, double[] p_184667_2_, double[] p_184667_3_)
     {
         IPhase iphase = this.phaseManager.getCurrentPhase();
-        PhaseList <? extends IPhase > phaselist = iphase.getType();
+        PhaseList <? extends IPhase > phaselist = iphase.getPhaseList();
         double d0;
 
         if (phaselist != PhaseList.LANDING && phaselist != PhaseList.TAKEOFF)
@@ -1088,7 +1088,7 @@ public class EntityDragon extends EntityLiving implements IEntityMultiPart, IMob
     public Vec3d getHeadLookVec(float p_184665_1_)
     {
         IPhase iphase = this.phaseManager.getCurrentPhase();
-        PhaseList <? extends IPhase > phaselist = iphase.getType();
+        PhaseList <? extends IPhase > phaselist = iphase.getPhaseList();
         Vec3d vec3d;
 
         if (phaselist != PhaseList.LANDING && phaselist != PhaseList.TAKEOFF)

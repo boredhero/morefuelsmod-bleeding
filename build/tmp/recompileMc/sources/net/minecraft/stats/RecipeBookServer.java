@@ -25,10 +25,10 @@ public class RecipeBookServer extends RecipeBook
 
         for (IRecipe irecipe : recipesIn)
         {
-            if (!this.recipes.get(getRecipeId(irecipe)) && !irecipe.isDynamic())
+            if (!this.recipes.get(getRecipeId(irecipe)) && !irecipe.isHidden())
             {
-                this.unlock(irecipe);
-                this.markNew(irecipe);
+                this.setRecipes(irecipe);
+                this.addDisplayedRecipe(irecipe);
                 list.add(irecipe);
                 CriteriaTriggers.RECIPE_UNLOCKED.trigger(player, irecipe);
             }
@@ -45,7 +45,7 @@ public class RecipeBookServer extends RecipeBook
         {
             if (this.recipes.get(getRecipeId(irecipe)))
             {
-                this.lock(irecipe);
+                this.removeRecipe(irecipe);
                 list.add(irecipe);
             }
         }
@@ -55,7 +55,7 @@ public class RecipeBookServer extends RecipeBook
 
     private void sendPacket(SPacketRecipeBook.State state, EntityPlayerMP player, List<IRecipe> recipesIn)
     {
-        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable);
+        player.connection.sendPacket(new SPacketRecipeBook(state, recipesIn, Collections.emptyList(), this.isGuiOpen, this.isFilteringCraftable));
     }
 
     public NBTTagCompound write()
@@ -99,7 +99,7 @@ public class RecipeBookServer extends RecipeBook
             }
             else
             {
-                this.unlock(irecipe);
+                this.setRecipes(irecipe);
             }
         }
 
@@ -116,7 +116,7 @@ public class RecipeBookServer extends RecipeBook
             }
             else
             {
-                this.markNew(irecipe1);
+                this.addDisplayedRecipe(irecipe1);
             }
         }
     }
@@ -137,7 +137,7 @@ public class RecipeBookServer extends RecipeBook
     {
         List<IRecipe> list = Lists.<IRecipe>newArrayList();
 
-        for (int i = this.newRecipes.nextSetBit(0); i >= 0; i = this.newRecipes.nextSetBit(i + 1))
+        for (int i = this.unseenRecipes.nextSetBit(0); i >= 0; i = this.unseenRecipes.nextSetBit(i + 1))
         {
             list.add(CraftingManager.REGISTRY.getObjectById(i));
         }
@@ -147,6 +147,6 @@ public class RecipeBookServer extends RecipeBook
 
     public void init(EntityPlayerMP player)
     {
-        net.minecraftforge.common.ForgeHooks.sendRecipeBook(player.connection, SPacketRecipeBook.State.INIT, this.getRecipes(), this.getDisplayedRecipes(), this.isGuiOpen, this.isFilteringCraftable);
+        player.connection.sendPacket(new SPacketRecipeBook(SPacketRecipeBook.State.INIT, this.getRecipes(), this.getDisplayedRecipes(), this.isGuiOpen, this.isFilteringCraftable));
     }
 }

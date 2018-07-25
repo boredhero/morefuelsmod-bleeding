@@ -45,7 +45,7 @@ public class ServerHangWatchdog implements Runnable
                 ThreadMXBean threadmxbean = ManagementFactory.getThreadMXBean();
                 ThreadInfo[] athreadinfo = threadmxbean.dumpAllThreads(true, true);
                 StringBuilder stringbuilder = new StringBuilder();
-                Error error = new Error(String.format("ServerHangWatchdog detected that a single server tick took %.2f seconds (should be max 0.05)", k / 1000F)); // Forge: don't just make a crash report with a seemingly-inexplicable Error
+                Error error = new Error();
 
                 for (ThreadInfo threadinfo : athreadinfo)
                 {

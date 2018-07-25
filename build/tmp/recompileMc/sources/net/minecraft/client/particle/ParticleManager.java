@@ -47,7 +47,7 @@ public class ParticleManager
     /** RNG. */
     private final Random rand = new Random();
     private final Map<Integer, IParticleFactory> particleTypes = Maps.<Integer, IParticleFactory>newHashMap();
-    private final Queue<Particle> queue = Queues.<Particle>newArrayDeque();
+    private final Queue<Particle> queueEntityFX = Queues.<Particle>newArrayDeque();
 
     public ParticleManager(World worldIn, TextureManager rendererIn)
     {
@@ -159,7 +159,7 @@ public class ParticleManager
     public void addEffect(Particle effect)
     {
         if (effect == null) return; //Forge: Prevent modders from being bad and adding nulls causing untraceable NPEs.
-        this.queue.add(effect);
+        this.queueEntityFX.add(effect);
     }
 
     public void updateEffects()
@@ -186,9 +186,9 @@ public class ParticleManager
             this.particleEmitters.removeAll(list);
         }
 
-        if (!this.queue.isEmpty())
+        if (!this.queueEntityFX.isEmpty())
         {
-            for (Particle particle = this.queue.poll(); particle != null; particle = this.queue.poll())
+            for (Particle particle = this.queueEntityFX.poll(); particle != null; particle = this.queueEntityFX.poll())
             {
                 int j = particle.getFXLayer();
                 int k = particle.shouldDisableDepth() ? 0 : 1;
@@ -205,11 +205,11 @@ public class ParticleManager
 
     private void updateEffectLayer(int layer)
     {
-        this.world.profiler.startSection(String.valueOf(layer));
+        this.world.profiler.startSection(layer + "");
 
         for (int i = 0; i < 2; ++i)
         {
-            this.world.profiler.startSection(String.valueOf(i));
+            this.world.profiler.startSection(i + "");
             this.tickParticleList(this.fxLayers[layer][i]);
             this.world.profiler.endSection();
         }
