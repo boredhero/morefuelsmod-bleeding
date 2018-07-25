@@ -9,21 +9,38 @@
 #################################################
 :deobfCompileDummyTask
 :deobfProvidedDummyTask
-:eclipseClasspath
-Download https://repo1.maven.org/maven2/jline/jline/2.13/jline-2.13-sources.jar
-Download https://repo1.maven.org/maven2/org/fusesource/jansi/jansi/1.11/jansi-1.11-sources.jar
-:eclipseJdt
-:eclipseProject
+:sourceApiJava
+:compileApiJava UP-TO-DATE
+:processApiResources UP-TO-DATE
+:apiClasses UP-TO-DATE
+:sourceMainJava
+:compileJavaNote: Some input files use or override a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+:processResources
+:classes
+:jar
+:sourceTestJava
+:compileTestJava UP-TO-DATE
+:processTestResources UP-TO-DATE
+:testClasses UP-TO-DATE
+:test UP-TO-DATE
+:extractMcpData SKIPPED
+:extractMcpMappings
 :getVersionJson
-:extractNatives SKIPPED
 :extractUserdev UP-TO-DATE
-:getAssetIndex UP-TO-DATE
-:getAssets
-:makeStart
-:makeEclipseCleanRunClient
-:makeEclipseCleanRunServer
-:eclipse
+:genSrgs SKIPPED
+:reobfJar
+:extractAnnotationsJar
+:extractRangemapReplacedMain
+C:\Code\morefuelsmod-bleeding\build\sources\main\java
+:retromapReplacedMain
+remapping source...
+:sourceJar
+:assemble
+:check UP-TO-DATE
+:build
 
 BUILD SUCCESSFUL
 
-Total time: 14.045 secs
+Total time: 21.746 secs
