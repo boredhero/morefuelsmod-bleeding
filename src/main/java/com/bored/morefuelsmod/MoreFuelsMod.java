@@ -109,6 +109,7 @@ public class MoreFuelsMod {
 	@SidedProxy(serverSide = "com.bored.morefuelsmod.proxy.CommonProxy", clientSide = "com.bored.morefuelsmod.proxy.ClientProxy")
 	public static CommonProxy proxy;
 
+	@SuppressWarnings("deprecation")
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		System.out.println(name + " " + version + " is loading!");

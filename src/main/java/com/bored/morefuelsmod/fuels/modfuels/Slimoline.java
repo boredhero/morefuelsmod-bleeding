@@ -5,6 +5,7 @@ import com.bored.morefuelsmod.item.ModItems;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.IFuelHandler;
 
+@SuppressWarnings("deprecation")
 public class Slimoline implements IFuelHandler {
 
 	@Override
