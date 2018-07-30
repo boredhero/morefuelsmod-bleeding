@@ -101,7 +101,7 @@ public class MoreFuelsMod {
 
 	public static final String modId = "morefuelsmod";
 	public static final String name = "More Fuels Mod";
-	public static final String version = "1.7.0.0";
+	public static final String version = "1.7.0-alpha.2";
 
 	@Mod.Instance(modId)
 	public static MoreFuelsMod instance;
@@ -109,6 +109,7 @@ public class MoreFuelsMod {
 	@SidedProxy(serverSide = "com.bored.morefuelsmod.proxy.CommonProxy", clientSide = "com.bored.morefuelsmod.proxy.ClientProxy")
 	public static CommonProxy proxy;
 
+	@SuppressWarnings("deprecation")
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
 		System.out.println(name + " " + version + " is loading!");

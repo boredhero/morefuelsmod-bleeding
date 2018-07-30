@@ -4,6 +4,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.IFuelHandler;
 
+@SuppressWarnings("deprecation")
 public class FishingRod implements IFuelHandler {
 
 	@Override

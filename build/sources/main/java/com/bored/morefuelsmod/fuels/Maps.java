@@ -5,6 +5,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.IFuelHandler;
 
+@SuppressWarnings("deprecation")
 public class Maps implements IFuelHandler {
 
 	@Override

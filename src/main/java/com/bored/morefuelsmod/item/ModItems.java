@@ -17,6 +17,7 @@ public class ModItems {
 	public static ItemBase lavaGlassOrb = new ItemBase("lava_glass_orb").setCreativeTab(MoreFuelsMod.creativeTab);
 	public static ItemBase lavaCrystals = new ItemBase("lava_crystals").setCreativeTab(MoreFuelsMod.creativeTab);
 	public static ItemBase pelletFuel = new ItemBase("pellet_fuel").setCreativeTab(MoreFuelsMod.creativeTab);
+	public static ItemBase crushedStone = new ItemBase("crushed_stone").setCreativeTab(MoreFuelsMod.creativeTab);
 	
 	public static void register (IForgeRegistry<Item> registry) {
 		registry.registerAll(
@@ -29,7 +30,8 @@ public class ModItems {
 				temperedGlassOrb,
 				lavaGlassOrb,
 				lavaCrystals,
-				pelletFuel
+				pelletFuel,
+				crushedStone
 	);
 	}
 	
@@ -44,5 +46,6 @@ public class ModItems {
 		lavaGlassOrb.registerItemModel();
 		lavaCrystals.registerItemModel();
 		pelletFuel.registerItemModel();
+		crushedStone.registerItemModel();
 	}
 }

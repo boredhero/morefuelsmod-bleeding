@@ -5,6 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.IFuelHandler;
 
+@SuppressWarnings("deprecation")
 public class DetectorRail implements IFuelHandler {
 
 	@Override
