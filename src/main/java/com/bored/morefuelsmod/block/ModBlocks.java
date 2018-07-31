@@ -17,6 +17,7 @@ public class ModBlocks {
 	public static BlockWood blockCompressedPelletFuel = new BlockWood("block_compressed_pellet_fuel").setCreativeTab(MoreFuelsMod.creativeTab);
 	public static BlockSlimerock blockSlimerock = new BlockSlimerock("block_slimerock").setCreativeTab(MoreFuelsMod.creativeTab);
 	public static BlockFuelConverter blockFuelConverter = new BlockFuelConverter("block_fuel_converter").setCreativeTab(MoreFuelsMod.creativeTab);
+	public static BlockMoreFuelsFurnace blockMoreFuelsFurnace = new BlockMoreFuelsFurnace("block_more_fuels_furnace").setCreativeTab(MoreFuelsMod.creativeTab);
 	
 	public static void register(IForgeRegistry<Block> registry) {
 		registry.registerAll(
@@ -28,7 +29,8 @@ public class ModBlocks {
 					blockPelletFuel,
 					blockCompressedPelletFuel,
 					blockSlimerock,
-					blockFuelConverter
+					blockFuelConverter,
+					blockMoreFuelsFurnace
 				);
 	}
 	
@@ -42,7 +44,8 @@ public class ModBlocks {
 					blockPelletFuel.createItemBlock(),
 					blockCompressedPelletFuel.createItemBlock(),
 					blockSlimerock.createItemBlock(),
-					blockFuelConverter.createItemBlock()
+					blockFuelConverter.createItemBlock(),
+					blockMoreFuelsFurnace.createItemBlock()
 				);
 	}
 	
@@ -56,5 +59,6 @@ public class ModBlocks {
 		blockCompressedPelletFuel.registerItemModel(Item.getItemFromBlock(blockCompressedPelletFuel));
 		blockSlimerock.registerItemModel(Item.getItemFromBlock(blockSlimerock));
 		blockFuelConverter.registerItemModel(Item.getItemFromBlock(blockFuelConverter));
+		blockMoreFuelsFurnace.registerItemModel(Item.getItemFromBlock(blockMoreFuelsFurnace));
 	}
 }

@@ -1,62 +1,41 @@
-[23:00:04] [main/INFO]: Setting user: Player537
-[23:00:07] [main/WARN]: Skipping bad option: lastServer:
-[23:00:07] [main/INFO]: LWJGL Version: 2.9.4
-[23:00:11] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
-[23:00:13] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[23:00:13] [Thread-5/INFO]: Initializing LWJGL OpenAL
-[23:00:13] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[23:00:13] [Thread-5/INFO]: OpenAL initialized.
-[23:00:14] [Sound Library Loader/INFO]: Sound engine started
-[23:00:17] [main/INFO]: Created: 512x512 textures-atlas
-[23:00:18] [main/WARN]: Skipping bad option: lastServer:
-[23:00:18] [main/INFO]: Narrator library for x64 successfully loaded
-[23:00:19] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[23:00:23] [Server thread/INFO]: Starting integrated minecraft server version 1.12
-[23:00:23] [Server thread/INFO]: Generating keypair
-[23:00:24] [Server thread/INFO]: Loaded 488 advancements
-[23:00:24] [Server thread/INFO]: Preparing start region for level 0
-[23:00:24] [Server thread/INFO]: Changing view distance to 12, from 10
-[23:00:25] [Server thread/INFO]: Player537[local:E:c83e8f9d] logged in with entity id 163 at (1137.4765116072624, 6.116501367928138, -863.4207889080972)
-[23:00:25] [Server thread/INFO]: Player537 joined the game
-[23:00:26] [Server thread/INFO]: Saving and pausing game...
-[23:00:26] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
-[23:00:26] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
-[23:00:26] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
-[23:00:26] [pool-2-thread-1/WARN]: Couldn't look up profile properties for com.mojang.authlib.GameProfile@204aa4d3[id=44915209-9814-3995-87c7-f4dc48b55294,name=Player537,properties={},legacy=false]
-com.mojang.authlib.exceptions.AuthenticationException: The client has sent too many requests within a certain amount of time
-	at com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService.makeRequest(YggdrasilAuthenticationService.java:79) ~[YggdrasilAuthenticationService.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillGameProfile(YggdrasilMinecraftSessionService.java:180) [YggdrasilMinecraftSessionService.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:60) [YggdrasilMinecraftSessionService$1.class:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService$1.load(YggdrasilMinecraftSessionService.java:57) [YggdrasilMinecraftSessionService$1.class:?]
-	at com.google.common.cache.LocalCache$LoadingValueReference.loadFuture(LocalCache.java:3716) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.loadSync(LocalCache.java:2424) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.lockedGetOrLoad(LocalCache.java:2298) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$Segment.get(LocalCache.java:2211) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache.get(LocalCache.java:4154) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache.getOrLoad(LocalCache.java:4158) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$LocalLoadingCache.get(LocalCache.java:5147) [guava-21.0.jar:?]
-	at com.google.common.cache.LocalCache$LocalLoadingCache.getUnchecked(LocalCache.java:5153) [guava-21.0.jar:?]
-	at com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService.fillProfileProperties(YggdrasilMinecraftSessionService.java:170) [YggdrasilMinecraftSessionService.class:?]
-	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:3170) [Minecraft.class:?]
-	at net.minecraft.client.resources.SkinManager$3.run(SkinManager.java:138) [SkinManager$3.class:?]
-	at java.util.concurrent.Executors$RunnableAdapter.call(Unknown Source) [?:1.8.0_172]
-	at java.util.concurrent.FutureTask.run(Unknown Source) [?:1.8.0_172]
-	at java.util.concurrent.ThreadPoolExecutor.runWorker(Unknown Source) [?:1.8.0_172]
-	at java.util.concurrent.ThreadPoolExecutor$Worker.run(Unknown Source) [?:1.8.0_172]
-	at java.lang.Thread.run(Unknown Source) [?:1.8.0_172]
-[23:02:05] [Server thread/INFO]: Saving and pausing game...
-[23:02:05] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
-[23:02:05] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
-[23:02:05] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
-[23:02:05] [Server thread/INFO]: Stopping server
-[23:02:05] [Server thread/INFO]: Saving players
-[23:02:05] [Server thread/INFO]: Player537 lost connection: Disconnected
-[23:02:05] [Server thread/INFO]: Player537 left the game
-[23:02:05] [Server thread/INFO]: Stopping singleplayer server as player logged out
-[23:02:05] [Server thread/INFO]: Saving worlds
-[23:02:05] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
-[23:02:05] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
-[23:02:05] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
-[23:06:01] [main/INFO]: Stopping!
-[23:06:01] [main/INFO]: SoundSystem shutting down...
-[23:06:01] [main/WARN]: Author: Paul Lamb, www.paulscode.com
+[15:09:58] [main/INFO]: Setting user: Player663
+[15:10:01] [main/WARN]: Skipping bad option: lastServer:
+[15:10:01] [main/INFO]: LWJGL Version: 2.9.4
+[15:10:04] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
+[15:10:06] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[15:10:06] [Thread-5/INFO]: Initializing LWJGL OpenAL
+[15:10:06] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[15:10:06] [Thread-5/INFO]: OpenAL initialized.
+[15:10:07] [Sound Library Loader/INFO]: Sound engine started
+[15:10:10] [main/INFO]: Created: 512x512 textures-atlas
+[15:10:11] [main/WARN]: Skipping bad option: lastServer:
+[15:10:11] [main/INFO]: Narrator library for x64 successfully loaded
+[15:10:12] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[15:10:21] [Server thread/INFO]: Starting integrated minecraft server version 1.12
+[15:10:21] [Server thread/INFO]: Generating keypair
+[15:10:22] [Server thread/INFO]: Loaded 488 advancements
+[15:10:22] [Server thread/INFO]: Preparing start region for level 0
+[15:10:22] [Server thread/INFO]: Changing view distance to 12, from 10
+[15:10:24] [Server thread/INFO]: Player663[local:E:e0ced52c] logged in with entity id 181 at (1132.9959865649053, 4.637239736460713, -853.4863330098854)
+[15:10:24] [Server thread/INFO]: Player663 joined the game
+[15:10:25] [Server thread/INFO]: Saving and pausing game...
+[15:10:25] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
+[15:10:25] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
+[15:10:25] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
+[15:10:25] [main/INFO]: Loaded 8 advancements
+[15:10:39] [Server thread/INFO]: Saving and pausing game...
+[15:10:39] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
+[15:10:39] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
+[15:10:39] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
+[15:10:40] [Server thread/INFO]: Stopping server
+[15:10:40] [Server thread/INFO]: Saving players
+[15:10:40] [Server thread/INFO]: Player663 lost connection: Disconnected
+[15:10:40] [Server thread/INFO]: Player663 left the game
+[15:10:40] [Server thread/INFO]: Stopping singleplayer server as player logged out
+[15:10:40] [Server thread/INFO]: Saving worlds
+[15:10:40] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
+[15:10:40] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
+[15:10:40] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
+[15:10:41] [main/INFO]: Stopping!
+[15:10:41] [main/INFO]: SoundSystem shutting down...
+[15:10:42] [main/WARN]: Author: Paul Lamb, www.paulscode.com
