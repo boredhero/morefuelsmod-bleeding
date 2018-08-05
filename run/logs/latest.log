@@ -1,41 +1,16 @@
-[15:09:58] [main/INFO]: Setting user: Player663
-[15:10:01] [main/WARN]: Skipping bad option: lastServer:
-[15:10:01] [main/INFO]: LWJGL Version: 2.9.4
-[15:10:04] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
-[15:10:06] [Sound Library Loader/INFO]: Starting up SoundSystem...
-[15:10:06] [Thread-5/INFO]: Initializing LWJGL OpenAL
-[15:10:06] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
-[15:10:06] [Thread-5/INFO]: OpenAL initialized.
-[15:10:07] [Sound Library Loader/INFO]: Sound engine started
-[15:10:10] [main/INFO]: Created: 512x512 textures-atlas
-[15:10:11] [main/WARN]: Skipping bad option: lastServer:
-[15:10:11] [main/INFO]: Narrator library for x64 successfully loaded
-[15:10:12] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
-[15:10:21] [Server thread/INFO]: Starting integrated minecraft server version 1.12
-[15:10:21] [Server thread/INFO]: Generating keypair
-[15:10:22] [Server thread/INFO]: Loaded 488 advancements
-[15:10:22] [Server thread/INFO]: Preparing start region for level 0
-[15:10:22] [Server thread/INFO]: Changing view distance to 12, from 10
-[15:10:24] [Server thread/INFO]: Player663[local:E:e0ced52c] logged in with entity id 181 at (1132.9959865649053, 4.637239736460713, -853.4863330098854)
-[15:10:24] [Server thread/INFO]: Player663 joined the game
-[15:10:25] [Server thread/INFO]: Saving and pausing game...
-[15:10:25] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
-[15:10:25] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
-[15:10:25] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
-[15:10:25] [main/INFO]: Loaded 8 advancements
-[15:10:39] [Server thread/INFO]: Saving and pausing game...
-[15:10:39] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
-[15:10:39] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
-[15:10:39] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
-[15:10:40] [Server thread/INFO]: Stopping server
-[15:10:40] [Server thread/INFO]: Saving players
-[15:10:40] [Server thread/INFO]: Player663 lost connection: Disconnected
-[15:10:40] [Server thread/INFO]: Player663 left the game
-[15:10:40] [Server thread/INFO]: Stopping singleplayer server as player logged out
-[15:10:40] [Server thread/INFO]: Saving worlds
-[15:10:40] [Server thread/INFO]: Saving chunks for level 'Test'/overworld
-[15:10:40] [Server thread/INFO]: Saving chunks for level 'Test'/the_nether
-[15:10:40] [Server thread/INFO]: Saving chunks for level 'Test'/the_end
-[15:10:41] [main/INFO]: Stopping!
-[15:10:41] [main/INFO]: SoundSystem shutting down...
-[15:10:42] [main/WARN]: Author: Paul Lamb, www.paulscode.com
+[15:11:14] [main/INFO]: Setting user: Player504
+[15:11:17] [main/WARN]: Skipping bad option: lastServer:
+[15:11:17] [main/INFO]: LWJGL Version: 2.9.4
+[15:11:21] [main/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge, FMLFileResourcePack:§4More Fuels Mod
+[15:11:23] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[15:11:23] [Thread-5/INFO]: Initializing LWJGL OpenAL
+[15:11:23] [Thread-5/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[15:11:23] [Thread-5/INFO]: OpenAL initialized.
+[15:11:24] [Sound Library Loader/INFO]: Sound engine started
+[15:11:27] [main/INFO]: Created: 512x512 textures-atlas
+[15:11:28] [main/WARN]: Skipping bad option: lastServer:
+[15:11:28] [main/INFO]: Narrator library for x64 successfully loaded
+[15:11:29] [Realms Notification Availability checker #1/INFO]: Could not authorize you against Realms server: Invalid session id
+[15:11:45] [main/INFO]: Stopping!
+[15:11:45] [main/INFO]: SoundSystem shutting down...
+[15:11:45] [main/WARN]: Author: Paul Lamb, www.paulscode.com
