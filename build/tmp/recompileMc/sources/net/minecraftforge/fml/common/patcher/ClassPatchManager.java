@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -50,10 +50,11 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 
 public class ClassPatchManager {
-    public static final ClassPatchManager INSTANCE = new ClassPatchManager();
-
+    //Must be ABOVE INSTANCE so they get set in time for the constructor.
     public static final boolean dumpPatched = Boolean.parseBoolean(System.getProperty("fml.dumpPatchedClasses", "false"));
     public static final boolean DEBUG = Boolean.parseBoolean(System.getProperty("fml.debugClassPatchManager", "false"));
+
+    public static final ClassPatchManager INSTANCE = new ClassPatchManager();
 
     private GDiffPatcher patcher = new GDiffPatcher();
     private ListMultimap<String, ClassPatch> patches;

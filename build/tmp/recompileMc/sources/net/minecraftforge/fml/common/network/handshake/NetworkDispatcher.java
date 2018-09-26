@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -68,8 +68,6 @@ import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.registries.ForgeRegistry;
 
-import org.apache.logging.log4j.Level;
-
 // TODO build test suites to validate the behaviour of this stuff and make it less annoyingly magical
 public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> implements ChannelOutboundHandler {
     private static boolean DEBUG_HANDSHAKE = Boolean.parseBoolean(System.getProperty("fml.debugNetworkHandshake", "false"));
@@ -77,7 +75,7 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
         OPENING, AWAITING_HANDSHAKE, HANDSHAKING, HANDSHAKECOMPLETE, FINALIZING, CONNECTED
     }
 
-    private static enum ConnectionType {
+    public static enum ConnectionType {
         MODDED, BUKKIT, VANILLA
     }
 
@@ -159,8 +157,8 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
         {
             serverInitiateHandshake();
             FMLLog.log.info("Connection received without FML marker, assuming vanilla.");
-            this.completeServerSideConnection(ConnectionType.VANILLA);
             insertIntoChannel();
+            this.completeServerSideConnection(ConnectionType.VANILLA);
         }
     }
 
@@ -255,7 +253,6 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
         this.connectionType = type;
         FMLLog.log.info("[{}] Server side {} connection established", Thread.currentThread().getName(), this.connectionType.name().toLowerCase(Locale.ENGLISH));
         this.state = ConnectionState.CONNECTED;
-        MinecraftForge.EVENT_BUS.post(new FMLNetworkEvent.ServerConnectionFromClientEvent(manager));
         if (DEBUG_HANDSHAKE)
             manager.closeChannel(new TextComponentString("Handshake Complete review log file for details."));
         scm.initializeConnectionToPlayer(manager, player, serverHandler);
@@ -349,39 +346,18 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
     }
 
     private MultiPartCustomPayload multipart = null;
+
     private boolean handleClientSideCustomPacket(SPacketCustomPayload msg, ChannelHandlerContext context)
     {
         String channelName = msg.getChannelName();
         if ("FML|MP".equals(channelName))
         {
-            try
+            boolean result = handleMultiPartCustomPacket(msg, context);
+            if (result)
             {
-                if (multipart == null)
-                {
-                    multipart = new MultiPartCustomPayload(msg.getBufferData());
-                }
-                else
-                {
-                    multipart.processPart(msg.getBufferData());
-                }
+                msg.getBufferData().release();
             }
-            catch (IOException e)
-            {
-                this.kickWithMessage(e.getMessage());
-                multipart = null;
-                return true;
-            }
-
-            if (multipart.isComplete())
-            {
-                msg = multipart;
-                channelName = msg.getChannelName();
-                multipart = null;
-            }
-            else
-            {
-                return true; // Haven't received all so return till we have.
-            }
+            return result;
         }
         if ("FML|HS".equals(channelName) || "REGISTER".equals(channelName) || "UNREGISTER".equals(channelName))
         {
@@ -410,6 +386,37 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
             return true;
         }
         return false;
+    }
+
+    private boolean handleMultiPartCustomPacket(SPacketCustomPayload msg, ChannelHandlerContext context)
+    {
+        try
+        {
+            if (multipart == null)
+            {
+                multipart = new MultiPartCustomPayload(msg.getBufferData());
+            }
+            else
+            {
+                multipart.processPart(msg.getBufferData());
+            }
+        }
+        catch (IOException e)
+        {
+            this.kickWithMessage(e.getMessage());
+            multipart = null;
+            return true;
+        }
+        if (multipart.isComplete())
+        {
+            boolean result = handleClientSideCustomPacket(multipart, context);
+            multipart = null;
+            return result;
+        }
+        else
+        {
+            return true; // Haven't received all so return till we have.
+        }
     }
 
     private boolean handleServerSideCustomPacket(CPacketCustomPayload msg, ChannelHandlerContext context)
@@ -531,10 +538,12 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
             else
             {
                 List<Packet<INetHandlerPlayClient>> parts = ((FMLProxyPacket)msg).toS3FPackets();
-                for (Packet<INetHandlerPlayClient> pkt : parts)
+                int sizeMinusOne = parts.size() - 1;
+                for (int i = 0; i < sizeMinusOne; i++)
                 {
-                    ctx.write(pkt, promise);
+                    ctx.write(parts.get(i), ctx.voidPromise());
                 }
+                ctx.write(parts.get(sizeMinusOne), promise);
             }
         }
         else
@@ -597,8 +606,8 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
         super.exceptionCaught(ctx, cause);
     }
 
-    // if we add any attributes, we should force removal of them here so that
-    //they do not hold references to the world and causes it to leak.
+    // If we add any attributes, we should force removal of them here so that
+    // they do not hold references to the world and cause it to leak.
     private void cleanAttributes(ChannelHandlerContext ctx)
     {
         ctx.channel().attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(null);
@@ -606,6 +615,7 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
         ctx.channel().attr(NetworkDispatcher.FML_DISPATCHER).set(null);
         this.handshakeChannel.attr(FML_DISPATCHER).set(null);
         this.manager.channel().attr(FML_DISPATCHER).set(null);
+        NetworkRegistry.INSTANCE.cleanAttributes();
     }
 
     public void setOverrideDimension(int overrideDim) {
@@ -647,7 +657,7 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
             {
                 throw new IOException("Received FML MultiPart packet out of order, Expected " + part_expected + " Got " + part);
             }
-            int len = input.readableBytes() - 1;
+            int len = input.readableBytes();
             input.readBytes(data, offset, len);
             part_expected++;
             offset += len;
@@ -669,5 +679,10 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet<?>> im
         {
             return this.data_buf;
         }
+    }
+
+    public ConnectionType getConnectionType()
+    {
+        return this.connectionType;
     }
 }

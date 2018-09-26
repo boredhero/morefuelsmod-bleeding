@@ -106,7 +106,7 @@ public class BlockDragonEgg extends Block
             {
                 BlockPos blockpos = pos.add(worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16), worldIn.rand.nextInt(8) - worldIn.rand.nextInt(8), worldIn.rand.nextInt(16) - worldIn.rand.nextInt(16));
 
-                if (worldIn.getBlockState(blockpos).getBlock().blockMaterial == Material.AIR)
+                if (worldIn.isAirBlock(blockpos))
                 {
                     if (worldIn.isRemote)
                     {

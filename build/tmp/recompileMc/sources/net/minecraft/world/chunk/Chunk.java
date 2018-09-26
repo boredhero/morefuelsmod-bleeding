@@ -41,7 +41,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Chunk
+public class Chunk implements net.minecraftforge.common.capabilities.ICapabilityProvider
 {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final ExtendedBlockStorage NULL_BLOCK_STORAGE = null;
@@ -112,6 +112,7 @@ public class Chunk
 
         Arrays.fill(this.precipitationHeightMap, -999);
         Arrays.fill(this.blockBiomeArray, (byte) - 1);
+        capabilities = net.minecraftforge.event.ForgeEventFactory.gatherCapabilities(this);
     }
 
     public Chunk(World worldIn, ChunkPrimer primer, int x, int z)
@@ -924,6 +925,7 @@ public class Chunk
      */
     public void onUnload()
     {
+        java.util.Arrays.stream(entityLists).forEach(multimap -> com.google.common.collect.Lists.newArrayList(multimap.getByClass(net.minecraft.entity.player.EntityPlayer.class)).forEach(player -> world.updateEntityWithOptionalForce(player, false))); // FORGE - Fix for MC-92916
         this.loaded = false;
 
         for (TileEntity tileentity : this.tileEntities.values())
@@ -1074,8 +1076,9 @@ public class Chunk
 
     protected void populate(IChunkGenerator generator)
     {
-        if (populating && net.minecraftforge.common.ForgeModContainer.logCascadingWorldGeneration) logCascadingWorldGeneration();
-        populating = true;
+        if (populating != null && net.minecraftforge.common.ForgeModContainer.logCascadingWorldGeneration) logCascadingWorldGeneration();
+        ChunkPos prev = populating;
+        populating = this.getPos();
         if (this.isTerrainPopulated())
         {
             if (generator.generateStructures(this, this.x, this.z))
@@ -1090,7 +1093,7 @@ public class Chunk
             net.minecraftforge.fml.common.registry.GameRegistry.generateWorld(this.x, this.z, this.world, generator, this.world.getChunkProvider());
             this.markDirty();
         }
-        populating = false;
+        populating = prev;
     }
 
     public BlockPos getPrecipitationHeight(BlockPos pos)
@@ -1541,6 +1544,7 @@ public class Chunk
         else
         {
             System.arraycopy(newHeightMap, 0, this.heightMap, 0, this.heightMap.length);
+            this.heightMapMinimum = com.google.common.primitives.Ints.min(this.heightMap); // Forge: fix MC-117412
         }
     }
 
@@ -1628,16 +1632,37 @@ public class Chunk
         }
     }
 
-    private static boolean populating = false; // keep track of cascading chunk generation during chunk population
+    private static ChunkPos populating = null; // keep track of cascading chunk generation during chunk population
 
     private void logCascadingWorldGeneration()
     {
         net.minecraftforge.fml.common.ModContainer activeModContainer = net.minecraftforge.fml.common.Loader.instance().activeModContainer();
-        String format = "{} loaded a new chunk ({}, {}  Dimension: {}) during chunk population, causing cascading worldgen lag. Please report this to the mod's issue tracker. This log can be disabled in the Forge config.";
+        String format = "{} loaded a new chunk {} in dimension {} ({}) while populating chunk {}, causing cascading worldgen lag.";
 
-        if (activeModContainer == null) // vanilla minecraft has problems too (MC-114332), log it at a quieter level.
-            net.minecraftforge.fml.common.FMLLog.log.debug(format, "Minecraft", this.x, this.z, this.world.provider.getDimension());
-        else
-            net.minecraftforge.fml.common.FMLLog.log.warn(format, activeModContainer.getName(), this.x, this.z, this.world.provider.getDimension());
+        if (activeModContainer == null) { // vanilla minecraft has problems too (MC-114332), log it at a quieter level.
+            net.minecraftforge.fml.common.FMLLog.log.debug(format, "Minecraft", this.getPos(), this.world.provider.getDimension(), this.world.provider.getDimensionType().getName(), populating);
+            net.minecraftforge.fml.common.FMLLog.log.debug("Consider setting 'fixVanillaCascading' to 'true' in the Forge config to fix many cases where this occurs in the base game.");
+        } else {
+            net.minecraftforge.fml.common.FMLLog.log.warn(format, activeModContainer.getName(), this.getPos(), this.world.provider.getDimension(), this.world.provider.getDimensionType().getName(), populating);
+            net.minecraftforge.fml.common.FMLLog.log.warn("Please report this to the mod's issue tracker. This log can be disabled in the Forge config.");
+        }
+    }
+
+    private final net.minecraftforge.common.capabilities.CapabilityDispatcher capabilities;
+    @Nullable
+    public net.minecraftforge.common.capabilities.CapabilityDispatcher getCapabilities()
+    {
+        return capabilities;
+    }
+    @Override
+    public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable EnumFacing facing)
+    {
+        return capabilities == null ? false : capabilities.hasCapability(capability, facing);
+    }
+    @Override
+    @Nullable
+    public <T> T getCapability(net.minecraftforge.common.capabilities.Capability<T> capability, @Nullable EnumFacing facing)
+    {
+        return capabilities == null ? null : capabilities.getCapability(capability, facing);
     }
 }

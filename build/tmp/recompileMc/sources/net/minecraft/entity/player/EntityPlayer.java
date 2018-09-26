@@ -100,6 +100,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     protected java.util.HashMap<Integer, BlockPos> spawnChunkMap = new java.util.HashMap<Integer, BlockPos>();
     protected java.util.HashMap<Integer, Boolean> spawnForcedMap = new java.util.HashMap<Integer, Boolean>();
     public float eyeHeight = this.getDefaultEyeHeight();
+    public static final net.minecraft.entity.ai.attributes.IAttribute REACH_DISTANCE = new net.minecraft.entity.ai.attributes.RangedAttribute(null, "generic.reachDistance", 5.0D, 0.0D, 1024.0D).setShouldWatch(true);
 
     /** The absorption data parameter */
     private static final DataParameter<Float> ABSORPTION = EntityDataManager.<Float>createKey(EntityPlayer.class, DataSerializers.FLOAT);
@@ -142,9 +143,9 @@ public abstract class EntityPlayer extends EntityLivingBase
     public float renderOffsetY;
     public float renderOffsetZ;
     /** holds the spawn chunk of the player */
-    private BlockPos spawnChunk;
+    protected BlockPos spawnChunk;
     /** Whether this player's spawn point is forced, preventing execution of bed checks. */
-    private boolean spawnForced;
+    protected boolean spawnForced;
     /** The player's capabilities. (See class PlayerCapabilities) */
     public PlayerCapabilities capabilities = new PlayerCapabilities();
     /** The current experience level the player is on. */
@@ -193,6 +194,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.10000000149011612D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_SPEED);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.LUCK);
+        this.getAttributeMap().registerAttribute(REACH_DISTANCE);
     }
 
     protected void entityInit()
@@ -239,7 +241,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                 {
                     this.wakeUpPlayer(true, true, false);
                 }
-                else if (this.world.isDaytime())
+                else if (!net.minecraftforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, this.bedLocation))
                 {
                     this.wakeUpPlayer(false, true, true);
                 }
@@ -1005,8 +1007,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     public void writeEntityToNBT(NBTTagCompound compound)
     {
         super.writeEntityToNBT(compound);
-        compound.setInteger("DataVersion", 1139);
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(compound);
+        compound.setInteger("DataVersion", 1343);
         compound.setTag("Inventory", this.inventory.writeToNBT(new NBTTagList()));
         compound.setInteger("SelectedItemSlot", this.inventory.currentItem);
         compound.setBoolean("Sleeping", this.sleeping);
@@ -1016,6 +1017,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         compound.setInteger("XpTotal", this.experienceTotal);
         compound.setInteger("XpSeed", this.xpSeed);
         compound.setInteger("Score", this.getScore());
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(compound); //Moved down so it doesn't keep missing every MC update.
 
         if (this.spawnChunk != null)
         {
@@ -1066,7 +1068,7 @@ public abstract class EntityPlayer extends EntityLivingBase
      */
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-        if (!net.minecraftforge.common.ForgeHooks.onLivingAttack(this, source, amount)) return false;
+        if (!net.minecraftforge.common.ForgeHooks.onPlayerAttack(this, source, amount)) return false;
         if (this.isEntityInvulnerable(source))
         {
             return false;
@@ -1208,6 +1210,7 @@ public abstract class EntityPlayer extends EntityLivingBase
             float f = damageAmount;
             damageAmount = Math.max(damageAmount - this.getAbsorptionAmount(), 0.0F);
             this.setAbsorptionAmount(this.getAbsorptionAmount() - (f - damageAmount));
+            damageAmount = net.minecraftforge.common.ForgeHooks.onLivingDamage(this, damageSrc, damageAmount);
 
             if (damageAmount != 0.0F)
             {
@@ -1641,7 +1644,9 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         EntityPlayer.SleepResult ret = net.minecraftforge.event.ForgeEventFactory.onPlayerSleepInBed(this, bedLocation);
         if (ret != null) return ret;
-        EnumFacing enumfacing = (EnumFacing)this.world.getBlockState(bedLocation).getValue(BlockHorizontal.FACING);
+        final IBlockState state = this.world.isBlockLoaded(bedLocation) ? this.world.getBlockState(bedLocation) : null;
+        final boolean isBed = state != null && state.getBlock().isBed(state, this.world, bedLocation, this);
+        final EnumFacing enumfacing = isBed && state.getBlock() instanceof BlockHorizontal ? (EnumFacing)state.getValue(BlockHorizontal.FACING) : null;
 
         if (!this.world.isRemote)
         {
@@ -1655,7 +1660,7 @@ public abstract class EntityPlayer extends EntityLivingBase
                 return EntityPlayer.SleepResult.NOT_POSSIBLE_HERE;
             }
 
-            if (this.world.isDaytime())
+            if (!net.minecraftforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, this.bedLocation))
             {
                 return EntityPlayer.SleepResult.NOT_POSSIBLE_NOW;
             }
@@ -1683,9 +1688,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         this.spawnShoulderEntities();
         this.setSize(0.2F, 0.2F);
 
-        IBlockState state = null;
-        if (this.world.isBlockLoaded(bedLocation)) state = this.world.getBlockState(bedLocation);
-        if (state != null && state.getBlock().isBed(state, this.world, bedLocation, this)) {
+        if (enumfacing != null) {
             float f1 = 0.5F + (float)enumfacing.getFrontOffsetX() * 0.4F;
             float f = 0.5F + (float)enumfacing.getFrontOffsetZ() * 0.4F;
             this.setRenderOffsetForSleep(enumfacing);
@@ -1717,6 +1720,7 @@ public abstract class EntityPlayer extends EntityLivingBase
         {
             return true;
         }
+        else if (p_190774_2_ == null) return false;
         else
         {
             BlockPos blockpos = p_190774_1_.offset(p_190774_2_.getOpposite());
@@ -1737,7 +1741,7 @@ public abstract class EntityPlayer extends EntityLivingBase
     {
         net.minecraftforge.event.ForgeEventFactory.onPlayerWakeup(this, immediately, updateWorldFlag, setSpawn);
         this.setSize(0.6F, 1.8F);
-        IBlockState iblockstate = this.world.getBlockState(this.bedLocation);
+        IBlockState iblockstate = this.bedLocation == null ? null : this.world.getBlockState(this.bedLocation);
 
         if (this.bedLocation != null && iblockstate.getBlock().isBed(iblockstate, world, bedLocation, this))
         {

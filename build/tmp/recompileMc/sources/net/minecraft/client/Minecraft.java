@@ -662,7 +662,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
     private void createDisplay() throws LWJGLException
     {
         Display.setResizable(true);
-        Display.setTitle("Minecraft 1.12");
+        Display.setTitle("Minecraft 1.12.2");
 
         try
         {
@@ -838,6 +838,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return this.mcLanguageManager.isCurrentLocaleUnicode() || this.gameSettings.forceUnicodeFont;
     }
 
+    @Deprecated // Forge: Use selective refreshResources method in FMLClientHandler
     public void refreshResources()
     {
         List<IResourcePack> list = Lists.newArrayList(this.defaultResourcePacks);
@@ -1175,7 +1176,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         long i1 = System.nanoTime() - l;
         this.checkGLError("Pre render");
         this.mcProfiler.endStartSection("sound");
-        this.mcSoundHandler.setListener(this.player, this.timer.renderPartialTicks);
+        this.mcSoundHandler.setListener(this.getRenderViewEntity(), this.timer.renderPartialTicks); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
         this.mcProfiler.endSection();
         this.mcProfiler.startSection("render");
         GlStateManager.pushMatrix();
@@ -2491,7 +2492,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
 
         this.loadingScreen.displaySavingString(I18n.format("menu.loadingLevel"));
 
-        while (!this.integratedServer.serverIsInRunLoop())
+        while (!this.integratedServer.serverIsInRunLoop() && !this.integratedServer.isServerStopped())
         {
             if (!net.minecraftforge.fml.common.StartupQuery.check())
             {
@@ -2524,7 +2525,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         SocketAddress socketaddress = this.integratedServer.getNetworkSystem().addLocalEndpoint();
         NetworkManager networkmanager = NetworkManager.provideLocalClient(socketaddress);
         networkmanager.setNetHandler(new NetHandlerLoginClient(networkmanager, this, (GuiScreen)null));
-        networkmanager.sendPacket(new C00Handshake(335, socketaddress.toString(), 0, EnumConnectionState.LOGIN, true));
+        networkmanager.sendPacket(new C00Handshake(socketaddress.toString(), 0, EnumConnectionState.LOGIN, true));
         com.mojang.authlib.GameProfile gameProfile = this.getSession().getProfile();
         if (!this.getSession().hasCachedProperties())
         {
@@ -2614,6 +2615,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
 
         TileEntityRendererDispatcher.instance.setWorld(worldClientIn);
+        net.minecraftforge.client.MinecraftForgeClient.clearRenderCache();
 
         if (worldClientIn != null)
         {
@@ -2668,17 +2670,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         EntityPlayerSP entityplayersp = this.player;
         this.player = this.playerController.createPlayer(this.world, this.player == null ? new StatisticsManager() : this.player.getStatFileWriter(), this.player == null ? new RecipeBook() : this.player.getRecipeBook());
         this.player.getDataManager().setEntryValues(entityplayersp.getDataManager().getAll());
-        // Forge - Fix MC-88179 attributes not being copied to new player
-        for (net.minecraft.entity.ai.attributes.IAttributeInstance oldInst : entityplayersp.getAttributeMap().getAllAttributes())
-        {
-            net.minecraft.entity.ai.attributes.IAttribute attrib = oldInst.getAttribute();
-            net.minecraft.entity.ai.attributes.IAttributeInstance newInst = player.getAttributeMap().getAttributeInstance(attrib);
-            newInst.setBaseValue(oldInst.getBaseValue());
-            for (net.minecraft.entity.ai.attributes.AttributeModifier modifier : oldInst.getModifiers())
-            {
-                newInst.applyModifier(modifier);
-            }
-        }
+        this.player.updateSyncFields(entityplayersp); // Forge: fix MC-10657
         this.player.dimension = dimension;
         this.renderViewEntity = this.player;
         this.player.preparePlayerToSpawn();
@@ -2889,6 +2881,7 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         return instance;
     }
 
+    @Deprecated // Forge: Use selective scheduleResourceRefresh method in FMLClientHandler
     public ListenableFuture<Object> scheduleResourcesRefresh()
     {
         return this.addScheduledTask(new Runnable()
@@ -3227,6 +3220,9 @@ public class Minecraft implements IThreadListener, ISnooperInfo
         }
         else if (this.player != null)
         {
+            MusicTicker.MusicType type = this.world.provider.getMusicType();
+            if (type != null) return type;
+
             if (this.player.world.provider instanceof WorldProviderHell)
             {
                 return MusicTicker.MusicType.NETHER;

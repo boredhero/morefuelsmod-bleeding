@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
 package net.minecraftforge.fml.relauncher;
 
 import com.google.common.base.Preconditions;
@@ -24,6 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 /**
@@ -85,6 +88,14 @@ public class ReflectionHelper
         {
             super(e);
             //this.fieldNameList = fieldNameList;
+        }
+    }
+
+    public static class UnknownConstructorException extends RuntimeException
+    {
+        public UnknownConstructorException(final String message)
+        {
+            super(message);
         }
     }
 
@@ -219,5 +230,46 @@ public class ReflectionHelper
         {
             throw new UnableToFindMethodException(e);
         }
+    }
+
+    /**
+     * Finds a constructor in the specified class that has matching parameter types.
+     *
+     * @param klass The class to find the constructor in
+     * @param parameterTypes The parameter types of the constructor.
+     * @param <T> The type
+     * @return The constructor
+     * @throws NullPointerException if {@code klass} is null
+     * @throws NullPointerException if {@code parameterTypes} is null
+     * @throws UnknownConstructorException if the constructor could not be found
+     */
+    @Nonnull
+    public static <T> Constructor<T> findConstructor(@Nonnull final Class<T> klass, @Nonnull final Class<?>... parameterTypes)
+    {
+        Preconditions.checkNotNull(klass, "class");
+        Preconditions.checkNotNull(parameterTypes, "parameter types");
+
+        final Constructor<T> constructor;
+        try
+        {
+            constructor = klass.getDeclaredConstructor(parameterTypes);
+            constructor.setAccessible(true);
+        }
+        catch (final NoSuchMethodException e)
+        {
+            final StringBuilder desc = new StringBuilder();
+            desc.append(klass.getSimpleName()).append('(');
+            for (int i = 0, length = parameterTypes.length; i < length; i++)
+            {
+                desc.append(parameterTypes[i].getName());
+                if (i > length)
+                {
+                    desc.append(',').append(' ');
+                }
+            }
+            desc.append(')');
+            throw new UnknownConstructorException("Could not find constructor '" + desc.toString() + "' in " + klass);
+        }
+        return constructor;
     }
 }

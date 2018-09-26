@@ -7,8 +7,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class InventoryCrafting implements IInventory
 {
@@ -191,7 +189,6 @@ public class InventoryCrafting implements IInventory
         return this.inventoryWidth;
     }
 
-    @SideOnly(Side.CLIENT)
     public void fillStackedContents(RecipeItemHelper helper)
     {
         for (ItemStack itemstack : this.stackList)

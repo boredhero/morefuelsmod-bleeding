@@ -124,7 +124,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
     public ItemStack(NBTTagCompound compound)
     {
         this.capNBT = compound.hasKey("ForgeCaps") ? compound.getCompoundTag("ForgeCaps") : null;
-        this.item = compound.hasKey("id", 8) ? Item.getByNameOrId(compound.getString("id")) : Item.getItemFromBlock(Blocks.AIR); //Forge fix tons of NumberFormatExceptions that are caused by deserializing EMPTY ItemStacks.
+        this.item = compound.hasKey("id", 8) ? Item.getByNameOrId(compound.getString("id")) : Items.AIR; //Forge fix tons of NumberFormatExceptions that are caused by deserializing EMPTY ItemStacks.
         this.stackSize = compound.getByte("Count");
         this.itemDamage = Math.max(0, compound.getShort("Damage"));
 
@@ -148,7 +148,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
         {
             return true;
         }
-        else if (this.getItemRaw() != null && this.getItemRaw() != Item.getItemFromBlock(Blocks.AIR))
+        else if (this.getItemRaw() != null && this.getItemRaw() != Items.AIR)
         {
             if (this.stackSize <= 0)
             {
@@ -188,7 +188,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      */
     public Item getItem()
     {
-        return this.isEmpty || this.delegate == null ? Item.getItemFromBlock(Blocks.AIR) : this.delegate.get();
+        return this.isEmpty || this.delegate == null ? Items.AIR : this.delegate.get();
     }
 
     /**
@@ -1357,6 +1357,7 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
      * Internal call to get the actual item, not the delegate.
      * In all other methods, FML replaces calls to this.item with the item delegate.
      */
+    @Nullable
     private Item getItemRaw()
     {
         return this.item;
@@ -1398,5 +1399,19 @@ public final class ItemStack implements net.minecraftforge.common.capabilities.I
             return shareTagB == null;
         else
             return shareTagB != null && shareTagA.equals(shareTagB);
+    }
+
+    /**
+     *
+     * Should this item, when held, allow sneak-clicks to pass through to the underlying block?
+     *
+     * @param world The world
+     * @param pos Block position in world
+     * @param player The Player that is wielding the item
+     * @return
+     */
+    public boolean doesSneakBypassUse(net.minecraft.world.IBlockAccess world, BlockPos pos, EntityPlayer player)
+    {
+        return this.isEmpty() || this.getItem().doesSneakBypassUse(this, world, pos, player);
     }
 }

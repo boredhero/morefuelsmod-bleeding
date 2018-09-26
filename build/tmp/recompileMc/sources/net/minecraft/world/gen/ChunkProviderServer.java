@@ -36,7 +36,7 @@ public class ChunkProviderServer implements IChunkProvider
     /** map of chunk Id's to Chunk instances */
     public final Long2ObjectMap<Chunk> id2ChunkMap = new Long2ObjectOpenHashMap<Chunk>(8192);
     public final WorldServer world;
-    private Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
+    private final Set<Long> loadingChunks = com.google.common.collect.Sets.newHashSet();
 
     public ChunkProviderServer(WorldServer worldObjIn, IChunkLoader chunkLoaderIn, IChunkGenerator chunkGeneratorIn)
     {
@@ -102,7 +102,7 @@ public class ChunkProviderServer implements IChunkProvider
     }
 
     @Nullable
-    public Chunk loadChunk(int x, int z, Runnable runnable)
+    public Chunk loadChunk(int x, int z, @Nullable Runnable runnable)
     {
         Chunk chunk = this.getLoadedChunk(x, z);
         if (chunk == null)
@@ -126,9 +126,9 @@ public class ChunkProviderServer implements IChunkProvider
             else
             {
                 net.minecraft.world.chunk.storage.AnvilChunkLoader loader = (net.minecraft.world.chunk.storage.AnvilChunkLoader) this.chunkLoader;
-                if (runnable == null)
+                if (runnable == null || !net.minecraftforge.common.ForgeChunkManager.asyncChunkLoading)
                     chunk = net.minecraftforge.common.chunkio.ChunkIOExecutor.syncChunkLoad(this.world, loader, this, x, z);
-                else if (loader.chunkExists(this.world, x, z))
+                else if (loader.isChunkGeneratedAt(x, z))
                 {
                     // We can only use the async queue for already generated chunks
                     net.minecraftforge.common.chunkio.ChunkIOExecutor.queueChunkLoad(this.world, loader, this, x, z, runnable);
@@ -285,18 +285,16 @@ public class ChunkProviderServer implements IChunkProvider
                     if (chunk != null && chunk.unloadQueued)
                     {
                         chunk.onUnload();
+                        net.minecraftforge.common.ForgeChunkManager.putDormantChunk(ChunkPos.asLong(chunk.x, chunk.z), chunk);
                         this.saveChunkData(chunk);
                         this.saveChunkExtraData(chunk);
                         this.id2ChunkMap.remove(olong);
                         ++i;
-                        net.minecraftforge.common.ForgeChunkManager.putDormantChunk(ChunkPos.asLong(chunk.x, chunk.z), chunk);
-                        if (id2ChunkMap.size() == 0 && net.minecraftforge.common.ForgeChunkManager.getPersistentChunksFor(this.world).size() == 0 && !this.world.provider.getDimensionType().shouldLoadSpawn()){
-                            net.minecraftforge.common.DimensionManager.unloadWorld(this.world.provider.getDimension());
-                            break;
-                        }
                     }
                 }
             }
+
+            if (this.id2ChunkMap.isEmpty()) net.minecraftforge.common.DimensionManager.unloadWorld(this.world.provider.getDimension());
 
             this.chunkLoader.chunkTick();
         }

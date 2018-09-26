@@ -227,6 +227,8 @@ public class Template
             for (Template.BlockInfo template$blockinfo : this.blocks)
             {
                 BlockPos blockpos = transformedBlockPos(placementIn, template$blockinfo.pos).add(p_189960_2_);
+                // Forge: skip processing blocks outside BB to prevent cascading worldgen issues
+                if (structureboundingbox != null && !structureboundingbox.isVecInside(blockpos)) continue;
                 Template.BlockInfo template$blockinfo1 = templateProcessor != null ? templateProcessor.processBlock(worldIn, blockpos, template$blockinfo) : template$blockinfo;
 
                 if (template$blockinfo1 != null)
@@ -530,13 +532,13 @@ public class Template
             nbttaglist2.appendTag(NBTUtil.writeBlockState(new NBTTagCompound(), iblockstate));
         }
 
+        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt); //Moved up for MC updating reasons.
         nbt.setTag("palette", nbttaglist2);
         nbt.setTag("blocks", nbttaglist);
         nbt.setTag("entities", nbttaglist1);
         nbt.setTag("size", this.writeInts(this.size.getX(), this.size.getY(), this.size.getZ()));
         nbt.setString("author", this.author);
-        nbt.setInteger("DataVersion", 1139);
-        net.minecraftforge.fml.common.FMLCommonHandler.instance().getDataFixer().writeVersionData(nbt);
+        nbt.setInteger("DataVersion", 1343);
         return nbt;
     }
 

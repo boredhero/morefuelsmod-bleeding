@@ -165,7 +165,8 @@ public class BlockFlowerPot extends BlockContainer
 
     public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
     {
-        return super.canPlaceBlockAt(worldIn, pos) && worldIn.getBlockState(pos.down()).isTopSolid();
+        IBlockState downState = worldIn.getBlockState(pos.down());
+        return super.canPlaceBlockAt(worldIn, pos) && (downState.isTopSolid() || downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) == BlockFaceShape.SOLID);
     }
 
     /**
@@ -175,7 +176,8 @@ public class BlockFlowerPot extends BlockContainer
      */
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
     {
-        if (!worldIn.getBlockState(pos.down()).isTopSolid())
+        IBlockState downState = worldIn.getBlockState(pos.down());
+        if (!downState.isTopSolid() && downState.getBlockFaceShape(worldIn, pos.down(), EnumFacing.UP) != BlockFaceShape.SOLID)
         {
             this.dropBlockAsItem(worldIn, pos, state, 0);
             worldIn.setBlockToAir(pos);

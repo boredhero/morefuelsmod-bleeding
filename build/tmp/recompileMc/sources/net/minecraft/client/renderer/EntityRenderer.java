@@ -320,7 +320,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
             this.mc.setRenderViewEntity(this.mc.player);
         }
 
-        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity()));
+        float f3 = this.mc.world.getLightBrightness(new BlockPos(this.mc.getRenderViewEntity().getPositionEyes(1F))); // Forge: fix MC-51150
         float f4 = (float)this.mc.gameSettings.renderDistanceChunks / 32.0F;
         float f2 = f3 * (1.0F - f4) + f4;
         this.fogColor1 += (f2 - this.fogColor1) * 0.1F;
@@ -927,6 +927,15 @@ public class EntityRenderer implements IResourceManagerReloadListener
                         f10 = 0.25F + f7 * 0.75F;
                     }
 
+                    float[] colors = {f8, f9, f10};
+                    world.provider.getLightmapColors(partialTicks, f, f2, f3, colors);
+                    f8 = colors[0]; f9 = colors[1]; f10 = colors[2];
+
+                    // Forge: fix MC-58177
+                    f8 = MathHelper.clamp(f8, 0f, 1f);
+                    f9 = MathHelper.clamp(f9, 0f, 1f);
+                    f10 = MathHelper.clamp(f10, 0f, 1f);
+
                     if (this.mc.player.isPotionActive(MobEffects.NIGHT_VISION))
                     {
                         float f15 = this.getNightVisionBrightness(this.mc.player, partialTicks);
@@ -1318,7 +1327,7 @@ public class EntityRenderer implements IResourceManagerReloadListener
         GlStateManager.clear(16640);
         this.mc.mcProfiler.endStartSection("camera");
         this.setupCameraTransform(partialTicks, pass);
-        ActiveRenderInfo.updateRenderInfo(this.mc.player, this.mc.gameSettings.thirdPersonView == 2);
+        ActiveRenderInfo.updateRenderInfo(this.mc.getRenderViewEntity(), this.mc.gameSettings.thirdPersonView == 2); //Forge: MC-46445 Spectator mode particles and sounds computed from where you have been before
         this.mc.mcProfiler.endStartSection("frustum");
         ClippingHelperImpl.getInstance();
         this.mc.mcProfiler.endStartSection("culling");
@@ -1371,7 +1380,9 @@ public class EntityRenderer implements IResourceManagerReloadListener
         GlStateManager.disableAlpha();
         renderglobal.renderBlockLayer(BlockRenderLayer.SOLID, (double)partialTicks, pass, entity);
         GlStateManager.enableAlpha();
+        this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, this.mc.gameSettings.mipmapLevels > 0); // FORGE: fix flickering leaves when mods mess up the blurMipmap settings
         renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT_MIPPED, (double)partialTicks, pass, entity);
+        this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
         this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).setBlurMipmap(false, false);
         renderglobal.renderBlockLayer(BlockRenderLayer.CUTOUT, (double)partialTicks, pass, entity);
         this.mc.getTextureManager().getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).restoreLastBlurMipmap();
@@ -1905,6 +1916,9 @@ public class EntityRenderer implements IResourceManagerReloadListener
             {
                 f6 = 1.0F / this.fogColorBlue;
             }
+
+            // Forge: fix MC-4647 and MC-10480
+            if (Float.isInfinite(f6)) f6 = Math.nextAfter(f6, 0.0);
 
             this.fogColorRed = this.fogColorRed * (1.0F - f15) + this.fogColorRed * f6 * f15;
             this.fogColorGreen = this.fogColorGreen * (1.0F - f15) + this.fogColorGreen * f6 * f15;

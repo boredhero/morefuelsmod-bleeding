@@ -19,7 +19,9 @@ import java.util.regex.Pattern;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.ICrashReportDetail;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.network.rcon.IServer;
 import net.minecraft.network.rcon.RConConsoleSource;
 import net.minecraft.network.rcon.RConThreadMain;
@@ -32,6 +34,7 @@ import net.minecraft.server.management.PlayerProfileCache;
 import net.minecraft.server.management.PreYggdrasilConverter;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.CryptManager;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.datafix.DataFixer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -115,7 +118,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
         };
         thread.setDaemon(true);
         thread.start();
-        LOGGER.info("Starting minecraft server version 1.12");
+        LOGGER.info("Starting minecraft server version 1.12.2");
 
         if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L)
         {
@@ -271,6 +274,7 @@ public class DedicatedServer extends MinecraftServer implements IServer
                 long i1 = System.nanoTime() - j;
                 String s3 = String.format("%.3fs", (double)i1 / 1.0E9D);
                 LOGGER.info("Done ({})! For help, type \"help\" or \"?\"", (Object)s3);
+                this.currentTime = getCurrentTimeMillis();
 
                 if (this.settings.hasProperty("announce-player-achievements"))
                 {
@@ -301,6 +305,8 @@ public class DedicatedServer extends MinecraftServer implements IServer
                     thread1.start();
                 }
 
+                Items.AIR.getSubItems(CreativeTabs.SEARCH, NonNullList.create());
+                // <3 you Grum for this, saves us ~30 patch files! --^
                 return net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStarting(this);
             }
         }

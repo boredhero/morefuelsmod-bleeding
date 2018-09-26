@@ -17,10 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
 public class RecipeItemHelper
 {
     /** Map from {@link #pack} packed ids to counts */
@@ -28,10 +25,15 @@ public class RecipeItemHelper
 
     public void accountStack(ItemStack stack)
     {
+        this.accountStack(stack, -1);
+    }
+
+    public void accountStack(ItemStack stack, int forceCount)
+    {
         if (!stack.isEmpty() && !stack.isItemDamaged() && !stack.isItemEnchanted() && !stack.hasDisplayName())
         {
             int i = pack(stack);
-            int j = stack.getCount();
+            int j = forceCount == -1 ? stack.getCount() : forceCount;
             this.increment(i, j);
         }
     }
@@ -98,7 +100,6 @@ public class RecipeItemHelper
         this.itemToCount.clear();
     }
 
-    @SideOnly(Side.CLIENT)
     class RecipePicker
     {
         private final IRecipe recipe;

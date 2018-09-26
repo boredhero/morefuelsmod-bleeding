@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -711,16 +711,16 @@ public class GuiEditArrayEntries extends GuiListExtended
 
     public static interface IArrayEntry extends GuiListExtended.IGuiListEntry
     {
-        public void keyTyped(char eventChar, int eventKey);
+        void keyTyped(char eventChar, int eventKey);
 
-        public void updateCursorCounter();
+        void updateCursorCounter();
 
-        public void mouseClicked(int x, int y, int mouseEvent);
+        void mouseClicked(int x, int y, int mouseEvent);
 
-        public void drawToolTip(int mouseX, int mouseY);
+        void drawToolTip(int mouseX, int mouseY);
 
-        public boolean isValueSavable();
+        boolean isValueSavable();
 
-        public Object getValue();
+        Object getValue();
     }
 }

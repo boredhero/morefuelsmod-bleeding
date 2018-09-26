@@ -159,7 +159,6 @@ public class InventoryPlayer implements IInventory
         return -1;
     }
 
-    @SideOnly(Side.CLIENT)
     public int findSlotMatchingUnusedItem(ItemStack p_194014_1_)
     {
         for (int i = 0; i < this.mainInventory.size(); ++i)
@@ -498,6 +497,8 @@ public class InventoryPlayer implements IInventory
                 CrashReportCategory crashreportcategory = crashreport.makeCategory("Item being added");
                 crashreportcategory.addCrashSection("Item ID", Integer.valueOf(Item.getIdFromItem(p_191971_2_.getItem())));
                 crashreportcategory.addCrashSection("Item data", Integer.valueOf(p_191971_2_.getMetadata()));
+                crashreportcategory.addDetail("Registry Name", () -> String.valueOf(p_191971_2_.getItem().getRegistryName()));
+                crashreportcategory.addDetail("Item Class", () -> p_191971_2_.getItem().getClass().getName());
                 crashreportcategory.addDetail("Item name", new ICrashReportDetail<String>()
                 {
                     public String call() throws Exception
@@ -1001,7 +1002,6 @@ public class InventoryPlayer implements IInventory
         }
     }
 
-    @SideOnly(Side.CLIENT)
     public void fillStackedContents(RecipeItemHelper helper, boolean p_194016_2_)
     {
         for (ItemStack itemstack : this.mainInventory)

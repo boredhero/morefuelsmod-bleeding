@@ -181,7 +181,7 @@ public class ServerPinger
 
         try
         {
-            networkmanager.sendPacket(new C00Handshake(335, serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS, true));
+            networkmanager.sendPacket(new C00Handshake(serveraddress.getIP(), serveraddress.getPort(), EnumConnectionState.STATUS, true));
             networkmanager.sendPacket(new CPacketServerQuery());
         }
         catch (Throwable throwable)

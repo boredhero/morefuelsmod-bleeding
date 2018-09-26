@@ -1052,6 +1052,14 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
         items.add(new ItemStack(this));
     }
 
+    /**
+     * Returns the CreativeTab to display the given block on.
+     */
+    public CreativeTabs getCreativeTabToDisplayOn()
+    {
+        return this.displayOnCreativeTab;
+    }
+
     public Block setCreativeTab(CreativeTabs tab)
     {
         this.displayOnCreativeTab = tab;
@@ -1064,14 +1072,6 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
      */
     public void onBlockHarvested(World worldIn, BlockPos pos, IBlockState state, EntityPlayer player)
     {
-    }
-
-    /**
-     * Returns the CreativeTab to display the given block on.
-     */
-    public CreativeTabs getCreativeTabToDisplayOn()
-    {
-        return this.displayOnCreativeTab;
     }
 
     /**
@@ -1795,7 +1795,7 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
      */
     public boolean canPlaceTorchOnTop(IBlockState state, IBlockAccess world, BlockPos pos)
     {
-        if (state.getBlockFaceShape(world, pos, EnumFacing.UP) == BlockFaceShape.SOLID)
+        if (state.isTopSolid() || state.getBlockFaceShape(world, pos, EnumFacing.UP) == BlockFaceShape.SOLID)
         {
             return this != Blocks.END_GATEWAY && this != Blocks.LIT_PUMPKIN;
         }
@@ -1840,6 +1840,23 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
      * @return True to prevent vanilla landing particles form spawning.
      */
     public boolean addLandingEffects(IBlockState state, net.minecraft.world.WorldServer worldObj, BlockPos blockPosition, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles )
+    {
+        return false;
+    }
+
+    /**
+     * Allows a block to override the standard vanilla running particles.
+     * This is called from {@link Entity#spawnRunningParticles} and is called both,
+     * Client and server side, it's up to the implementor to client check / server check.
+     * By default vanilla spawns particles only on the client and the server methods no-op.
+     *
+     * @param state  The BlockState the entity is running on.
+     * @param world  The world.
+     * @param pos    The position at the entities feet.
+     * @param entity The entity running on the block.
+     * @return True to prevent vanilla running particles from spawning.
+     */
+    public boolean addRunningEffects(IBlockState state, World world, BlockPos pos, Entity entity)
     {
         return false;
     }
@@ -2147,7 +2164,7 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
             if (prop.getName().equals("color") && prop.getValueClass() == net.minecraft.item.EnumDyeColor.class)
             {
                 net.minecraft.item.EnumDyeColor current = (net.minecraft.item.EnumDyeColor)state.getValue(prop);
-                if (current != color)
+                if (current != color && prop.getAllowedValues().contains(color))
                 {
                     world.setBlockState(pos, state.withProperty(prop, color));
                     return true;
@@ -2330,6 +2347,20 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
      {
          return null;
      }
+     
+     /**
+      * Called when entities are moving to check if they are inside a liquid
+      *
+      * @param world world that is being tested.
+      * @param pos block thats being tested.
+      * @param boundingBox box to test, generally the bounds of an entity that are besting tested.
+      * @return null for default behavior, true if the box is within the material, false if it was not.
+      */
+     @Nullable
+     public Boolean isAABBInsideLiquid(World world, BlockPos pos, AxisAlignedBB boundingBox)
+     {
+         return null;
+     }
 
      /**
      * Queries if this block should render in a given layer.
@@ -2421,6 +2452,22 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
     }
 
     /**
+     * Used to determine the state 'viewed' by an entity (see
+     * {@link net.minecraft.client.renderer.ActiveRenderInfo#getBlockStateAtEntityViewpoint(World, Entity, float)}).
+     * Can be used by fluid blocks to determine if the viewpoint is within the fluid or not.
+     *
+     * @param state     the state
+     * @param world     the world
+     * @param pos       the position
+     * @param viewpoint the viewpoint
+     * @return the block state that should be 'seen'
+     */
+    public IBlockState getStateAtViewpoint(IBlockState state, IBlockAccess world, BlockPos pos, Vec3d viewpoint)
+    {
+        return state;
+    }
+
+    /**
      * Gets the {@link IBlockState} to place
      * @param world The world the block is being placed in
      * @param pos The position the block is being placed at
@@ -2460,6 +2507,33 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
     public net.minecraft.pathfinding.PathNodeType getAiPathNodeType(IBlockState state, IBlockAccess world, BlockPos pos)
     {
         return isBurning(world, pos) ? net.minecraft.pathfinding.PathNodeType.DAMAGE_FIRE : null;
+    }
+
+    /**
+     * @param blockState The state for this block
+     * @param world The world this block is in
+     * @param pos The position of this block
+     * @param side The side of this block that the chest lid is trying to open into
+     * @return true if the chest should be prevented from opening by this block
+     */
+    public boolean doesSideBlockChestOpening(IBlockState blockState, IBlockAccess world, BlockPos pos, EnumFacing side)
+    {
+        ResourceLocation registryName = this.getRegistryName();
+        if (registryName != null && "minecraft".equals(registryName.getResourceDomain()))
+        {
+            // maintain the vanilla behavior of https://bugs.mojang.com/browse/MC-378
+            return isNormalCube(blockState, world, pos);
+        }
+        return isSideSolid(blockState, world, pos, side);
+    }
+
+    /**
+     * @param state The state
+     * @return true if the block is sticky block which used for pull or push adjacent blocks (use by piston)
+     */
+    public boolean isStickyBlock(IBlockState state)
+    {
+        return state.getBlock() == Blocks.SLIME_BLOCK;
     }
 
     /* ========================================= FORGE END ======================================*/
@@ -2635,7 +2709,7 @@ public class Block extends net.minecraftforge.registries.IForgeRegistryEntry.Imp
         Block block11 = (new BlockQuartz()).setSoundType(SoundType.STONE).setHardness(0.8F).setUnlocalizedName("quartzBlock");
         registerBlock(155, "quartz_block", block11);
         registerBlock(156, "quartz_stairs", (new BlockStairs(block11.getDefaultState().withProperty(BlockQuartz.VARIANT, BlockQuartz.EnumType.DEFAULT))).setUnlocalizedName("stairsQuartz"));
-        registerBlock(157, "activator_rail", (new BlockRailPowered()).setHardness(0.7F).setSoundType(SoundType.METAL).setUnlocalizedName("activatorRail"));
+        registerBlock(157, "activator_rail", (new BlockRailPowered(true)).setHardness(0.7F).setSoundType(SoundType.METAL).setUnlocalizedName("activatorRail"));
         registerBlock(158, "dropper", (new BlockDropper()).setHardness(3.5F).setSoundType(SoundType.STONE).setUnlocalizedName("dropper"));
         registerBlock(159, "stained_hardened_clay", (new BlockStainedHardenedClay()).setHardness(1.25F).setResistance(7.0F).setSoundType(SoundType.STONE).setUnlocalizedName("clayHardenedStained"));
         registerBlock(160, "stained_glass_pane", (new BlockStainedGlassPane()).setHardness(0.3F).setSoundType(SoundType.GLASS).setUnlocalizedName("thinStainedGlass"));

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,6 +52,7 @@ import net.minecraft.util.FoodStats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
@@ -71,6 +72,7 @@ public class GuiIngameForge extends GuiIngame
     //Flags to toggle the rendering of certain aspects of the HUD, valid conditions
     //must be met for them to render normally. If those conditions are met, but this flag
     //is false, they will not be rendered.
+    public static boolean renderVignette = true;
     public static boolean renderHelmet = true;
     public static boolean renderPortal = true;
     public static boolean renderHotbar = true;
@@ -120,7 +122,7 @@ public class GuiIngameForge extends GuiIngame
         mc.entityRenderer.setupOverlayRendering();
         GlStateManager.enableBlend();
 
-        if (Minecraft.isFancyGraphicsEnabled())
+        if (renderVignette && Minecraft.isFancyGraphicsEnabled())
         {
             renderVignette(mc.player.getBrightness(), res);
         }
@@ -247,6 +249,23 @@ public class GuiIngameForge extends GuiIngame
         post(BOSSHEALTH);
     }
 
+    /**
+     * Renders a Vignette arount the entire screen that changes with light level.
+     */
+    @Override
+    protected void renderVignette(float lightLevel, ScaledResolution scaledRes)
+    {
+        if (pre(VIGNETTE))
+        {
+            // Need to put this here, since Vanilla assumes this state after the vignette was rendered.
+            GlStateManager.enableDepth();
+            GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+            return;
+        }
+        super.renderVignette(lightLevel, scaledRes);
+        post(VIGNETTE);
+    }
+
     private void renderHelmet(ScaledResolution res, float partialTicks)
     {
         if (pre(HELMET)) return;
@@ -331,6 +350,12 @@ public class GuiIngameForge extends GuiIngame
         }
 
         post(HOTBAR);
+    }
+
+    @Override
+    public void setOverlayMessage(ITextComponent component, boolean animateColor)
+    {
+        this.setOverlayMessage(component.getFormattedText(), animateColor);
     }
 
     protected void renderAir(int width, int height)

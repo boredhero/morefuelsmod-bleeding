@@ -117,6 +117,7 @@ public class BlockBush extends Block implements net.minecraftforge.common.IPlant
         if (this == Blocks.WHEAT)          return net.minecraftforge.common.EnumPlantType.Crop;
         if (this == Blocks.CARROTS)        return net.minecraftforge.common.EnumPlantType.Crop;
         if (this == Blocks.POTATOES)       return net.minecraftforge.common.EnumPlantType.Crop;
+        if (this == Blocks.BEETROOTS)      return net.minecraftforge.common.EnumPlantType.Crop;
         if (this == Blocks.MELON_STEM)     return net.minecraftforge.common.EnumPlantType.Crop;
         if (this == Blocks.PUMPKIN_STEM)   return net.minecraftforge.common.EnumPlantType.Crop;
         if (this == Blocks.DEADBUSH)       return net.minecraftforge.common.EnumPlantType.Desert;

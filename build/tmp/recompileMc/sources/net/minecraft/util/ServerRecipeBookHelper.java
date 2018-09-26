@@ -35,7 +35,7 @@ public class ServerRecipeBookHelper
 
     public void func_194327_a(EntityPlayerMP p_194327_1_, @Nullable IRecipe p_194327_2_, boolean p_194327_3_)
     {
-        if (p_194327_2_ != null && p_194327_1_.getRecipeBook().isUnlocked(p_194327_2_))
+        if (p_194327_2_ != null && p_194327_1_.getRecipeBook().containsRecipe(p_194327_2_))
         {
             this.field_194332_c = p_194327_1_;
             this.field_194333_d = p_194327_2_;

@@ -1,6 +1,7 @@
 package net.minecraft.stats;
 
 import java.util.BitSet;
+import javax.annotation.Nullable;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.fml.relauncher.Side;
@@ -30,7 +31,7 @@ public class RecipeBook
         }
     }
 
-    public boolean containsRecipe(IRecipe recipe)
+    public boolean containsRecipe(@Nullable IRecipe recipe)
     {
         return this.recipes.get(getRecipeId(recipe));
     }
@@ -43,7 +44,7 @@ public class RecipeBook
     }
 
     @Deprecated //DO NOT USE
-    protected static int getRecipeId(IRecipe recipe)
+    protected static int getRecipeId(@Nullable IRecipe recipe)
     {
         int ret = CraftingManager.REGISTRY.getIDForObject(recipe);
         if (ret == -1)

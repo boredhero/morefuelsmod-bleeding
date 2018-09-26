@@ -264,7 +264,6 @@ public abstract class CreativeTabs
     /**
      * Returns the enchantment types relevant to this tab
      */
-    @SideOnly(Side.CLIENT)
     public EnumEnchantmentType[] getRelevantEnchantmentTypes()
     {
         return this.enchantmentTypes;
@@ -279,7 +278,6 @@ public abstract class CreativeTabs
         return this;
     }
 
-    @SideOnly(Side.CLIENT)
     public boolean hasRelevantEnchantmentType(@Nullable EnumEnchantmentType enchantmentType)
     {
         if (enchantmentType != null)
@@ -341,5 +339,11 @@ public abstract class CreativeTabs
     public int getSearchbarWidth()
     {
         return 89;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public net.minecraft.util.ResourceLocation getBackgroundImage()
+    {
+        return new net.minecraft.util.ResourceLocation("textures/gui/container/creative_inventory/tab_" + this.getBackgroundImageName());
     }
 }

@@ -499,7 +499,7 @@ public class BlockChest extends BlockContainer
 
                     if (block == this)
                     {
-                        if (this.isBlocked(worldIn, blockpos))
+                        if (!allowBlocking && this.isBlocked(worldIn, blockpos)) // Forge: fix MC-99321
                         {
                             return null;
                         }
@@ -573,7 +573,7 @@ public class BlockChest extends BlockContainer
 
     private boolean isBelowSolidBlock(World worldIn, BlockPos pos)
     {
-        return worldIn.getBlockState(pos.up()).isSideSolid(worldIn, pos.up(), EnumFacing.DOWN);
+        return worldIn.getBlockState(pos.up()).doesSideBlockChestOpening(worldIn, pos.up(), EnumFacing.DOWN);
     }
 
     private boolean isOcelotSittingOnChest(World worldIn, BlockPos pos)

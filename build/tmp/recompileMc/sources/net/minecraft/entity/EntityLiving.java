@@ -647,7 +647,7 @@ public abstract class EntityLiving extends EntityLivingBase
         super.onLivingUpdate();
         this.world.profiler.startSection("looting");
 
-        if (!this.world.isRemote && this.canPickUpLoot() && !this.dead && this.world.getGameRules().getBoolean("mobGriefing"))
+        if (!this.world.isRemote && this.canPickUpLoot() && !this.dead && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.world, this))
         {
             for (EntityItem entityitem : this.world.getEntitiesWithinAABB(EntityItem.class, this.getEntityBoundingBox().grow(1.0D, 0.0D, 1.0D)))
             {
@@ -1114,6 +1114,8 @@ public abstract class EntityLiving extends EntityLivingBase
 
     public static EntityEquipmentSlot getSlotForItemStack(ItemStack stack)
     {
+        final EntityEquipmentSlot slot = stack.getItem().getEquipmentSlot(stack);
+        if (slot != null) return slot; // FORGE: Allow modders to set a non-default equipment slot for a stack; e.g. a non-armor chestplate-slot item
         if (stack.getItem() != Item.getItemFromBlock(Blocks.PUMPKIN) && stack.getItem() != Items.SKULL)
         {
             if (stack.getItem() instanceof ItemArmor)
@@ -1592,5 +1594,19 @@ public abstract class EntityLiving extends EntityLivingBase
         ON_GROUND,
         IN_AIR,
         IN_WATER;
+
+        private final java.util.function.BiPredicate<net.minecraft.world.IBlockAccess, BlockPos> spawnPredicate;
+
+        SpawnPlacementType() { this.spawnPredicate = null; }
+
+        SpawnPlacementType(java.util.function.BiPredicate<net.minecraft.world.IBlockAccess, BlockPos> spawnPredicate)
+        {
+            this.spawnPredicate = spawnPredicate;
+        }
+
+        public boolean canSpawnAt(World world, BlockPos pos)
+        {
+            return this.spawnPredicate != null ? this.spawnPredicate.test(world, pos) : net.minecraft.world.WorldEntitySpawner.canCreatureTypeSpawnBody(this, world, pos);
+        }
     }
 }

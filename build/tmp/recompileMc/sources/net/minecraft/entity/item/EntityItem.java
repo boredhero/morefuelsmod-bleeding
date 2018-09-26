@@ -434,14 +434,16 @@ public class EntityItem extends Entity
 
             int hook = net.minecraftforge.event.ForgeEventFactory.onItemPickup(this, entityIn);
             if (hook < 0) return;
+            ItemStack clone = itemstack.copy();
 
-            if (this.delayBeforeCanPickup <= 0 && (this.owner == null || lifespan - this.age <= 200 || this.owner.equals(entityIn.getName())) && (hook == 1 || i <= 0 || entityIn.inventory.addItemStackToInventory(itemstack)))
+            if (this.delayBeforeCanPickup <= 0 && (this.owner == null || lifespan - this.age <= 200 || this.owner.equals(entityIn.getName())) && (hook == 1 || i <= 0 || entityIn.inventory.addItemStackToInventory(itemstack) || clone.getCount() > this.getItem().getCount()))
             {
-                net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerItemPickupEvent(entityIn, this);
-                entityIn.onItemPickup(this, i);
+                clone.setCount(clone.getCount() - this.getItem().getCount());
+                net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerItemPickupEvent(entityIn, this, clone);
 
                 if (itemstack.isEmpty())
                 {
+                    entityIn.onItemPickup(this, i);
                     this.setDead();
                     itemstack.setCount(i);
                 }
@@ -468,9 +470,9 @@ public class EntityItem extends Entity
     }
 
     @Nullable
-    public Entity changeDimension(int dimensionIn)
+    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
     {
-        Entity entity = super.changeDimension(dimensionIn);
+        Entity entity = super.changeDimension(dimensionIn, teleporter);
 
         if (!this.world.isRemote && entity instanceof EntityItem)
         {

@@ -184,9 +184,9 @@ public class BlockFluidRenderer
 
                 if (!flag)
                 {
-                    Block block = blockAccess.getBlockState(blockpos).getBlock();
+                    IBlockState state = blockAccess.getBlockState(blockpos);
 
-                    if (block == Blocks.GLASS || block == Blocks.STAINED_GLASS)
+                    if (state.getBlockFaceShape(blockAccess, blockpos, EnumFacing.VALUES[i1+2].getOpposite()) == net.minecraft.block.state.BlockFaceShape.SOLID)
                     {
                         textureatlassprite1 = this.atlasSpriteWaterOverlay;
                     }

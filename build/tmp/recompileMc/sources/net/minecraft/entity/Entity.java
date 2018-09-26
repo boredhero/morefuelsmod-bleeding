@@ -1413,6 +1413,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
         BlockPos blockpos = new BlockPos(i, j, k);
         IBlockState iblockstate = this.world.getBlockState(blockpos);
 
+        if(!iblockstate.getBlock().addRunningEffects(iblockstate, world, blockpos, this))
         if (iblockstate.getRenderType() != EnumBlockRenderType.INVISIBLE)
         {
             this.world.spawnParticle(EnumParticleTypes.BLOCK_CRACK, this.posX + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, this.getEntityBoundingBox().minY + 0.1D, this.posZ + ((double)this.rand.nextFloat() - 0.5D) * (double)this.width, -this.motionX * 4.0D, 1.5D, -this.motionZ * 4.0D, Block.getStateId(iblockstate));
@@ -2897,6 +2898,13 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     @Nullable
     public Entity changeDimension(int dimensionIn)
     {
+        if (this.world.isRemote || this.isDead) return null;
+        return changeDimension(dimensionIn, this.getServer().getWorld(dimensionIn).getDefaultTeleporter());
+    }
+
+    @Nullable // Forge: Entities that require custom handling should override this method, not the other
+    public Entity changeDimension(int dimensionIn, net.minecraftforge.common.util.ITeleporter teleporter)
+    {
         if (!this.world.isRemote && !this.isDead)
         {
             if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, dimensionIn)) return null;
@@ -2907,7 +2915,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             WorldServer worldserver1 = minecraftserver.getWorld(dimensionIn);
             this.dimension = dimensionIn;
 
-            if (i == 1 && dimensionIn == 1)
+            if (i == 1 && dimensionIn == 1 && teleporter.isVanilla())
             {
                 worldserver1 = minecraftserver.getWorld(0);
                 this.dimension = 0;
@@ -2918,22 +2926,23 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             this.world.profiler.startSection("reposition");
             BlockPos blockpos;
 
-            if (dimensionIn == 1)
+            if (dimensionIn == 1 && teleporter.isVanilla())
             {
                 blockpos = worldserver1.getSpawnCoordinate();
             }
             else
             {
-                double d0 = this.posX;
-                double d1 = this.posZ;
+                double moveFactor = worldserver.provider.getMovementFactor() / worldserver1.provider.getMovementFactor();
+                double d0 = MathHelper.clamp(this.posX * moveFactor, worldserver1.getWorldBorder().minX() + 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
+                double d1 = MathHelper.clamp(this.posZ * moveFactor, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
                 double d2 = 8.0D;
 
-                if (dimensionIn == -1)
+                if (false && dimensionIn == -1)
                 {
                     d0 = MathHelper.clamp(d0 / 8.0D, worldserver1.getWorldBorder().minX() + 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
                     d1 = MathHelper.clamp(d1 / 8.0D, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
                 }
-                else if (dimensionIn == 0)
+                else if (false && dimensionIn == 0)
                 {
                     d0 = MathHelper.clamp(d0 * 8.0D, worldserver1.getWorldBorder().minX() + 16.0D, worldserver1.getWorldBorder().maxX() - 16.0D);
                     d1 = MathHelper.clamp(d1 * 8.0D, worldserver1.getWorldBorder().minZ() + 16.0D, worldserver1.getWorldBorder().maxZ() - 16.0D);
@@ -2943,8 +2952,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
                 d1 = (double)MathHelper.clamp((int)d1, -29999872, 29999872);
                 float f = this.rotationYaw;
                 this.setLocationAndAngles(d0, this.posY, d1, 90.0F, 0.0F);
-                Teleporter teleporter = worldserver1.getDefaultTeleporter();
-                teleporter.placeInExistingPortal(this, f);
+                teleporter.placeEntity(worldserver1, this, f);
                 blockpos = new BlockPos(this);
             }
 
@@ -2956,7 +2964,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
             {
                 entity.copyDataFromOld(this);
 
-                if (i == 1 && dimensionIn == 1)
+                if (i == 1 && dimensionIn == 1 && teleporter.isVanilla())
                 {
                     BlockPos blockpos1 = worldserver1.getTopSolidOrLiquidBlock(worldserver1.getSpawnPoint());
                     entity.moveToBlockPosAndAngles(blockpos1, entity.rotationYaw, entity.rotationPitch);
@@ -3453,6 +3461,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     /**
      * Reset the entity ID to a new value. Not to be used from Mod code
      */
+    @Deprecated // TODO: remove (1.13?)
     public final void resetEntityId()
     {
         this.entityId = nextEntityID++;
@@ -3500,9 +3509,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     @Override
     public boolean hasCapability(net.minecraftforge.common.capabilities.Capability<?> capability, @Nullable net.minecraft.util.EnumFacing facing)
     {
-        if (getCapability(capability, facing) != null)
-            return true;
-        return capabilities == null ? false : capabilities.hasCapability(capability, facing);
+        return capabilities != null && capabilities.hasCapability(capability, facing);
     }
 
     @Override
@@ -3537,7 +3544,7 @@ public abstract class Entity implements ICommandSender, net.minecraftforge.commo
     {
         return world.rand.nextFloat() < fallDistance - 0.5F
             && this instanceof EntityLivingBase
-            && (this instanceof EntityPlayer || world.getGameRules().getBoolean("mobGriefing"))
+            && (this instanceof EntityPlayer || net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(world, this))
             && this.width * this.width * this.height > 0.512F;
     }
     /* ================================== Forge End =====================================*/

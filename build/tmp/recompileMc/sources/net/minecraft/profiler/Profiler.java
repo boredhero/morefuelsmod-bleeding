@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -49,6 +50,14 @@ public class Profiler
             this.profilingSection = this.profilingSection + name;
             this.sectionList.add(this.profilingSection);
             this.timestampList.add(Long.valueOf(System.nanoTime()));
+        }
+    }
+
+    public void func_194340_a(Supplier<String> p_194340_1_)
+    {
+        if (this.profilingEnabled)
+        {
+            this.startSection(p_194340_1_.get());
         }
     }
 
@@ -164,6 +173,13 @@ public class Profiler
     public String getNameOfLastSection()
     {
         return this.sectionList.isEmpty() ? "[UNKNOWN]" : (String)this.sectionList.get(this.sectionList.size() - 1);
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void func_194339_b(Supplier<String> p_194339_1_)
+    {
+        this.endSection();
+        this.func_194340_a(p_194339_1_);
     }
 
     public static final class Result implements Comparable<Profiler.Result>

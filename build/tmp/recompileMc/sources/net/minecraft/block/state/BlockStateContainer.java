@@ -519,6 +519,7 @@ public class BlockStateContainer
             }
 
             //Forge Start
+            @Override
             public ImmutableTable<IProperty<?>, Comparable<?>, IBlockState> getPropertyValueTable()
             {
                 return propertyValueTable;
@@ -536,9 +537,16 @@ public class BlockStateContainer
                 return this.block.getLightValue(this, world, pos);
             }
 
+            @Override
             public boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side)
             {
                 return this.block.isSideSolid(this, world, pos, side);
+            }
+
+            @Override
+            public boolean doesSideBlockChestOpening(IBlockAccess world, BlockPos pos, EnumFacing side)
+            {
+                return this.block.doesSideBlockChestOpening(this, world, pos, side);
             }
 
             @Override

@@ -324,7 +324,7 @@ public class GameSettings
                 this.mc.getTextureMapBlocks().setMipmapLevels(this.mipmapLevels);
                 this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
                 this.mc.getTextureMapBlocks().setBlurMipmapDirect(false, this.mipmapLevels > 0);
-                this.needsResourceRefresh = true; // FORGE: fix for MC-64581 very laggy mipmap slider
+                this.needsBlockModelRefresh = true; // FORGE: fix for MC-64581 very laggy mipmap slider
             }
         }
 
@@ -389,7 +389,7 @@ public class GameSettings
         if (settingsOption == GameSettings.Options.ANAGLYPH)
         {
             this.anaglyph = !this.anaglyph;
-            this.mc.refreshResources();
+            net.minecraftforge.fml.client.FMLClientHandler.instance().refreshResources(net.minecraftforge.client.resource.VanillaResourceType.TEXTURES);
         }
 
         if (settingsOption == GameSettings.Options.GRAPHICS)
@@ -1187,7 +1187,7 @@ public class GameSettings
         try
         {
             printwriter = new PrintWriter(new OutputStreamWriter(new FileOutputStream(this.optionsFile), StandardCharsets.UTF_8));
-            printwriter.println("version:1139");
+            printwriter.println("version:1343");
             printwriter.println("invertYMouse:" + this.invertMouse);
             printwriter.println("mouseSensitivity:" + this.mouseSensitivity);
             printwriter.println("fov:" + (this.fovSetting - 70.0F) / 40.0F);
@@ -1521,13 +1521,13 @@ public class GameSettings
     }
 
     // FORGE: fix for MC-64581 very laggy mipmap slider
-    private boolean needsResourceRefresh = false;
+    private boolean needsBlockModelRefresh = false;
     public void onGuiClosed()
     {
-        if (needsResourceRefresh)
+        if (needsBlockModelRefresh)
         {
-            this.mc.scheduleResourcesRefresh();
-            this.needsResourceRefresh = false;
+            net.minecraftforge.fml.client.FMLClientHandler.instance().scheduleResourcesRefresh(net.minecraftforge.client.resource.VanillaResourceType.MODELS);
+            this.needsBlockModelRefresh = false;
         }
     }
     /******* Forge End ***********/

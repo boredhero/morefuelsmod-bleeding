@@ -281,7 +281,7 @@ public abstract class EntityArrow extends Entity implements IProjectile
                 }
             }
 
-            if (raytraceresult != null)
+            if (raytraceresult != null && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult))
             {
                 this.onHit(raytraceresult);
             }

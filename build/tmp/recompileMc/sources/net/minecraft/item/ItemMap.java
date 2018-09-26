@@ -254,13 +254,13 @@ public class ItemMap extends ItemMapBase
      */
     public static void renderBiomePreviewMap(World worldIn, ItemStack map)
     {
-        if (map.getItem() == Items.FILLED_MAP)
+        if (map.getItem() instanceof ItemMap)
         {
-            MapData mapdata = Items.FILLED_MAP.getMapData(map, worldIn);
+            MapData mapdata = ((ItemMap) map.getItem()).getMapData(map, worldIn);
 
             if (mapdata != null)
             {
-                if (worldIn.provider.getDimensionType().getId() == mapdata.dimension)
+                if (worldIn.provider.getDimension() == mapdata.dimension)
                 {
                     int i = 1 << mapdata.scale;
                     int j = mapdata.xCenter;

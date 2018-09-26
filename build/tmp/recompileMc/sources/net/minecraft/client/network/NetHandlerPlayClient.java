@@ -48,6 +48,7 @@ import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.gui.IProgressMeter;
 import net.minecraft.client.gui.MapItemRenderer;
 import net.minecraft.client.gui.inventory.GuiContainerCreative;
+import net.minecraft.client.gui.recipebook.GuiRecipeBook;
 import net.minecraft.client.gui.recipebook.IRecipeShownListener;
 import net.minecraft.client.gui.toasts.RecipeToast;
 import net.minecraft.client.multiplayer.ClientAdvancementManager;
@@ -174,6 +175,7 @@ import net.minecraft.network.play.server.SPacketMoveVehicle;
 import net.minecraft.network.play.server.SPacketMultiBlockChange;
 import net.minecraft.network.play.server.SPacketOpenWindow;
 import net.minecraft.network.play.server.SPacketParticles;
+import net.minecraft.network.play.server.SPacketPlaceGhostRecipe;
 import net.minecraft.network.play.server.SPacketPlayerAbilities;
 import net.minecraft.network.play.server.SPacketPlayerListHeaderFooter;
 import net.minecraft.network.play.server.SPacketPlayerListItem;
@@ -323,7 +325,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         this.gameController.gameSettings.difficulty = packetIn.getDifficulty();
         this.gameController.loadWorld(this.clientWorldController);
         this.gameController.player.dimension = packetIn.getDimension();
-        this.gameController.displayGuiScreen(new GuiDownloadTerrain(this));
+        this.gameController.displayGuiScreen(new GuiDownloadTerrain());
         this.gameController.player.setEntityId(packetIn.getPlayerId());
         this.currentServerMaxPlayers = packetIn.getMaxPlayers();
         this.gameController.player.setReducedDebug(packetIn.isReducedDebugInfo());
@@ -819,7 +821,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
         chunk.read(packetIn.getReadBuffer(), packetIn.getExtractedSize(), packetIn.isFullChunk());
         this.clientWorldController.markBlockRangeForRenderUpdate(packetIn.getChunkX() << 4, 0, packetIn.getChunkZ() << 4, (packetIn.getChunkX() << 4) + 15, 256, (packetIn.getChunkZ() << 4) + 15);
 
-        if (!packetIn.isFullChunk() || !(this.clientWorldController.provider instanceof WorldProviderSurface))
+        if (!packetIn.isFullChunk() || this.clientWorldController.provider.shouldClientCheckLighting())
         {
             chunk.resetRelightChecks();
         }
@@ -1158,7 +1160,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             this.clientWorldController.setWorldScoreboard(scoreboard);
             this.gameController.loadWorld(this.clientWorldController);
             this.gameController.player.dimension = packetIn.getDimensionID();
-            this.gameController.displayGuiScreen(new GuiDownloadTerrain(this));
+            this.gameController.displayGuiScreen(new GuiDownloadTerrain());
         }
 
         this.gameController.setDimensionAndSpawnPlayer(packetIn.getDimensionID());
@@ -1452,7 +1454,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             if (j == 0)
             {
                 this.gameController.player.connection.sendPacket(new CPacketClientStatus(CPacketClientStatus.State.PERFORM_RESPAWN));
-                this.gameController.displayGuiScreen(new GuiDownloadTerrain(this));
+                this.gameController.displayGuiScreen(new GuiDownloadTerrain());
             }
             else if (j == 1)
             {
@@ -2025,6 +2027,7 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
             }
             finally
             {
+                if (false) // Forge: let packet handle releasing buffer
                 packetbuffer.release();
             }
         }
@@ -2290,6 +2293,21 @@ public class NetHandlerPlayClient implements INetHandlerPlayClient
                         iattributeinstance.applyModifier(attributemodifier);
                     }
                 }
+            }
+        }
+    }
+
+    public void func_194307_a(SPacketPlaceGhostRecipe p_194307_1_)
+    {
+        PacketThreadUtil.checkThreadAndEnqueue(p_194307_1_, this, this.gameController);
+        Container container = this.gameController.player.openContainer;
+
+        if (container.windowId == p_194307_1_.func_194313_b() && container.getCanCraft(this.gameController.player))
+        {
+            if (this.gameController.currentScreen instanceof IRecipeShownListener)
+            {
+                GuiRecipeBook guirecipebook = ((IRecipeShownListener)this.gameController.currentScreen).func_194310_f();
+                guirecipebook.setupGhostRecipe(p_194307_1_.func_194311_a(), container.inventorySlots);
             }
         }
     }

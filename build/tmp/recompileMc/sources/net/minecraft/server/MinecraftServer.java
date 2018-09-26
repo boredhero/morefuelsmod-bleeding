@@ -33,6 +33,7 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.advancements.AdvancementManager;
@@ -165,7 +166,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     private long nanoTimeSinceStatusRefresh;
     public final Queue < FutureTask<? >> futureTaskQueue = Queues. < FutureTask<? >> newArrayDeque();
     private Thread serverThread;
-    private long currentTime = getCurrentTimeMillis();
+    protected long currentTime = getCurrentTimeMillis();
     @SideOnly(Side.CLIENT)
     private boolean worldIconSet;
 
@@ -527,6 +528,8 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         {
             this.usageSnooper.stopSnooper();
         }
+
+        CommandBase.setCommandListener(null); // Forge: fix MC-128561
     }
 
     public boolean isServerRunning()
@@ -552,7 +555,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 this.currentTime = getCurrentTimeMillis();
                 long i = 0L;
                 this.statusResponse.setServerDescription(new TextComponentString(this.motd));
-                this.statusResponse.setVersion(new ServerStatusResponse.Version("1.12", 335));
+                this.statusResponse.setVersion(new ServerStatusResponse.Version("1.12.2", 340));
                 this.applyServerIconToResponse(this.statusResponse);
 
                 while (this.serverRunning)
@@ -640,7 +643,6 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             try
             {
                 this.stopServer();
-                this.serverStopped = true;
             }
             catch (Throwable throwable)
             {
@@ -676,6 +678,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 ImageIO.write(bufferedimage, "PNG", new ByteBufOutputStream(bytebuf));
                 ByteBuf bytebuf1 = Base64.encode(bytebuf);
                 response.setFavicon("data:image/png;base64," + bytebuf1.toString(StandardCharsets.UTF_8));
+                bytebuf1.release(); // Forge: fix MC-122085
             }
             catch (Exception exception)
             {
@@ -808,7 +811,10 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             if (id == 0 || this.getAllowNether())
             {
                 WorldServer worldserver = net.minecraftforge.common.DimensionManager.getWorld(id);
-                this.profiler.startSection(worldserver.getWorldInfo().getWorldName());
+                this.profiler.func_194340_a(() ->
+                {
+                    return worldserver.getWorldInfo().getWorldName();
+                });
 
                 if (this.tickCounter % 20 == 0)
                 {
@@ -904,7 +910,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public WorldServer getWorld(int dimension)
     {
-        WorldServer ret = net.minecraftforge.common.DimensionManager.getWorld(dimension);
+        WorldServer ret = net.minecraftforge.common.DimensionManager.getWorld(dimension, true);
         if (ret == null)
         {
             net.minecraftforge.common.DimensionManager.initDimension(dimension);
@@ -918,7 +924,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public String getMinecraftVersion()
     {
-        return "1.12";
+        return "1.12.2";
     }
 
     /**
@@ -1126,24 +1132,24 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
     public void setDifficultyForAllWorlds(EnumDifficulty difficulty)
     {
-        for (WorldServer worldserver : this.worlds)
+        for (WorldServer worldserver1 : this.worlds)
         {
-            if (worldserver != null)
+            if (worldserver1 != null)
             {
-                if (worldserver.getWorldInfo().isHardcoreModeEnabled())
+                if (worldserver1.getWorldInfo().isHardcoreModeEnabled())
                 {
-                    worldserver.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
-                    worldserver.setAllowedSpawnTypes(true, true);
+                    worldserver1.getWorldInfo().setDifficulty(EnumDifficulty.HARD);
+                    worldserver1.setAllowedSpawnTypes(true, true);
                 }
                 else if (this.isSinglePlayer())
                 {
-                    worldserver.getWorldInfo().setDifficulty(difficulty);
-                    worldserver.setAllowedSpawnTypes(worldserver.getDifficulty() != EnumDifficulty.PEACEFUL, true);
+                    worldserver1.getWorldInfo().setDifficulty(difficulty);
+                    worldserver1.setAllowedSpawnTypes(worldserver1.getDifficulty() != EnumDifficulty.PEACEFUL, true);
                 }
                 else
                 {
-                    worldserver.getWorldInfo().setDifficulty(difficulty);
-                    worldserver.setAllowedSpawnTypes(this.allowSpawnMonsters(), this.canSpawnAnimals);
+                    worldserver1.getWorldInfo().setDifficulty(difficulty);
+                    worldserver1.setAllowedSpawnTypes(this.allowSpawnMonsters(), this.canSpawnAnimals);
                 }
             }
         }
@@ -1212,29 +1218,29 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
         playerSnooper.addClientStat("gui_state", this.getGuiEnabled() ? "enabled" : "disabled");
         playerSnooper.addClientStat("run_time", Long.valueOf((getCurrentTimeMillis() - playerSnooper.getMinecraftStartTimeMillis()) / 60L * 1000L));
         playerSnooper.addClientStat("avg_tick_ms", Integer.valueOf((int)(MathHelper.average(this.tickTimeArray) * 1.0E-6D)));
-        int i = 0;
+        int l = 0;
 
         if (this.worlds != null)
         {
-            for (WorldServer worldserver : this.worlds)
+            for (WorldServer worldserver1 : this.worlds)
             {
-                if (worldserver != null)
+                if (worldserver1 != null)
                 {
-                    WorldInfo worldinfo = worldserver.getWorldInfo();
-                    playerSnooper.addClientStat("world[" + i + "][dimension]", Integer.valueOf(worldserver.provider.getDimensionType().getId()));
-                    playerSnooper.addClientStat("world[" + i + "][mode]", worldinfo.getGameType());
-                    playerSnooper.addClientStat("world[" + i + "][difficulty]", worldserver.getDifficulty());
-                    playerSnooper.addClientStat("world[" + i + "][hardcore]", Boolean.valueOf(worldinfo.isHardcoreModeEnabled()));
-                    playerSnooper.addClientStat("world[" + i + "][generator_name]", worldinfo.getTerrainType().getName());
-                    playerSnooper.addClientStat("world[" + i + "][generator_version]", Integer.valueOf(worldinfo.getTerrainType().getVersion()));
-                    playerSnooper.addClientStat("world[" + i + "][height]", Integer.valueOf(this.buildLimit));
-                    playerSnooper.addClientStat("world[" + i + "][chunks_loaded]", Integer.valueOf(worldserver.getChunkProvider().getLoadedChunkCount()));
-                    ++i;
+                    WorldInfo worldinfo = worldserver1.getWorldInfo();
+                    playerSnooper.addClientStat("world[" + l + "][dimension]", Integer.valueOf(worldserver1.provider.getDimensionType().getId()));
+                    playerSnooper.addClientStat("world[" + l + "][mode]", worldinfo.getGameType());
+                    playerSnooper.addClientStat("world[" + l + "][difficulty]", worldserver1.getDifficulty());
+                    playerSnooper.addClientStat("world[" + l + "][hardcore]", Boolean.valueOf(worldinfo.isHardcoreModeEnabled()));
+                    playerSnooper.addClientStat("world[" + l + "][generator_name]", worldinfo.getTerrainType().getName());
+                    playerSnooper.addClientStat("world[" + l + "][generator_version]", Integer.valueOf(worldinfo.getTerrainType().getVersion()));
+                    playerSnooper.addClientStat("world[" + l + "][height]", Integer.valueOf(this.buildLimit));
+                    playerSnooper.addClientStat("world[" + l + "][chunks_loaded]", Integer.valueOf(worldserver1.getChunkProvider().getLoadedChunkCount()));
+                    ++l;
                 }
             }
         }
 
-        playerSnooper.addClientStat("worlds", Integer.valueOf(i));
+        playerSnooper.addClientStat("worlds", Integer.valueOf(l));
     }
 
     public void addServerTypeToSnooper(Snooper playerSnooper)
@@ -1361,9 +1367,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
      */
     public void setGameType(GameType gameMode)
     {
-        for (WorldServer worldserver : this.worlds)
+        for (WorldServer worldserver1 : this.worlds)
         {
-            worldserver.getWorldInfo().setGameType(gameMode);
+            worldserver1.getWorldInfo().setGameType(gameMode);
         }
     }
 
@@ -1474,11 +1480,11 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @Nullable
     public Entity getEntityFromUuid(UUID uuid)
     {
-        for (WorldServer worldserver : this.worlds)
+        for (WorldServer worldserver1 : this.worlds)
         {
-            if (worldserver != null)
+            if (worldserver1 != null)
             {
-                Entity entity = worldserver.getEntityFromUuid(uuid);
+                Entity entity = worldserver1.getEntityFromUuid(uuid);
 
                 if (entity != null)
                 {
@@ -1612,6 +1618,16 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
     @SideOnly(Side.SERVER)
     public static void main(String[] p_main_0_)
     {
+        //Forge: Copied from DedicatedServer.init as to run as early as possible, Old code left in place intentionally.
+        //Done in good faith with permission: https://github.com/MinecraftForge/MinecraftForge/issues/3659#issuecomment-390467028
+        ServerEula eula = new ServerEula(new File("eula.txt"));
+        if (!eula.hasAcceptedEULA())
+        {
+            LOG.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
+            eula.createEULAFile();
+            return;
+        }
+
         Bootstrap.register();
 
         try
@@ -1622,12 +1638,12 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
             String s2 = null;
             boolean flag1 = false;
             boolean flag2 = false;
-            int i = -1;
+            int l = -1;
 
-            for (int j = 0; j < p_main_0_.length; ++j)
+            for (int i1 = 0; i1 < p_main_0_.length; ++i1)
             {
-                String s3 = p_main_0_[j];
-                String s4 = j == p_main_0_.length - 1 ? null : p_main_0_[j + 1];
+                String s3 = p_main_0_[i1];
+                String s4 = i1 == p_main_0_.length - 1 ? null : p_main_0_[i1 + 1];
                 boolean flag3 = false;
 
                 if (!"nogui".equals(s3) && !"--nogui".equals(s3))
@@ -1638,7 +1654,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                         try
                         {
-                            i = Integer.parseInt(s4);
+                            l = Integer.parseInt(s4);
                         }
                         catch (NumberFormatException var13)
                         {
@@ -1676,7 +1692,7 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
 
                 if (flag3)
                 {
-                    ++j;
+                    ++i1;
                 }
             }
 
@@ -1696,9 +1712,9 @@ public abstract class MinecraftServer implements ICommandSender, Runnable, IThre
                 dedicatedserver.setFolderName(s2);
             }
 
-            if (i >= 0)
+            if (l >= 0)
             {
-                dedicatedserver.setServerPort(i);
+                dedicatedserver.setServerPort(l);
             }
 
             if (flag1)

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,6 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+
 package net.minecraftforge.common.crafting;
 
 import java.io.BufferedReader;
@@ -143,14 +144,15 @@ public class CraftingHelper {
         if (json.isJsonArray())
         {
             List<Ingredient> ingredients = Lists.newArrayList();
-            List<ItemStack> vanilla = Lists.newArrayList();
-            json.getAsJsonArray().forEach((ele) -> {
+            List<Ingredient> vanilla = Lists.newArrayList();
+            json.getAsJsonArray().forEach((ele) ->
+            {
                 Ingredient ing = CraftingHelper.getIngredient(ele, context);
 
-                if (ing.getClass() == Ingredient.class) {
+                if (ing.getClass() == Ingredient.class)
+                {
                     //Vanilla, Due to how we read it splits each itemstack, so we pull out to re-merge later
-                    for (ItemStack stack : ing.getMatchingStacks())
-                        vanilla.add(stack);
+                    vanilla.add(ing);
                 }
                 else
                 {
@@ -160,8 +162,7 @@ public class CraftingHelper {
 
             if (!vanilla.isEmpty())
             {
-                ItemStack[] items = vanilla.toArray(new ItemStack[vanilla.size()]);
-                ingredients.add(Ingredient.fromStacks(items));
+                ingredients.add(Ingredient.merge(vanilla));
             }
 
             if (ingredients.size() == 0)
@@ -407,7 +408,6 @@ public class CraftingHelper {
 
         return factory.parse(context, json);
     }
-
 
 
     //=======================================================
@@ -726,16 +726,30 @@ public class CraftingHelper {
                     IOUtils.closeQuietly(reader);
                 }
                 return true;
-            }
+            },
+            true, true
         );
     }
 
-
+    /**
+     * @deprecated Use {@link CraftingHelper#findFiles(ModContainer, String, Function, BiFunction, boolean, boolean)} instead.
+     */
+    @Deprecated
     public static boolean findFiles(ModContainer mod, String base, Function<Path, Boolean> preprocessor, BiFunction<Path, Path, Boolean> processor)
     {
-        return findFiles(mod, base, preprocessor, processor, false);
+        return findFiles(mod, base, preprocessor, processor, false, false);
     }
+
+    /**
+     * @deprecated Use {@link CraftingHelper#findFiles(ModContainer, String, Function, BiFunction, boolean, boolean)} instead.
+     */
+    @Deprecated
     public static boolean findFiles(ModContainer mod, String base, Function<Path, Boolean> preprocessor, BiFunction<Path, Path, Boolean> processor, boolean defaultUnfoundRoot)
+    {
+        return findFiles(mod, base, preprocessor, processor, defaultUnfoundRoot, false);
+    }
+
+    public static boolean findFiles(ModContainer mod, String base, Function<Path, Boolean> preprocessor, BiFunction<Path, Path, Boolean> processor, boolean defaultUnfoundRoot, boolean visitAllFiles)
     {
         FileSystem fs = null;
         try
@@ -788,6 +802,8 @@ public class CraftingHelper {
                     return false;
             }
 
+            boolean success = true;
+
             if (processor != null)
             {
                 Iterator<Path> itr = null;
@@ -804,12 +820,19 @@ public class CraftingHelper {
                 while (itr != null && itr.hasNext())
                 {
                     Boolean cont = processor.apply(root, itr.next());
-                    if (cont == null || !cont.booleanValue())
+
+                    if (visitAllFiles)
+                    {
+                        success &= cont != null && cont;
+                    }
+                    else if (cont == null || !cont)
+                    {
                         return false;
+                    }
                 }
             }
 
-            return true;
+            return success;
         }
         finally
         {

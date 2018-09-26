@@ -123,7 +123,7 @@ public class BlockEnderChest extends BlockContainer
 
         if (inventoryenderchest != null && tileentity instanceof TileEntityEnderChest)
         {
-            if (worldIn.getBlockState(pos.up()).isNormalCube())
+            if (worldIn.getBlockState(pos.up()).doesSideBlockChestOpening(worldIn, pos.up(), EnumFacing.DOWN))
             {
                 return true;
             }

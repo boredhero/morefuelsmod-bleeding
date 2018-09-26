@@ -136,6 +136,11 @@ public class EntitySelector
      */
     public static <T extends Entity> List<T> matchEntities(ICommandSender sender, String token, Class <? extends T > targetClass) throws CommandException
     {
+        return net.minecraftforge.common.command.SelectorHandlerManager.matchEntities(sender, token, targetClass);
+    }
+
+    public static <T extends Entity> List<T> matchEntitiesDefault(ICommandSender sender, String token, Class <? extends T > targetClass) throws CommandException
+    {
         Matcher matcher = TOKEN_PATTERN.matcher(token);
 
         if (matcher.matches() && sender.canUseCommand(1, "@"))
@@ -815,6 +820,11 @@ public class EntitySelector
      */
     public static boolean matchesMultiplePlayers(String selectorStr) throws CommandException
     {
+        return net.minecraftforge.common.command.SelectorHandlerManager.matchesMultiplePlayers(selectorStr);
+    }
+
+    public static boolean matchesMultiplePlayersDefault(String selectorStr) throws CommandException
+    {
         Matcher matcher = TOKEN_PATTERN.matcher(selectorStr);
 
         if (!matcher.matches())
@@ -834,6 +844,11 @@ public class EntitySelector
      * Returns whether the given string represents a selector.
      */
     public static boolean isSelector(String selectorStr)
+    {
+        return net.minecraftforge.common.command.SelectorHandlerManager.isSelector(selectorStr);
+    }
+
+    public static boolean isSelectorDefault(String selectorStr)
     {
         return TOKEN_PATTERN.matcher(selectorStr).matches();
     }

@@ -1,6 +1,6 @@
 /*
  * Minecraft Forge
- * Copyright (c) 2016.
+ * Copyright (c) 2016-2018.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -252,7 +252,14 @@ public class OBJModel implements IModel
                     }
                     else if (key.equalsIgnoreCase("usemtl"))
                     {
-                        material = this.materialLibrary.materials.get(data);
+                        if (this.materialLibrary.materials.containsKey(data))
+                        {
+                            material = this.materialLibrary.materials.get(data);
+                        }
+                        else
+                        {
+                            FMLLog.log.error("OBJModel.Parser: (Model: '{}', Line: {}) material '{}' referenced but was not found", objFrom, lineNum, data);
+                        }
                         usemtlCounter++;
                     }
                     else if (key.equalsIgnoreCase("v")) // Vertices: x y z [w] - w Defaults to 1.0

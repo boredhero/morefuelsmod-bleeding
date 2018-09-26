@@ -29,17 +29,17 @@ public interface IRecipe extends net.minecraftforge.registries.IForgeRegistryEnt
         return net.minecraftforge.common.ForgeHooks.defaultRecipeGetRemainingItems(inv);
     }
 
-    default NonNullList<Ingredient> getIngredients()
+default NonNullList<Ingredient> getIngredients()
     {
         return NonNullList.<Ingredient>create();
     }
 
-    default boolean isHidden()
+default boolean isHidden()
     {
         return false;
     }
 
-    default String getGroup()
+default String getGroup()
     {
         return "";
     }
